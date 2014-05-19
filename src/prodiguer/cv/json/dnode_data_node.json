@@ -1,0 +1,98 @@
+[
+	{
+		"id": 5,
+		"institute_id": 23,
+		"is_active": false,
+		"is_default": false,
+		"name": "BADC",
+		"root_url": "http://cmip-dn.badc.rl.ac.uk"
+	},
+	{
+		"id": 10,
+		"institute_id": 1,
+		"is_active": false,
+		"is_default": false,
+		"name": "BCC",
+		"root_url": "http://bcccsm.cma.gov.cn"
+	},
+	{
+		"id": 7,
+		"institute_id": 3,
+		"is_active": false,
+		"is_default": false,
+		"name": "CCCMA",
+		"root_url": "http://dap.cccma.uvic.ca"
+	},
+	{
+		"id": 1,
+		"institute_id": 13,
+		"is_active": false,
+		"is_default": false,
+		"name": "CCRT",
+		"root_url": "http://vesg.ipsl.fr"
+	},
+	{
+		"id": 4,
+		"institute_id": 13,
+		"is_active": true,
+		"is_default": true,
+		"name": "CICLAD",
+		"root_url": "http://vesg.ipsl.fr"
+	},
+	{
+		"id": 3,
+		"institute_id": 13,
+		"is_active": false,
+		"is_default": false,
+		"name": "CINES",
+		"root_url": "http://vesg.ipsl.fr"
+	},
+	{
+		"id": 6,
+		"institute_id": 5,
+		"is_active": false,
+		"is_default": false,
+		"name": "CNRM-CERFACS",
+		"root_url": "http://esg.cnrm-game-meteo.fr"
+	},
+	{
+		"id": 12,
+		"institute_id": 6,
+		"is_active": false,
+		"is_default": false,
+		"name": "CSIRO-QCCCE",
+		"root_url": "http://esgnode1.nci.org.au"
+	},
+	{
+		"id": 8,
+		"institute_id": 11,
+		"is_active": false,
+		"is_default": false,
+		"name": "GISS",
+		"root_url": "http://esg.nccs.nasa.gov"
+	},
+	{
+		"id": 2,
+		"institute_id": 13,
+		"is_active": false,
+		"is_default": false,
+		"name": "IDRIS",
+		"root_url": "http://vesg.ipsl.fr"
+	},
+	{
+		"id": 11,
+		"institute_id": 25,
+		"is_active": false,
+		"is_default": false,
+		"name": "NTNU",
+		"root_url": "http://norstore-trd-bio1.hpc.ntnu.no"
+	},
+	{
+		"id": 9,
+		"institute_id": 24,
+		"is_active": false,
+		"is_default": false,
+		"name": "PCMDI",
+		"root_url": "http://pcmdi3.llnl.gov"
+	}
+]

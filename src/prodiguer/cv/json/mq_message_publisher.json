@@ -1,0 +1,12 @@
+[
+	{
+		"code": "libligcm",
+		"description": "liblIGCM runtume environment",
+		"id": 1
+	},
+	{
+		"code": "prodiguer",
+		"description": "intra-mq publisher",
+		"id": 2
+	}
+]

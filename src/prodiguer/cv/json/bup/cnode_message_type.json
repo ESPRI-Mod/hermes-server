@@ -1,0 +1,32 @@
+[
+	{
+		"code": "0000",
+		"description": "La simulation dmarre (FirstInitialize)",
+		"id": 1
+	},
+	{
+		"code": "1000",
+		"description": "Le job d'une simulation dmarre (Period=1 and not FirstInitialize)",
+		"id": 2
+	},
+	{
+		"code": "2000",
+		"description": "PushStack",
+		"id": 3
+	},
+	{
+		"code": "3000",
+		"description": "PopStack russi",
+		"id": 4
+	},
+	{
+		"code": "9000",
+		"description": "PopStack pas russi : un problme a t dtect",
+		"id": 5
+	},
+	{
+		"code": "9999",
+		"description": "FATAL",
+		"id": 6
+	}
+]

@@ -1,0 +1,12 @@
+[
+	{
+		"code": "smon",
+		"description": "Simulation monitoring",
+		"id": 1
+	},
+	{
+		"code": "metrics",
+		"description": "Simulation metrics",
+		"id": 2
+	}
+]
