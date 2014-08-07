@@ -34,9 +34,9 @@ def _get_sim_status():
 	return sim_states[i]
 
 
-def _get_sim_name():	
+def _get_sim_name():
 	"""Returns a random simulation name."""
-	sim_list = _get_sim_list()	
+	sim_list = _get_sim_list()
 	i = random.randint(0, len(sim_list) - 1)
 
 	return sim_list[i]
@@ -45,13 +45,13 @@ def _get_sim_name():
 def _get_basic_properties(message_type):
 	"""Returns AMPQ message properties."""
 	return utils.create_ampq_message_properties(
-		constants.PRODUCER_IGCM, 
-		constants.APP_SMON, 
+		constants.PRODUCER_IGCM,
+		constants.APP_SMON,
 		message_type=message_type)
 
 
 def _get_1000_content(
-	activity, 
+	activity,
 	compute_node,
 	compute_node_login,
 	compute_node_machine,
@@ -88,7 +88,7 @@ def _get_2000_content(s_name):
 
 
 def get_message_1000(
-	activity=_get_name(db.types.Activity), 
+	activity=_get_name(db.types.Activity),
 	compute_node=_get_name(db.types.ComputeNode),
 	compute_node_login=_get_name(db.types.ComputeNodeLogin),
 	compute_node_machine=_get_name(db.types.ComputeNodeMachine),
@@ -104,22 +104,22 @@ def get_message_1000(
 	props = _get_basic_properties(constants.TYPE_SMON_1000)
 
 	content = _get_1000_content(
-		activity,activity, 
-		compute_node, 
-		compute_node_login, 
-		compute_node_machine, 
-		execution_start_date, 
-		execution_state, 
-		experiment, 
-		model, 
-		name, 
+		activity,activity,
+		compute_node,
+		compute_node_login,
+		compute_node_machine,
+		execution_start_date,
+		execution_state,
+		experiment,
+		model,
+		name,
 		space)
 
 	return props, content
 
 
 def get_message_2000(
-	name=_get_sim_name(), 
+	name=_get_sim_name(),
 	status=_get_sim_status()):
 	"""Publishes a sim-mon message (type = 2000).
 

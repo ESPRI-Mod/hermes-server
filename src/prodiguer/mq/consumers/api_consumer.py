@@ -34,11 +34,11 @@ def _get_api_ep():
 	return ep.get_endpoint(_API_EP)
 
 
-def _post_to_web_app(ei):
+def _post_to_web_app(event_info):
 	"""Posts event information to web app."""
 	try:
 		ep = _get_api_ep()
-		requests.get(ep, params=ei)
+		requests.get(ep, params=event_info)
 	except requests.exceptions.ConnectionError:
 		rt.log_api(_ERR_API_NOT_RUNNING, level=rt.LOG_LEVEL_WARNING)
 	except Exception as e:

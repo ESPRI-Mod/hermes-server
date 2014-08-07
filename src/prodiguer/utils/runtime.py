@@ -396,6 +396,9 @@ def invoke(tasks):
         try:
             task()
         except Exception as e:
-            for error_task in tasks["red"]:
-                error_task(e)
+            try:
+                for error_task in tasks["red"]:
+                    error_task(e)
+            except:
+                pass
             break

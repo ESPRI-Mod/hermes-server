@@ -17,7 +17,7 @@ from demos import utils as u
 # API endpoint to post event data to.
 _API_EP = '/monitoring/event'
 
-# API not running error message. 
+# API not running error message.
 _ERR_API_NOT_RUNNING = "API service needs to be started."
 
 # List of simulations.

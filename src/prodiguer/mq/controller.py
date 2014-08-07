@@ -14,7 +14,7 @@
 # Module imports.
 from . import utils
 from ..utils import (
-    config as cfg,  
+    config as cfg,
     convert,
     runtime as rt
     )
@@ -27,10 +27,10 @@ _ERR_MQ_PRODUCER_ACTION_UNSUPPORTED = "Message queue producer action is unsuppor
 _ERR_MQ_CONSUMER_UNSUPPORTED = "Message queue consumer is unsupported."
 
 
-# Set of consumer mq agents. 
+# Set of consumer mq agents.
 _consumers = {}
 
-# Set of producer mq agents. 
+# Set of producer mq agents.
 _producers = {}
 
 
@@ -45,7 +45,7 @@ def initialise(agents):
     :param agents: Set of supported mq agents.
     :type agents: dict
 
-    """ 
+    """
     for q, agent in agents.items():
         producer, consumer = agent
         _consumers[q] = consumer
@@ -58,7 +58,7 @@ def produce(q, action_name='start', *args, **kwargs):
     :param q: Key of mq to be consumed.
     :type q: str
 
-    """     
+    """
     # Defensive programming.
     if q not in _producers:
         rt.throw(_ERR_MQ_PRODUCER_UNSUPPORTED)
@@ -76,7 +76,7 @@ def consume(q):
     :param q: Key of mq to be consumed.
     :type q: str
 
-    """ 
+    """
     # Defensive programming.
     if q not in _consumers:
         rt.throw(_ERR_MQ_CONSUMER_UNSUPPORTED)

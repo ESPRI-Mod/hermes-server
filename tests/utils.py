@@ -71,11 +71,8 @@ def get_datetime():
 def get_int(lower=0, upper=9999999):
     """Returns a random integer for testing purposes.
 
-    :param lower: Lower limit for returned result.
-    :param lower: int
-
-    :param upper: Upper limit for returned result.
-    :param upper: int
+    :param int lower: Lower limit for returned result.
+    :param int upper: Upper limit for returned result.
 
     """
     return random.randint(lower, upper)
@@ -90,7 +87,7 @@ def get_long():
 
 def get_float():
     """Returns a random float for testing purposes.
-    
+
     """
     return random.random()
 
@@ -98,8 +95,7 @@ def get_float():
 def get_string(len=63):
     """Returns a random string for testing purposes.
 
-    :param len: Limit for length of returned result.
-    :param len: int
+    :param int len: Limit for length of returned result.
 
     """
     return str(uuid.uuid1())[:len]
@@ -108,8 +104,7 @@ def get_string(len=63):
 def get_unicode(len=63):
     """Returns a random unicde for testing purposes.
 
-    :param len: Limit for length of returned result.
-    :param len: int
+    :param int len: Limit for length of returned result.
 
     """
     return unicode(uuid.uuid1())[:len]
@@ -122,15 +117,25 @@ def get_uuid():
     return uuid.uuid4()
 
 
+def assert_nullable(actual, expected, assertor):
+    """Asserts a nullable value.
+
+    :param object actual: A value.
+    :param object expected: Expected value.
+    :param function assertor: Callback to execute if expected is a value.
+
+    """
+    if expected is None:
+        assert_none(actual)
+    else:
+        assertor(actual, expected)
+
+
 def assert_collection(collection, length = -1, types=None):
     """Asserts an object collection.
 
-    :param collection: An object collection.
-    :type collection: list
-
-    :param length: Length of collection.
-    :type length: int
-
+    :param list collection: An object collection.
+    :param int length: Length of collection.
     :param types: Types that object must either be or sub-class from.
     :type types: list | class
 
@@ -146,19 +151,17 @@ def assert_collection(collection, length = -1, types=None):
 def assert_none(instance):
     """Asserts an instance is none.
 
-    :param instance: An object for testing.
-    :type instance: object
+    :param object instance: An object for testing.
 
     """
-    assert instance is None, "Object is of type {0}.  Expected an object of type None.".format(instance.__class__)
+    assert instance is None, \
+           "Object is of type {0}.  Expected an object of type None.".format(instance.__class__)
 
 
 def assert_obj(instance, types=None):
     """Asserts an object instance.
 
-    :param instance: An object for testing.
-    :type instance: object
-
+    :param object instance: An object for testing.
     :param types: Types that object must either be or sub-class from.
     :type types: list | class
 
@@ -181,24 +184,39 @@ def assert_obj(instance, types=None):
 def assert_object(instance, types=None):
     """Asserts an object instance.
 
-    :param instance: An object for testing.
-    :type instance: object
-
+    :param object instance: An object for testing.
     :param types: Types that object must either be or sub-class from.
     :type types: list | class
 
     """
     assert_obj(instance, types)
 
-    
+
+def assert_dict(instance, keys=None):
+    """Asserts a dictionary.
+
+    :param dict instance: A dictionary for testing.
+    :param list keys: Expected dictionary keys.
+
+    """
+    assert_object(instance, dict)
+    try:
+        iter(keys)
+    except TypeError:
+        keys = ()
+    missing = []
+    for key in keys:
+        if key not in instance:
+            missing.append(key)
+    assert len(missing) == 0, \
+           "Dictionary keys not found: {0}".format(", ".join(missing))
+
+
 def assert_namedtuple(instance, cls_name='_Class'):
     """Asserts a namedtuple.
 
-    :param instance: A namedtuple for testing.
-    :type instance: object
-
-    :param cls_name: Expected name of namedtuple class.
-    :type cls_name: str
+    :param namedtuple instance: A namedtuple for testing.
+    :param str cls_name: Expected name of namedtuple class.
 
     """
     assert_string(instance.__class__.__name__, cls_name)
@@ -222,45 +240,40 @@ def assert_string(actual, expected, startswith=False, ignore_case=False):
 
     # Assert.
     if startswith == False:
-        assert actual == expected, "Was {0}, expected {1}".format(actual, expected)
+        assert actual == expected, \
+               "Was {0}, expected {1}".format(actual, expected)
     else:
-        assert actual.startswith(expected), "{0} does not start with {1}".format(actual, expected)
+        assert actual.startswith(expected), \
+               "{0} does not start with {1}".format(actual, expected)
 
 
 def assert_bool(actual, expected=True):
     """Asserts a bool.
 
-    :param actual: A boolean.
-    :type actual: bool
-
-    :param expected: Expected boolean value.
-    :type expected: bool
+    :param bool actual: A boolean.
+    :param bool expected: Expected boolean value.
 
     """
-    assert actual == expected, "Was {0}, expected {1}".format(actual, expected)
+    assert actual == expected, \
+           "Was {0}, expected {1}".format(actual, expected)
 
 
 def assert_date(actual, expected):
     """Asserts a date.
 
-    :param actual: A date.
-    :type actual: str
-
-    :param expected: Expected date value.
-    :type expected: str
+    :param str actual: A date.
+    :param str expected: Expected date value.
 
     """
-    assert actual == dateutil_parser.parse(expected), "Was {0}, expected {1}".format(actual, dateutil_parser.parse(expected))
+    assert actual == dateutil_parser.parse(expected), \
+           "Was {0}, expected {1}".format(actual, dateutil_parser.parse(expected))
 
 
 def assert_datetime(actual, expected):
     """Asserts a datetime.
 
-    :param actual: A datetime.
-    :type actual: str
-
-    :param expected: Expected datetime value.
-    :type expected: str
+    :param str actual: A datetime.
+    :param str expected: Expected datetime value.
 
     """
     assert actual == dateutil_parser.parse(expected), "Was {0}, expected {1}".format(actual, dateutil_parser.parse(expected))
@@ -269,28 +282,25 @@ def assert_datetime(actual, expected):
 def assert_integer(actual, expected):
     """Asserts an integer.
 
-    :param actual: An integer.
-    :type actual: int
-
-    :param expected: Expected integer value.
-    :type expected: int
+    :param int actual: An integer.
+    :param int expected: Expected integer value.
 
     """
     assert actual == expected, "Was {0}, expected {1}".format(actual, expected)
 
 
-def assert_uuid(actual, expected):
+def assert_uuid(actual, expected=None):
     """Asserts a uuid.
 
-    :param actual: A uuid.
-    :type actual: str
-
-    :param expected: Expected uuid value.
-    :type expected: str
+    :param str actual: A uuid.
+    :param str expected: Expected uuid value.
 
     """
     if isinstance(actual, uuid.UUID) == False:
         actual = uuid.UUID(actual)
+    if expected is None:
+        return
+
     if isinstance(expected, uuid.UUID) == False:
         expected = uuid.UUID(expected)
 
@@ -375,9 +385,9 @@ def invoke_api(verb, url, payload=None):
     return verb(url, data=data, headers=headers)
 
 
-def assert_api_response(r, 
-                        expected_status, 
-                        expected_data=None, 
+def assert_api_response(r,
+                        expected_status,
+                        expected_data=None,
                         expected_content_type=HTTP_CONTENT_TYPE_JSON,
                         expected_content_encoding=HTTP_CONTENT_ENCODING_UTF8,
                         response_data_parser=None):
@@ -392,13 +402,13 @@ def assert_api_response(r,
 
     def assert_json():
         # ... assert http header
-        assert_string(r.headers.get('content-type'), HTTP_CONTENT_TYPE_JSON, 
+        assert_string(r.headers.get('content-type'), HTTP_CONTENT_TYPE_JSON,
                       startswith=True, ignore_case=True)
-        
+
         # ... assert status
         response_data = r.json()
         assert_integer(response_data['status'], expected_status)
-        
+
         # ... assert data
         if expected_status == 0 and expected_data:
             del response_data['status']
@@ -411,7 +421,7 @@ def assert_api_response(r,
 
     def assert_csv():
         # ... assert http header
-        assert_string(r.headers.get('content-type'), HTTP_CONTENT_TYPE_CSV, 
+        assert_string(r.headers.get('content-type'), HTTP_CONTENT_TYPE_CSV,
                       startswith=True, ignore_case=True)
 
         return r.text

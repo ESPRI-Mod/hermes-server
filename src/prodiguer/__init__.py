@@ -66,7 +66,7 @@ def _initialize():
 
 	# Auto-initialise db.
 	db.initialize()
-		
+
 	# Auto-initialise mq.
 	# if config.mq.auto_initialize:
 	# 	utils.runtime.log_mq("Initialising mq sub-package ...")

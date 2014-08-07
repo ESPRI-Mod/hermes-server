@@ -26,7 +26,7 @@ MQ_API = "api"
 
 def _on_new(ei):
 	"""On new simulation event handler."""
-	# Persist simulation to db.	
+	# Persist simulation to db.
 	s = db.mq_hooks.create_simulation(
 		ei['activity'],
 		ei['compute_node'],
@@ -40,19 +40,19 @@ def _on_new(ei):
 		ei['space']
 		)
 
-	# Publish simulation to api.	
+	# Publish simulation to api.
 	controller.produce(MQ_API, 'do_new_simulation', s)
 
 
 def _on_state_change(ei):
 	"""On simulation state change event handler."""
-	# Persist simulation state change to db.	
+	# Persist simulation state change to db.
 	s = db.mq_hooks.update_simulation_status(
 		ei['name'],
 		ei['state']
 		)
 
-	# Publish simulation state change to api.	
+	# Publish simulation state change to api.
 	controller.produce(MQ_API, 'do_simulation_state_change', s.id, ei['state'])
 
 

@@ -51,7 +51,7 @@ def get_list(entity_type):
 
     :returns: A list of entites in dictionary format ready to be returned to front-end.
     :rtype: list
-    
+
     """
     return [get_item(e) for e in db.dao.get_all(entity_type)]
 
@@ -63,11 +63,11 @@ def get_item(entity):
 
     :returns: Entity information in dictionary format ready to be returned to front-end.
     :rtype: dict
-    
+
     """
     # Convert to a dictionary.
     d = db.types.Convertor.to_dict(entity)
-    
+
     # Remove row meta-info.
     del d["row_create_date"]
     del d["row_update_date"]
@@ -87,12 +87,12 @@ def validate_group_name(name):
 
     """
     def throw():
-        raise ValueError("Invalid metric group name: {0}".format(name))        
+        raise ValueError("Invalid metric group name: {0}".format(name))
 
     if re.compile(_GROUP_NAME_REGEX).search(name):
         throw()
     if len(name) < _GROUP_NAME_MIN_LENGTH or len(name) > _GROUP_NAME_MAX_LENGTH:
-        throw()        
+        throw()
 
 
 def validate_format(format):
@@ -102,5 +102,5 @@ def validate_format(format):
 
     """
     if format not in _FORMATS:
-        raise ValueError("Unsupported metric group format: {0}".format(format))        
+        raise ValueError("Unsupported metric group format: {0}".format(format))
 

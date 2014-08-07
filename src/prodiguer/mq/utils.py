@@ -28,8 +28,7 @@ from ..utils import (
 def connect(q):
 	"""Binds to a mq subscriber channel.
 
-	:param q: Name of message queue.
-	:type q: str
+	:param str q: Name of message queue.
 
 	:returns: An mq channel for pub/sub operations.
 	:rtype: pika.BlockingChannel
@@ -43,7 +42,7 @@ def connect(q):
 	connection = pika.BlockingConnection(pika.ConnectionParameters(
 	               cfg.mq.host))
 	channel = connection.channel()
-	channel.queue_declare(queue=q_cfg.name, 
+	channel.queue_declare(queue=q_cfg.name,
 						  durable=q_cfg.is_durable)
 
 	rt.log_mq("CONNECTED", cfg.mq.host, q)
@@ -118,7 +117,7 @@ def publish(q, data, channel=None):
 	# Connect if necessary.
 	if channel is None:
 		channel, connection = connect(q)
-	
+
 	# Ensure message id durable.
 	if q_cfg.is_durable:
 		properties = pika.BasicProperties(
@@ -142,11 +141,11 @@ def publish(q, data, channel=None):
 			cluster_id=unicode(uuid.uuid4()),
 			)
 		properties.headers['test'] = 'test'
-	
+
 	# Publish over mq channel.
 	channel.basic_publish(
-		exchange='', 
-		routing_key=q, 
+		exchange='',
+		routing_key=q,
 		body=convert.dict_to_json(data),
 		properties=properties)
 
@@ -192,7 +191,7 @@ def create_ampq_message_properties(
 	:returns pika.BasicProperties: Set of AMPQ message basic properties.
 
 	"""
-	# Defensive programming.
+	# Validate inputs.
 	if producer_id not in constants.PRODUCERS:
 		raise ValueError("Unsupported producer identifier: {0}.".format(producer_id))
 	if app_id not in constants.APPS:
@@ -210,10 +209,11 @@ def create_ampq_message_properties(
 	if priority not in constants.PRIORITIES:
 		raise ValueError("Unsupported priority: {0}.".format(priority))
 
+
 	# Default headers attached with each property.
 	default_headers = {
 		"mode": mode,
-		"producer_id": producer_id	
+		"producer_id": producer_id
 	}
 
 	# Return a pika BasicProperties instance (follows AMPQ protocol).
@@ -236,8 +236,8 @@ def create_ampq_message_properties(
 
 
 class MessageInfo(object):
-	"""Information used during message processing."""	
-	def __init__(self, 
+	"""Information used during message processing."""
+	def __init__(self,
 				 ampq_properties=None,
 				 content=None):
 		"""Constructor.
@@ -300,8 +300,8 @@ class BaseProducer(object):
 	PUBLISH_INTERVAL = constants.DEFAULT_PUBLISH_INTERVAL
 
 
-	def __init__(self, 
-				 amqp_url = None, 
+	def __init__(self,
+				 amqp_url = None,
 				 connection_reopen_delay = 5,
 				 enable_confirmations = True):
 		"""Setup the example publisher object, passing in the URL we will use
@@ -322,7 +322,7 @@ class BaseProducer(object):
 
 		self._url = amqp_url or str(cfg.mq.connection)
 		self._connection_reopen_delay = connection_reopen_delay
-		self._enable_confirmations = enable_confirmations  
+		self._enable_confirmations = enable_confirmations
 		self._stop_ioloop_on_disconnect = not (connection_reopen_delay > 0)
 
 
@@ -567,7 +567,7 @@ class BaseProducer(object):
 
 		if self._enable_confirmations:
 			self.enable_delivery_confirmations()
-		self.schedule_next_message()        
+		self.schedule_next_message()
 
 
 	def enable_delivery_confirmations(self):
@@ -650,7 +650,7 @@ class BaseProducer(object):
 		props, content = parse(props, content)
 
 		# Publish over MQ channel.
-		self._channel.basic_publish(self.MQ_EXCHANGE, 
+		self._channel.basic_publish(self.MQ_EXCHANGE,
 									self.MQ_ROUTING_KEY,
 									content,
 									props)
@@ -678,7 +678,7 @@ class BaseProducer(object):
 		if self._stopping:
 			return
 
-		# Iterate messages emitted by producer.	
+		# Iterate messages emitted by producer.
 		try:
 			for type_id, content in self.get_message():
 				self._publish(type_id, content)
