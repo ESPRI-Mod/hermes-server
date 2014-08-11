@@ -68,7 +68,7 @@ def run():
 
     # Instantiate.
     app = Application(_get_app_routes(),
-                      debug=not cfg.core.mode=='prod',
+                      debug=not cfg.api.mode=='prod',
                       **_get_app_settings())
 
     # Listen.

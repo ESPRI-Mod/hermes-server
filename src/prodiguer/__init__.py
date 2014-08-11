@@ -52,7 +52,6 @@ configure = config.set
 
 def _get_config_filepath():
 	"""Returns the path to the prodiguer configuration file."""
-	# Note - this assumes that prodiguer stack has been correctly installed.
 	fp = abspath(__file__)
 	for i in range(5):
 		fp = dirname(fp)

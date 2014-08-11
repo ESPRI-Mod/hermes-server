@@ -72,32 +72,3 @@ def set(fp=None):
 	core = data.core
 	db = data.db
 	mq = data.mq
-
-
-def get_mq_config(q):
-	"""Returns mesage queue configuration.
-
-	:param q: Name of message queue.
-	:type q: str
-
-	:returns: Message queue configuration.
-	:rtype: namedtuple
-
-	"""
-	for cfg in mq.queues:
-		if cfg.name == q:
-			return cfg
-
-
-def get_mq_config1(msg_type):
-	"""Returns mesage queue configuration.
-
-	:param str msg_type: Type of message.
-
-	:returns: Message queue configuration.
-	:rtype: namedtuple
-
-	"""
-	for cfg in mq.types:
-		if cfg.code == msg_type:
-			return cfg
