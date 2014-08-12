@@ -39,13 +39,3 @@ __all__ = [
 	"types",
 	"type_factory"
 ]
-
-
-
-def initialize():
-	"""Initialises sub-package.
-
-	"""
-	if config.db.auto_initialize:	
-		session.start(config.db.connection)
-

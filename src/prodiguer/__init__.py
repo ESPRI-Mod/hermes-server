@@ -48,31 +48,3 @@ config = utils.config
 
 # Library configuration assignment.
 configure = config.set
-
-
-def _get_config_filepath():
-	"""Returns the path to the prodiguer configuration file."""
-	fp = abspath(__file__)
-	for i in range(5):
-		fp = dirname(fp)
-
-	return join(fp, _CONFIG_FILENAME)
-
-
-def _initialize():
-	# Auto-configure.
-	config.set(_get_config_filepath())
-
-	# Auto-initialise db.
-	db.initialize()
-
-	# Auto-initialise mq.
-	# if config.mq.auto_initialize:
-	# 	utils.runtime.log_mq("Initialising mq sub-package ...")
-	# 	mq.initialize()
-
-	utils.runtime.log()
-
-
-# Auto-initialize.
-_initialize()
