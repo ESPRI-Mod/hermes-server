@@ -1,9 +1,0 @@
-{
-	"smtp": {
-		"host": "imap.ipsl.jussieu.fr",
-		"port": "993",
-		"username": "momipsl",
-		"password": "Silence107!",
-		"mailbox": "AMPQ"
-	}
-}

@@ -19,9 +19,9 @@ from os.path import dirname, abspath, join
 
 from . import (
 	api,
-	cv, 
+	cv,
 	db,
-	# mq,
+	mq1 as mq,
 	utils,
 	)
 
@@ -34,17 +34,13 @@ __all__ = [
 	'configure',
 	'cv',
 	'db',
-	# 'mq',
+	'mq',
 	'utils',
 ]
-
-
-# Config filename.
-_CONFIG_FILENAME = 'config.json'
 
 
 # Library configuration data.
 config = utils.config
 
 # Library configuration assignment.
-configure = config.set
+configure = config.init

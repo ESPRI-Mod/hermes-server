@@ -12,13 +12,9 @@
 
 """
 # Module imports.
-from os.path import dirname, abspath, join, exists
+import os
 
-from . import runtime as rt
-from . convert import (
-	json_file_to_dict, 
-	json_file_to_namedtuple
-	)
+from . import convert
 
 
 
@@ -33,6 +29,9 @@ __all__ = [
 ]
 
 
+
+# Standard configuration file path.
+_CONFIG="{0}/.prodiguer".format(os.environ['HOME'])
 
 # Configuration data.
 data = None
@@ -50,14 +49,13 @@ db = None
 mq = None
 
 
-def set(fp=None):
-	"""Sets the configuration data wrapper.
+def init(fp=_CONFIG):
+	"""Initializes configuration.
 
-	:param fp: Path to configuration file.
-	:type fp: str
+	:param str fp: Path to configuration file.
 
 	"""
-	if not exists(fp):
+	if not os.path.exists(fp):
 		raise RuntimeError("Configuration file does not exist :: {0}".format(fp))
 
 	global api
@@ -67,7 +65,7 @@ def set(fp=None):
 	global mq
 
 	# Cache pointers to config sections of interest.
-	data = json_file_to_namedtuple(fp)
+	data = convert.json_file_to_namedtuple(fp)
 	api = data.api
 	core = data.core
 	db = data.db
