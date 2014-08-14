@@ -27,7 +27,7 @@ from . type_utils import (
     parse_attr_value
     )
 
-# Import cnode types. 
+# Import cnode types.
 from .types_cnode import (
     ComputeNode,
     ComputeNodeLogin,
@@ -42,10 +42,10 @@ from .types_cnode import (
     SimulationMetric,
     SimulationMetricGroup,
     SimulationSpace,
-    SimulationState    
+    SimulationState
     )
 
-# Import dnode types. 
+# Import dnode types.
 from .types_dnode import (
     DataNode,
     DataServer,
@@ -56,15 +56,15 @@ from .types_dnode import (
     DRSSchema
     )
 
-# Import mq types. 
+# Import mq types.
 from .types_mq import (
     Message,
     MessageApplication,
-    MessagePublisher,
+    MessageProducer,
     MessageType
     )
 
-# Import shared schema 
+# Import shared schema
 from .types_shared import (
     Activity,
     Institute
@@ -99,7 +99,7 @@ __all__ = [
     # ... mq types
     "Message",
     "MessageApplication",
-    "MessagePublisher",
+    "MessageProducer",
     "MessageType",
     # ... shared types
     "Activity",
@@ -115,7 +115,7 @@ __all__ = [
     "CACHEABLE",
     "CV",
     ]
-    
+
 
 
 # Set of supported model schemas.
@@ -144,13 +144,13 @@ TYPES = type_utils.supported_types = [
     DataServer,
     DataServerType,
     DRSComponent,
-    DRSElement,    
+    DRSElement,
     DRSElementMapping,
     DRSSchema,
     # ... mq
     Message,
     MessageApplication,
-    MessagePublisher,
+    MessageProducer,
     MessageType,
     # ... shared
     Activity,
@@ -180,7 +180,7 @@ CV = (
     SimulationState,
     # ... mq cv's.
     MessageApplication,
-    MessagePublisher,
+    MessageProducer,
     MessageType,
     # ... dnode cv's.
     DataNode,
@@ -208,7 +208,7 @@ CACHEABLE = (
     SimulationState,
     # ... mq
     MessageApplication,
-    MessagePublisher,    
+    MessageProducer,
     MessageType,
     # ... shared
     Activity,

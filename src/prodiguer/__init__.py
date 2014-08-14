@@ -21,7 +21,7 @@ from . import (
 	api,
 	cv,
 	db,
-	mq1 as mq,
+	mq,
 	utils,
 	)
 
@@ -44,3 +44,6 @@ config = utils.config
 
 # Library configuration assignment.
 configure = config.init
+
+# Auto-configure.
+configure()

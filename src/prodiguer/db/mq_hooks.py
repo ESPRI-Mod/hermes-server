@@ -208,39 +208,24 @@ def update_simulation_status(name, execution_state):
     return s
 
 
-def create_message(app_id, 
-                   publisher_id, 
+def create_message(uid,
+                   app_id,
+                   producer_id,
                    type_id,
                    content,
                    content_encoding='utf-8',
                    content_type='application/json',
-                   uid=None,
                    timestamp=None):
     """Creates a new related message record in db.
 
-    :param app_id: Message application id, e.g. smon.
-    :type app_id: str
-
-    :param publisher_id: Message application id, e.g. libligcm.
-    :type publisher_id: str
-
-    :param type_id: Message type id, e.g. 1001000.
-    :type type_id: str
-
-    :param name: Message content.
-    :type name: str
-
-    :param content_encoding: Message content encoding, e.g. utf-8.
-    :type content_encoding: str
-
-    :param content_type: Message content type, e.g. application/json.
-    :type content_type: str
-
-    :param uid: Message unique identifer.
-    :type uid: str
-
-    :param timestamp: Message timestamp in milliseconds since epoch.
-    :type timestamp: str
+    :param str uid: Message unique identifer.
+    :param str app_id: Message application id, e.g. smon.
+    :param str producer_id: Message producer id, e.g. libligcm.
+    :param str type_id: Message type id, e.g. 1001000.
+    :param str name: Message content.
+    :param str content_encoding: Message content encoding, e.g. utf-8.
+    :param str content_type: Message content type, e.g. application/json.
+    :param str timestamp: Message timestamp in milliseconds since epoch.
 
     :returns: Newly created message.
     :rtype: dbtypes.Message
@@ -249,7 +234,7 @@ def create_message(app_id,
     def guard():
         if not cache.exists(dbtypes.MessageApplication, app_id):
             raise ValueError('Message application is unknown')
-        if not cache.exists(dbtypes.MessagePublisher, publisher_id):
+        if not cache.exists(dbtypes.MessageProducer, producer_id):
             raise ValueError('Message publisher is unknown')
         if not cache.exists(dbtypes.MessageType, type_id):
             raise ValueError('Message type is unknown')
@@ -263,22 +248,21 @@ def create_message(app_id,
     guard()
 
     # Instantiate a message instance.
-    m = dbtypes.Message()
-    m.app_id = _get_id(dbtypes.MessageApplication, app_id)
-    m.publisher_id = _get_id(dbtypes.MessagePublisher, publisher_id)
-    m.type_id = _get_id(dbtypes.MessageType, type_id)
-    m.content = content
-    m.content_encoding = content_encoding
-    m.content_type = content_type
-    if uid is not None:
-        m.uid = uid
+    msg = dbtypes.Message()
+    msg.app_id = _get_id(dbtypes.MessageApplication, app_id)
+    msg.content = content
+    msg.content_encoding = content_encoding
+    msg.content_type = content_type
+    msg.producer_id = _get_id(dbtypes.MessageProducer, producer_id)
     if timestamp is not None:
-        m.timestamp = timestamp
+        msg.timestamp = timestamp
+    msg.type_id = _get_id(dbtypes.MessageType, type_id)
+    msg.uid = uid
 
     # Append to session.
-    dao.insert(m)
+    dao.insert(msg)
 
-    return m
+    return msg
 
 
 def create_simulation_message(name,

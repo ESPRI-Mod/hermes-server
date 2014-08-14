@@ -56,6 +56,19 @@ def exists(typeof, id):
         return len([i for i in _cache[typeof] if i.name.upper() == id]) == 1
 
 
+def get_collection(typeof):
+    """Returns a cached collection.
+
+    :param class typeof: Cache entity type.
+
+    :returns: A Prodiguer entity collection if cached, None otherwise.
+    :rtype: list | None
+
+    """
+    if typeof in _cache:
+        return _cache[typeof]
+
+
 def get_item(typeof, id):
     """Returns a cached item.
 

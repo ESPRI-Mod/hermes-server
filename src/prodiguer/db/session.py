@@ -52,7 +52,7 @@ logging.basicConfig()
 for logger, level in loggers:
     logging.getLogger(logger).setLevel(level)
 
-    
+
 def assert_is_live():
     """Ensures that session has been established.
 
@@ -144,7 +144,7 @@ def add(instance, auto_commit=True):
 
     """
     insert(instance, auto_commit)
-            
+
 
 def delete(instance, auto_commit=True):
     """Marks a type instance for deletion and optionally commits the session.

@@ -1,32 +1,52 @@
 [
 	{
-		"code": "1000000",
+		"code": "0000",
 		"description": "La simulation demarre (FirstInitialize)",
 		"id": 1
 	},
 	{
-		"code": "1001000",
-		"description": "Le job d'une simulation demarre (Period=1 and not FirstInitialize)",
+		"code": "0100",
+		"description": "La fin de la simulation",
 		"id": 2
 	},
 	{
-		"code": "1002000",
-		"description": "PushStack",
+		"code": "1000",
+		"description": "Le job d'une simulation demarre (Period=1 and not FirstInitialize)",
 		"id": 3
 	},
 	{
-		"code": "1003000",
-		"description": "PopStack russi",
+		"code": "1100",
+		"description": "La fin du job",
 		"id": 4
 	},
 	{
-		"code": "1009000",
-		"description": "PopStack pas russi : un probleme a ett detecte",
+		"code": "2000",
+		"description": "PushStack",
 		"id": 5
 	},
 	{
-		"code": "1009999",
-		"description": "FATAL",
+		"code": "3000",
+		"description": "PopStack reussi",
 		"id": 6
+	},
+	{
+		"code": "7000",
+		"description": "Test",
+		"id": 7
+	},
+	{
+		"code": "8888",
+		"description": "Cleanup",
+		"id": 8
+	},
+	{
+		"code": "9000",
+		"description": "PopStack pas russi : un probleme a ete detecte",
+		"id": 9
+	},
+	{
+		"code": "9999",
+		"description": "FATAL",
+		"id": 10
 	}
 ]

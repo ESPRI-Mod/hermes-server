@@ -28,7 +28,7 @@ from sqlalchemy import (
 from sqlalchemy.ext.declarative import declarative_base
 
 from .. utils import (
-    convert, 
+    convert,
     runtime as rt
     )
 
@@ -51,7 +51,7 @@ def assert_type(etype):
     if etype not in supported_types:
         rt.throw('DB entity type is unknown :: {0}'.format(type))
 
-        
+
 def create_fk(fk, nullable=False):
     """Factory function to return a foreign key column.
 
@@ -169,8 +169,8 @@ class Convertor(object):
 
         def _from_dict(d):
             i = etype()
-            for k, v in d.items():                
-                if v is not None and k != 'id':  
+            for k, v in d.items():
+                if v is not None and k != 'id':
                     setattr(i, k, v)
 
             return i

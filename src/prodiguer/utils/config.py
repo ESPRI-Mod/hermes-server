@@ -39,9 +39,6 @@ data = None
 # API configuration data.
 api = None
 
-# Core configuration data.
-core = None
-
 # DB configuration data.
 db = None
 
@@ -59,7 +56,6 @@ def init(fp=_CONFIG):
 		raise RuntimeError("Configuration file does not exist :: {0}".format(fp))
 
 	global api
-	global core
 	global data
 	global db
 	global mq
@@ -67,6 +63,5 @@ def init(fp=_CONFIG):
 	# Cache pointers to config sections of interest.
 	data = convert.json_file_to_namedtuple(fp)
 	api = data.api
-	core = data.core
 	db = data.db
 	mq = data.mq

@@ -36,7 +36,7 @@ def get_filename(etype):
     db.types.assert_type(etype)
 
     return "{0}_{1}.json".format(
-        etype.__table__.schema, 
+        etype.__table__.schema,
         convert.str_to_underscore_case(etype.__name__))
 
 
@@ -52,7 +52,7 @@ def get_filepath(etype):
     """
     db.types.assert_type(etype)
 
-    return "{0}/json/{1}".format(dirname(abspath(__file__)), 
+    return "{0}/json/{1}".format(dirname(abspath(__file__)),
                                  get_filename(etype))
 
 
@@ -67,15 +67,15 @@ def write(targets=db.types.CV):
 
     :params targets: A set of model types that have an associated cv.
     :type targets: list
-    
+
     """
     from .. import db
-    
+
     for etype in db.types.CV:
         if etype in targets:
             instances = db.dao.get_all(etype)
             as_json = db.types.Convertor.to_json(instances)
-            with open(get_filepath(etype), 'w') as f: 
+            with open(get_filepath(etype), 'w') as f:
                 f.write(as_json)
 
 

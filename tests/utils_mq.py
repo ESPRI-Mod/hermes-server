@@ -13,7 +13,7 @@
 """
 import pika
 
-from prodiguer.mq1 import constants
+from prodiguer.mq import constants
 
 from . import utils as tu
 

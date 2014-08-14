@@ -13,8 +13,8 @@
 """
 import inspect
 
-from prodiguer.mq1 import constants
-from prodiguer.mq1.producers import cc_smon
+from prodiguer.mq import constants
+from prodiguer.mq.producers import cc_smon
 
 from . import (
     utils as tu,

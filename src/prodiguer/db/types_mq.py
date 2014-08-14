@@ -47,11 +47,11 @@ class Message(Entity):
 
     # Foreign keys.
     app_id = create_fk('mq.tbl_message_application.id')
-    publisher_id = create_fk('mq.tbl_message_publisher.id')
+    producer_id = create_fk('mq.tbl_message_producer.id')
     type_id = create_fk('mq.tbl_message_type.id')
 
     # Attributes.
-    uid = Column(Unicode(63), nullable=False, default=unicode(uuid.uuid4()))
+    uid = Column(Unicode(63), nullable=False, unique=True, default=unicode(uuid.uuid4()))
     timestamp = Column(DateTime, nullable=True, default=datetime.datetime.now)
     content_encoding = Column(Unicode(63), nullable=False, default=u"utf-8")
     content_type = Column(Unicode(63), nullable=False, default=u"application/json")
@@ -69,12 +69,12 @@ class MessageApplication(ControlledVocabularyEntity):
     )
 
 
-class MessagePublisher(ControlledVocabularyEntity):
-    """Distinguishes the publisher that originally sent the message.
+class MessageProducer(ControlledVocabularyEntity):
+    """Distinguishes the producer that originally dispatched the message.
 
     """
     # SQLAlchemy directives.
-    __tablename__ = 'tbl_message_publisher'
+    __tablename__ = 'tbl_message_producer'
     __table_args__ = (
         {'schema':_DB_SCHEMA}
     )
