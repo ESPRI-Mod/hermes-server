@@ -13,6 +13,7 @@
 import pika
 
 from prodiguer.utils import rt
+from . import constants
 
 
 
@@ -33,9 +34,7 @@ class Consumer(object):
                  exchange,
                  queue,
                  callback,
-                 routing_key=None,
                  connection_url=None,
-                 connection_reopen_delay=None,
                  consume_limit=0,
                  verbose=False):
         """Create a new instance of the consumer class, passing in the AMQP
@@ -44,9 +43,7 @@ class Consumer(object):
         :param str exchange: Name of an exchange to bind to.
         :param str queue: Name of queue to bind to.
         :param func callback: Function to invoke when message has been handled.
-        :param str routing_key: A routing key acting as a queue message filter.
         :param str connection_url: An MQ server connection URL.
-        :param int connection_reopen_delay: Delay in seconds before a connection is reopened after somekind of issue.
         :param int consume_limit: Limit upon number of message to be consumed.
         :param bool verbose: Flag indicating whether logging level is verbose or not.
 
@@ -54,16 +51,15 @@ class Consumer(object):
         # Override defaults from config.
         if connection_url is None:
             connection_url=config.mq.connections.main
-        if connection_reopen_delay is None:
-            connection_reopen_delay=config.mq.connection_reopen_delay
 
         self._callback = callback
-        self._connection_reopen_delay = connection_reopen_delay
+        self._connection_reopen_delay = \
+            constants.DEFAULT_CONNECTION_REOPEN_DELAY
         self._consume_limit = consume_limit
         self._exchange = exchange
         self._queue = queue
-        self._routing_key = routing_key
-        self._stop_ioloop_on_disconnect = not (connection_reopen_delay > 0)
+        self._stop_ioloop_on_disconnect = \
+            not (self._connection_reopen_delay > 0)
         self._url = connection_url
         self._verbose = verbose
 
@@ -259,15 +255,13 @@ class Consumer(object):
 
     def _bind_to_queue(self):
         """Binds to target queue."""
-        msg = "Binding {0} to {1} with {2}"
-        msg = msg.format(self._exchange, self._queue, self._routing_key)
-        print msg
+        msg = "Binding {0} to {1}"
+        msg = msg.format(self._exchange, self._queue)
         self._log(msg)
 
         self._channel.queue_bind(self._on_queue_bindok,
                                  self._queue,
-                                 self._exchange,
-                                 self._routing_key)
+                                 self._exchange)
 
 
     def _on_queue_bindok(self, unused_frame):
@@ -340,16 +334,15 @@ class Consumer(object):
         # Escape if already at consumption limit.
         if self._consume_limit > 0 and \
            self._consumed == self._consume_limit:
-           print "DDDDD"
            return
 
         # Increment consumed count.
         self._consumed += 1
 
-        msg = "Received message # {0} from {1}: {2}"
+        msg = "Received message # {0}::{1} from {2}"
         msg = msg.format(basic_deliver.delivery_tag,
-                         properties.app_id,
-                         type(body))
+                         properties.message_id,
+                         properties.app_id)
         self._log(msg)
 
         # Invoke callback.

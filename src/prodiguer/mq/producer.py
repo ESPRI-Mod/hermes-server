@@ -33,7 +33,6 @@ class Producer(object):
     def __init__(self,
                  msg_source,
                  connection_url=None,
-                 connection_reopen_delay=None,
                  enable_confirmations=True,
                  publish_limit=constants.DEFAULT_PUBLISH_LIMIT,
                  publish_interval=constants.DEFAULT_PUBLISH_INTERVAL,
@@ -44,7 +43,6 @@ class Producer(object):
         :param msg_source: Source of messages for publishing.
         :type msg_source: Message | function
         :param str connection_url: An MQ server connection URL.
-        :param int connection_reopen_delay: Delay in seconds before a connection is reopened after somekind of issue.
         :param bool enable_confirmations: Flag indicating whether message delivery confirmations are required.
         :param int publish_limit: Maximum number of message publishing events.
         :param int publish_interval: Frequency at which message(s) are published.
@@ -54,15 +52,15 @@ class Producer(object):
         # Override defaults from config.
         if connection_url is None:
             connection_url=config.mq.connections.main
-        if connection_reopen_delay is None:
-            connection_reopen_delay=config.mq.connection_reopen_delay
 
         self._msg_source = msg_source
-        self._connection_reopen_delay = connection_reopen_delay
+        self._connection_reopen_delay = \
+            constants.DEFAULT_CONNECTION_REOPEN_DELAY
         self._enable_confirmations = enable_confirmations
         self._publish_limit = publish_limit
         self._publish_interval = publish_interval
-        self._stop_ioloop_on_disconnect = not (connection_reopen_delay > 0)
+        self._stop_ioloop_on_disconnect = \
+            not (self._connection_reopen_delay > 0)
         self._url = connection_url
         self._verbose = verbose
 

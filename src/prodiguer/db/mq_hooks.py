@@ -237,7 +237,7 @@ def create_message(uid,
         if not cache.exists(dbtypes.MessageProducer, producer_id):
             raise ValueError('Message publisher is unknown')
         if not cache.exists(dbtypes.MessageType, type_id):
-            raise ValueError('Message type is unknown')
+            raise ValueError('Message type is unknown: {0}'.format(type_id))
         if content is None:
             raise TypeError('Message content is empty')
 

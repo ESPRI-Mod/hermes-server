@@ -23,12 +23,12 @@ from ..utils import config, convert
 
 class Message(object):
     """Wraps a message either being consumed or produced."""
-    def __init__(self, exchange, props, content):
+    def __init__(self, props, content, exchange=None):
         """Constructor.
 
-        :param str exchange: Target message exchange.
         :param pika.BasicProperties props: Set of AMPQ properties associated with the message.
         :param object content: Message content.
+        :param str exchange: An AMPQ message exchange.
 
         """
         # Validate inputs.
@@ -168,7 +168,6 @@ def create_ampq_message_properties(
 
 def publish(msg_source,
             connection_url=None,
-            connection_reopen_delay=None,
             enable_confirmations=True,
             publish_limit=constants.DEFAULT_PUBLISH_LIMIT,
             publish_interval=constants.DEFAULT_PUBLISH_INTERVAL,
@@ -188,13 +187,10 @@ def publish(msg_source,
     # Override defaults from config.
     if connection_url is None:
         connection_url=config.mq.connections.main
-    if connection_reopen_delay is None:
-        connection_reopen_delay=config.mq.connection_reopen_delay
 
     # Instantiate producer.
     producer = Producer(msg_source,
                         connection_url,
-                        connection_reopen_delay,
                         enable_confirmations,
                         publish_limit,
                         publish_interval,
@@ -207,12 +203,13 @@ def publish(msg_source,
         producer.stop()
 
 
+produce = publish
+
+
 def consume(exchange,
             queue,
             callback,
-            routing_key="*.*.*.*.*",
             connection_url=None,
-            connection_reopen_delay=None,
             consume_limit=0,
             verbose=False):
     """Consumes message(s) from an MQ server.
@@ -220,7 +217,6 @@ def consume(exchange,
     :param str exchange: Name of an exchange to bind to.
     :param str queue: Name of queue to bind to.
     :param func callback: Function to invoke when message has been handled.
-    :param str routing_key: A routing key acting as a queue message filter.
     :param str connection_url: An MQ server connection URL.
     :param int connection_reopen_delay: Delay in seconds before a connection is reopened after somekind of issue.
     :param int consume_limit: Limit upon number of message to be consumed.
@@ -230,16 +226,12 @@ def consume(exchange,
     # Override defaults from config.
     if connection_url is None:
         connection_url=config.mq.connections.main
-    if connection_reopen_delay is None:
-        connection_reopen_delay=config.mq.connection_reopen_delay
 
     # Instantiate producer.
     consumer = Consumer(exchange,
                         queue,
                         callback,
-                        routing_key,
                         connection_url,
-                        connection_reopen_delay,
                         consume_limit,
                         verbose)
 

@@ -24,6 +24,7 @@ from . import (
 	mq,
 	utils,
 	)
+from .utils import config, convert, runtime as rt
 
 
 
@@ -32,6 +33,7 @@ __all__ = [
 	'api',
 	'config',
 	'configure',
+	'convert',
 	'cv',
 	'db',
 	'mq',
@@ -39,11 +41,8 @@ __all__ = [
 ]
 
 
-# Library configuration data.
-config = utils.config
-
 # Library configuration assignment.
 configure = config.init
 
 # Auto-configure.
-configure()
+config.init()

@@ -43,23 +43,41 @@ DEFAULT_DELIVERY_MODE = AMPQ_DELIVERY_MODE_PERSISTENT
 VHOST = "prodiguer"
 
 # Message server exchanges.
+EXCHANGE_PRODIGUER_EXT = "x-ext"
 EXCHANGE_PRODIGUER_IN = "x-in"
 EXCHANGE_PRODIGUER_INTERNAL = "x-internal"
 EXCHANGE_PRODIGUER_OUT = "x-out"
 
 # All exchanges.
 EXCHANGES = set([
+	EXCHANGE_PRODIGUER_EXT,
 	EXCHANGE_PRODIGUER_IN,
 	EXCHANGE_PRODIGUER_INTERNAL,
 	EXCHANGE_PRODIGUER_OUT
 	])
 
+# Message queues.
+QUEUE_EXT_SMTP = "q-ext-smtp"
+QUEUE_IN_LOG = "q-in-log"
+QUEUE_IN_PERSIST = "q-in-persist"
+QUEUE_INTERNAL_MONITORING = "q-internal-monitoring"
+
+# All queues.
+QUEUES = set([
+	QUEUE_EXT_SMTP,
+	QUEUE_IN_LOG,
+	QUEUE_IN_PERSIST,
+	QUEUE_INTERNAL_MONITORING
+	])
+
 # Message producers.
 PRODUCER_IGCM = "libligcm"
+PRODUCER_PRODIGUER = "prodiguer"
 
 # All producers.
 PRODUCERS = set([
-	PRODUCER_IGCM
+	PRODUCER_IGCM,
+	PRODUCER_PRODIGUER
 	])
 
 # Default message producer.
@@ -87,6 +105,8 @@ APPS = set([
 DEFAULT_APP = APP_MONITORING
 
 # Message types:
+# ... general message types.
+TYPE_GENERAL_SMTP = "-1000"
 # ... simulation monitoring.
 TYPE_SMON_0000 = "0000"
 TYPE_SMON_0100 = "0100"
@@ -101,6 +121,7 @@ TYPE_SMON_9999 = "9999"
 
 # All types.
 TYPES = set([
+	TYPE_GENERAL_SMTP,
 	TYPE_SMON_0000,
 	TYPE_SMON_0100,
 	TYPE_SMON_1000,
@@ -182,3 +203,7 @@ DEFAULT_PUBLISH_FREQUENCY = 1
 
 # Default message expiration.
 DEFAULT_EXPIRATION = None
+
+# Default delay (in seconds) before an MQ server connection
+# retry is attempted.
+DEFAULT_CONNECTION_REOPEN_DELAY = 5

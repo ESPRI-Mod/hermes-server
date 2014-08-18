@@ -70,9 +70,9 @@ def log(msg=None, module=_DEFAULT_MODULE, level=LOG_LEVEL_INFO, app=_DEFAULT_APP
     print msg
 
 
-def log_error(err, 
-              module=_DEFAULT_MODULE, 
-              app=_DEFAULT_APP, 
+def log_error(err,
+              module=_DEFAULT_MODULE,
+              app=_DEFAULT_APP,
               institute=_DEFAULT_INSTITUTE):
     """Logs a runtime error.
 
@@ -80,15 +80,15 @@ def log_error(err,
     :type err: Sub-class of BaseException
 
     """
-    msg = "!!! RUNTIME ERROR !!! :: {0} :: {1}.".format(err.__class__, err)
+    msg = "{0} :: {1}.".format(err.__class__, err)
     log(msg, module=module, level=LOG_LEVEL_ERROR, app=app, institute=institute)
 
 
-def log_mq(msg, 
-           host=None, 
-           queue=None, 
-           level=LOG_LEVEL_INFO, 
-           app=_DEFAULT_APP, 
+def log_mq(msg,
+           host=None,
+           queue=None,
+           level=LOG_LEVEL_INFO,
+           app=_DEFAULT_APP,
            institute=_DEFAULT_INSTITUTE):
     """Logs message queue related event.
 
@@ -113,8 +113,8 @@ def log_mq(msg,
         _log("{0} :: {1} :: {2}.".format(msg, host, queue))
 
 
-def log_mq_error(err, 
-                 app=_DEFAULT_APP, 
+def log_mq_error(err,
+                 app=_DEFAULT_APP,
                  institute=_DEFAULT_INSTITUTE):
     """Logs a runtime error.
 
@@ -126,9 +126,9 @@ def log_mq_error(err,
     log(msg, module="MQ", level=LOG_LEVEL_ERROR, app=app, institute=institute)
 
 
-def log_db(msg, 
-           level=LOG_LEVEL_INFO, 
-           app=_DEFAULT_APP, 
+def log_db(msg,
+           level=LOG_LEVEL_INFO,
+           app=_DEFAULT_APP,
            institute=_DEFAULT_INSTITUTE):
     """Logs database related events.
 
@@ -139,9 +139,9 @@ def log_db(msg,
     log(msg, module="DB", level=level, app=app, institute=institute)
 
 
-def log_api(msg, 
-            level=LOG_LEVEL_INFO, 
-            app=_DEFAULT_APP, 
+def log_api(msg,
+            level=LOG_LEVEL_INFO,
+            app=_DEFAULT_APP,
             institute=_DEFAULT_INSTITUTE):
     """Logs api related events.
 
@@ -152,8 +152,8 @@ def log_api(msg,
     log(msg, module="API", level=level, app=app, institute=institute)
 
 
-def log_api_error(err, 
-                  app=_DEFAULT_APP, 
+def log_api_error(err,
+                  app=_DEFAULT_APP,
                   institute=_DEFAULT_INSTITUTE):
     """Logs a runtime error.
 
@@ -386,19 +386,37 @@ def throw(msg):
     raise ProdiguerException(msg)
 
 
-def invoke(tasks):
+def invoke(tasks, ctx=None, module=_DEFAULT_MODULE):
     """Invokes a set of tasks and handles errors.
 
     :param dict tasks: A set of tasks divided into green/red.
+    :param object ctx: Task processing context object.
 
     """
+    def _invoke(task, err=None):
+        """Invokes an individual task."""
+        if ctx:
+            if err:
+                task(ctx, err)
+            else:
+                task(ctx)
+        else:
+            if err:
+                task(err)
+            else:
+                task()
+
+    # Execute green tasks.
     for task in tasks["green"]:
         try:
-            task()
-        except Exception as e:
+            _invoke(task)
+        # Execute red tasks.
+        except Exception as err:
             try:
+                log_error(err, module)
                 for error_task in tasks["red"]:
-                    error_task(e)
+                    _invoke(error_task, err)
             except:
                 pass
+            # N.B. break out of green line.
             break
