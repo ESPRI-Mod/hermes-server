@@ -194,16 +194,14 @@ def update_simulation_status(name, execution_state):
     # Log.
     log()
 
-    # Ensure that cache is loaded.
-    cache.load()
-
     # Defensive programming.
     guard()
 
     # Update status.
     s = retrieve_simulation(name)
     if s is not None:
-        s.execution_state_id = _get_id(dbtypes.SimulationState, execution_state)
+        s.execution_state_id = _get_id(dbtypes.SimulationState,
+                                       execution_state)
 
     return s
 

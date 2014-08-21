@@ -10,10 +10,13 @@
 .. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
 
 """
+import inspect
+
 import pika
 
 from prodiguer.utils import rt
-from . import constants
+from . import constants, message
+from ..utils import config
 
 
 
@@ -36,6 +39,7 @@ class Consumer(object):
                  callback,
                  connection_url=None,
                  consume_limit=0,
+                 context_type=message.Message,
                  verbose=False):
         """Create a new instance of the consumer class, passing in the AMQP
         URL used to connect to RabbitMQ.
@@ -43,19 +47,37 @@ class Consumer(object):
         :param str exchange: Name of an exchange to bind to.
         :param str queue: Name of queue to bind to.
         :param func callback: Function to invoke when message has been handled.
+
         :param str connection_url: An MQ server connection URL.
         :param int consume_limit: Limit upon number of message to be consumed.
+        :param class context_type: Type of message processing context object to instantiate.
         :param bool verbose: Flag indicating whether logging level is verbose or not.
 
         """
-        # Override defaults from config.
-        if connection_url is None:
-            connection_url=config.mq.connections.main
+        # Validate inputs.
+        if exchange not in constants.EXCHANGES:
+            err = "Invalid MQ exchange: {0}".format(exchange)
+            raise ValueError(err)
+        if queue not in constants.QUEUES:
+            err = "Invalid MQ queue: {0}".format(queue)
+            raise ValueError(err)
+        if not inspect.isfunction(callback):
+            err = "Invalid message callback handler"
+            raise ValueError(err)
+        if not issubclass(context_type, message.Message):
+            err = "Invalid message processing context type"
+            raise ValueError(err)
 
+        # Override inputs from config.
+        if connection_url is None:
+            connection_url = config.mq.connections.main
+
+        # Initialize properties from inputs.
         self._callback = callback
         self._connection_reopen_delay = \
             constants.DEFAULT_CONNECTION_REOPEN_DELAY
         self._consume_limit = consume_limit
+        self._context_type = context_type
         self._exchange = exchange
         self._queue = queue
         self._stop_ioloop_on_disconnect = \
@@ -63,6 +85,7 @@ class Consumer(object):
         self._url = connection_url
         self._verbose = verbose
 
+        # Initialize other properties.
         self._channel = None
         self._closing = False
         self._connection = None
@@ -317,7 +340,11 @@ class Consumer(object):
             self._channel.close()
 
 
-    def _on_message(self, unused_channel, basic_deliver, properties, body):
+    def _on_message(self,
+                    unused_channel,
+                    basic_deliver,
+                    properties,
+                    body):
         """Invoked by pika when a message is delivered from RabbitMQ. The
         channel is passed for your convenience. The basic_deliver object that
         is passed in carries the exchange, routing key, delivery tag and
@@ -346,7 +373,7 @@ class Consumer(object):
         self._log(msg)
 
         # Invoke callback.
-        self._callback(properties, body)
+        self._process_message(properties, body)
 
         # Acknowledge message.
         self._acknowledge_message(basic_deliver.delivery_tag)
@@ -355,6 +382,13 @@ class Consumer(object):
         if self._consume_limit > 0 and \
            self._consumed == self._consume_limit:
            self._disconnect()
+
+
+    def _process_message(self, props, payload):
+        """Processes message being consumed."""
+        ctx = self._context_type(props, payload)
+        ctx.decode()
+        self._callback(ctx)
 
 
     def _acknowledge_message(self, delivery_tag):

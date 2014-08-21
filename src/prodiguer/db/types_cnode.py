@@ -102,8 +102,8 @@ class ComputeNodeLogin(Entity):
         """Gets the full user name derived by concatanation.
 
         """
-        return "{0}, {1} - ({2})".format(self.family_name.upper(), 
-                                         self.first_name, 
+        return "{0}, {1} - ({2})".format(self.family_name.upper(),
+                                         self.first_name,
                                          self.login)
 
 
@@ -295,7 +295,7 @@ class Simulation(Entity):
         result += cache.get(Experiment, self.experiment_id).name;
         result += '/';
         result += self.Name;
-        
+
         return result
 
 
@@ -396,7 +396,7 @@ class SimulationSpace(Entity):
 
 class SimulationState(Entity):
     """The state that a simulation may be in, i.e. InProgress, Queued, Error...etc.
-    
+
     """
     # Sqlalchemy directives.
     __tablename__ = 'tbl_simulation_state'

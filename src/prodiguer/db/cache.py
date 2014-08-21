@@ -31,14 +31,11 @@ def load():
             _cache[typeof] = dao.get_all(typeof)
 
 
-def exists(typeof, id):
+def exists(typeof, key):
     """Determines whether a cache item exists or not.
 
-    :param typeof: Cache entity type.
-    :type typeof: class
-
-    :param id: Cache item identifier.
-    :type id: str
+    :param class typeof: Cache entity type.
+    :param int|str key: Cache item identifier.
 
     :returns: True if item is cached, False otherwise.
     :rtype: bool
@@ -47,13 +44,13 @@ def exists(typeof, id):
     # JIT load.
     load()
 
-    if typeof not in _cache or id is None:
+    if typeof not in _cache or key is None:
         return False
-    elif isinstance(id, int):
-        return len([i for i in _cache[typeof] if i.id == id]) == 1
+    elif isinstance(key, int):
+        return len([i for i in _cache[typeof] if i.id == key]) == 1
     else:
-        id = str(id).upper()
-        return len([i for i in _cache[typeof] if i.name.upper() == id]) == 1
+        key = str(key).upper()
+        return len([i for i in _cache[typeof] if i.name.upper() == key]) == 1
 
 
 def get_collection(typeof):
@@ -69,14 +66,11 @@ def get_collection(typeof):
         return _cache[typeof]
 
 
-def get_item(typeof, id):
+def get_item(typeof, key):
     """Returns a cached item.
 
-    :param typeof: Cache entity type.
-    :type typeof: class
-
-    :param id: Cache item id.
-    :type id: str
+    :param class typeof: Cache entity type.
+    :param int|str key: Cache item identifier.
 
     :returns: A Prodiguer entity if item is cached, None otherwise.
     :rtype: A subclass of prodiguer.types.Entity
@@ -85,23 +79,20 @@ def get_item(typeof, id):
     # JIT load.
     load()
 
-    if not exists(typeof, id):
+    if not exists(typeof, key):
         return None
-    elif isinstance(id, int):
-        return [i for i in _cache[typeof] if i.id == id][0]
+    elif isinstance(key, int):
+        return [i for i in _cache[typeof] if i.id == key][0]
     else:
-        id = str(id).upper()
-        return [i for i in _cache[typeof] if i.name.upper() == id][0]
+        key = str(key).upper()
+        return [i for i in _cache[typeof] if i.name.upper() == key][0]
 
 
-def get_name(typeof, id):
+def get_name(typeof, key):
     """Returns a cached item name.
 
-    :param typeof: Cache entity type.
-    :type typeof: class
-
-    :param id: Cache item identifier.
-    :type id: int | str
+    :param class typeof: Cache entity type.
+    :param int|str key: Cache item identifier.
 
     :returns: A Prodiguer entity ID if item is cached, None otherwise.
     :rtype: str | None
@@ -110,19 +101,16 @@ def get_name(typeof, id):
     # JIT load.
     load()
 
-    item = get_item(typeof, id)
+    item = get_item(typeof, key)
 
     return None if item is None else item.name
 
 
-def get_id(typeof, id):
+def get_id(typeof, key):
     """Returns a cached item id.
 
-    :param typeof: Cache entity type.
-    :type typeof: class
-
-    :param id: Cache item identifier.
-    :type id: int | str
+    :param class typeof: Cache entity type.
+    :param int|str key: Cache item identifier.
 
     :returns: A Prodiguer entity id if item is cached, None otherwise.
     :rtype: int | None
@@ -131,7 +119,7 @@ def get_id(typeof, id):
     # JIT load.
     load()
 
-    item = get_item(typeof, id)
+    item = get_item(typeof, key)
 
     return None if item is None else item.id
 
@@ -139,8 +127,7 @@ def get_id(typeof, id):
 def get_random(typeof):
     """Returns a random cache item.
 
-    :param typeof: Cache entity type.
-    :type typeof: class
+    :param class typeof: Cache entity type.
 
     :returns: A random item from the cache.
     :rtype: Sub-class of types.Entity
@@ -155,8 +142,7 @@ def get_random(typeof):
 def get_random_name(typeof):
     """Returns a random cache item name.
 
-    :param typeof: Cache entity type.
-    :type typeof: class
+    :param class typeof: Cache entity type.
 
     :returns: The name of a random cached item.
     :rtype: str
@@ -168,8 +154,7 @@ def get_random_name(typeof):
 def get_random_id(typeof):
     """Returns a random cache item id.
 
-    :param typeof: Cache entity type.
-    :type typeof: class
+    :param class typeof: Cache entity type.
 
     :returns: The id of a random cached item.
     :rtype: int

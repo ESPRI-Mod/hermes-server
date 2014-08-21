@@ -13,60 +13,14 @@
 import uuid
 
 import pika
+from sqlalchemy.exc import IntegrityError
 
-from . import constants
+from . import constants, message
 from .consumer import Consumer
 from .producer import Producer
-from ..utils import config, convert
+from .. import db
+from ..utils import convert
 
-
-
-class Message(object):
-    """Wraps a message either being consumed or produced."""
-    def __init__(self, props, content, exchange=None):
-        """Constructor.
-
-        :param pika.BasicProperties props: Set of AMPQ properties associated with the message.
-        :param object content: Message content.
-        :param str exchange: An AMPQ message exchange.
-
-        """
-        # Validate inputs.
-        if not isinstance(props, pika.BasicProperties):
-            raise ValueError("AMPQ message basic properties is invalid.")
-        if 'mode' not in props.headers:
-            msg = "[mode] is a required header field."
-            raise ValueError(msg)
-        if props.headers['mode'] not in constants.MODES:
-            msg = "Unsupported mode: {0}."
-            raise ValueError(msg.format(props.headers['mode']))
-        if 'producer_id' not in props.headers:
-            msg = "[producer_id] is a required header field."
-            raise ValueError(msg)
-        if props.headers['producer_id'] not in constants.PRODUCERS:
-            msg = "Unsupported producer_id: {0}."
-            raise ValueError(msg.format(props.headers['producer_id']))
-
-
-        self.exchange = exchange
-        self.content = content
-        self.content_raw = content
-        self.content_type = props.content_type
-        self.props = props
-        self.routing_key = "{0}.{1}.{2}.{3}.{4}".format(props.headers['mode'],
-                                                        props.user_id,
-                                                        props.headers['producer_id'],
-                                                        props.app_id,
-                                                        props.type).lower()
-
-
-    def parse_content(self):
-        """Parses message content.
-
-        """
-        # Auto convert content to json.
-        if self.content_type in (None, constants.CONTENT_TYPE_JSON):
-            self.content = convert.dict_to_json(self.content)
 
 
 def create_ampq_message_properties(
@@ -166,9 +120,8 @@ def create_ampq_message_properties(
         )
 
 
-def publish(msg_source,
+def produce(msg_source,
             connection_url=None,
-            enable_confirmations=True,
             publish_limit=constants.DEFAULT_PUBLISH_LIMIT,
             publish_interval=constants.DEFAULT_PUBLISH_INTERVAL,
             verbose=False):
@@ -177,24 +130,17 @@ def publish(msg_source,
     :param msg_source: Source of messages for publishing.
     :type msg_source: Message | function
     :param str connection_url: An MQ server connection URL.
-    :param int connection_reopen_delay: Delay in seconds before a connection is reopened after somekind of issue.
-    :param bool enable_confirmations: Flag indicating whether message delivery confirmations are required.
     :param int publish_limit: Maximum number of message publishing events.
     :param int publish_interval: Frequency at which message(s) are published.
     :param bool verbose: Flag indicating whether logging level is verbose or not.
 
     """
-    # Override defaults from config.
-    if connection_url is None:
-        connection_url=config.mq.connections.main
-
     # Instantiate producer.
     producer = Producer(msg_source,
-                        connection_url,
-                        enable_confirmations,
-                        publish_limit,
-                        publish_interval,
-                        verbose)
+                        connection_url=connection_url,
+                        publish_limit=publish_limit,
+                        publish_interval=publish_interval,
+                        verbose=verbose)
 
     # Run.
     try:
@@ -203,40 +149,73 @@ def publish(msg_source,
         producer.stop()
 
 
-produce = publish
-
-
 def consume(exchange,
             queue,
             callback,
+            auto_persist=False,
             connection_url=None,
             consume_limit=0,
+            context_type=message.Message,
             verbose=False):
     """Consumes message(s) from an MQ server.
 
     :param str exchange: Name of an exchange to bind to.
     :param str queue: Name of queue to bind to.
     :param func callback: Function to invoke when message has been handled.
+
+    :param bool auto_persist: Flag indicating whether message is to be persisted to db.
     :param str connection_url: An MQ server connection URL.
-    :param int connection_reopen_delay: Delay in seconds before a connection is reopened after somekind of issue.
     :param int consume_limit: Limit upon number of message to be consumed.
-    :param bool verbose: Flag indicating whether logging level is verbose or not.
+    :param class context_type: Type of message processing context object to instantiate.
+    :param bool verbose: Flag indicating whether logging level is verbose.
 
     """
-    # Override defaults from config.
-    if connection_url is None:
-        connection_url=config.mq.connections.main
+    # Handles message being consumed.
+    def msg_handler(ctx):
+        """Handles message being consumed."""
+        if auto_persist:
+            try:
+                ctx.msg = persist(ctx.properties, ctx.content_raw)
+            except IntegrityError:
+                pass
+        callback(ctx)
 
     # Instantiate producer.
     consumer = Consumer(exchange,
                         queue,
-                        callback,
-                        connection_url,
-                        consume_limit,
-                        verbose)
+                        msg_handler,
+                        connection_url=connection_url,
+                        consume_limit=consume_limit,
+                        context_type=context_type,
+                        verbose=verbose)
 
     # Run.
     try:
         consumer.run()
     except KeyboardInterrupt:
         consumer.stop()
+
+
+def persist(properties, payload):
+    """Persists message to backend db.
+
+    :param pika.BasicProperties properties: Message AMPQ properties.
+    :param str payload: Message payload.
+
+    :returns: Persisted message.
+    :rtype: prodiguer.db.Message
+
+    """
+    # TODO: timestamp
+    # TODO: determine if other properties should be persisted
+    # TODO: persist message mode ?
+    # TODO: persist message user-id ?
+
+    return db.mq_hooks.create_message(
+        properties.message_id,
+        properties.app_id,
+        properties.headers['producer_id'],
+        properties.type,
+        payload,
+        properties.content_encoding,
+        properties.content_type)

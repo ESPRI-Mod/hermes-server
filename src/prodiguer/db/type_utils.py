@@ -155,7 +155,8 @@ class BaseControlledVocabularyEntity(BaseEntity):
 
 # Mixin with sql alchemy.
 Entity = declarative_base(metadata=metadata, cls=BaseEntity)
-ControlledVocabularyEntity = declarative_base(metadata=metadata, cls=BaseControlledVocabularyEntity)
+ControlledVocabularyEntity = \
+    declarative_base(metadata=metadata, cls=BaseControlledVocabularyEntity)
 
 
 
@@ -183,7 +184,7 @@ class Convertor(object):
 
 
     @staticmethod
-    def to_dict(target):
+    def to_dict(target, drop_db_admin_cols=False):
         """Returns a dictionary representation.
 
         :param target: Target to be converted to a dictionary.
@@ -197,17 +198,27 @@ class Convertor(object):
             return {}
 
         def _to_dict(e):
+            """Converts entity instance to a dictionary."""
             # Use sqlalchemy column mappings to derive dictionary keys.
             cols = inspect(e).mapper.columns
 
             # Return a dictionary comprehension.
-            return { c.name: getattr(e, c.name) for c in cols }
+            as_dict = { c.name: getattr(e, c.name) for c in cols }
 
-        # Convert either an instance or sequence.
+            # Optionally drop db admin columns.
+            if drop_db_admin_cols:
+                del as_dict["row_create_date"]
+                del as_dict["row_update_date"]
+
+            return as_dict
+
+        # Convert instance | sequence.
         try:
-            return map(_to_dict, target)
+            iter(target)
         except TypeError:
             return _to_dict(target)
+        else:
+            return [_to_dict(i) for i in target]
 
 
     @staticmethod

@@ -24,7 +24,7 @@ from . import (
 	mq,
 	utils,
 	)
-from .utils import config, convert, runtime as rt
+from .utils import config, convert, runtime, runtime as rt
 
 
 

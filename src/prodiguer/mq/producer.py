@@ -341,8 +341,8 @@ class Producer(object):
 
     def _publish_message(self, msg):
         """Publishes an individual message."""
-        # Parse.
-        msg.parse_content()
+        # Encode content in readiness for publishing.
+        msg.encode()
 
         # Publish over MQ channel.
         self._channel.basic_publish(msg.exchange,
@@ -391,12 +391,15 @@ class Producer(object):
         """Returns next message(s) for processing.
 
         """
-        if inspect.isfunction(self._msg_source):
+        try:
             for msg in self._msg_source():
                 yield msg
-        else:
-            yield self._msg_source
-
+        except TypeError:
+            try:
+                for msg in self._msg_source:
+                    yield msg
+            except TypeError:
+                yield self._msg_source
 
 
     def run(self, on_publish_callback=None):

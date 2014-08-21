@@ -16,14 +16,17 @@ import tornado.web
 
 from . import utils
 from .... import db
-from ....utils import convert
-
+from ....utils import convert, config
 
 
 
 def _get_simulation_list():
+    def _filter(s):
+        return s.name.startswith("v3") or \
+               s.activity_id == 5
+
     s_list = db.dao.get_all(db.types.Simulation)
-    s_list = [s for s in s_list if s.name.startswith("v3")]
+    s_list = [s for s in s_list if _filter(s)]
 
     return [utils.get_simulation_dict(s) for s in s_list]
 
@@ -33,6 +36,9 @@ class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
 
     """
     def get(self, *args):
+        # Start session.
+        db.session.start(config.db.connections.main)
+
         # Load setup data from db.
         data = {
             'activity_list': utils.get_list(db.types.Activity),

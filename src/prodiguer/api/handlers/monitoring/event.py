@@ -19,10 +19,7 @@ import tornado.web
 from . import utils
 from .. import utils_ws as ws
 from .... import db
-from .... utils import (
-    convert, 
-    runtime as rt
-    )
+from .... utils import config, convert, rt
 
 
 
@@ -35,17 +32,17 @@ def _log(msg):
     rt.log_api("{0} :: {1}".format(_KEY, msg))
 
 
-def _broadcast_on_state_change_event(handler):
+def _broadcast_simulation_state_change_event(handler):
     """Web socket event broadcast :: simulation state change."""
-    ws.on_write(_KEY, { 
+    ws.on_write(_KEY, {
         'eventType' : 'stateChange',
         'eventTimestamp': unicode(datetime.datetime.now()),
-        'id': int(handler.get_argument('id')), 
+        'id': int(handler.get_argument('id')),
         'state' : handler.get_argument('state')
         })
 
 
-def _broadcast_on_new_event(handler):
+def _broadcast_new_simulation_event(handler):
     """Web socket event broadcast :: new simulation."""
     # Load simulation.
     s = db.dao.get_by_id(db.types.Simulation, int(handler.get_argument('id')))
@@ -64,8 +61,8 @@ def _broadcast_on_new_event(handler):
 
 # Map of supported broadcasters.
 _broadcasters = {
-    'state_change' : _broadcast_on_state_change_event,
-    'new' : _broadcast_on_new_event
+    'simulation_state_change' : _broadcast_simulation_state_change_event,
+    'new_simulation' : _broadcast_new_simulation_event
 }
 
 
@@ -78,6 +75,9 @@ class EventRequestHandler(tornado.web.RequestHandler):
         self.finish()
 
         _log("on {0} event received".format(self.get_argument('event_type')))
+
+        # Start session.
+        db.session.start(config.db.connections.main)
 
         # Broadcase event to clients.
         _broadcasters[self.get_argument('event_type')](self)

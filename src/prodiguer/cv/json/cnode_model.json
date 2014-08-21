@@ -22,5 +22,13 @@
 		"institute_id": 13,
 		"name": "LMDZOR_v3",
 		"version": "v3"
+	},
+	{
+		"description": "IPSL Climate Model 6",
+		"drs_tag_name": "IPSLCM6",
+		"id": 4,
+		"institute_id": 13,
+		"name": "IPSLCM6",
+		"version": "6"
 	}
 ]
