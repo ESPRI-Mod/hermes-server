@@ -1,0 +1,12 @@
+[
+	{
+		"code": "-1000",
+		"description": "An email message pulled from an SMTP server",
+		"id": 1
+	},
+	{
+		"code": "-2000",
+		"description": "An internal web API notification",
+		"id": 2
+	}
+]
