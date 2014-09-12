@@ -26,13 +26,13 @@ _COLUMN_METRIC_ID = "metric_id"
 _PARAM_GROUP = 'group'
 
 
-class FetchHeadersRequestHandler(utils.MetricWebRequestHandler):
-    """Simulation metric group fetch headers method request handler.
+class FetchColumnsRequestHandler(utils.MetricWebRequestHandler):
+    """Simulation metric group fetch columns method request handler.
 
     """
     def prepare(self):
         """Called at the beginning of request handling."""
-        super(FetchHeadersRequestHandler, self).prepare()
+        super(FetchColumnsRequestHandler, self).prepare()
 
         self.group = None
 
@@ -53,7 +53,7 @@ class FetchHeadersRequestHandler(utils.MetricWebRequestHandler):
     def _set_output(self):
         """Sets response output."""
         self.output['group'] = self.group.name
-        self.output['headers'] = json.loads(self.group.columns) + [_COLUMN_METRIC_ID]
+        self.output['columns'] = json.loads(self.group.columns) + [_COLUMN_METRIC_ID]
 
 
     def _write(self, error=None):

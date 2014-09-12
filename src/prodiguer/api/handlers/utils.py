@@ -41,7 +41,7 @@ def write(handler, error=None, format='json'):
             })
 
     # Write json.
-    elif format == 'json':    
+    elif format == 'json':
         output = handler.output if handler.output else {}
         if 'status' not in output:
             output['status'] = 0
@@ -65,7 +65,7 @@ def log(api_type, handler, error=None):
         msg = msg.format(api_type, handler, error)
         rt.log_api_error(msg)
     else:
-        msg = "{0} --> success --> {1}"  
+        msg = "{0} --> success --> {1}"
         msg = msg.format(api_type, handler)
-        rt.log_api(msg)        
+        rt.log_api(msg)
 

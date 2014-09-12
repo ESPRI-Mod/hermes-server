@@ -73,6 +73,7 @@ class FetchSetupRequestHandler(utils.MetricWebRequestHandler):
 
     def _set_output(self):
         """Sets response output."""
+        self.output['columns'] = json.loads(self.group.columns)
         self.output['group'] = self.group.name
         self.output['data'] = self.setup_data
 

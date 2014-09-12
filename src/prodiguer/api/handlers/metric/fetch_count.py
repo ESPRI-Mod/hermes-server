@@ -24,13 +24,13 @@ _DEFAULT_GROUP = 'default'
 _PARAM_GROUP = 'group'
 
 
-class FetchLineCountRequestHandler(utils.MetricWebRequestHandler):
+class FetchCountRequestHandler(utils.MetricWebRequestHandler):
     """Simulation metric group fetch line count method request handler.
 
     """
     def prepare(self):
         """Called at the beginning of request handling."""
-        super(FetchLineCountRequestHandler, self).prepare()
+        super(FetchCountRequestHandler, self).prepare()
 
         self.group = None
         self.line_count = 0

@@ -16,8 +16,8 @@ from .add import AddRequestHandler
 from .delete import DeleteRequestHandler
 from .delete_lines import DeleteLinesRequestHandler
 from .fetch import FetchRequestHandler
-from .fetch_headers import FetchHeadersRequestHandler
-from .fetch_line_count import FetchLineCountRequestHandler
+from .fetch_columns import FetchColumnsRequestHandler
+from .fetch_count import FetchCountRequestHandler
 from .fetch_setup import FetchSetupRequestHandler
 from .fe_setup import FrontEndSetupRequestHandler
 from .list import ListRequestHandler
