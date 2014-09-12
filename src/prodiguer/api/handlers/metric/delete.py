@@ -28,37 +28,36 @@ from ....utils import runtime as rt
 _PARAM_GROUP = 'group'
 
 
-class DeleteGroupRequestHandler(tornado.web.RequestHandler):
+class DeleteRequestHandler(utils.MetricWebRequestHandler):
     """Simulation metric group delete method request handler.
 
     """
-    def prepare(self):
-        """Called at the beginning of request handling."""
-        self.output = {}
-
-
     def _validate_params(self):
         """Validates query params."""
-        if 'group' in self.request.arguments:
-            utils.validate_group_name(self.get_argument('group'))
+        utils.validate_group_name(self.get_argument(_PARAM_GROUP))
 
 
     def _set_group(self):
         """Loads group from db prior to deletion."""
-        group_name = self.get_argument(_PARAM_GROUP) if _PARAM_GROUP in self.request.arguments else 'default'
+        group_name = self.get_argument(_PARAM_GROUP)
         self.group = db.dao_metrics.get_group(group_name)
+        if not self.group:
+            raise ValueError("{0} not found".format(group_name))
 
 
     def _delete_lines(self):
         """Deletes group metric lines."""
-        if self.group:
-            db.dao_metrics.delete_group_lines(self.group.id)
+        db.dao_metrics.delete_group_lines(self.group.id)
 
 
     def _delete_group(self):
         """Deletes group."""
-        if self.group:
-            db.dao_metrics.delete_group(self.group.id)
+        db.dao_metrics.delete_group(self.group.id)
+
+
+    def _commit_to_db(self):
+        """Commits db changes."""
+        db.session.commit()
 
 
     def _write(self, error=None):
@@ -75,16 +74,17 @@ class DeleteGroupRequestHandler(tornado.web.RequestHandler):
         # Define tasks.
         tasks = {
             "green": (
-                self._validate_params, 
+                self._validate_params,
                 self._set_group,
                 self._delete_lines,
-                self._delete_group,                
+                self._delete_group,
+                self._commit_to_db,
                 self._write,
-                self._log, 
+                self._log,
                 ),
             "red": (
                 self._write,
-                self._log, 
+                self._log,
                 )
         }
 

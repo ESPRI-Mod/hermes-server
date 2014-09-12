@@ -27,8 +27,8 @@ from .... utils import (
 
 
 
-class ListGroupRequestHandler(tornado.web.RequestHandler):
-    """Simulation metric list group method request handler.
+class ListRequestHandler(tornado.web.RequestHandler):
+    """Simulation list metric request handler.
 
     """
     def set_default_headers(self):

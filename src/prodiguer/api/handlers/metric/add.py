@@ -19,10 +19,7 @@ import tornado
 from . import utils
 from .. import utils as handler_utils
 from .... import db
-from ....utils import (
-    convert,
-    runtime as rt,
-    )
+from .... utils import config, convert, rt
 
 
 
@@ -35,7 +32,7 @@ _COLUMN_METRIC_ID = "metric_id"
 # Set of supported contnet types.
 _CONTENT_TYPE_CSV = "text/csv"
 _CONTENT_TYPE_JSON = "application/json"
-_CONTENT_TYPES = (_CONTENT_TYPE_JSON, ) 
+_CONTENT_TYPES = (_CONTENT_TYPE_JSON, )
 
 
 class AddRequestHandler(tornado.web.RequestHandler):
@@ -44,9 +41,13 @@ class AddRequestHandler(tornado.web.RequestHandler):
     """
     def prepare(self):
         """Called at the beginning of request handling."""
+        # Start session.
+        db.session.start(config.db.connections.main)
+
+        # Initialise output.
         self.output = {}
 
-        
+
     def _validate_headers(self):
         """Validates request headers."""
         # Verify json data type.
@@ -64,7 +65,7 @@ class AddRequestHandler(tornado.web.RequestHandler):
 
         # Load json.
         data = json.loads(self.request.body)
-        
+
         # Set default group if necessary.
         if 'group' not in data:
             data['group'] = _DEFAULT_GROUP
@@ -77,15 +78,15 @@ class AddRequestHandler(tornado.web.RequestHandler):
         """Validates request body."""
         # Validate fields.
         for fname, ftype in [
-            ('group', unicode), 
-            ('columns', list), 
+            ('group', unicode),
+            ('columns', list),
             ('metrics', list),
             ]:
             if fname not in self.data._fields:
                 raise KeyError("Undefined field: {0}".format(fname))
             if not isinstance(getattr(self.data, fname), ftype):
                 raise ValueError("Invalid field type: {0}".format(fname))
-        
+
         # Validate group name.
         utils.validate_group_name(self.data.group)
 
@@ -93,7 +94,7 @@ class AddRequestHandler(tornado.web.RequestHandler):
         if _COLUMN_METRIC_ID in self.data.columns:
             raise KeyError("metric_id is a reserved column name")
 
-        # Validate that length   of each metric is same as length of group columns. 
+        # Validate that length   of each metric is same as length of group columns.
         for metric in self.data.metrics:
             if len(metric) != len(self.data.columns):
                 raise ValueError("Invalid metric: number of columns does not match group columns")
@@ -103,7 +104,7 @@ class AddRequestHandler(tornado.web.RequestHandler):
         """Persists metrics group to the db."""
         # Retrieve group.
         self.group = db.dao_metrics.get_group(self.data.group)
-        
+
         # Insert if not found.
         if self.group is None:
             smg = self.group = db.types.SimulationMetricGroup()
@@ -137,13 +138,13 @@ class AddRequestHandler(tornado.web.RequestHandler):
         # Define tasks.
         tasks = {
             "green": (
-                self._validate_headers, 
+                self._validate_headers,
                 self._decode_body_json,
-                self._validate_body, 
-                self._set_metrics_group, 
-                self._set_metrics, 
+                self._validate_body,
+                self._set_metrics_group,
+                self._set_metrics,
                 self._write,
-                self._log, 
+                self._log,
                 ),
             "red": (
                 self._write,

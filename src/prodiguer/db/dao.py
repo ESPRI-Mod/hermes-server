@@ -63,7 +63,7 @@ def get_active(etype):
     :rtype: list
 
     """
-    return get_by_facet(etype, filter=etype.is_active==True, get_iterable=True)
+    return get_by_facet(etype, qfilter=etype.is_active==True, get_iterable=True)
 
 
 def get_all(etype):
@@ -79,20 +79,13 @@ def get_all(etype):
     return get_by_facet(etype, order_by=etype.id, get_iterable=True)
 
 
-def get_by_facet(etype, filter=None, order_by=None, get_iterable=False):
+def get_by_facet(etype, qfilter=None, order_by=None, get_iterable=False):
     """Gets entity instance by facet.
 
-    :param etype: A supported entity type.
-    :type etype: class
-
-    :param filter: Filter expression.
-    :type filter: expression
-
-    :param order_by: Sort expression.
-    :type order_by: expression
-
-    :param get_iterable: Flag indicating whether to return an iterable or not.
-    :type get_iterable: bool
+    :param class etype: A supported entity type.
+    :param expression qfilter: Query filter expression.
+    :param expression order_by: Sort expression.
+    :param bool get_iterable: Flag indicating whether to return an iterable or not.
 
     :returns: Entity or entity collection.
     :rtype: Sub-class of types.Entity
@@ -101,8 +94,8 @@ def get_by_facet(etype, filter=None, order_by=None, get_iterable=False):
     types.assert_type(etype)
 
     q = session.query(etype)
-    if filter is not None:
-        q = q.filter(filter)
+    if qfilter is not None:
+        q = q.filter(qfilter)
     if order_by is not None:
         q = q.order_by(order_by)
 
@@ -121,7 +114,7 @@ def get_random(etype):
     """
     all = get_all(etype)
 
-    return None if not len(all) else all[random.randint(0, len(all) - 1)]    
+    return None if not len(all) else all[random.randint(0, len(all) - 1)]
 
 
 def get_random_sample(etype):
@@ -152,7 +145,7 @@ def get_by_id(etype, id):
     :rtype: Sub-class of types.Entity
 
     """
-    return get_by_facet(etype, filter=etype.id==id)
+    return get_by_facet(etype, qfilter=etype.id==id)
 
 
 def get_by_name(etype, name):
@@ -168,10 +161,10 @@ def get_by_name(etype, name):
     :rtype: Sub-class of types.Entity
 
     """
-    return get_by_facet(etype, filter=etype.name==name)
+    return get_by_facet(etype, qfilter=etype.name==name)
 
 
-def get_count(etype, filter=None):
+def get_count(etype, qfilter=None):
     """Gets count of entity instances.
 
     :param etype: A supported entity type.
@@ -184,8 +177,8 @@ def get_count(etype, filter=None):
     types.assert_type(etype)
 
     q = session.query(etype)
-    if filter is not None:
-        q = q.filter(filter)
+    if qfilter is not None:
+        q = q.filter(qfilter)
 
     return q.count()
 
@@ -376,7 +369,7 @@ def get_message_by_simulation(simulation_name, get_last=False):
     """
     q = session.query(Message, SimulationMessage, Simulation)
 
-    q = q.filter(Simulation.name==simulation_name)    
+    q = q.filter(Simulation.name==simulation_name)
     if get_last:
         q = q.order_by(Message.row_create_date.desc())
 
@@ -401,8 +394,8 @@ def get_simulations_by_state(state_id):
     if state_id is None:
         return get_all(Simulation)
     else:
-        return get_by_facet(Simulation, 
-                            Simulation.execution_state_id==state_id, 
+        return get_by_facet(Simulation,
+                            Simulation.execution_state_id==state_id,
                             get_iterable=True)
 
 
@@ -415,7 +408,7 @@ def delete_message_by_simulation(simulation_name):
     """
     # Get simulation.
     s = get_by_name(Simulation, simulation_name)
-    if s is None:        
+    if s is None:
         return
 
     q = session.query(SimulationMessage, Message)
@@ -427,8 +420,8 @@ def get_model_by_drs_tag_name(name):
     """Gets an instance of the entity by drs tag name.
 
     """
-    return get_by_facet(Model, 
-                        filter=Model.drs_tag_name==name)
+    return get_by_facet(Model,
+                        qfilter=Model.drs_tag_name==name)
 
 
 def delete_simulation_forcing_by_simulation_id(simulation_id):
@@ -438,7 +431,7 @@ def delete_simulation_forcing_by_simulation_id(simulation_id):
     :type simulation_id: int
 
     """
-    delete_by_facet(SimulationForcing, 
+    delete_by_facet(SimulationForcing,
                     SimulationForcing.simulation_id==simulation_id)
 
 

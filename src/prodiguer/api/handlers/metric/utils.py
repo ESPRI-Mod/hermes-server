@@ -14,7 +14,10 @@
 # Module imports.
 import datetime, re
 
+import tornado
+
 from .... import db
+from .... utils import config
 
 
 
@@ -30,6 +33,26 @@ _FORMATS = ['json', 'csv']
 
 # HTTP header names.
 HTTP_HEADER_Access_Control_Allow_Origin = "Access-Control-Allow-Origin"
+
+
+
+class MetricWebRequestHandler(tornado.web.RequestHandler):
+    """Base metric web request handler.
+
+    """
+    def set_default_headers(self):
+        """Set HTTP headers at the beginning of the request."""
+        self.set_header(HTTP_HEADER_Access_Control_Allow_Origin,
+                        ",".join(config.api.metric.cors_white_list))
+
+
+    def prepare(self):
+        """Called at the beginning of request handling."""
+        # Start session.
+        db.session.start(config.db.connections.main)
+
+        # Initialise fields.
+        self.output = {}
 
 
 def _get_name(entity_type, id):

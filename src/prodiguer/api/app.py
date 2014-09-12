@@ -40,16 +40,23 @@ def _get_path_to_front_end():
 def _get_app_routes():
     """Returns supported app routes."""
     return (
+        # Monitoring routes.
         (r'/api/1/monitoring/fe/setup', monitoring.FrontEndSetupRequestHandler),
         (r'/api/1/monitoring/fe/ws', monitoring.FrontEndWebSocketHandler),
         (r'/api/1/monitoring/event', monitoring.EventRequestHandler),
+        # Metric routes.
         (r'/api/1/metric/fe/setup', metric.FrontEndSetupRequestHandler),
         (r'/api/1/metric/add', metric.AddRequestHandler),
-        (r'/api/1/metric/delete', metric.DeleteLinesRequestHandler),
-        (r'/api/1/metric/delete_group', metric.DeleteGroupRequestHandler),
+        (r'/api/1/metric/delete', metric.DeleteRequestHandler),
+        (r'/api/1/metric/delete_lines', metric.DeleteLinesRequestHandler),
         (r'/api/1/metric/fetch', metric.FetchRequestHandler),
-        (r'/api/1/metric/list_group', metric.ListGroupRequestHandler),
+        (r'/api/1/metric/fetch_headers', metric.FetchHeadersRequestHandler),
+        (r'/api/1/metric/fetch_setup', metric.FetchSetupRequestHandler),
+        (r'/api/1/metric/fetch_line_count', metric.FetchLineCountRequestHandler),
+        (r'/api/1/metric/list', metric.ListRequestHandler),
+        # Operational routes.
         (r'/api/1/ops/heartbeat', ops.HeartbeatRequestHandler),
+        (r'/api/1/ops/list_endpoints', ops.ListEndpointsRequestHandler),
     )
 
 

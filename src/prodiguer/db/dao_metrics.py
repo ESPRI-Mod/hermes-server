@@ -43,18 +43,31 @@ def get_groups():
     return dao.get_all(SimulationMetricGroup)
 
 
-def get_group_metrics(id):
+def get_group_metrics(group_id):
     """Returns a set of metrics related to a group.
 
-    :param str id: ID of a metric group.
+    :param str group_id: ID of a metric group.
 
     :returns: A collection of simulation metrics.
     :rtype: list
 
     """
     return dao.get_by_facet(SimulationMetric, 
-                            filter=SimulationMetric.group_id==id,
+                            qfilter=SimulationMetric.group_id==group_id,
                             get_iterable=True)
+
+
+def get_group_metric_line_count(group_id):
+    """Returns metric line count.
+
+    :param str group_id: ID of a metric group.
+
+    :returns: Count of number of lines within a metric.
+    :rtype: int
+
+    """
+    return dao.get_count(SimulationMetric,
+                         qfilter=SimulationMetric.group_id==group_id)
 
 
 def delete_group(id):

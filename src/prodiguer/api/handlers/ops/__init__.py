@@ -13,3 +13,4 @@
 """
 # Module imports.
 from .heartbeat import HeartbeatRequestHandler
+from .list_endpoints import ListEndpointsRequestHandler

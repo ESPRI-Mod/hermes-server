@@ -30,15 +30,10 @@ from ....utils import (
 _PARAM_GROUP = 'group'
 
 
-class DeleteLinesRequestHandler(tornado.web.RequestHandler):
+class DeleteLinesRequestHandler(utils.MetricWebRequestHandler):
     """Simulation metric delete lines method request handler.
 
     """
-    def prepare(self):
-        """Called at the beginning of request handling."""
-        self.output = {}
-
-        
     def _validate_headers(self):
         """Validates request headers."""
         # Verify json data type.
@@ -52,16 +47,16 @@ class DeleteLinesRequestHandler(tornado.web.RequestHandler):
         """Decodes request body."""
         # Load json.
         data = json.loads(self.request.body)
-        
+
         # Convert to namedtuple.
         self.data = convert.dict_to_namedtuple(data)
-        
-        
+
+
     def _validate_body(self):
         """Validates request body."""
         # Validate fields.
         for fname, ftype in [
-            ('metric_id_list', list), 
+            ('metric_id_list', list),
             ]:
             if fname not in self.data._fields:
                 raise KeyError("Undefined field: {0}".format(fname))
@@ -73,6 +68,11 @@ class DeleteLinesRequestHandler(tornado.web.RequestHandler):
         """Deletes metric lines."""
         for metric_id in self.data.metric_id_list:
             db.dao_metrics.delete_line(metric_id)
+
+
+    def _commit_to_db(self):
+        """Commits db changes."""
+        db.session.commit()
 
 
     def _write(self, error=None):
@@ -89,16 +89,17 @@ class DeleteLinesRequestHandler(tornado.web.RequestHandler):
         # Define tasks.
         tasks = {
             "green": (
-                self._validate_headers, 
+                self._validate_headers,
                 self._decode_body,
                 self._validate_body,
                 self._delete_metric_lines,
-                self._write, 
-                self._log, 
+                self._commit_to_db,
+                self._write,
+                self._log,
                 ),
             "red": (
                 self._write,
-                self._log, 
+                self._log,
                 )
         }
 
