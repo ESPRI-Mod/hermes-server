@@ -27,18 +27,14 @@ from .... utils import (
 
 
 
-class ListRequestHandler(tornado.web.RequestHandler):
+class ListRequestHandler(utils.MetricWebRequestHandler):
     """Simulation list metric request handler.
 
     """
-    def set_default_headers(self):
-        """Set HTTP headers at the beginning of the request."""
-        self.set_header(utils.HTTP_HEADER_Access_Control_Allow_Origin,
-                        ",".join(cfg.api.metric.cors_white_list))
-
-
     def prepare(self):
         """Called at the beginning of request handling."""
+        super(ListRequestHandler, self).prepare()
+
         self.output = {
             'groups': []
         }
