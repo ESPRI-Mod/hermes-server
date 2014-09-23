@@ -98,7 +98,8 @@ def create_ampq_message_properties(
     # Default headers attached with each property.
     default_headers = {
         "mode": mode,
-        "producer_id": producer_id
+        "producer_id": producer_id,
+        "timestamp": unicode(timestamp)
     }
 
     # Return a pika BasicProperties instance (follows AMPQ protocol).

@@ -45,15 +45,14 @@ def _get_app_routes():
         (r'/api/1/monitoring/fe/ws', monitoring.FrontEndWebSocketHandler),
         (r'/api/1/monitoring/event', monitoring.EventRequestHandler),
         # Metric routes.
-        (r'/api/1/metric/fe/setup', metric.FrontEndSetupRequestHandler),
         (r'/api/1/metric/add', metric.AddRequestHandler),
         (r'/api/1/metric/delete', metric.DeleteRequestHandler),
         (r'/api/1/metric/delete_lines', metric.DeleteLinesRequestHandler),
         (r'/api/1/metric/fetch', metric.FetchRequestHandler),
         (r'/api/1/metric/fetch_count', metric.FetchCountRequestHandler),
         (r'/api/1/metric/fetch_columns', metric.FetchColumnsRequestHandler),
+        (r'/api/1/metric/fetch_list', metric.FetchListRequestHandler),
         (r'/api/1/metric/fetch_setup', metric.FetchSetupRequestHandler),
-        (r'/api/1/metric/list', metric.ListRequestHandler),
         # Operational routes.
         (r'/api/1/ops/heartbeat', ops.HeartbeatRequestHandler),
         (r'/api/1/ops/list_endpoints', ops.ListEndpointsRequestHandler),

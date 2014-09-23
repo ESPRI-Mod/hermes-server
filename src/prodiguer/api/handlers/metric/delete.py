@@ -11,15 +11,11 @@
 
 
 """
-# Module imports.
-import json
-import re
-
 import tornado
 
 from . import utils
 from .. import utils as handler_utils
-from .... import db
+from .... db.mongo import dao_metrics as dao
 from ....utils import runtime as rt
 
 
@@ -28,45 +24,32 @@ from ....utils import runtime as rt
 _PARAM_GROUP = 'group'
 
 
-class DeleteRequestHandler(utils.MetricWebRequestHandler):
+class DeleteRequestHandler(tornado.web.RequestHandler):
     """Simulation metric group delete method request handler.
 
     """
-    def _validate_params(self):
-        """Validates query params."""
+    def _validate_request_params(self):
+        """Validates request params."""
         utils.validate_group_name(self.get_argument(_PARAM_GROUP))
 
 
-    def _set_group(self):
-        """Loads group from db prior to deletion."""
-        group_name = self.get_argument(_PARAM_GROUP)
-        self.group = db.dao_metrics.get_group(group_name)
-        if not self.group:
-            raise ValueError("{0} not found".format(group_name))
+    def _decode_request_params(self):
+        """Decodes request params."""
+        self.group = self.get_argument(_PARAM_GROUP)
 
 
-    def _delete_lines(self):
-        """Deletes group metric lines."""
-        db.dao_metrics.delete_group_lines(self.group.id)
+    def _delete_metrics(self):
+        """Deletes metrics from db."""
+        dao.delete(self.group)
 
 
-    def _delete_group(self):
-        """Deletes group."""
-        db.dao_metrics.delete_group(self.group.id)
-
-
-    def _commit_to_db(self):
-        """Commits db changes."""
-        db.session.commit()
-
-
-    def _write(self, error=None):
+    def _write_response(self, error=None):
         """Write response output."""
         handler_utils.write(self, error)
 
 
     def _log(self, error=None):
-        """Log execution."""
+        """Logs request processing completion."""
         handler_utils.log("metric", self, error)
 
 
@@ -74,16 +57,14 @@ class DeleteRequestHandler(utils.MetricWebRequestHandler):
         # Define tasks.
         tasks = {
             "green": (
-                self._validate_params,
-                self._set_group,
-                self._delete_lines,
-                self._delete_group,
-                self._commit_to_db,
-                self._write,
+                self._validate_request_params,
+                self._decode_request_params,
+                self._delete_metrics,
+                self._write_response,
                 self._log,
                 ),
             "red": (
-                self._write,
+                self._write_response,
                 self._log,
                 )
         }

@@ -71,6 +71,8 @@ QUEUE_IN_MONITORING_8888 = "q-in-monitoring-8888"
 QUEUE_IN_MONITORING_9000 = "q-in-monitoring-9000"
 QUEUE_IN_MONITORING_9999 = "q-in-monitoring-9999"
 QUEUE_INTERNAL_API = "q-internal-api"
+QUEUE_INTERNAL_SMTP = "q-internal-smtp"
+QUEUE_INTERNAL_SMS = "q-internal-sms"
 
 # All queues.
 QUEUES = set([
@@ -87,11 +89,13 @@ QUEUES = set([
 	QUEUE_IN_MONITORING_8888,
 	QUEUE_IN_MONITORING_9000,
 	QUEUE_IN_MONITORING_9999,
-	QUEUE_INTERNAL_API
+	QUEUE_INTERNAL_API,
+	QUEUE_INTERNAL_SMTP,
+	QUEUE_INTERNAL_SMS
 	])
 
 # Message producers.
-PRODUCER_IGCM = "libligcm"
+PRODUCER_IGCM = "libigcm"
 PRODUCER_PRODIGUER = "prodiguer"
 
 # All producers.
@@ -104,7 +108,7 @@ PRODUCERS = set([
 DEFAULT_PRODUCER = PRODUCER_IGCM
 
 # Message server users.
-USER_IGCM = "libligcm-mq-user"
+USER_IGCM = "libigcm-mq-user"
 USER_PRODIGUER = "prodiguer-mq-user"
 
 # All users.
@@ -126,8 +130,9 @@ DEFAULT_APP = APP_MONITORING
 
 # Message types:
 # ... general message types.
-TYPE_GENERAL_SMTP = "-1000"
 TYPE_GENERAL_API = "-2000"
+TYPE_GENERAL_SMTP = "-1000"
+TYPE_GENERAL_SMS = "-3000"
 # ... simulation monitoring.
 TYPE_SMON_0000 = "0000"
 TYPE_SMON_0100 = "0100"
@@ -142,8 +147,9 @@ TYPE_SMON_9999 = "9999"
 
 # All types.
 TYPES = set([
-	TYPE_GENERAL_SMTP,
 	TYPE_GENERAL_API,
+	TYPE_GENERAL_SMS,
+	TYPE_GENERAL_SMTP,
 	TYPE_SMON_0000,
 	TYPE_SMON_0100,
 	TYPE_SMON_1000,

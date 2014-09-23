@@ -10,81 +10,57 @@
 
 
 """
-import json
+import tornado
 
 from . import utils
 from .. import utils as handler_utils
-from .... import db
+from .... db.mongo import dao_metrics as dao
 from .... utils import rt
 
 
-
-# Default group.
-_DEFAULT_GROUP = 'default'
 
 # Query parameter names.
 _PARAM_GROUP = 'group'
 
 
-class FetchSetupRequestHandler(utils.MetricWebRequestHandler):
+class FetchSetupRequestHandler(tornado.web.RequestHandler):
     """Simulation metric group fetch setup method request handler.
 
     """
-    def prepare(self):
-        """Called at the beginning of request handling."""
-        super(FetchSetupRequestHandler, self).prepare()
-
-        self.group = None
-        self.metrics = None
-        self.setup_data = []
+    def set_default_headers(self):
+        """Set default HTTP response headers."""
+        utils.set_cors_white_list(self)
 
 
-    def _validate_params(self):
+    def _validate_request_params(self):
         """Validates query params."""
-        # ... group
         utils.validate_group_name(self.get_argument(_PARAM_GROUP))
 
 
-    def _parse_params(self):
+    def _decode_request_params(self):
         """Parses query params."""
-        # ... group
-        group_name = self.get_argument(_PARAM_GROUP)
-        group = db.dao_metrics.get_group(group_name)
-        if group:
-            self.group = group
-        else:
-            raise ValueError("Unknown metric group: {0}".format(group_name))
+        self.group = self.get_argument(_PARAM_GROUP)
 
 
-    def _set_metrics(self):
-        """Loads metrics from db."""
-        self.metrics = db.dao_metrics.get_group_metrics(self.group.id)
-        self.metrics = [json.loads(m.metric) for m in self.metrics]
+    def _fetch_data(self):
+        """Fetches data from db."""
+        self.columns = dao.fetch_columns(self.group, False)
+        self.data = dao.fetch_setup(self.group)
 
 
-    def _set_setup(self):
-        """Loads metrics from db."""
-        if not self.metrics:
-            return
-
-        for i in range(len(self.metrics[0])):
-            self.setup_data.append(sorted(set([m[i] for m in self.metrics])))
-
-
-    def _set_output(self):
-        """Sets response output."""
-        self.output['columns'] = json.loads(self.group.columns)
-        self.output['group'] = self.group.name
-        self.output['data'] = self.setup_data
-
-
-    def _write(self, error=None):
+    def _write_response(self, error=None):
         """Write response output."""
+        if not error:
+            self.output = {
+                'group': self.group,
+                'columns': self.columns,
+                'data': self.data
+            }
         handler_utils.write(self, error)
 
 
     def _log(self, error=None):
-        """Log execution."""
+        """Logs request processing completion."""
         handler_utils.log("metric", self, error)
 
 
@@ -95,16 +71,14 @@ class FetchSetupRequestHandler(utils.MetricWebRequestHandler):
         # Define tasks.
         tasks = {
             "green": (
-                self._validate_params,
-                self._parse_params,
-                self._set_metrics,
-                self._set_setup,
-                self._set_output,
-                self._write,
+                self._validate_request_params,
+                self._decode_request_params,
+                self._fetch_data,
+                self._write_response,
                 self._log,
                 ),
             "red": (
-                self._write,
+                self._write_response,
                 self._log,
                 )
         }

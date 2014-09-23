@@ -27,34 +27,19 @@ def _get_id(type, name):
 
 
 
-def retrieve_simulations(state_id=constants.EXECUTION_STATE_RUNNING_ID):
-    """Retrieves list of simulation details from db filtered by execution state.
-
-    :param state_id: ID of execution state.
-    :type state_id: int
-
-    :returns: Simulation details.
-    :rtype: dbtypes.cnode.simulation.Simulation
-
-    """
-    rt.log_mq("Retrieving simulations list filtered by execution state.")
-
-    return dao.get_simulations_by_state(state_id)
-
-
-def retrieve_simulation(name):
+def retrieve_simulation_by_uid(uid):
     """Retrieves simulation details from db.
 
-    :param name: Name of simulation, e.g. v3.aqua4K.
-    :type name: str
+    :param str uid: UID of simulation.
 
     :returns: Simulation details.
     :rtype: dbtypes.cnode.simulation.Simulation
 
     """
-    rt.log_mq("Retrieving simulation.")
+    rt.log_mq("Retrieving simulation: {0}.".format(uid))
 
-    return dao.get_by_name(dbtypes.Simulation, name)
+    return dao.get_by_facet(dbtypes.Simulation,
+                            qfilter=dbtypes.Simulation.uid==unicode(uid))
 
 
 def delete_simulation(name):
@@ -67,7 +52,7 @@ def delete_simulation(name):
     rt.log_mq("Deleting simulation.")
 
     dao.delete_by_name(dbtypes.Simulation, name)
-    
+
 
 def create_simulation(activity,
                       compute_node,
@@ -78,53 +63,32 @@ def create_simulation(activity,
                       experiment,
                       model,
                       name,
+                      output_start_date,
+                      output_end_date,
                       space,
+                      uid,
                       parent_simulation_name=None):
     """Creates a new simulation record in db.
 
-    :param activity: Name of activity, e.g. IPSL.
-    :type activity: str
-
-    :param compute_node: Name of compute node, e.g. TGCC.
-    :type compute_node: str
-
-    :param compute_node_login: Name of compute node login, e.g. dcugnet.
-    :type compute_node_login: str
-
-    :param compute_node_machine: Name of compute machine, e.g. SX9.
-    :type compute_node_machine: str
-
-    :param execution_start_date: Simulation start date.
-    :type execution_start_date: datetime
-
-    :param execution_state: State of simulation execution, e.g. COMPLETE.
-    :type execution_state: str
-    
-    :param experiment: Name of experiment, e.g. piControl.
-    :type experiment: str
-
-    :param model: Name of model, e.g. IPSLCM5A.
-    :type model: str
-
-    :param name: Name of simulation, e.g. v3.aqua4K.
-    :type name: str
-
-    :param space: Name of space, e.g. PROD.
-    :type space: str
-
-    :param parent_simulation_name: Name of parent simulation, e.g. piControl2.
-    :type parent_simulation_name: str
+    :param str activity: Name of activity, e.g. IPSL.
+    :param str compute_node: Name of compute node, e.g. TGCC.
+    :param str compute_node_login: Name of compute node login, e.g. dcugnet.
+    :param str compute_node_machine: Name of compute machine, e.g. SX9.
+    :param datetime execution_start_date: Simulation start date.
+    :param str execution_state: State of simulation execution, e.g. COMPLETE.
+    :param str experiment: Name of experiment, e.g. piControl.
+    :param str model: Name of model, e.g. IPSLCM5A.
+    :param str name: Name of simulation, e.g. v3.aqua4K.
+    :param datetime output_start_date: Output start date.
+    :param datetime output_end_date: Output start date.
+    :param str space: Name of space, e.g. PROD.
+    :param str uid: Simulation unique identifier.
+    :param str parent_simulation_name: Name of parent simulation, e.g. piControl2.
 
     :returns: Newly created simulation.
     :rtype: dbtypes.Simulation
-    
-    """
-    # Log.
-    msg = "Persisting new simulation to db :: {0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} | {8} | {9}"
-    rt.log_mq(msg.format(name, activity, compute_node, 
-                         compute_node_login, compute_node_machine, execution_start_date, 
-                         execution_state, experiment, model, space))    
 
+    """
     # Ensure that cache is loaded.
     cache.load()
 
@@ -149,6 +113,20 @@ def create_simulation(activity,
             raise TypeError('Execution start date must be a valid date')
     if name is None:
         raise TypeError('Name is undefined')
+    if output_start_date is None:
+        raise TypeError('Output start date is undefined')
+    if not isinstance(output_start_date, datetime.datetime):
+        output_start_date = date_parser.parse(output_start_date)
+        if not isinstance(output_start_date, datetime.datetime):
+            raise TypeError('Output start date must be a valid date')
+    if output_end_date is None:
+        raise TypeError('Output end date is undefined')
+    if not isinstance(output_end_date, datetime.datetime):
+        output_end_date = date_parser.parse(output_end_date)
+        if not isinstance(output_end_date, datetime.datetime):
+            raise TypeError('Output end date must be a valid date')
+    if uid is None:
+        raise TypeError('UID is undefined')
 
     # Instantiate an instance.
     s = dbtypes.Simulation()
@@ -161,7 +139,10 @@ def create_simulation(activity,
     s.experiment_id = _get_id(dbtypes.Experiment, experiment)
     s.model_id = _get_id(dbtypes.Model, model)
     s.name = str(name)
+    s.output_start_date = output_start_date
+    s.output_end_date = output_end_date
     s.space_id = _get_id(dbtypes.SimulationSpace, space)
+    s.uid = unicode(uid)
 
     # TODO process parent simulation name
 
@@ -171,39 +152,33 @@ def create_simulation(activity,
     return s
 
 
-def update_simulation_status(name, execution_state):
+def update_simulation_status(uid, execution_state):
     """Updates status of an existing simulation record in db.
 
-    :param name: Name of simulation, e.g. v3.aqua4K.
+    :param uid: UID of simulation.
     :type name: str
 
     :param execution_state: State of simulation execution, e.g. COMPLETE.
     :type execution_state: str
-    
-    """
-    def log():
-        msg = "Persisting simulation state update to db :: {0} | {1}"
-        rt.log_mq(msg.format(name, execution_state))    
 
-    def guard():
-        if name is None:
-            raise TypeError('Name is undefined')
-        if not cache.exists(dbtypes.SimulationState, execution_state):
-            raise ValueError('Execution state is unknown')
+    """
+    # Defensive programming.
+    if uid is None:
+        raise TypeError('Simulation UID is undefined')
+    if not cache.exists(dbtypes.SimulationState, execution_state):
+        raise ValueError('Execution state is unknown')
 
     # Log.
-    log()
-
-    # Defensive programming.
-    guard()
+    msg = "Persisting simulation state update to db :: {0} | {1}"
+    rt.log_mq(msg.format(uid, execution_state))
 
     # Update status.
-    s = retrieve_simulation(name)
-    if s is not None:
-        s.execution_state_id = _get_id(dbtypes.SimulationState,
-                                       execution_state)
+    simulation = retrieve_simulation_by_uid(uid)
+    if simulation is not None:
+        simulation.execution_state_id = \
+            _get_id(dbtypes.SimulationState, execution_state)
 
-    return s
+    return simulation
 
 
 def create_message(uid,
@@ -218,7 +193,7 @@ def create_message(uid,
 
     :param str uid: Message unique identifer.
     :param str app_id: Message application id, e.g. smon.
-    :param str producer_id: Message producer id, e.g. libligcm.
+    :param str producer_id: Message producer id, e.g. libigcm.
     :param str type_id: Message type id, e.g. 1001000.
     :param str name: Message content.
     :param str content_encoding: Message content encoding, e.g. utf-8.
@@ -264,8 +239,8 @@ def create_message(uid,
 
 
 def create_simulation_message(name,
-                              app_id, 
-                              publisher_id, 
+                              app_id,
+                              publisher_id,
                               type_id,
                               content,
                               content_encoding='utf-8',
@@ -274,32 +249,15 @@ def create_simulation_message(name,
                               timestamp=None):
     """Creates a new simulation related message record in db.
 
-    :param name: Name of simulation for which a message has been received.
-    :type name: str
-    
-    :param app_id: Message application id, e.g. smon.
-    :type app_id: str
-
-    :param publisher_id: Message application id, e.g. libligcm.
-    :type publisher_id: str
-
-    :param type_id: Message type id, e.g. 1001000.
-    :type type_id: str
-
-    :param name: Message content.
-    :type name: str
-
-    :param content_encoding: Message content encoding, e.g. utf-8.
-    :type content_encoding: str
-
-    :param content_type: Message content type, e.g. application/json.
-    :type content_type: str
-
-    :param uid: Message unique identifer.
-    :type uid: str
-
-    :param timestamp: Message timestamp in milliseconds since epoch.
-    :type timestamp: str
+    :param str name: Name of simulation for which a message has been received.
+    :param str app_id: Message application id, e.g. smon.
+    :param str publisher_id: Message application id, e.g. libigcm.
+    :param str type_id: Message type id, e.g. 1001000.
+    :param str content: Message content.
+    :param str content_encoding: Message content encoding, e.g. utf-8.
+    :param str content_type: Message content type, e.g. application/json.
+    :param str uid: Message unique identifer.
+    :param str timestamp: Message timestamp in milliseconds since epoch.
 
     :returns: Newly created message.
     :rtype: dbtypes.Message
@@ -310,19 +268,19 @@ def create_simulation_message(name,
 
     # Defensive programming.
     if name is None:
-        raise TypeError('Simulation Name is undefined')        
+        raise TypeError('Simulation Name is undefined')
     s = retrieve_simulation(name)
     if s is None:
         raise ValueError('Simulation name is unknown :: {0}'.format(name))
 
     # Instantiate a message instance.
-    m = create_message(app_id, 
-                       publisher_id, 
-                       type_id, 
-                       content, 
-                       content_encoding, 
-                       content_type, 
-                       uid, 
+    m = create_message(app_id,
+                       publisher_id,
+                       type_id,
+                       content,
+                       content_encoding,
+                       content_type,
+                       uid,
                        timestamp)
     dao.insert(m)
 
@@ -346,7 +304,7 @@ def retrieve_messages(name):
 
     :returns: List of received simulation messages.
     :rtype: list
-    
+
     """
     return dao.get_message_by_simulation(name)
 
@@ -375,3 +333,4 @@ def delete_messages(name):
 
     """
     dao.delete_message_by_simulation(name)
+

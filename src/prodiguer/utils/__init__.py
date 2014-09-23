@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from . import (
-	config,
-	config as cfg,
 	convert,
 	runtime,
 	runtime as rt,
 	)
+from .config import data as config
+from .config import data as cfg

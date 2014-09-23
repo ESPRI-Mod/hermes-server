@@ -10,54 +10,40 @@
 
 
 """
-
-# Module imports.
-import json
-import re
-
 import tornado
 
 from . import utils
 from .. import utils as handler_utils
-from .... import db
-from .... utils import (
-    config as cfg,
-    runtime as rt
-    )
+from .... db.mongo import dao_metrics as dao
+from .... utils import runtime as rt
 
 
 
-class ListRequestHandler(utils.MetricWebRequestHandler):
+class FetchListRequestHandler(tornado.web.RequestHandler):
     """Simulation list metric request handler.
 
     """
-    def prepare(self):
-        """Called at the beginning of request handling."""
-        super(ListRequestHandler, self).prepare()
-
-        self.output = {
-            'groups': []
-        }
+    def set_default_headers(self):
+        """Set default HTTP response headers."""
+        utils.set_cors_white_list(self)
 
 
-    def _set_group(self):
-        """Loads groups from db."""
-        self.groups = db.dao_metrics.get_groups()
+    def _fetch_data(self):
+        """Fetches data from db."""
+        self.groups = dao.fetch_list()
 
 
-    def _set_output(self):
-        """Sets response data."""
-        if self.groups:
-            self.output['groups'] = [i.name for i in self.groups]
-
-
-    def _write(self, error=None):
+    def _write_response(self, error=None):
         """Write response output."""
+        if not error:
+            self.output = {
+                'groups': self.groups
+            }
         handler_utils.write(self, error)
 
 
     def _log(self, error=None):
-        """Log execution."""
+        """Logs request processing completion."""
         handler_utils.log("metric", self, error)
 
 
@@ -65,13 +51,12 @@ class ListRequestHandler(utils.MetricWebRequestHandler):
         # Define tasks.
         tasks = {
             "green": (
-                self._set_group,
-                self._set_output,
-                self._write,
+                self._fetch_data,
+                self._write_response,
                 self._log,
                 ),
             "red": (
-                self._write,
+                self._write_response,
                 self._log,
                 )
         }

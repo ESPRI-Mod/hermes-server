@@ -22,8 +22,9 @@ from ....utils import convert, config
 
 def _get_simulation_list():
     def _filter(s):
-        return s.name.startswith("v3") or \
-               s.activity_id == 5
+        if s.activity_id == 1:
+            return s.name.startswith("v3")
+        return True
 
     s_list = db.dao.get_all(db.types.Simulation)
     s_list = [s for s in s_list if _filter(s)]
@@ -37,7 +38,7 @@ class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
     """
     def get(self, *args):
         # Start session.
-        db.session.start(config.db.connections.main)
+        db.session.start(config.db.pgres.main)
 
         # Load setup data from db.
         data = {

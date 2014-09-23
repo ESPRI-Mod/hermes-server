@@ -77,7 +77,7 @@ class EventRequestHandler(tornado.web.RequestHandler):
         _log("on {0} event received".format(self.get_argument('event_type')))
 
         # Start session.
-        db.session.start(config.db.connections.main)
+        db.session.start(config.db.pgres.main)
 
         # Broadcase event to clients.
         _broadcasters[self.get_argument('event_type')](self)

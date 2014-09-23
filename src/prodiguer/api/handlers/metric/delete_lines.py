@@ -12,76 +12,61 @@
 
 """
 # Module imports.
-import json
-import re
-
 import tornado
 
 from . import utils
 from .. import utils as handler_utils
-from .... import db
-from ....utils import (
-    convert,
-    runtime as rt,
-    )
+from .... db.mongo import dao_metrics as dao
+from ....utils import runtime as rt
 
 
-# Query parameter names.
-_PARAM_GROUP = 'group'
+
+# Supported content types.
+_CONTENT_TYPE_JSON = "application/json"
+
+# Set of expected payload fields and their type.
+_PAYLOAD_FIELDS = set([
+    ('group', unicode),
+    ('metric_id_list', list)
+    ])
 
 
-class DeleteLinesRequestHandler(utils.MetricWebRequestHandler):
+class DeleteLinesRequestHandler(tornado.web.RequestHandler):
     """Simulation metric delete lines method request handler.
 
     """
-    def _validate_headers(self):
+    def _validate_request_headers(self):
         """Validates request headers."""
-        # Verify json data type.
-        if 'Content-Type' not in self.request.headers:
-            raise ValueError("Content-Type is undefined")
-        if self.request.headers['Content-Type'] != 'application/json':
-            raise ValueError("Content-Type must be application/json")
+        utils.validate_http_content_type(self, _CONTENT_TYPE_JSON)
 
 
-    def _decode_body(self):
-        """Decodes request body."""
-        # Load json.
-        data = json.loads(self.request.body)
-
-        # Convert to namedtuple.
-        self.data = convert.dict_to_namedtuple(data)
-
-
-    def _validate_body(self):
+    def _validate_request_payload(self):
         """Validates request body."""
-        # Validate fields.
-        for fname, ftype in [
-            ('metric_id_list', list),
-            ]:
-            if fname not in self.data._fields:
-                raise KeyError("Undefined field: {0}".format(fname))
-            if not isinstance(getattr(self.data, fname), ftype):
-                raise ValueError("Invalid field type: {0}".format(fname))
+        # Decode payload.
+        payload = utils.decode_json_payload(self)
+
+        # Validate payload.
+        utils.validate_payload(payload, _PAYLOAD_FIELDS)
+
+        # Validate group name.
+        utils.validate_group_name(payload.group, False)
+
+        # Validation passed therefore cache decoded payload.
+        self.payload = payload
 
 
-    def _delete_metric_lines(self):
-        """Deletes metric lines."""
-        for metric_id in self.data.metric_id_list:
-            db.dao_metrics.delete_line(metric_id)
+    def _delete_data(self):
+        """Deletes data from db."""
+        dao.delete_lines(self.payload.group, self.payload.metric_id_list)
 
 
-    def _commit_to_db(self):
-        """Commits db changes."""
-        db.session.commit()
-
-
-    def _write(self, error=None):
+    def _write_response(self, error=None):
         """Write response output."""
         handler_utils.write(self, error)
 
 
     def _log(self, error=None):
-        """Log execution."""
+        """Logs request processing completion."""
         handler_utils.log("metric", self, error)
 
 
@@ -89,16 +74,14 @@ class DeleteLinesRequestHandler(utils.MetricWebRequestHandler):
         # Define tasks.
         tasks = {
             "green": (
-                self._validate_headers,
-                self._decode_body,
-                self._validate_body,
-                self._delete_metric_lines,
-                self._commit_to_db,
-                self._write,
+                self._validate_request_headers,
+                self._validate_request_payload,
+                self._delete_data,
+                self._write_response,
                 self._log,
                 ),
             "red": (
-                self._write,
+                self._write_response,
                 self._log,
                 )
         }

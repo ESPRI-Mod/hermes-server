@@ -14,54 +14,28 @@
 # Module imports.
 import os
 
-from . import convert
+from .convert import json_file_to_namedtuple
 
 
+# Default prodiguer stack home directory.
+_DEFAULT_HOME = '/opt/prodiguer'
 
-# Module exports.
-__all__ = [
-	'api',
-	'core',
-	'data',
-	'db',
-	'mq',
-	'set'
-]
+# Set home directory either from environment variable or from default.
+try:
+	_HOME = os.environ['PRODIGUER_HOME']
+except KeyError:
+	_HOME = _DEFAULT_HOME
 
+# Configuration file name.
+_CONFIG_FNAME = "prodiguer.json"
 
+# Configuration file path.
+_CONFIG_FPATH = "{0}/ops/config/{1}".format(_HOME, _CONFIG_FNAME)
 
-# Standard configuration file path.
-_CONFIG="{0}/.prodiguer".format(os.environ['HOME'])
+# Exception if not found.
+if not os.path.exists(_CONFIG_FPATH):
+	msg = "PRODIGUER configuration file does not exist :: {0}"
+	raise RuntimeError(msg.format(_CONFIG_FPATH))
 
-# Configuration data.
-data = None
-
-# API configuration data.
-api = None
-
-# DB configuration data.
-db = None
-
-# MQ configuration data.
-mq = None
-
-
-def init(fp=_CONFIG):
-	"""Initializes configuration.
-
-	:param str fp: Path to configuration file.
-
-	"""
-	if not os.path.exists(fp):
-		raise RuntimeError("Configuration file does not exist :: {0}".format(fp))
-
-	global api
-	global data
-	global db
-	global mq
-
-	# Cache pointers to config sections of interest.
-	data = convert.json_file_to_namedtuple(fp)
-	api = data.api
-	db = data.db
-	mq = data.mq
+# Config data wrapper.
+data = json_file_to_namedtuple(_CONFIG_FPATH)

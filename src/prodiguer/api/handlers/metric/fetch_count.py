@@ -10,67 +10,55 @@
 
 
 """
+import tornado
+
 from . import utils
 from .. import utils as handler_utils
-from .... import db
+from .... db.mongo import dao_metrics as dao
 from .... utils import rt
 
 
-
-# Default group.
-_DEFAULT_GROUP = 'default'
 
 # Query parameter names.
 _PARAM_GROUP = 'group'
 
 
-class FetchCountRequestHandler(utils.MetricWebRequestHandler):
+class FetchCountRequestHandler(tornado.web.RequestHandler):
     """Simulation metric group fetch line count method request handler.
 
     """
-    def prepare(self):
-        """Called at the beginning of request handling."""
-        super(FetchCountRequestHandler, self).prepare()
-
-        self.group = None
-        self.line_count = 0
+    def set_default_headers(self):
+        """Set default HTTP response headers."""
+        utils.set_cors_white_list(self)
 
 
-    def _validate_params(self):
+    def _validate_request_params(self):
         """Validates query params."""
-        # ... group
         utils.validate_group_name(self.get_argument(_PARAM_GROUP))
 
 
-    def _parse_params(self):
-        """Parses query params."""
-        # ... group
-        group_name = self.get_argument(_PARAM_GROUP)
-        group = db.dao_metrics.get_group(group_name)
-        if group:
-            self.group = group
-        else:
-            raise ValueError("Unknown metric group: {0}".format(group_name))
+    def _decode_request_params(self):
+        """Decodes request query parameters."""
+        self.group = self.get_argument(_PARAM_GROUP)
 
 
-    def _set_line_count(self):
-        """Calculates metric line count via a db query."""
-        self.line_count = db.dao_metrics.get_group_metric_line_count(self.group.id)
+    def _fetch_data(self):
+        """Fetches data from db."""
+        self.count = dao.fetch_count(self.group)
 
 
-    def _set_output(self):
-        """Sets response output."""
-        self.output['group'] = self.group.name
-        self.output['count'] = self.line_count
-
-
-    def _write(self, error=None):
+    def _write_response(self, error=None):
         """Write response output."""
+        if not error:
+            self.output = {
+                'group': self.group,
+                'count': self.count
+            }
         handler_utils.write(self, error)
 
 
     def _log(self, error=None):
-        """Log execution."""
+        """Logs request processing completion."""
         handler_utils.log("metric", self, error)
 
 
@@ -81,15 +69,14 @@ class FetchCountRequestHandler(utils.MetricWebRequestHandler):
         # Define tasks.
         tasks = {
             "green": (
-                self._validate_params,
-                self._parse_params,
-                self._set_line_count,
-                self._set_output,
-                self._write,
+                self._validate_request_params,
+                self._decode_request_params,
+                self._fetch_data,
+                self._write_response,
                 self._log,
                 ),
             "red": (
-                self._write,
+                self._write_response,
                 self._log,
                 )
         }

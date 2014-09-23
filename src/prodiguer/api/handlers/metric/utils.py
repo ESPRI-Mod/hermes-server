@@ -11,13 +11,10 @@
 
 
 """
-# Module imports.
-import datetime, re
+import json, re
 
-import tornado
-
-from .... import db
-from .... utils import config
+from .... utils import config, convert
+from .... db.mongo import dao_metrics as dao
 
 
 
@@ -28,102 +25,103 @@ _GROUP_NAME_REGEX = '[^a-zA-Z0-9_-]'
 _GROUP_NAME_MIN_LENGTH = 4
 _GROUP_NAME_MAX_LENGTH = 256
 
-# Set of supported formats.
-_FORMATS = ['json', 'csv']
+# HTTP header - Content-Type.
+_HTTP_HEADER_CONTENT_TYPE = "Content-Type"
 
 # HTTP header names.
-HTTP_HEADER_Access_Control_Allow_Origin = "Access-Control-Allow-Origin"
+_HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin"
+
+# Inclide db id query parameter name.
+_PARAM_INCLUDE_DB_ID = 'include_db_id'
 
 
+def set_cors_white_list(handler):
+    """Sets CORS whilte list from configuration.
 
-class MetricWebRequestHandler(tornado.web.RequestHandler):
-    """Base metric web request handler.
-
-    """
-    def set_default_headers(self):
-        """Set HTTP headers at the beginning of the request."""
-        self.set_header(HTTP_HEADER_Access_Control_Allow_Origin,
-                        ",".join(config.api.metric.cors_white_list))
-
-
-    def prepare(self):
-        """Called at the beginning of request handling."""
-        # Start session.
-        db.session.start(config.db.connections.main)
-
-        # Initialise fields.
-        self.output = {}
-
-
-def _get_name(entity_type, id):
-    """Utility function to map a db entity id to an entity name.
-
-    :param db.types.Entity entity: Entity instance.
-
-    :returns: Entity instance name.
-    :rtype: str
+    :param tornado.web.RequestHandler handler: A web request handler.
 
     """
-    return db.cache.get_name(entity_type, id)
+    handler.set_header(_HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+    # handler.set_header(_HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
+    #                    ",".join(config.api.metric.cors_white_list))
 
 
-def get_list(entity_type):
-    """Returns a list of db entities formatted for front-end.
-
-    :param db.types.Entity entity: Entity instance.
-
-    :returns: A list of entites in dictionary format ready to be returned to front-end.
-    :rtype: list
-
-    """
-    return [get_item(e) for e in db.dao.get_all(entity_type)]
-
-
-def get_item(entity):
-    """Returns a db entity formatted for front-end.
-
-    :param db.types.Entity entity: Entity instance.
-
-    :returns: Entity information in dictionary format ready to be returned to front-end.
-    :rtype: dict
-
-    """
-    # Convert to a dictionary.
-    d = db.types.Convertor.to_dict(entity)
-
-    # Remove row meta-info.
-    del d["row_create_date"]
-    del d["row_update_date"]
-
-    # Format date fields
-    for k, v in d.items():
-        if type(v) == datetime.datetime:
-            d[k] = str(v)[:10]
-
-    return d
-
-
-def validate_group_name(name):
+def validate_group_name(group, validate_db_collection=True):
     """Validates a simulation metric group name.
 
-    :param str name: A simulation metric group name.
+    :param str group: A simulation metric group name.
 
     """
     def throw():
-        raise ValueError("Invalid metric group name: {0}".format(name))
+        raise ValueError("Invalid metric group name: {0}".format(group))
 
-    if re.compile(_GROUP_NAME_REGEX).search(name):
+    if re.compile(_GROUP_NAME_REGEX).search(group):
         throw()
-    if len(name) < _GROUP_NAME_MIN_LENGTH or len(name) > _GROUP_NAME_MAX_LENGTH:
+    if len(group) < _GROUP_NAME_MIN_LENGTH or \
+       len(group) > _GROUP_NAME_MAX_LENGTH:
         throw()
+    if validate_db_collection and not dao.exists(group):
+        raise ValueError("{0} db collection not found".format(group))
 
 
-def validate_format(format):
-    """Validates a simulation metric format.
+def decode_json_payload(handler):
+    """Decode request body.
 
-    :param str format: A simulation metric format.
+    :param tornado.web.RequestHandler handler: A web request handler.
+
+    :returns: Decoded json data.
+    :rtype: namedtuple | None
 
     """
-    if format not in _FORMATS:
-        raise ValueError("Unsupported metric group format: {0}".format(format))
+    payload = json.loads(handler.request.body)
 
+    return convert.dict_to_namedtuple(payload)
+
+
+def validate_payload(payload, config):
+    """Validate request payload.
+
+    :param namedtuple payload: Payload being validated.
+    :param list config: Validation configuration.
+
+    """
+    for fname, ftype in config:
+        if fname not in payload._fields:
+            raise KeyError("Undefined field: {0}".format(fname))
+        if not isinstance(getattr(payload, fname), ftype):
+            raise ValueError("Invalid field type: {0}".format(fname))
+
+
+def validate_http_content_type(handler, expected_type):
+    """Validates HTTP Content-Type request header."""
+    if _HTTP_HEADER_CONTENT_TYPE not in handler.request.headers:
+        raise ValueError("Content-Type is undefined")
+    if handler.request.headers[_HTTP_HEADER_CONTENT_TYPE] != expected_type:
+        raise ValueError("Unsupported content-type")
+
+
+def validate_include_db_id(handler):
+    """Validates the include_db_id query parameter.
+
+    :param tornado.web.RequestHandler handler: A web request handler.
+
+    """
+    if _PARAM_INCLUDE_DB_ID in handler.request.arguments:
+        if handler.get_argument(_PARAM_INCLUDE_DB_ID) not in ('true', 'false'):
+            raise ValueError("Invalid request parameter {0}".format(_PARAM_INCLUDE_DB_ID))
+
+
+def decode_include_db_id(handler):
+    """Decodes the include_db_id query parameter.
+
+    :param tornado.web.RequestHandler handler: A web request handler.
+
+    :returns: Query parameter value if specified otherwise True.
+    :rtype: bool
+
+    """
+    if _PARAM_INCLUDE_DB_ID not in handler.request.arguments or \
+       handler.get_argument(_PARAM_INCLUDE_DB_ID) == 'false':
+        return False
+    else:
+        return True

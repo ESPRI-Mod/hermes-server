@@ -12,125 +12,93 @@
 
 """
 # Module imports.
-import json
-
 import tornado
+
+from collections import OrderedDict
 
 from . import utils
 from .. import utils as handler_utils
-from .... import db
-from .... utils import config, convert, rt
+from .... db.mongo import dao_metrics as dao
+from .... utils import rt
 
 
 
-# Default group.
-_DEFAULT_GROUP = 'default'
+# Set of reserved column names that cannot appear in metrics.
+_RESERVED_FIELD_NAMES = set(["_id"])
 
-# Metric id column name.
-_COLUMN_METRIC_ID = "metric_id"
-
-# Set of supported contnet types.
-_CONTENT_TYPE_CSV = "text/csv"
+# Supported content types.
 _CONTENT_TYPE_JSON = "application/json"
-_CONTENT_TYPES = (_CONTENT_TYPE_JSON, )
+
+# Set of expected payload fields and their type.
+_PAYLOAD_FIELDS = set([
+    ('group', unicode),
+    ('columns', list),
+    ('metrics', list),
+    ])
 
 
 class AddRequestHandler(tornado.web.RequestHandler):
     """Simulation metric group add method request handler.
 
     """
-    def prepare(self):
-        """Called at the beginning of request handling."""
-        # Start session.
-        db.session.start(config.db.connections.main)
-
-        # Initialise output.
-        self.output = {}
-
-
-    def _validate_headers(self):
+    def _validate_request_headers(self):
         """Validates request headers."""
-        # Verify json data type.
-        if 'Content-Type' not in self.request.headers:
-            raise ValueError("Content-Type is undefined")
-        if self.request.headers['Content-Type'] not in _CONTENT_TYPES:
-            raise ValueError("Unsupported content-type")
+        utils.validate_http_content_type(self, _CONTENT_TYPE_JSON)
 
 
-    def _decode_body_json(self):
-        """Decodes request body in json format."""
-        # Escape if metrics not psoted as json.
-        if self.request.headers['Content-Type'] != _CONTENT_TYPE_JSON:
-            return
+    def _validate_request_payload(self):
+        """Validates request payload."""
+        # Decode payload.
+        payload = utils.decode_json_payload(self)
 
-        # Load json.
-        data = json.loads(self.request.body)
-
-        # Set default group if necessary.
-        if 'group' not in data:
-            data['group'] = _DEFAULT_GROUP
-
-        # Convert to namedtuple.
-        self.data = convert.dict_to_namedtuple(data)
-
-
-    def _validate_body(self):
-        """Validates request body."""
-        # Validate fields.
-        for fname, ftype in [
-            ('group', unicode),
-            ('columns', list),
-            ('metrics', list),
-            ]:
-            if fname not in self.data._fields:
-                raise KeyError("Undefined field: {0}".format(fname))
-            if not isinstance(getattr(self.data, fname), ftype):
-                raise ValueError("Invalid field type: {0}".format(fname))
+        # Validate payload.
+        utils.validate_payload(payload, _PAYLOAD_FIELDS)
 
         # Validate group name.
-        utils.validate_group_name(self.data.group)
+        utils.validate_group_name(payload.group, False)
 
-        # Validate that metric_id is not a column.
-        if _COLUMN_METRIC_ID in self.data.columns:
-            raise KeyError("metric_id is a reserved column name")
+        # Validate reserved field names.
+        illegal = _RESERVED_FIELD_NAMES.intersection(set(payload.columns))
+        if illegal:
+            raise KeyError("Metrics contains illegal field names: {0}".format(illegal))
 
-        # Validate that length   of each metric is same as length of group columns.
-        for metric in self.data.metrics:
-            if len(metric) != len(self.data.columns):
+        # Validate metrics count > 0.
+        if len(payload.metrics) == 0:
+            raise ValueError("No metrics to add")
+
+        # Validate that length of each metric is same as length of group columns.
+        for metric in payload.metrics:
+            if len(metric) != len(payload.columns):
                 raise ValueError("Invalid metric: number of columns does not match group columns")
 
-
-    def _set_metrics_group(self):
-        """Persists metrics group to the db."""
-        # Retrieve group.
-        self.group = db.dao_metrics.get_group(self.data.group)
-
-        # Insert if not found.
-        if self.group is None:
-            smg = self.group = db.types.SimulationMetricGroup()
-            smg.name = self.data.group
-            smg.columns = json.dumps(self.data.columns)
-            db.session.add(smg)
+        # Validation passed therefore cache decoded payload.
+        self.payload = payload
 
 
-    def _set_metrics(self):
-        """Persists metrics to the db."""
-        # Iterate metrics & persist.
-        for metric in self.data.metrics:
-            sm = db.types.SimulationMetric()
-            sm.group_id = self.group.id
-            sm.metric = json.dumps(metric)
-            db.session.add(sm)
+    def _insert_metrics(self):
+        """Inserts metrics to the db."""
+        def _format(metric):
+            """Formats a metric for insertion into db."""
+            return [(c, metric[i]) for i, c in enumerate(self.payload.columns)]
+
+        def _format_metrics():
+            """Returns list of formatted metrics."""
+            return [OrderedDict(_format(m)) for m in self.payload.metrics]
+
+        dao.add(self.payload.group, _format_metrics())
 
 
-    def _write(self, error=None):
+    def _write_response(self, error=None):
         """Write response output."""
-        self.output['group'] = self.data.group
+        if not error:
+            self.output = {
+                'group': self.payload.group
+            }
         handler_utils.write(self, error)
 
 
     def _log(self, error=None):
-        """Log execution."""
+        """Logs request processing completion."""
         handler_utils.log("metric", self, error)
 
 
@@ -138,16 +106,14 @@ class AddRequestHandler(tornado.web.RequestHandler):
         # Define tasks.
         tasks = {
             "green": (
-                self._validate_headers,
-                self._decode_body_json,
-                self._validate_body,
-                self._set_metrics_group,
-                self._set_metrics,
-                self._write,
+                self._validate_request_headers,
+                self._validate_request_payload,
+                self._insert_metrics,
+                self._write_response,
                 self._log,
                 ),
             "red": (
-                self._write,
+                self._write_response,
                 self._log,
                 )
         }

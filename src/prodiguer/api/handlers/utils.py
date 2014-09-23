@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+import json
 
-# Module imports.
+from bson import json_util
+
 from ... utils import (
     config,
     runtime as rt
@@ -25,7 +27,7 @@ def get_endpoint(ep):
     return _BASE_ADDRESS.format(config.api.host, config.api.port) + ep
 
 
-def write(handler, error=None, format='json'):
+def write(handler, error=None):
     """Writes a response.
 
     :param tornado.web.RequestHandler handler: An api handler.
@@ -39,18 +41,14 @@ def write(handler, error=None, format='json'):
             'status': 1,
             'error': unicode(error)
             })
+        return
 
-    # Write json.
-    elif format == 'json':
-        output = handler.output if handler.output else {}
-        if 'status' not in output:
-            output['status'] = 0
-        handler.write(output)  # NOTE - tornado automatically sets content-type = json for dicts
-
-    # Write csv.
-    elif format == 'csv':
-        handler.set_header('Content-Type', 'application/csv; charset=utf-8')
-        handler.write(handler.output if handler.output else "")
+    # Write output as json.
+    output = handler.output if hasattr(handler, 'output') else  {}
+    if 'status' not in output:
+        output['status'] = 0
+    handler.set_header("Content-Type", "application/json; charset=utf-8")
+    handler.write(json.dumps(output, default=json_util.default))
 
 
 def log(api_type, handler, error=None):

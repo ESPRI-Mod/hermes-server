@@ -32,7 +32,6 @@ from .utils import config, convert, runtime, runtime as rt
 __all__ = [
 	'api',
 	'config',
-	'configure',
 	'convert',
 	'cv',
 	'db',
@@ -40,9 +39,3 @@ __all__ = [
 	'utils',
 ]
 
-
-# Library configuration assignment.
-configure = config.init
-
-# Auto-configure.
-config.init()

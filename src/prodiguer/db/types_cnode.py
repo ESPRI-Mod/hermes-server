@@ -12,7 +12,7 @@
 
 """
 # Module imports.
-import datetime
+import datetime, uuid
 
 from sqlalchemy import (
     Boolean,
@@ -278,6 +278,7 @@ class Simulation(Entity):
     output_start_date = Column(DateTime)
     output_end_date = Column(DateTime)
     parent_simulation_branch_date = Column(DateTime)
+    uid = Column(Unicode(63), nullable=False, unique=True, default=lambda: unicode(uuid.uuid4()))
 
 
     def get_inter_monitor_url(self, cache):
@@ -338,36 +339,6 @@ class SimulationMessage(Entity):
     # Foreign keys.
     simulation_id = create_fk('cnode.tbl_simulation.id')
     message_id = create_fk('mq.tbl_message.id')
-
-
-class SimulationMetric(Entity):
-    """A simulation metric.
-
-    """
-    # SQLAlchemy directives.
-    __tablename__ = 'tbl_simulation_metric'
-    __table_args__ = (
-        {'schema':_DB_SCHEMA}
-    )
-
-    # Foreign keys.
-    group_id = create_fk('cnode.tbl_simulation_metric_group.id')
-    metric = Column(Text, nullable=False)
-
-
-class SimulationMetricGroup(Entity):
-    """A simulation metric group.
-
-    """
-    # SQLAlchemy directives.
-    __tablename__ = 'tbl_simulation_metric_group'
-    __table_args__ = (
-        {'schema':_DB_SCHEMA}
-    )
-
-    # Attributes.
-    name = Column(Unicode(256), nullable=False, unique=True)
-    columns = Column(Text, nullable=False)
 
 
 class SimulationSpace(Entity):

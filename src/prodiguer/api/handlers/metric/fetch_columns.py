@@ -10,59 +10,58 @@
 
 
 """
-import json
+import tornado
 
 from . import utils
 from .. import utils as handler_utils
-from .... import db
+from .... db.mongo import dao_metrics as dao
 from .... utils import rt
 
 
 
-# Metric id column name.
-_COLUMN_METRIC_ID = "metric_id"
-
 # Query parameter names.
 _PARAM_GROUP = 'group'
+_PARAM_INCLUDE_DB_ID = 'include_db_id'
 
 
-class FetchColumnsRequestHandler(utils.MetricWebRequestHandler):
+class FetchColumnsRequestHandler(tornado.web.RequestHandler):
     """Simulation metric group fetch columns method request handler.
 
     """
-    def prepare(self):
-        """Called at the beginning of request handling."""
-        super(FetchColumnsRequestHandler, self).prepare()
-
-        self.group = None
+    def set_default_headers(self):
+        """Set default HTTP response headers."""
+        utils.set_cors_white_list(self)
 
 
-    def _validate_params(self):
+    def _validate_request_params(self):
         """Validates query params."""
         utils.validate_group_name(self.get_argument(_PARAM_GROUP))
+        utils.validate_include_db_id(self)
 
 
-    def _parse_params(self):
-        """Parses query params."""
-        group_name = self.get_argument(_PARAM_GROUP)
-        self.group = db.dao_metrics.get_group(group_name)
-        if not self.group:
-            raise ValueError("Group ({0}) unknown".format(group_name))
+    def _decode_request_params(self):
+        """Decodes request query parameters."""
+        self.group = self.get_argument(_PARAM_GROUP)
+        self.include_db_id = utils.decode_include_db_id(self)
 
 
-    def _set_output(self):
-        """Sets response output."""
-        self.output['group'] = self.group.name
-        self.output['columns'] = json.loads(self.group.columns) + [_COLUMN_METRIC_ID]
+    def _fetch_data(self):
+        """Fetches data from db."""
+        self.columns = dao.fetch_columns(self.group, self.include_db_id)
 
 
-    def _write(self, error=None):
+    def _write_response(self, error=None):
         """Write response output."""
+        if not error:
+            self.output = {
+                'group': self.group,
+                'columns': self.columns
+            }
         handler_utils.write(self, error)
 
 
     def _log(self, error=None):
-        """Log execution."""
+        """Logs request processing completion."""
         handler_utils.log("metric", self, error)
 
 
@@ -70,14 +69,14 @@ class FetchColumnsRequestHandler(utils.MetricWebRequestHandler):
         # Define tasks.
         tasks = {
             "green": (
-                self._validate_params,
-                self._parse_params,
-                self._set_output,
-                self._write,
+                self._validate_request_params,
+                self._decode_request_params,
+                self._fetch_data,
+                self._write_response,
                 self._log,
                 ),
             "red": (
-                self._write,
+                self._write_response,
                 self._log,
                 )
         }

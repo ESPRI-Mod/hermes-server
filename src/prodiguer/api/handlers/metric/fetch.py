@@ -10,100 +10,60 @@
 
 
 """
-import json
+import tornado
 
 from . import utils
 from .. import utils as handler_utils
-from .... import db
 from .... utils import rt
+from .... db.mongo import dao_metrics as dao
 
 
-# Default format query param value.
-_DEFAULT_FORMAT = 'json'
-
-# Default group.
-_DEFAULT_GROUP = 'default'
-
-# Metric id column name.
-_COLUMN_METRIC_ID = "metric_id"
 
 # Query parameter names.
 _PARAM_GROUP = 'group'
-_PARAM_FORMAT = 'format'
+_PARAM_INCLUDE_DB_ID = 'include_db_id'
 
 
-class FetchRequestHandler(utils.MetricWebRequestHandler):
+class FetchRequestHandler(tornado.web.RequestHandler):
     """Simulation metric group fetch method request handler.
 
     """
-    def prepare(self):
-        """Called at the beginning of request handling."""
-        super(FetchRequestHandler, self).prepare()
-
-        self.format = _DEFAULT_FORMAT
-        self.group = None
-        self.metrics = None
+    def set_default_headers(self):
+        """Set default HTTP response headers."""
+        utils.set_cors_white_list(self)
 
 
-    def _validate_params(self):
-        """Validates query params."""
-        # ... group name
+    def _validate_request_params(self):
+        """Validates request params."""
         utils.validate_group_name(self.get_argument(_PARAM_GROUP))
-
-        # ... format
-        if _PARAM_FORMAT in self.request.arguments:
-            utils.validate_format(self.get_argument(_PARAM_FORMAT))
+        utils.validate_include_db_id(self)
 
 
-    def _parse_params(self):
-        """Parses query params."""
-        # ... group name
-        group_name = self.get_argument(_PARAM_GROUP)
-        self.group = db.dao_metrics.get_group(group_name)
-        if not self.group:
-            raise ValueError("Group ({0}) unknown".format(group_name))
-
-        # ... format
-        if _PARAM_FORMAT in self.request.arguments:
-            self.format = self.get_argument(_PARAM_FORMAT)
+    def _decode_request_params(self):
+        """Decodes request query parameters."""
+        self.group = self.get_argument(_PARAM_GROUP)
+        self.include_db_id = utils.decode_include_db_id(self)
 
 
-    def _set_metrics(self):
-        """Loads metrics from db."""
-        self.metrics = db.dao_metrics.get_group_metrics(self.group.id)
+    def _fetch_data(self):
+        """Fetches data from db."""
+        self.columns = dao.fetch_columns(self.group, self.include_db_id)
+        self.metrics = [m.values() for m in dao.fetch(self.group, self.include_db_id)]
 
 
-    def _set_output(self):
-        """Sets response output."""
-        def _get_metric(m):
-            return json.loads(m.metric) + [m.id]
-
-        self.output['group'] = self.group.name
-        self.output['columns'] = json.loads(self.group.columns) + [_COLUMN_METRIC_ID]
-        if self.metrics:
-            self.output['metrics'] = [_get_metric(m) for m in self.metrics]
-
-
-    def _set_output_csv(self):
-        """Sets response csv output."""
-        def get_value(value):
-            return str(value)
-
-        if self.format == 'csv':
-            csv = ",".join(get_value(i) for i in self.output['columns'])
-            for metric in self.output['metrics']:
-                csv += '\n'
-                csv += ",".join(get_value(i) for i in metric)
-            self.output = csv
-
-
-    def _write(self, error=None):
+    def _write_response(self, error=None):
         """Write response output."""
-        handler_utils.write(self, error, self.format)
+        if not error:
+            self.output = {
+                'group': self.group,
+                'columns': self.columns,
+                'metrics': self.metrics
+            }
+        handler_utils.write(self, error)
 
 
     def _log(self, error=None):
-        """Log execution."""
+        """Logs request processing completion."""
         handler_utils.log("metric", self, error)
 
 
@@ -111,16 +71,14 @@ class FetchRequestHandler(utils.MetricWebRequestHandler):
         # Define tasks.
         tasks = {
             "green": (
-                self._validate_params,
-                self._parse_params,
-                self._set_metrics,
-                self._set_output,
-                self._set_output_csv,
-                self._write,
+                self._validate_request_params,
+                self._decode_request_params,
+                self._fetch_data,
+                self._write_response,
                 self._log,
                 ),
             "red": (
-                self._write,
+                self._write_response,
                 self._log,
                 )
         }
