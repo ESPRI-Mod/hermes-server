@@ -11,7 +11,7 @@ from ... utils import (
 
 
 # Base address to API endpoints.
-_BASE_ADDRESS = 'http://{0}:{1}/api/1'
+_BASE_ADDRESS = 'http://{0}{1}/api/1'
 
 
 def get_endpoint(ep):
@@ -24,7 +24,15 @@ def get_endpoint(ep):
     :rtype: str
 
     """
-    return _BASE_ADDRESS.format(config.api.host, config.api.port) + ep
+    host = config.api.host.strip()
+    try:
+        port = config.api.port.strip()
+    except AttributeError:
+        port = config.api.port
+    if port:
+        port = ":{0}".format(port)
+
+    return _BASE_ADDRESS.format(host, port) + ep
 
 
 def write(handler, error=None):
