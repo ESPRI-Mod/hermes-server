@@ -12,6 +12,18 @@
 import pymongo
 
 
+from ...utils import config
+
+
+def get_client():
+    """Returns a mongo db server connection.
+
+    :returns: Pymongo connection to MongoDB server.
+    :rtype: pymongo.MongoClient
+
+    """
+    return pymongo.MongoClient(config.db.mongodb.main)
+
 
 def get_db(db_name):
     """Returns a pointer to a db.
@@ -22,9 +34,9 @@ def get_db(db_name):
     :rtype: pymongo.database.Database
 
     """
-    # TODO get client connection string from config
-    mg_client = pymongo.MongoClient()
-    return mg_client[db_name]
+    client = get_client()
+
+    return client[db_name]
 
 
 def get_db_collection(db_name, collection_name):
