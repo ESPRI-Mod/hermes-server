@@ -64,7 +64,7 @@ def validate_group_name(group, validate_db_collection=True):
         raise ValueError("{0} db collection not found".format(group))
 
 
-def decode_json_payload(handler):
+def decode_json_payload(handler, as_namedtuple=True):
     """Decode request body.
 
     :param tornado.web.RequestHandler handler: A web request handler.
@@ -74,8 +74,10 @@ def decode_json_payload(handler):
 
     """
     payload = json.loads(handler.request.body)
+    if as_namedtuple:
+        payload = convert.dict_to_namedtuple(payload)
 
-    return convert.dict_to_namedtuple(payload)
+    return payload
 
 
 def validate_payload(payload, config):

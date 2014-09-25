@@ -32,7 +32,7 @@ def _format_group_id(group_id):
     return None if not group_id else group_id.strip().lower()
 
 
-def _fetch(action, include_db_id):
+def _fetch(action, include_db_id=True):
     """Fetches data form db."""
     if include_db_id:
         return action(as_class=OrderedDict)
@@ -173,6 +173,23 @@ def fetch_count(group_id):
     collection = utils.get_db_collection(_DB_NAME, group_id)
 
     return collection.count()
+
+
+def fetch_filtered(group_id, include_db_id, filter):
+    """Returns a filtered group of metrics.
+
+    :param str group_id: ID of the metric group being returned.
+    :param bool include_db_id: Flag indicating whether to include db id.
+    :param dict filter: Flag indicating whether to include db id.
+
+    :returns: A group of metrics.
+    :rtype: dict
+
+    """
+    group_id = _format_group_id(group_id)
+    collection = utils.get_db_collection(_DB_NAME, group_id)
+
+    return list(_fetch(collection.find, include_db_id))
 
 
 def fetch_list():
