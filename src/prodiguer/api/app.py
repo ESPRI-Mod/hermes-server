@@ -47,7 +47,6 @@ def _get_app_routes():
         # Metric routes.
         (r'/api/1/metric/add', metric.AddRequestHandler),
         (r'/api/1/metric/delete', metric.DeleteRequestHandler),
-        (r'/api/1/metric/delete_lines', metric.DeleteLinesRequestHandler),
         (r'/api/1/metric/fetch', metric.FetchRequestHandler),
         (r'/api/1/metric/fetch_count', metric.FetchCountRequestHandler),
         (r'/api/1/metric/fetch_columns', metric.FetchColumnsRequestHandler),

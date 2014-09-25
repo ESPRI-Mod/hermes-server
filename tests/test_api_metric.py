@@ -86,14 +86,6 @@ def _test_positive():
 	r = tu.invoke_api(requests.get, tu_api.EP_LIST_GROUP)
 	tu_api.assert_response_list(r, old_list=m_list)
 
-	# Test metric API delete lines method.
-	r = tu.invoke_api(requests.post, tu_api.EP_DELETE_LINES, tu_api.get_metric_lines_for_deletion(m_fetched))
-	tu_api.assert_response_delete_lines(r)
-
-	# Confirm line deletion.
-	r = tu.invoke_api(requests.get, tu_api.EP_FETCH.format(m['group']))
-	tu_api.assert_lines_deleted(r, m)
-
 	# Test metric API delete group method.
 	r = tu.invoke_api(requests.post, tu_api.EP_DELETE_GROUP.format(m['group']))
 	tu_api.assert_response_delete_group(r)

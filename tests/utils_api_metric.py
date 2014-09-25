@@ -161,15 +161,6 @@ def assert_response_fetch_headers(r, m, expected_status=0):
 	tu.assert_api_response(r, expected_status, expected_data=metric)
 
 
-def assert_response_delete_lines(r, expected_status=0):
-	tu.assert_api_response(r, expected_status)
-
-
-def assert_lines_deleted(r, m, expected_status=0):
-	tu.assert_api_response(r, expected_status)
-	tu.assert_integer(len(m['metrics']) - len(r.json()['metrics']), 3)
-
-
 def assert_response_delete_group(r, expected_status=0):
 	tu.assert_api_response(r, expected_status)
 

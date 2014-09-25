@@ -14,7 +14,6 @@
 # Module imports.
 from .add import AddRequestHandler
 from .delete import DeleteRequestHandler
-from .delete_lines import DeleteLinesRequestHandler
 from .fetch import FetchRequestHandler
 from .fetch_columns import FetchColumnsRequestHandler
 from .fetch_count import FetchCountRequestHandler

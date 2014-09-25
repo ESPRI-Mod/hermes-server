@@ -33,11 +33,10 @@ class ListEndpointsRequestHandler(tornado.web.RequestHandler):
             "metric": [
                 r'/api/1/metric/add',
                 r'/api/1/metric/delete',
-                r'/api/1/metric/delete_lines',
                 r'/api/1/metric/fetch',
                 r'/api/1/metric/fetch_headers',
                 r'/api/1/metric/fetch_setup',
-                r'/api/1/metric/fetch_line_count',
+                r'/api/1/metric/fetch_count',
                 r'/api/1/metric/list'
             ],
             "ops": [
