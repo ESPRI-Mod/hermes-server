@@ -20,6 +20,9 @@ from ....utils import runtime as rt
 
 
 
+# Supported content types.
+_CONTENT_TYPE_JSON = "application/json"
+
 # Query parameter names.
 _PARAM_GROUP = 'group'
 
@@ -28,19 +31,25 @@ class DeleteRequestHandler(tornado.web.RequestHandler):
     """Simulation metric group delete method request handler.
 
     """
-    def _validate_request_params(self):
-        """Validates request params."""
+    def _validate_request(self):
+        """Validates request."""
+        if self.request.body:
+            utils.validate_http_content_type(self, _CONTENT_TYPE_JSON)
         utils.validate_group_name(self.get_argument(_PARAM_GROUP))
 
 
-    def _decode_request_params(self):
-        """Decodes request params."""
+    def _decode_request(self):
+        """Decodes request."""
         self.group = self.get_argument(_PARAM_GROUP)
+        if self.request.body:
+            self.query = utils.decode_json_payload(self, False)
+        else:
+            self.query = None
 
 
     def _delete_metrics(self):
         """Deletes metrics from db."""
-        dao.delete(self.group)
+        dao.delete(self.group, self.query)
 
 
     def _write_response(self, error=None):
@@ -57,8 +66,8 @@ class DeleteRequestHandler(tornado.web.RequestHandler):
         # Define tasks.
         tasks = {
             "green": (
-                self._validate_request_params,
-                self._decode_request_params,
+                self._validate_request,
+                self._decode_request,
                 self._delete_metrics,
                 self._write_response,
                 self._log,

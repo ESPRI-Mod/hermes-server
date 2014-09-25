@@ -18,6 +18,5 @@ from .delete_lines import DeleteLinesRequestHandler
 from .fetch import FetchRequestHandler
 from .fetch_columns import FetchColumnsRequestHandler
 from .fetch_count import FetchCountRequestHandler
-from .fetch_filtered import FetchFilteredRequestHandler
 from .fetch_list import FetchListRequestHandler
 from .fetch_setup import FetchSetupRequestHandler

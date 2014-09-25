@@ -51,7 +51,6 @@ def _get_app_routes():
         (r'/api/1/metric/fetch', metric.FetchRequestHandler),
         (r'/api/1/metric/fetch_count', metric.FetchCountRequestHandler),
         (r'/api/1/metric/fetch_columns', metric.FetchColumnsRequestHandler),
-        (r'/api/1/metric/fetch_filtered', metric.FetchFilteredRequestHandler),
         (r'/api/1/metric/fetch_list', metric.FetchListRequestHandler),
         (r'/api/1/metric/fetch_setup', metric.FetchSetupRequestHandler),
         # Operational routes.

@@ -19,6 +19,9 @@ from .... db.mongo import dao_metrics as dao
 
 
 
+# Supported content types.
+_CONTENT_TYPE_JSON = "application/json"
+
 # Query parameter names.
 _PARAM_GROUP = 'group'
 _PARAM_INCLUDE_DB_ID = 'include_db_id'
@@ -33,22 +36,28 @@ class FetchRequestHandler(tornado.web.RequestHandler):
         utils.set_cors_white_list(self)
 
 
-    def _validate_request_params(self):
-        """Validates request params."""
+    def _validate_request(self):
+        """Validates request."""
+        if self.request.body:
+            utils.validate_http_content_type(self, _CONTENT_TYPE_JSON)
         utils.validate_group_name(self.get_argument(_PARAM_GROUP))
         utils.validate_include_db_id(self)
 
 
-    def _decode_request_params(self):
-        """Decodes request query parameters."""
+    def _decode_request(self):
+        """Decodes request."""
         self.group = self.get_argument(_PARAM_GROUP)
         self.include_db_id = utils.decode_include_db_id(self)
+        if self.request.body:
+            self.query = utils.decode_json_payload(self, False)
+        else:
+            self.query = None
 
 
     def _fetch_data(self):
         """Fetches data from db."""
         self.columns = dao.fetch_columns(self.group, self.include_db_id)
-        self.metrics = [m.values() for m in dao.fetch(self.group, self.include_db_id)]
+        self.metrics = dao.fetch(self.group, self.include_db_id, self.query)
 
 
     def _write_response(self, error=None):
@@ -57,7 +66,7 @@ class FetchRequestHandler(tornado.web.RequestHandler):
             self.output = {
                 'group': self.group,
                 'columns': self.columns,
-                'metrics': self.metrics
+                'metrics': [m.values() for m in self.metrics]
             }
         handler_utils.write(self, error)
 
@@ -71,8 +80,8 @@ class FetchRequestHandler(tornado.web.RequestHandler):
         # Define tasks.
         tasks = {
             "green": (
-                self._validate_request_params,
-                self._decode_request_params,
+                self._validate_request,
+                self._decode_request,
                 self._fetch_data,
                 self._write_response,
                 self._log,

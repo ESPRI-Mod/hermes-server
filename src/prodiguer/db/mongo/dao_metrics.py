@@ -26,17 +26,28 @@ _MONGO_FIELD_PREFIX = "_"
 # Token of object identifier that each inserted record is associated with.
 _MONGO_OBJECT_ID = "_id"
 
+# Default field limiter to use when querying a collection.
+_DEFAULT_FIELD_LIMITER = {
+    _MONGO_OBJECT_ID: 0
+}
+
 
 def _format_group_id(group_id):
     """Returns a formatted group id."""
     return None if not group_id else group_id.strip().lower()
 
 
-def _fetch(action, include_db_id=True):
+def _fetch(action, include_db_id=True, query=None):
     """Fetches data form db."""
-    if include_db_id:
-        return action(as_class=OrderedDict)
-    return action({}, {'_id': 0}, as_class=OrderedDict)
+    # Parse params.
+    query = query or {}
+    field_limiter = _DEFAULT_FIELD_LIMITER if not include_db_id else None
+
+    # Return data.
+    if field_limiter:
+        return action(query, field_limiter, as_class=OrderedDict)
+    else:
+        return action(query, as_class=OrderedDict)
 
 
 def build_indexes(group_id):
@@ -75,21 +86,22 @@ def add(group_id, metrics):
     return collection.insert(metrics)
 
 
-def delete(group_id):
+def delete(group_id, query=None):
     """Deletes a group of metrics.
 
     :param str group_id: ID of a metric group to be deleted.
+    :param dict query: Query filter to be applied.
 
     :returns: Names of remaining metric groups.
     :rtype: list
 
     """
     group_id = _format_group_id(group_id)
-    mg_db = utils.get_db(_DB_NAME)
-
-    mg_db.drop_collection(group_id)
-
-    return mg_db.collection_names()[1:]
+    collection = utils.get_db_collection(_DB_NAME, group_id)
+    if query:
+        collection.remove(query)
+    else:
+        collection.drop()
 
 
 def delete_lines(group_id, line_ids):
@@ -109,7 +121,6 @@ def delete_lines(group_id, line_ids):
     for line_id in line_ids:
         collection.remove({_MONGO_OBJECT_ID: ObjectId(line_id)})
 
-    print count, collection.count()
     return count, collection.count()
 
 
@@ -127,11 +138,12 @@ def exists(group_id):
     return group_id in fetch_list()
 
 
-def fetch(group_id, include_db_id):
+def fetch(group_id, include_db_id, query=None):
     """Returns a group of metrics.
 
     :param str group_id: ID of the metric group being returned.
     :param bool include_db_id: Flag indicating whether to include db id.
+    :param dict query: Query filter to be applied.
 
     :returns: A group of metrics.
     :rtype: dict
@@ -139,8 +151,9 @@ def fetch(group_id, include_db_id):
     """
     group_id = _format_group_id(group_id)
     collection = utils.get_db_collection(_DB_NAME, group_id)
+    cursor = _fetch(collection.find, include_db_id=include_db_id, query=query)
 
-    return list(_fetch(collection.find, include_db_id))
+    return list(cursor)
 
 
 def fetch_columns(group_id, include_db_id):
@@ -155,15 +168,16 @@ def fetch_columns(group_id, include_db_id):
     """
     group_id = _format_group_id(group_id)
     collection = utils.get_db_collection(_DB_NAME, group_id)
-    row = _fetch(collection.find_one, include_db_id)
+    cursor = _fetch(collection.find_one, include_db_id)
 
-    return row.keys() if row else []
+    return cursor.keys() if cursor else []
 
 
-def fetch_count(group_id):
+def fetch_count(group_id, query=None):
     """Returns count of number of metrics within a group.
 
     :param str group_id: ID of a metric group.
+    :param dict query: Query filter to be applied.
 
     :returns: Count of number of metrics within a group.
     :rtype: int
@@ -171,25 +185,9 @@ def fetch_count(group_id):
     """
     group_id = _format_group_id(group_id)
     collection = utils.get_db_collection(_DB_NAME, group_id)
+    cursor = _fetch(collection.find, query=query)
 
-    return collection.count()
-
-
-def fetch_filtered(group_id, include_db_id, filter):
-    """Returns a filtered group of metrics.
-
-    :param str group_id: ID of the metric group being returned.
-    :param bool include_db_id: Flag indicating whether to include db id.
-    :param dict filter: Flag indicating whether to include db id.
-
-    :returns: A group of metrics.
-    :rtype: dict
-
-    """
-    group_id = _format_group_id(group_id)
-    collection = utils.get_db_collection(_DB_NAME, group_id)
-
-    return list(_fetch(collection.find, include_db_id))
+    return cursor.count()
 
 
 def fetch_list():
@@ -201,21 +199,25 @@ def fetch_list():
     """
     mg_db = utils.get_db(_DB_NAME)
 
-    return mg_db.collection_names()[1:]
+    return sorted(mg_db.collection_names()[1:])
 
 
-def fetch_setup(group_id):
+def fetch_setup(group_id, query=None):
     """Returns setup data associated with a group of metrics.
 
     The setup data is the set of unique values for each field within the metric group.
 
     :param str group_id: ID of a metric group.
+    :param dict query: Query filter to be applied.
 
     :returns: Setup data associated with a group of metrics.
     :rtype: dict
 
     """
     group_id = _format_group_id(group_id)
+    query = query or {}
     collection = utils.get_db_collection(_DB_NAME, group_id)
+    cursor = _fetch(collection.find, query=query)
+    fields = fetch_columns(group_id, False)
 
-    return [sorted(collection.distinct(c)) for c in fetch_columns(group_id, False)]
+    return [sorted(cursor.distinct(f)) for f in fields]

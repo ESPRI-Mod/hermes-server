@@ -19,6 +19,9 @@ from .... utils import rt
 
 
 
+# Supported content types.
+_CONTENT_TYPE_JSON = "application/json"
+
 # Query parameter names.
 _PARAM_GROUP = 'group'
 
@@ -32,20 +35,26 @@ class FetchSetupRequestHandler(tornado.web.RequestHandler):
         utils.set_cors_white_list(self)
 
 
-    def _validate_request_params(self):
-        """Validates query params."""
+    def _validate_request(self):
+        """Validates request."""
+        if self.request.body:
+            utils.validate_http_content_type(self, _CONTENT_TYPE_JSON)
         utils.validate_group_name(self.get_argument(_PARAM_GROUP))
 
 
-    def _decode_request_params(self):
-        """Parses query params."""
+    def _decode_request(self):
+        """Decodes request."""
         self.group = self.get_argument(_PARAM_GROUP)
+        if self.request.body:
+            self.query = utils.decode_json_payload(self, False)
+        else:
+            self.query = None
 
 
     def _fetch_data(self):
         """Fetches data from db."""
         self.columns = dao.fetch_columns(self.group, False)
-        self.data = dao.fetch_setup(self.group)
+        self.data = dao.fetch_setup(self.group, self.query)
 
 
     def _write_response(self, error=None):
@@ -71,8 +80,8 @@ class FetchSetupRequestHandler(tornado.web.RequestHandler):
         # Define tasks.
         tasks = {
             "green": (
-                self._validate_request_params,
-                self._decode_request_params,
+                self._validate_request,
+                self._decode_request,
                 self._fetch_data,
                 self._write_response,
                 self._log,
