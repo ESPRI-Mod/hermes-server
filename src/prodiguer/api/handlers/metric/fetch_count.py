@@ -20,7 +20,7 @@ from .... utils import rt
 
 
 # Supported content types.
-_CONTENT_TYPE_JSON = "application/json"
+_CONTENT_TYPE_JSON = ["application/json", "application/json; charset=UTF-8"]
 
 # Query parameter names.
 _PARAM_GROUP = 'group'
@@ -71,10 +71,8 @@ class FetchCountRequestHandler(tornado.web.RequestHandler):
         handler_utils.log("metric", self, error)
 
 
-    def get(self):
-        """HTTP GET request handler.
-
-        """
+    def _process(self):
+        """Process one of the support HTTP actions."""
         # Define tasks.
         tasks = {
             "green": (
@@ -92,3 +90,12 @@ class FetchCountRequestHandler(tornado.web.RequestHandler):
 
         # Invoke tasks.
         rt.invoke(tasks)
+
+
+    def get(self):
+        self._process()
+
+
+    def post(self):
+        self._process()
+

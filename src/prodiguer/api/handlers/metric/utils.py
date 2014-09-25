@@ -94,11 +94,18 @@ def validate_payload(payload, config):
             raise ValueError("Invalid field type: {0}".format(fname))
 
 
-def validate_http_content_type(handler, expected_type):
+def validate_http_content_type(handler, expected_types):
     """Validates HTTP Content-Type request header."""
     if _HTTP_HEADER_CONTENT_TYPE not in handler.request.headers:
         raise ValueError("Content-Type is undefined")
-    if handler.request.headers[_HTTP_HEADER_CONTENT_TYPE] != expected_type:
+    header = handler.request.headers[_HTTP_HEADER_CONTENT_TYPE]
+
+    try:
+        iter(expected_types)
+    except ValueError:
+        expected_types = [expected_types]
+    found = True in set([t == header for t in expected_types])
+    if not found:
         raise ValueError("Unsupported content-type")
 
 
