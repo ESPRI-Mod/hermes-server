@@ -21,7 +21,7 @@ from ....utils import runtime as rt
 
 
 # Supported content types.
-_CONTENT_TYPE_JSON = "application/json"
+_CONTENT_TYPE_JSON = ["application/json", "application/json; charset=UTF-8"]
 
 # Query parameter names.
 _PARAM_GROUP = 'group'

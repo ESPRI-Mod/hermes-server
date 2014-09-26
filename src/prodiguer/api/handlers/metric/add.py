@@ -27,7 +27,7 @@ from .... utils import rt
 _RESERVED_FIELD_NAMES = set(["_id"])
 
 # Supported content types.
-_CONTENT_TYPE_JSON = "application/json"
+_CONTENT_TYPE_JSON = ["application/json", "application/json; charset=UTF-8"]
 
 # Set of expected payload fields and their type.
 _PAYLOAD_FIELDS = set([

@@ -99,13 +99,7 @@ def validate_http_content_type(handler, expected_types):
     if _HTTP_HEADER_CONTENT_TYPE not in handler.request.headers:
         raise ValueError("Content-Type is undefined")
     header = handler.request.headers[_HTTP_HEADER_CONTENT_TYPE]
-
-    try:
-        iter(expected_types)
-    except ValueError:
-        expected_types = [expected_types]
-    found = True in set([t == header for t in expected_types])
-    if not found:
+    if not header in expected_types:
         raise ValueError("Unsupported content-type")
 
 
