@@ -86,6 +86,7 @@ class ComputeNodeLogin(Entity):
     first_name = Column(Unicode(127), nullable=False)
     family_name = Column(Unicode(127), nullable=False)
     email = Column(Unicode(255), nullable=False)
+    mobile = Column(Unicode(255), nullable=True)
     is_active = Column(Boolean, nullable=False, default=True)
 
 

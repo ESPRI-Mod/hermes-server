@@ -11,7 +11,6 @@
 
 
 """
-# Module imports.
 import datetime
 import inspect
 
@@ -416,6 +415,55 @@ def invoke(tasks, ctx=None, module=_DEFAULT_MODULE):
                 log_error(err, module)
                 for error_task in tasks["red"]:
                     _invoke(error_task, err)
+            except:
+                pass
+            # N.B. break out of green line.
+            break
+
+
+def invoke1(tasks, error_tasks=None, ctx=None, module=_DEFAULT_MODULE):
+    """Invokes a set of tasks and handles errors.
+
+    :param dict tasks: A set of tasks divided into green/red.
+    :param object ctx: Task processing context object.
+
+    """
+    def  _get(taskset):
+        """Gets formatted tasks in readiness for execution."""
+        if taskset is None:
+            return []
+        else:
+            try:
+                iter(taskset)
+            except ValueError:
+                return [taskset]
+            else:
+                return taskset
+
+    def _invoke(task, err=None):
+        """Invokes an individual task."""
+        if ctx:
+            if err:
+                task(ctx, err)
+            else:
+                task(ctx)
+        else:
+            if err:
+                task(err)
+            else:
+                task()
+
+    # Execute tasks.
+    for task in _get(tasks):
+        try:
+            _invoke(task)
+        except Exception as err:
+            # Execute error tasks.
+            try:
+                log_error(err, module)
+                for error_task in _get(error_tasks):
+                    _invoke(error_task, err)
+            # N.B. ensure error tasks execute.
             except:
                 pass
             # N.B. break out of green line.

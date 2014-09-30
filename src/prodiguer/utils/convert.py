@@ -11,7 +11,6 @@
 
 
 """
-# Module imports.
 import collections
 import csv
 import datetime

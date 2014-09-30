@@ -11,7 +11,6 @@
 
 
 """
-# Module imports.
 import os
 
 from .convert import json_file_to_namedtuple
