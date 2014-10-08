@@ -57,9 +57,8 @@ EXCHANGES = set([
 	])
 
 # Message queues.
-QUEUE_EXT_LOG = "q-ext-log"
 QUEUE_EXT_SMTP = "q-ext-smtp"
-QUEUE_IN_LOG = "q-in-log"
+QUEUE_IN_MONITORING = "q-in-monitoring"
 QUEUE_IN_MONITORING_0000 = "q-in-monitoring-0000"
 QUEUE_IN_MONITORING_0100 = "q-in-monitoring-0100"
 QUEUE_IN_MONITORING_1000 = "q-in-monitoring-1000"
@@ -76,9 +75,8 @@ QUEUE_INTERNAL_SMS = "q-internal-sms"
 
 # All queues.
 QUEUES = set([
-	QUEUE_EXT_LOG,
 	QUEUE_EXT_SMTP,
-	QUEUE_IN_LOG,
+	QUEUE_IN_MONITORING,
 	QUEUE_IN_MONITORING_0000,
 	QUEUE_IN_MONITORING_0100,
 	QUEUE_IN_MONITORING_1000,

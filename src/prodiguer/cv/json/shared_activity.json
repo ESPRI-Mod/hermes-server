@@ -5,7 +5,7 @@
 		"home_page_url": "http://www.wcrp-climate.org/index.php/wgcm-cmip/wgcm-cmip5",
 		"id": 1,
 		"is_active": true,
-		"is_default": true,
+		"is_default": false,
 		"name": "CMIP5"
 	},
 	{
@@ -23,7 +23,7 @@
 		"home_page_url": "http://www.ipsl.fr/",
 		"id": 2,
 		"is_active": true,
-		"is_default": false,
+		"is_default": true,
 		"name": "IPSL"
 	},
 	{

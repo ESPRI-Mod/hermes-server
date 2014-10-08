@@ -435,7 +435,7 @@ def invoke1(tasks, error_tasks=None, ctx=None, module=_DEFAULT_MODULE):
         else:
             try:
                 iter(taskset)
-            except ValueError:
+            except TypeError:
                 return [taskset]
             else:
                 return taskset

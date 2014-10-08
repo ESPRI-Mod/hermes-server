@@ -19,7 +19,7 @@ from . import constants, message
 from .consumer import Consumer
 from .producer import Producer
 from .. import db
-from ..utils import convert
+from ..utils import convert, rt
 
 
 
@@ -175,11 +175,15 @@ def consume(exchange,
     def msg_handler(ctx):
         """Handles message being consumed."""
         if auto_persist:
+            # Abort processing of duplicate messages.
             try:
                 ctx.msg = persist(ctx.properties, ctx.content_raw)
-            except IntegrityError:
-                pass
-        callback(ctx)
+            except IntegrityError as err:
+                rt.log_mq("Duplicate message :: {}".format(ctx.properties.message_id))
+            else:
+                callback(ctx)
+        else:
+            callback(ctx)
 
     # Instantiate producer.
     consumer = Consumer(exchange,
