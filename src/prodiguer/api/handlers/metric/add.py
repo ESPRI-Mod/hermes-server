@@ -11,7 +11,6 @@
 
 
 """
-# Module imports.
 import tornado
 
 from collections import OrderedDict

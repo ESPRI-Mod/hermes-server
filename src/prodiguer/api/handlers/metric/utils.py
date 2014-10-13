@@ -28,7 +28,7 @@ _GROUP_NAME_MAX_LENGTH = 256
 # HTTP header - Content-Type.
 _HTTP_HEADER_CONTENT_TYPE = "Content-Type"
 
-# HTTP header names.
+# HTTP CORS header.
 _HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin"
 
 # Inclide db id query parameter name.
