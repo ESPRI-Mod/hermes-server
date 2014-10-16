@@ -12,12 +12,13 @@
 """
 import uuid
 
-import pika
+import arrow, pika
 from sqlalchemy.exc import IntegrityError
 
 from . import constants, message
 from .consumer import Consumer
 from .producer import Producer
+from .timestamp import Timestamp
 from .. import db
 from ..utils import convert, rt
 
@@ -29,7 +30,7 @@ def create_ampq_message_properties(
     app_id,
     message_type,
     message_id=None,
-    headers={},
+    headers=None,
     cluster_id=None,
     content_encoding=constants.DEFAULT_CONTENT_ENCODING,
     content_type=constants.DEFAULT_CONTENT_TYPE,
@@ -89,17 +90,28 @@ def create_ampq_message_properties(
         msg = "Unsupported priority: {0}."
         raise ValueError(msg.format(priority))
 
-    # Format inputs.
+    # Override null inputs.
+    if headers is None:
+        headers = {}
     if message_id is None:
         message_id = unicode(uuid.uuid4())
+
+    # Set timestamps.
     if timestamp is None:
-        timestamp = convert.now_to_timestamp()
+        timestamp = arrow.now('Europe/Paris')
+        headers['timestamp'] = unicode(timestamp)
+        headers['timestamp_precision'] = 'ms'
+        timestamp = int(repr(timestamp.float_timestamp).replace(".", ""))
+    if 'timestamp' not in headers:
+        headers['timestamp'] = unicode(arrow.now('Europe/Paris'))
+        headers['timestamp_precision'] = 'ms'
+    if 'timestamp_precision' not in headers:
+        headers['timestamp_precision'] = 'ms'
 
     # Default headers attached with each property.
     default_headers = {
         "mode": mode,
-        "producer_id": producer_id,
-        "timestamp": unicode(timestamp)
+        "producer_id": producer_id
     }
 
     # Return a pika BasicProperties instance (follows AMPQ protocol).
@@ -179,7 +191,9 @@ def consume(exchange,
             try:
                 ctx.msg = persist(ctx.properties, ctx.content_raw)
             except IntegrityError as err:
-                rt.log_mq("Duplicate message :: {}".format(ctx.properties.message_id))
+                rt.log_mq("WARNING :: duplicate message :: {}".format(ctx.properties.message_id))
+            except Exception as err:
+                print err
             else:
                 callback(ctx)
         else:
@@ -201,6 +215,28 @@ def consume(exchange,
         consumer.stop()
 
 
+def _get_timestamps(properties):
+    """Returns timestamps used during persistence.
+
+    """
+    # Set precision.
+    if 'timestamp_precision' in properties.headers:
+        precision = properties.headers["timestamp_precision"]
+    else:
+        precision = 'ms'
+
+    # Set raw.
+    raw = properties.headers["timestamp"]
+
+    # Set parsed.
+    if precision == 'ns':
+        parsed = Timestamp.from_ns(raw).as_ms.datetime
+    else:
+        parsed = Timestamp.from_ms(raw).as_ms.datetime
+
+    return precision, raw, parsed
+
+
 def persist(properties, payload):
     """Persists message to backend db.
 
@@ -211,10 +247,11 @@ def persist(properties, payload):
     :rtype: prodiguer.db.Message
 
     """
-    # TODO: timestamp
-    # TODO: determine if other properties should be persisted
     # TODO: persist message mode ?
     # TODO: persist message user-id ?
+
+    # Get timestamp info.
+    ts_precision, ts_raw, ts_parsed = _get_timestamps(properties)
 
     return db.mq_hooks.create_message(
         properties.message_id,
@@ -223,4 +260,7 @@ def persist(properties, payload):
         properties.type,
         payload,
         properties.content_encoding,
-        properties.content_type)
+        properties.content_type,
+        ts_parsed,
+        ts_precision,
+        ts_raw)

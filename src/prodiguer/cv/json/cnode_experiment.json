@@ -824,5 +824,19 @@
 		"is_active": true,
 		"name": "volcIn2010",
 		"years_per_run": "10-30"
+	},
+	{
+		"activity_id": 2,
+		"activity_info_1": "1.4",
+		"activity_info_2": "TIER 1",
+		"activity_info_3": null,
+		"activity_info_4": null,
+		"description": "prediction with 2010 volcano",
+		"ensemble_size": ">=3",
+		"group_id": 3,
+		"id": 60,
+		"is_active": true,
+		"name": "secsto",
+		"years_per_run": "10-30"
 	}
 ]

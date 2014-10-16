@@ -30,5 +30,13 @@
 		"institute_id": 13,
 		"name": "IPSLCM6",
 		"version": "6"
+	},
+	{
+		"description": "OL2",
+		"drs_tag_name": "OL2",
+		"id": 5,
+		"institute_id": 13,
+		"name": "OL2",
+		"version": "1"
 	}
 ]

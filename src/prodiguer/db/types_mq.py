@@ -52,9 +52,11 @@ class Message(Entity):
 
     # Attributes.
     uid = Column(Unicode(63), nullable=False, unique=True, default=unicode(uuid.uuid4()))
-    timestamp = Column(DateTime, nullable=True, default=datetime.datetime.now)
-    content_encoding = Column(Unicode(63), nullable=False, default=u"utf-8")
-    content_type = Column(Unicode(63), nullable=False, default=u"application/json")
+    timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now)
+    timestamp_raw = Column(Unicode(63), nullable=True)
+    timestamp_precision = Column(Unicode(7), nullable=False, default=u"ms")
+    content_encoding = Column(Unicode(63), nullable=True, default=u"utf-8")
+    content_type = Column(Unicode(63), nullable=True, default=u"application/json")
     content = Column(Text, nullable=True)
 
 
