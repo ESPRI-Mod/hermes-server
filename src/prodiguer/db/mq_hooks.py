@@ -176,24 +176,6 @@ def create_simulation(activity,
     return s
 
 
-def create_simulation_message(simulation_id, message_id):
-    """Creates an entry in the simulation_message lookup table.
-
-    :param int simulation_id: ID of an executing simulation.
-    :param int message_id: ID of message being processed.
-
-    """
-    # Instantiate.
-    i = dbtypes.SimulationMessage()
-    i.simulation_id = simulation_id
-    i.message_id = message_id
-
-    # Insert.
-    dao.insert(i)
-
-    return i
-
-
 def update_simulation_status(uid, execution_state):
     """Updates status of an existing simulation record in db.
 
@@ -230,6 +212,7 @@ def create_message(uid,
                    content,
                    content_encoding='utf-8',
                    content_type='application/json',
+                   correlation_id=None,
                    timestamp=None,
                    timestamp_precision=None,
                    timestamp_raw=None):
@@ -272,6 +255,7 @@ def create_message(uid,
     msg.content = content
     msg.content_encoding = content_encoding
     msg.content_type = content_type
+    msg.correlation_id = correlation_id
     msg.producer_id = _get_id(dbtypes.MessageProducer, producer_id)
     if timestamp is not None:
         msg.timestamp = timestamp
@@ -286,43 +270,4 @@ def create_message(uid,
     dao.insert(msg)
 
     return msg
-
-
-def retrieve_messages(name):
-    """Retrieves set of messages received for a simulation (used in failover scenarios).
-
-    :param name: Name of simulation, e.g. v3.aqua4K.
-    :type name: str
-
-    :returns: List of received simulation messages.
-    :rtype: list
-
-    """
-    return dao.get_message_by_simulation(name)
-
-
-def retrieve_last_message(name):
-    """Retrieves last messsage received for a simulation (used in failover scenarios).
-
-    :param name: Name of simulation, e.g. v3.aqua4K.
-    :type name: str
-
-    :returns: Last received simulation message.
-    :rtype: dbtypes.Message
-
-    """
-    return dao.get_message_by_simulation(name, get_last=True)
-
-
-def delete_messages(name):
-    """Deletes set of messages received for a simulation (used in failover scenarios).
-
-    :param name: Name of simulation, e.g. v3.aqua4K.
-    :type name: str
-
-    :returns: List of received simulation messages.
-    :rtype: list
-
-    """
-    dao.delete_message_by_simulation(name)
 

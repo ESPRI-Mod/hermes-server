@@ -28,7 +28,6 @@ from .types import (
     Message,
     Model,
     Simulation,
-    SimulationMessage,
     SimulationForcing,
     )
 from ..utils import runtime as rt
@@ -354,28 +353,6 @@ def get_experiment_group_by_activity_and_name(activity, group):
     return q.first()
 
 
-def get_message_by_simulation(simulation_name, get_last=False):
-    """Retrieves instances with matching simulation.
-
-    :param simulation_name: Simulation name.
-    :type simulation_name: str
-
-    :param get_last: Flag indicating whether only the last entry is to be returned.
-    :type get_last: bool
-
-    :returns: List of simulation messages.
-    :rtype: list
-
-    """
-    q = session.query(Message, SimulationMessage, Simulation)
-
-    q = q.filter(Simulation.name==simulation_name)
-    if get_last:
-        q = q.order_by(Message.row_create_date.desc())
-
-    return q.first() if get_last else sort(Message, q.all())
-
-
 def get_simulations_by_state(state_id):
     """Retrieves list of simulation details from backend filtered by execution state.
 
@@ -397,23 +374,6 @@ def get_simulations_by_state(state_id):
         return get_by_facet(Simulation,
                             Simulation.execution_state_id==state_id,
                             get_iterable=True)
-
-
-def delete_message_by_simulation(simulation_name):
-    """Deletes instances with matching simulation name.
-
-    :param simulation_name: Simulation name.
-    :type simulation_name: str
-
-    """
-    # Get simulation.
-    s = get_by_name(Simulation, simulation_name)
-    if s is None:
-        return
-
-    q = session.query(SimulationMessage, Message)
-    q = q.filter(SimulationMessage.simulation_id==s.id)
-    q.delete()
 
 
 def get_model_by_drs_tag_name(name):

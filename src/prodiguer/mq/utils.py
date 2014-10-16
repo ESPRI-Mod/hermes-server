@@ -34,6 +34,7 @@ def create_ampq_message_properties(
     cluster_id=None,
     content_encoding=constants.DEFAULT_CONTENT_ENCODING,
     content_type=constants.DEFAULT_CONTENT_TYPE,
+    correlation_id=None,
     delivery_mode = constants.DEFAULT_DELIVERY_MODE,
     expiration=constants.DEFAULT_EXPIRATION,
     mode=constants.DEFAULT_MODE,
@@ -51,6 +52,7 @@ def create_ampq_message_properties(
     :param str cluster_id: ID of MQ cluster.
     :param str content_encoding: Content encoding, e.g. utf-8.
     :param str content_type: Content MIME type, e.g. application/json.
+    :param str correlation_id: Application correlation identifier.
     :param int delivery_mode: Message delivery mode (2 = with acknowledgement).
     :param int expiration: Ticks until message will no be considered as active.
     :param str mode: Messaging mode (dev|test|prod).
@@ -120,7 +122,7 @@ def create_ampq_message_properties(
         cluster_id=cluster_id,
         content_type=content_type,
         content_encoding=content_encoding,
-        correlation_id=None,
+        correlation_id=correlation_id,
         delivery_mode = delivery_mode,
         expiration=expiration,
         headers=dict(default_headers.items() + headers.items()),
@@ -261,6 +263,7 @@ def persist(properties, payload):
         payload,
         properties.content_encoding,
         properties.content_type,
+        properties.correlation_id,
         ts_parsed,
         ts_precision,
         ts_raw)

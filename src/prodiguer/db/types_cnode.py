@@ -327,21 +327,6 @@ class SimulationForcing(Entity):
     model_forcing_id = create_fk('cnode.tbl_model_forcing.id')
 
 
-class SimulationMessage(Entity):
-    """A simulation related message.
-
-    """
-    # SQLAlchemy directives.
-    __tablename__ = 'tbl_simulation_message'
-    __table_args__ = (
-        {'schema':_DB_SCHEMA}
-    )
-
-    # Foreign keys.
-    simulation_id = create_fk('cnode.tbl_simulation.id')
-    message_id = create_fk('mq.tbl_message.id')
-
-
 class SimulationSpace(Entity):
     """Indicates simulation type, i.e. PROD (production), TEST (test), FAIL (failed) ...etc.
 

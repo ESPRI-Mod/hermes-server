@@ -38,7 +38,6 @@ from .types_cnode import (
     ModelForcing,
     Simulation,
     SimulationForcing,
-    SimulationMessage,
     SimulationSpace,
     SimulationState
     )
@@ -81,7 +80,6 @@ __all__ = [
     "ModelForcing",
     "Simulation",
     "SimulationForcing",
-    "SimulationMessage",
     "SimulationSpace",
     "SimulationState",
     # ... dnode types
@@ -130,7 +128,6 @@ TYPES = type_utils.supported_types = [
     ModelForcing,
     Simulation,
     SimulationForcing,
-    SimulationMessage,
     SimulationSpace,
     SimulationState,
     # ... dnode

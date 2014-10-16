@@ -23,8 +23,7 @@ from prodiguer import db
 from prodiguer.db.types import (
     Message,
     Simulation,
-    SimulationState,
-    SimulationMessage
+    SimulationState
     )
 
 

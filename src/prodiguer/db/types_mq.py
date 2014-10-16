@@ -52,6 +52,7 @@ class Message(Entity):
 
     # Attributes.
     uid = Column(Unicode(63), nullable=False, unique=True, default=unicode(uuid.uuid4()))
+    correlation_id = Column(Unicode(63), nullable=True)
     timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now)
     timestamp_raw = Column(Unicode(63), nullable=True)
     timestamp_precision = Column(Unicode(7), nullable=False, default=u"ms")
