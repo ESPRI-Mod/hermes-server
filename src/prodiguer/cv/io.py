@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: TODO - write module name
+.. module:: cv.io.py
    :copyright: Copyright "May 22, 2013", Earth System Documentation
    :license: GPL/CeCIL
    :platform: Unix, Windows
-   :synopsis: TODO - write synopsis
+   :synopsis: Controlled vocabulary file system io manager.
 
 .. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
 
 
 """
-# Module imports.
 from os.path import dirname, abspath
 
 from .. import db

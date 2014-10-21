@@ -206,14 +206,5 @@
 		"id": 12,
 		"is_active": true,
 		"login": "p24lava"
-	},
-	{
-		"compute_node_id": 2,
-		"email": "rpsl388@idris.fr",
-		"family_name": "IDRIS",
-		"first_name": "SYSTEM",
-		"id": 24,
-		"is_active": true,
-		"login": "rpsl388"
 	}
 ]

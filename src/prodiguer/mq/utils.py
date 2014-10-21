@@ -21,7 +21,7 @@ from .producer import Producer
 from .timestamp import Timestamp
 from .. import db
 from ..utils import convert, rt
-
+import db_hooks
 
 
 def create_ampq_message_properties(
@@ -255,7 +255,7 @@ def persist(properties, payload):
     # Get timestamp info.
     ts_precision, ts_raw, ts_parsed = _get_timestamps(properties)
 
-    return db.mq_hooks.create_message(
+    return db_hooks.create_message(
         properties.message_id,
         properties.app_id,
         properties.headers['producer_id'],

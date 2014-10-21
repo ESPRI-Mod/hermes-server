@@ -54,6 +54,7 @@ class Activity(Entity):
     home_page_url = Column(Unicode(511), nullable=False)
     is_default = Column(Boolean, nullable=False, default=False)
     is_active = Column(Boolean, nullable=False, default=True)
+    is_reviewed = Column(Boolean, nullable=False, default=True)
 
 
 class Institute(Entity):
@@ -74,3 +75,4 @@ class Institute(Entity):
     name = Column(Unicode(255), nullable=False, unique=True)
     long_name = Column(Unicode(127), nullable=False)
     home_page_url = Column(Unicode(1023))
+    is_reviewed = Column(Boolean, nullable=False, default=True)

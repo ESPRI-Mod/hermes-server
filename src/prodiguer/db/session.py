@@ -161,6 +161,16 @@ def delete(instance, auto_commit=True):
         if auto_commit:
             commit()
 
+def update(instance, auto_commit=True):
+    """Marks a type instance for update and optionally commits the session.
+
+    :param db.Entity instance: A db type instance.
+    :param bool auto_commit: Flag indicating whether a commit is to be issued.
+
+    """
+    if instance is not None and sa_session is not None:
+        if auto_commit:
+            commit()
 
 def query(*etypes):
     """Begins a query operation against a session.

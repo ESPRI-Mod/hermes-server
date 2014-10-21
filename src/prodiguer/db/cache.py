@@ -15,6 +15,7 @@
 import random
 
 from . import dao, types
+from .. utils import runtime as rt
 
 
 
@@ -27,8 +28,18 @@ def load():
 
     """
     if len(_cache) == 0:
+        rt.log_db("LOADING CACHE ...")
         for typeof in types.CACHEABLE:
             _cache[typeof] = dao.get_all(typeof)
+
+
+def reload():
+    """Loads cache.
+
+    """
+    for key in _cache.keys():
+        del _cache[key]
+    load()
 
 
 def exists(typeof, key):

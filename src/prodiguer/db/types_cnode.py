@@ -62,10 +62,11 @@ class ComputeNode(Entity):
     # Attributes.
     name = Column(Unicode(16), nullable=False)
     description = Column(Unicode(127), nullable=False)
-    centre_url = Column(Unicode(511), nullable=False)
+    centre_url = Column(Unicode(511))
     dods_server_url = Column(Unicode(511))
     is_active = Column(Boolean, nullable=False, default=True)
     is_default = Column(Boolean, nullable=False, default=False)
+    is_reviewed = Column(Boolean, nullable=False, default=True)
 
 
 class ComputeNodeLogin(Entity):
@@ -88,6 +89,7 @@ class ComputeNodeLogin(Entity):
     email = Column(Unicode(255), nullable=False)
     mobile = Column(Unicode(255), nullable=True)
     is_active = Column(Boolean, nullable=False, default=True)
+    is_reviewed = Column(Boolean, nullable=False, default=True)
 
 
     @property
@@ -135,6 +137,7 @@ class ComputeNodeMachine(Entity):
     manafacturer = Column(Unicode(127), nullable=False)
     type = Column(Unicode(32), nullable=False)
     is_active = Column(Boolean, nullable=False, default=True)
+    is_reviewed = Column(Boolean, nullable=False, default=True)
 
 
 class Experiment(Entity):
@@ -162,6 +165,7 @@ class Experiment(Entity):
     activity_info_3 = Column(Unicode(127))
     activity_info_4 = Column(Unicode(127))
     is_active = Column(Boolean, nullable=False, default=True)
+    is_reviewed = Column(Boolean, nullable=False, default=True)
 
 
     @property
@@ -225,6 +229,7 @@ class Model(Entity):
     description = Column(Unicode(127), nullable=False)
     drs_tag_name = Column(Unicode(16), nullable=False, unique=True)
     version = Column(Unicode(8))
+    is_reviewed = Column(Boolean, nullable=False, default=True)
 
 
 class ModelForcing(Entity):
@@ -341,6 +346,7 @@ class SimulationSpace(Entity):
     name = Column(Unicode(255), nullable=False, unique=True)
     description = Column(Unicode(127), nullable=False)
     is_default = Column(Boolean, nullable=False, default=False)
+    is_reviewed = Column(Boolean, nullable=False, default=True)
 
 
     @property

@@ -10,7 +10,6 @@
 
 
 """
-# Module imports.
 from .io import (
 	get_filename,
 	get_filepath,
@@ -19,16 +18,4 @@ from .io import (
 	read,
 	write
 	)
-
-
-
-# Module exports.
-__all__ = [
-	"get_filename",
-	"get_filepath",
-	"list_types",
-	"load",
-	"read",
-	"write",
-	"setup"
-]
+import factory

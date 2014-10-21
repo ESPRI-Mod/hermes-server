@@ -160,6 +160,16 @@ TYPES = set([
 	TYPE_SMON_9999,
 	])
 
+# Timestamp precision types.
+TIMESTAMP_PRECISION_NS = 'ns'
+TIMESTAMP_PRECISION_MS = 'ms'
+
+# All timestamp precision types.
+TIMESTAMP_PRECISIONS = set([
+	TIMESTAMP_PRECISION_NS,
+	TIMESTAMP_PRECISION_MS
+	])
+
 # Message modes.
 MODE_DEV = 'dev'
 MODE_TEST = 'test'

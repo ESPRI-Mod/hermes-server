@@ -111,3 +111,22 @@ class Timestamp(object):
             as_ms_raw.split("T")[1].split("+")[1])
 
         return Timestamp.from_ns(as_ns_raw)
+
+
+    @classmethod
+    def create(cls, precision, raw):
+        """Creates an instance from a raw timestamp.
+
+        :param str precision: Timestamp precision.
+        :param str raw: Raw timestamp.
+
+        :returns: A timestamp wrapper instance.
+        :rtype: Timestamp
+
+        """
+        if precision == "ms":
+            return cls.from_ms(raw)
+        elif precision == "ns":
+            return cls.from_ns(raw)
+        else:
+            raise ValueError("Timestamp precision [{0}] is unsupported.".format(precision))

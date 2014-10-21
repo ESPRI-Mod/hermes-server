@@ -28,5 +28,15 @@
 		"ordinal_position": 2,
 		"short_description": "Coupled Long-Term",
 		"short_description_1": "Long-Term"
+	},
+	{
+		"activity_id": 2,
+		"description": "IPSL internal",
+		"id": 4,
+		"is_active": true,
+		"name": "ipsl-internal",
+		"ordinal_position": 1,
+		"short_description": "IPSL Internal",
+		"short_description_1": "IPSL Internal"
 	}
 ]
