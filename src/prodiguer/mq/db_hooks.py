@@ -198,7 +198,7 @@ def _validate_create_message(
     validation.validate_timestamp(timestamp, timestamp_precision, timestamp_raw)
 
 
-def _retrieve_simulation_by_uid(uid):
+def retrieve_simulation(uid):
     """Retrieves simulation details from db.
 
     :param str uid: UID of simulation.
@@ -296,7 +296,7 @@ def update_simulation_status(uid, execution_state):
     _validate_update_simulation_status(uid, execution_state)
 
     # Update.
-    sim = _retrieve_simulation_by_uid(uid)
+    sim = retrieve_simulation(uid)
     sim.execution_state_id = _get_id(db.types.SimulationState, execution_state)
 
     # Push to db.
