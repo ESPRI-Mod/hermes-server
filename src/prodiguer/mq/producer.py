@@ -10,13 +10,17 @@
 .. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
 
 """
-import inspect
+import inspect, logging
 
 import pika
 
 from . import constants
 from ..utils import config, rt
 
+
+
+# Reduce pika logging to warnings + errors only.
+logging.getLogger("pika").setLevel(logging.WARNING)
 
 
 class Producer(object):
