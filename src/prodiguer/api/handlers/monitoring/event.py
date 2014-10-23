@@ -37,7 +37,7 @@ def _broadcast_simulation_state_change_event(handler):
     ws.on_write(_KEY, {
         'eventType' : 'stateChange',
         'eventTimestamp': unicode(datetime.datetime.now()),
-        'id': int(handler.get_argument('id')),
+        'uid': unicode(handler.get_argument('uid')),
         'state' : handler.get_argument('state')
         })
 

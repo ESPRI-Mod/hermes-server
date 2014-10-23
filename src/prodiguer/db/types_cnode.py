@@ -317,6 +317,23 @@ class Simulation(Entity):
         return result
 
 
+class SimulationStateChange(Entity):
+    """History of simulation status changes.
+
+    """
+    # SQLAlchemy directives.
+    __tablename__ = 'tbl_simulation_state_change'
+    __table_args__ = (
+        {'schema':_DB_SCHEMA}
+    )
+
+    # Attributes.
+    simulation_uid = Column(Unicode(63), nullable=False)
+    state_id = create_fk('cnode.tbl_simulation_state.id')
+    timestamp = Column(DateTime, nullable=False)
+    info = Column(Unicode(63), nullable=False)
+
+
 class SimulationForcing(Entity):
     """The simulation forcing, i.e. related to configuration.
 

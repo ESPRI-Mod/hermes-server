@@ -36,6 +36,8 @@ from ..db.validation import (
     validate_simulation_output_start_date,
     validate_simulation_space,
     validate_simulation_state,
+    validate_simulation_state_info,
+    validate_simulation_state_timestamp,
     validate_simulation_uid
     )
 from ..utils import runtime as rt
@@ -161,6 +163,16 @@ def _validate_update_simulation_status(uid, state):
     validate_simulation_state(state)
 
 
+def _validate_create_simulation_state(uid, state, timestamp, info):
+    """Validates create simulation state inputs.
+
+    """
+    validate_simulation_uid(uid)
+    validate_simulation_state(state)
+    validate_simulation_state_timestamp(timestamp)
+    validate_simulation_state_info(info)
+
+
 def _validate_create_message(
     uid,
     app_id,
@@ -276,11 +288,8 @@ def create_simulation(
 def update_simulation_status(uid, execution_state):
     """Updates status of an existing simulation record in db.
 
-    :param uid: UID of simulation.
-    :type name: str
-
-    :param execution_state: State of simulation execution, e.g. COMPLETE.
-    :type execution_state: str
+    :param str uid: Simulation UID.
+    :param str execution_state: Simulation execution state, e.g. COMPLETE.
 
     """
     # Validate inputs.
@@ -296,6 +305,34 @@ def update_simulation_status(uid, execution_state):
     rt.log_db(msg.format(uid, execution_state))
 
     return sim
+
+
+def create_simulation_state(uid, state, timestamp, info):
+    """Creates a new simulation state record in db.
+
+    :param str uid: Simulation UID.
+    :param str state: Simulation execution state, e.g. COMPLETE.
+    :param datetime.datetime timestamp: Simulation state update timestamp.
+    :param str info: Short contextual description of state change.
+
+    """
+    # Validate inputs.
+    _validate_create_simulation_state(uid, state, timestamp, info)
+
+    # Instantiate instance.
+    instance = db.types.SimulationStateChange()
+    instance.info = info
+    instance.simulation_uid = unicode(uid)
+    instance.state_id = _get_id(db.types.SimulationState, state)
+    instance.timestamp = timestamp
+
+    # Push to db.
+    db.session.add(instance)
+    msg = "Persisted simulation state to db :: {0} | {1}"
+    msg = msg.format(uid, state)
+    rt.log_db(msg)
+
+    return instance
 
 
 def create_message(
@@ -345,7 +382,7 @@ def create_message(
     # Ensure that cache is loaded.
     db.cache.load()
 
-    # Instantiate a message instance.
+    # Instantiate instance.
     msg = db.types.Message()
     msg.app_id = _get_id(db.types.MessageApplication, app_id)
     msg.content = content
@@ -363,6 +400,6 @@ def create_message(
     msg.uid = uid
 
     # Push to db.
-    db.session.insert(msg)
+    db.session.add(msg)
 
     return msg

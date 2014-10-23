@@ -39,7 +39,8 @@ from .types_cnode import (
     Simulation,
     SimulationForcing,
     SimulationSpace,
-    SimulationState
+    SimulationState,
+    SimulationStateChange
     )
 
 # Import dnode types.
@@ -82,6 +83,7 @@ __all__ = [
     "SimulationForcing",
     "SimulationSpace",
     "SimulationState",
+    "SimulationStateChange",
     # ... dnode types
     "DataNode",
     "DataServer",
@@ -130,6 +132,7 @@ TYPES = type_utils.supported_types = [
     SimulationForcing,
     SimulationSpace,
     SimulationState,
+    SimulationStateChange,
     # ... dnode
     DataNode,
     DataServer,
@@ -182,7 +185,7 @@ CV = (
     DRSElement,
     DRSElementMapping,
     # ... temp cv's.
-    Simulation,
+    Simulation
     )
 
 

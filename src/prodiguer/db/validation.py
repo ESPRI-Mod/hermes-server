@@ -127,6 +127,26 @@ def validate_simulation_execution_start_date(date):
     _validate_date(date, 'Execution start date')
 
 
+def validate_simulation_state_timestamp(date):
+    """Validate simulation state timestamp.
+
+    :param date: A simulation state timestamp.
+    :type date: str | datetime.datetime
+
+    """
+    _validate_date(date, 'State timestamp')
+
+
+def validate_simulation_state_info(info):
+    """Validate simulation state info.
+
+    :param str info: A simulation state information.
+
+    """
+    if info is None or len(info.strip()) == 0:
+        raise TypeError('Info is undefined')
+
+
 def validate_simulation_name(name):
     """Validate simulation name.
 
