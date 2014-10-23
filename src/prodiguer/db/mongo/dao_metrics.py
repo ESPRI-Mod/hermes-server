@@ -199,7 +199,13 @@ def fetch_list():
     """
     mg_db = utils.get_db(_DB_NAME)
 
-    return sorted(mg_db.collection_names()[1:])
+    groups = mg_db.collection_names()
+    try:
+        groups.remove('system.indexes')
+    except ValueError:
+        pass
+
+    return sorted(groups)
 
 
 def fetch_setup(group_id, query=None):
