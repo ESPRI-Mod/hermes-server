@@ -36,7 +36,7 @@
 		"id": 4,
 		"institute_id": 13,
 		"is_active": true,
-		"is_default": true,
+		"is_default": false,
 		"name": "TGCC"
 	}
 ]
