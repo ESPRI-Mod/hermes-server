@@ -19,9 +19,9 @@ from . import constants, message
 from .consumer import Consumer
 from .producer import Producer
 from .timestamp import Timestamp
-from .. import db
-from ..utils import convert, rt
+from ..utils import rt
 import db_hooks
+
 
 
 def create_ampq_message_properties(

@@ -11,12 +11,18 @@
 .. moduleauthor:: Institute Pierre Simon Laplace (ES-DOC) <dev@esdocumentation.org>
 
 """
+import logging
+
 import pika
 
 from prodiguer.mq import constants
 
 from . import utils as tu
 
+
+
+# Reduce pika logging to warnings + errors only.
+# logging.getLogger("pika").setLevel(logging.ERROR)
 
 
 def assert_msg_props(props,

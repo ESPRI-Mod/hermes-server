@@ -30,6 +30,7 @@ __all__ = [
     'query',
     'rollback',
     'start',
+    'update'
 ]
 
 

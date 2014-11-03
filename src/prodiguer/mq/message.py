@@ -19,7 +19,6 @@ from ..utils import convert
 
 
 
-
 def _validate_ampq_basic_properties(props):
     """Validates AMPQ basic properties associated with message being processed.
 

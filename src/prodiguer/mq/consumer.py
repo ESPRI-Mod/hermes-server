@@ -10,7 +10,7 @@
 .. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
 
 """
-import inspect, logging
+import inspect
 
 import pika
 
@@ -18,10 +18,6 @@ from prodiguer.utils import rt
 from . import constants, message
 from ..utils import config
 
-
-
-# Reduce pika logging to warnings + errors only.
-logging.getLogger("pika").setLevel(logging.WARNING)
 
 
 class Consumer(object):
