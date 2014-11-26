@@ -42,6 +42,15 @@ def get_list(entity_type):
     return [get_item(e) for e in db.dao.get_all(entity_type)]
 
 
+def format_date_fields(obj):
+    """Formats date fields within passed dictionary.
+
+    """
+    for key, val in obj.items():
+        if type(val) == datetime.datetime:
+            obj[key] = str(val)[:10]
+
+
 def get_item(entity):
     """Returns a db entity formatted for front-end.
 
@@ -52,18 +61,16 @@ def get_item(entity):
 
     """
     # Convert to a dictionary.
-    d = db.types.Convertor.to_dict(entity)
+    obj = db.types.Convertor.to_dict(entity)
 
     # Remove row meta-info.
-    del d["row_create_date"]
-    del d["row_update_date"]
+    del obj["row_create_date"]
+    del obj["row_update_date"]
 
     # Format date fields
-    for k, v in d.items():
-        if type(v) == datetime.datetime:
-            d[k] = str(v)[:10]
+    format_date_fields(obj)
 
-    return d
+    return obj
 
 
 def get_simulation_dict(s):
@@ -76,16 +83,34 @@ def get_simulation_dict(s):
 
     """
     # Convert to dict.
-    d = get_item(s)
+    obj = get_item(s)
 
     # Set names
-    d["activity"] = _get_name(db.types.Activity, s.activity_id)
-    d["compute_node"] = _get_name(db.types.ComputeNode, s.compute_node_id)
-    d["compute_node_login"] = _get_name(db.types.ComputeNodeLogin, s.compute_node_login_id),
-    d["compute_node_machine"] = _get_name(db.types.ComputeNodeMachine, s.compute_node_machine_id)
-    d["execution_state"] = _get_name(db.types.SimulationState, s.execution_state_id)
-    d["experiment"] = _get_name(db.types.Experiment, s.experiment_id)
-    d["model"] = _get_name(db.types.Model, s.model_id)
-    d["space"] = _get_name(db.types.SimulationSpace, s.space_id)
+    obj["activity"] = _get_name(db.types.Activity, s.activity_id)
+    obj["compute_node"] = _get_name(db.types.ComputeNode, s.compute_node_id)
+    obj["compute_node_login"] = _get_name(db.types.ComputeNodeLogin, s.compute_node_login_id),
+    obj["compute_node_machine"] = _get_name(db.types.ComputeNodeMachine, s.compute_node_machine_id)
+    obj["execution_state"] = _get_name(db.types.SimulationState, s.execution_state_id)
+    obj["experiment"] = _get_name(db.types.Experiment, s.experiment_id)
+    obj["model"] = _get_name(db.types.Model, s.model_id)
+    obj["space"] = _get_name(db.types.SimulationSpace, s.space_id)
+
+    return obj
+
+
+def get_simulation_state_change_dict(ssc):
+    """Returns simulation information formatted for front-end.
+
+    :param db.types.Simulation ssc: Simulation state change instance.
+
+    :returns: Simulation state change information in dictionary format ready to be returned to front-end.
+    :rtype: dict
+
+    """
+    # Convert to dict.
+    d = get_item(ssc)
+
+    # Set names
+    d["state"] = _get_name(db.types.SimulationState, ssc.state_id)
 
     return d

@@ -12,6 +12,7 @@
 
 """
 from .. import db
+from ..utils import runtime as rt
 
 
 
@@ -32,6 +33,14 @@ def _create_term(term_type):
     return term
 
 
+def _log_new_term(term, term_name=None):
+    """Logs creation of a new term.
+
+    """
+    term_name = term_name or term.name
+    rt.log("CV term created: {0} - {1}".format(type(term).__name__, term_name))
+
+
 def _get_id(term_type, term_name):
     """Utility function to map a name to an id.
 
@@ -47,6 +56,8 @@ def create_activity(activity):
     term.description = "{0} ?".format(activity)
     term.name = activity
 
+    _log_new_term(term)
+
     return term
 
 
@@ -61,6 +72,8 @@ def create_compute_node(compute_node, institute=_DEFAULT_INSITUTE):
     term.institute_id = _get_id(db.types.Institute, institute)
     term.name = compute_node
 
+    _log_new_term(term)
+
     return term
 
 
@@ -74,6 +87,8 @@ def create_compute_node_login(compute_node, compute_node_login):
     term.first_name = "UNKNOWN"
     term.family_name = "UNKNOWN"
     term.email = "UNKNOWN"
+
+    _log_new_term(term, "{0}-{1}".format(compute_node.upper(), term.login))
 
     return term
 
@@ -92,6 +107,8 @@ def create_compute_node_machine(compute_node, compute_node_machine):
     term.short_name = compute_node_machine
     term.type = "UNKNOWN"
 
+    _log_new_term(term)
+
     return term
 
 
@@ -104,6 +121,8 @@ def create_experiment(activity, experiment, experiment_group=_DEFAULT_EXPERIMENT
     term.description = "{0} ?".format(experiment)
     term.group_id = _get_id(db.types.ExperimentGroup, experiment_group)
     term.name = experiment
+
+    _log_new_term(term)
 
     return term
 
@@ -120,6 +139,8 @@ def create_experiment_group(activity, experiment_group):
     term.short_description = "{0} ?".format(experiment_group)
     term.short_description_1 = "{0} ?".format(experiment_group)
 
+    _log_new_term(term)
+
     return term
 
 
@@ -135,6 +156,8 @@ def create_model(model, institute=_DEFAULT_INSITUTE):
     term.institute_id = _get_id(db.types.Institute, institute)
     term.name = model
 
+    _log_new_term(term)
+
     return term
 
 
@@ -148,6 +171,8 @@ def create_simulation_space(space):
     term.description = "{0} ?".format(space)
     term.name = space
 
+    _log_new_term(term)
+
     return term
 
 
@@ -160,5 +185,7 @@ def create_simulation_state(state):
     term = _create_term(db.types.SimulationState)
     term.description = "{0} ?".format(state)
     term.name = state
+
+    _log_new_term(term)
 
     return term

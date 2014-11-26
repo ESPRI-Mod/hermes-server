@@ -21,15 +21,21 @@ from ....utils import convert, config
 
 
 def _get_simulation_list():
-    def _filter(s):
-        if s.activity_id == 1:
-            return s.name.startswith("v3")
-        return True
+    """Returns list of simulations from db.
 
-    s_list = db.dao.get_all(db.types.Simulation)
-    s_list = [s for s in s_list if _filter(s)]
+    """
+    collection = db.dao.get_all(db.types.Simulation)
 
-    return [utils.get_simulation_dict(s) for s in s_list]
+    return [utils.get_simulation_dict(s) for s in collection]
+
+
+def _get_simulation_state_change_list():
+    """Returns list of simulation state change events from db.
+
+    """
+    collection = db.dao.get_all(db.types.SimulationStateChange)
+
+    return [utils.get_simulation_state_change_dict(ssc) for ssc in collection]
 
 
 class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
@@ -49,9 +55,10 @@ class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
             'experiment_list': utils.get_list(db.types.Experiment),
             'model_list': utils.get_list(db.types.Model),
             'simulation_list': _get_simulation_list(),
+            'simulation_state_change_list': _get_simulation_state_change_list(),
             'execution_state_list': utils.get_list(db.types.SimulationState),
             'space_list': utils.get_list(db.types.SimulationSpace),
-        };
+        }
 
         # Convert keys to camel case so as to respect json naming conventions.
         data = convert.dict_keys(data, convert.str_to_camel_case)

@@ -13,7 +13,8 @@
 """
 # Module imports.
 from . import (
-	metric, 
+	metric,
 	monitoring,
-	ops
+	ops,
+	utils_ws as ws
 	)

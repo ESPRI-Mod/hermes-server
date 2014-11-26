@@ -25,6 +25,7 @@ __all__ = [
     'assert_is_live',
     'commit',
     'sa_engine',
+    'sa_session'
     'delete',
     'end',
     'query',
@@ -121,11 +122,8 @@ def rollback():
 def insert(instance, auto_commit=True):
     """Adds a newly created type instance to the session and optionally commits the session.
 
-    :param instance: A db type instance.
-    :type instance: sub-class of Entity
-
-    :param auto_commit: Flag indicating whether a commit is to be issued.
-    :type auto_commit: bool
+    :param Entity instance: A db type instance.
+    :param bool auto_commit: Flag indicating whether a commit is to be issued.
 
     """
     if instance is not None and sa_session is not None:
@@ -137,11 +135,8 @@ def insert(instance, auto_commit=True):
 def add(instance, auto_commit=True):
     """Adds a newly created type instance to the session and optionally commits the session.
 
-    :param instance: A db type instance.
-    :type instance: sub-class of Entity
-
-    :param auto_commit: Flag indicating whether a commit is to be issued.
-    :type auto_commit: bool
+    :param Entity instance: A db type instance.
+    :param bool auto_commit: Flag indicating whether a commit is to be issued.
 
     """
     insert(instance, auto_commit)
@@ -184,3 +179,5 @@ def query(*etypes):
     for etype in etypes:
         q = sa_session.query(etype) if q is None else q.join(etype)
     return q
+
+

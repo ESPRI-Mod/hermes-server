@@ -11,7 +11,6 @@
 
 
 """
-# Module imports.
 import random
 
 from . import dao, types
@@ -28,25 +27,26 @@ def load():
 
     """
     if len(_cache) == 0:
-        rt.log_db("LOADING CACHE ...")
-        for typeof in types.CACHEABLE:
-            _cache[typeof] = dao.get_all(typeof)
+        for collection_key in types.CACHEABLE:
+            _cache[collection_key] = dao.get_all(collection_key)
+        rt.log_db("LOADED CACHE ...")
 
 
 def reload():
     """Loads cache.
 
     """
-    for key in _cache.keys():
-        del _cache[key]
+    rt.log_db("RELOADING CACHE ...")
+    for collection_key in _cache.keys():
+        del _cache[collection_key]
     load()
 
 
-def exists(typeof, key):
+def exists(collection_key, item_key):
     """Determines whether a cache item exists or not.
 
-    :param class typeof: Cache entity type.
-    :param int|str key: Cache item identifier.
+    :param class collection_key: Cached collection key.
+    :param int|str item_key: Cache item identifier.
 
     :returns: True if item is cached, False otherwise.
     :rtype: bool
@@ -55,33 +55,62 @@ def exists(typeof, key):
     # JIT load.
     load()
 
-    if typeof not in _cache or key is None:
+    if collection_key not in _cache or item_key is None:
         return False
-    elif isinstance(key, int):
-        return len([i for i in _cache[typeof] if i.id == key]) == 1
+    elif isinstance(item_key, int):
+        return len([i for i in _cache[collection_key] if i.id == item_key]) == 1
     else:
-        key = str(key).upper()
-        return len([i for i in _cache[typeof] if i.name.upper() == key]) == 1
+        item_key = str(item_key).upper()
+        return len([i for i in _cache[collection_key] if i.name.upper() == item_key]) == 1
 
 
-def get_collection(typeof):
+def get_collection(collection_key):
     """Returns a cached collection.
 
-    :param class typeof: Cache entity type.
+    :param class collection_key: Cached collection key.
 
-    :returns: A Prodiguer entity collection if cached, None otherwise.
+    :returns: A Prodiguer collection if cached, None otherwise.
     :rtype: list | None
 
     """
-    if typeof in _cache:
-        return _cache[typeof]
+    if collection_key in _cache:
+        return _cache[collection_key]
 
 
-def get_item(typeof, key):
+def get_count():
+    """Returns count of items in cache.
+
+    :returns: Count of items in cache.
+    :rtype: int
+
+    """
+    count = 0
+    for collection_key in _cache.keys():
+        count += len(_cache[collection_key])
+
+    return count
+
+
+def get_items():
+    """Returns all cached items.
+
+    :returns: All cached items.
+    :rtype: list
+
+    """
+    result = []
+    for collection_key in _cache.keys():
+        for item in _cache[collection_key]:
+            result.append(item)
+
+    return result
+
+
+def get_item(collection_key, item_key):
     """Returns a cached item.
 
-    :param class typeof: Cache entity type.
-    :param int|str key: Cache item identifier.
+    :param class|str collection_key: Cached entity type key.
+    :param int|str item_key: Cached item key.
 
     :returns: A Prodiguer entity if item is cached, None otherwise.
     :rtype: A subclass of prodiguer.types.Entity
@@ -90,85 +119,98 @@ def get_item(typeof, key):
     # JIT load.
     load()
 
-    if not exists(typeof, key):
+    # Escape if passed invalid key.
+    if not exists(collection_key, item_key):
         return None
-    elif isinstance(key, int):
-        return [i for i in _cache[typeof] if i.id == key][0]
+
+    # Set target collection.
+    collection = _cache[collection_key]
+
+    # Filter collection.
+    if isinstance(item_key, int):
+        collection = [i for i in collection if i.id == item_key]
     else:
-        key = str(key).upper()
-        return [i for i in _cache[typeof] if i.name.upper() == key][0]
+        item_key = str(item_key).upper()
+        collection = [i for i in collection if i.name.upper() == item_key]
+
+    return collection[0] if collection else None
 
 
-def get_name(typeof, key):
+def get_name(collection_key, item_key):
     """Returns a cached item name.
 
-    :param class typeof: Cache entity type.
-    :param int|str key: Cache item identifier.
+    :param class|str collection_key: Cached entity type key.
+    :param int|str item_key: Cached item key.
 
-    :returns: A Prodiguer entity ID if item is cached, None otherwise.
+    :returns: A Prodiguer entity name if item is cached, None otherwise.
     :rtype: str | None
 
     """
     # JIT load.
     load()
 
-    item = get_item(typeof, key)
+    item = get_item(collection_key, item_key)
 
     return None if item is None else item.name
 
 
-def get_id(typeof, key):
+def get_id(collection_key, item_key):
     """Returns a cached item id.
 
-    :param class typeof: Cache entity type.
-    :param int|str key: Cache item identifier.
+    :param class|str collection_key: Cached entity type key.
+    :param int|str item_key: Cached item key.
 
-    :returns: A Prodiguer entity id if item is cached, None otherwise.
+    :returns: A Prodiguer entity identifier if item is cached, None otherwise.
     :rtype: int | None
 
     """
     # JIT load.
     load()
 
-    item = get_item(typeof, key)
+    item = get_item(collection_key, item_key)
 
     return None if item is None else item.id
 
 
-def get_random(typeof):
+def get_random(collection_key):
     """Returns a random cache item.
 
-    :param class typeof: Cache entity type.
+    :param class collection_key: Cached collection key.
 
-    :returns: A random item from the cache.
+    :returns: A cached item selected at random.
     :rtype: Sub-class of types.Entity
 
     """
     # JIT load.
     load()
 
-    return _cache[typeof][random.randint(0, len(_cache[typeof]) - 1)]
+    collection = _cache[collection_key]
+    item_id = random.randint(0, len(collection) - 1)
+
+    return collection[item_id]
 
 
-def get_random_name(typeof):
+def get_random_name(collection_key):
     """Returns a random cache item name.
 
-    :param class typeof: Cache entity type.
+    :param class collection_key: Cached collection key.
 
-    :returns: The name of a random cached item.
+    :returns: The name of a cached item selected at random.
     :rtype: str
 
     """
-    return get_random(typeof).name
+    return get_random(collection_key).name
 
 
-def get_random_id(typeof):
+def get_random_id(collection_key):
     """Returns a random cache item id.
 
-    :param class typeof: Cache entity type.
+    :param class collection_key: Cached collection key.
 
-    :returns: The id of a random cached item.
+    :returns: The id of a cached item selected at random.
     :rtype: int
 
     """
-    return get_random(typeof).id
+    return get_random(collection_key).id
+
+

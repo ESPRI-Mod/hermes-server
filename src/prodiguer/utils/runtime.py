@@ -138,6 +138,20 @@ def log_db(msg,
     log(msg, module="DB", level=level, app=app, institute=institute)
 
 
+def log_db_error(err, app=_DEFAULT_APP, institute=_DEFAULT_INSTITUTE):
+    """Logs a runtime error.
+
+    :param err: Message for writing to log.
+    :type err: Sub-class of BaseException
+
+    """
+    if type(err) == str:
+        msg = "!!! RUNTIME ERROR !!! :: {0}".format(err)
+    else:
+        msg = "!!! RUNTIME ERROR !!! :: {0} :: {1}.".format(err.__class__, err)
+    log(msg, module="DB", level=LOG_LEVEL_ERROR, app=app, institute=institute)
+
+
 def log_api(msg,
             level=LOG_LEVEL_INFO,
             app=_DEFAULT_APP,

@@ -11,16 +11,20 @@ from . handlers import (
     metric,
     monitoring,
     ops,
+    ws
     )
-
+from .. import db
 from .. utils import (
-    config as cfg,
+    config,
     runtime as rt
     )
 
 
+
 def _get_path_to_front_end():
-    """Return path to the front end javascript application."""
+    """Return path to the front end javascript application.
+
+    """
     # N.B. deriving path on assumption that software
     # has been installed using the prodiguer bootstrapper.
 
@@ -32,13 +36,15 @@ def _get_path_to_front_end():
     # Get directory to front end source code.
     path = os.path.join(repos, 'prodiguer-fe')
     path = os.path.join(path, 'src')
-    rt.log_api("Front-end @ {0}".format(path))
+    rt.log_api("Front-end static files @ {0}".format(path))
 
     return path
 
 
 def _get_app_routes():
-    """Returns supported app routes."""
+    """Returns supported app routes.
+
+    """
     return (
         # Monitoring routes.
         (r'/api/1/monitoring/fe/setup', monitoring.FrontEndSetupRequestHandler),
@@ -59,28 +65,47 @@ def _get_app_routes():
 
 
 def _get_app_settings():
-    """Returns app settings."""
+    """Returns app settings.
+
+    """
     return {
-        "cookie_secret": cfg.api.cookie_secret,
+        "cookie_secret": config.api.cookie_secret,
         "static_path": _get_path_to_front_end()
     }
 
 
+def _init_db_cache():
+    """Initializes db cache.
+
+    """
+    db.session.start(config.db.pgres.main)
+    db.cache.load()
+    db.session.end()
+
+
 def run():
-    """Runs the prodiguer web api."""
+    """Runs the prodiguer web api.
+
+    """
     # Setup app.
     rt.log_api("Initializing")
 
+    # Initialize db cache.
+    _init_db_cache()
+
     # Instantiate.
     app = Application(_get_app_routes(),
-                      debug=not cfg.api.mode=='prod',
+                      debug=not config.api.mode=='prod',
                       **_get_app_settings())
 
     # Listen.
-    app.listen(cfg.api.port)
-    rt.log_api("Ready")
+    app.listen(config.api.port)
+
+    # Set web-socket keep alive.
+    ws.keep_alive()
 
     # Start io loop.
+    rt.log_api("Ready")
     tornado.ioloop.IOLoop.instance().start()
 
 

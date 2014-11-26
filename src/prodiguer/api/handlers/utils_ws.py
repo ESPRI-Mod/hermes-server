@@ -3,7 +3,7 @@
 # Module imports.
 import tornado.websocket
 
-from ... utils import runtime as rt
+from ... utils import runtime as rt, config
 
 
 
@@ -26,7 +26,7 @@ def get_client_count(key=None):
     :returns: Web socket client count.
     :rtype: int
 
-    """        
+    """
     if key is not None:
         _init_cache(key)
         return len(_clients[key])
@@ -43,7 +43,7 @@ def on_write(key, data):
     :param data: Data dictionary to send to client.
     :param data: dict
 
-    """    
+    """
     _init_cache(key)
     for c in _clients[key]:
         try:
@@ -62,12 +62,12 @@ def on_connect(key, c):
     :param c: Web socket handler pointer.
     :param c: torndao.websocket.WebSocketHandler
 
-    """     
+    """
     _init_cache(key)
     if c not in _clients[key]:
         _clients[key].append(c)
-        rt.log_mq("WS {0} :: connection opened :: clients = {1}.".format(key, len(_clients[key])))        
-        
+        rt.log_api("WS {0} :: connection opened :: clients = {1}.".format(key, len(_clients[key])))
+
 
 def on_disconnect(key, c):
     """Removes a client connection from cache.
@@ -78,11 +78,11 @@ def on_disconnect(key, c):
     :param c: Web socket handler pointer.
     :param c: torndao.websocket.WebSocketHandler
 
-    """ 
+    """
     _init_cache(key)
     if c in _clients[key]:
         _clients[key].remove(c)
-        rt.log_mq("WS {0} :: connection closed :: clients = {1}.".format(key, len(_clients[key])))        
+        rt.log_api("WS {0} :: connection closed :: clients = {1}.".format(key, len(_clients[key])))
 
 
 def clear_cache(key=None):
@@ -91,7 +91,7 @@ def clear_cache(key=None):
     :param key: Web socket client cache key.
     :param type: str
 
-    """ 
+    """
     global _clients
 
     if key is None:
@@ -99,3 +99,33 @@ def clear_cache(key=None):
     elif key in _clients:
         del _clients[key]
 
+
+def pong_clients():
+    """Pongs clients.
+
+    """
+    logged = False
+    for app in _clients.keys():
+        for client in _clients[app]:
+            if not logged:
+                rt.log_api("Ponging websocket clients.")
+                logged = True
+            try:
+                client.write_message("pong")
+            except tornado.websocket.WebSocketClosedError:
+                _clients[app].remove(client)
+
+
+def keep_alive():
+    """Sends a websocket ping to all clients to keep them open.
+
+    """
+    def _do():
+        pong_clients()
+        keep_alive()
+
+    # Do this every N seconds so as to keep client connections open.
+    delay = config.api.websocketKeepAliveDelayInSeconds
+    if delay:
+        rt.log_api("Websocket keep alive every {0} seconds.".format(delay))
+        tornado.ioloop.IOLoop.instance().call_later(delay, _do)

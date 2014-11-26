@@ -11,6 +11,8 @@
 
 
 """
+import sqlalchemy
+
 import validation
 from .. import db
 from ..cv.factory import (
@@ -51,6 +53,13 @@ def _get_id(cv_type, cv_term):
     return db.cache.get_id(cv_type, cv_term)
 
 
+def _get_name(cv_type, cv_term):
+    """Utility function to map a CV id to a name.
+
+    """
+    return db.cache.get_name(cv_type, cv_term)
+
+
 def _validate_create_simulation_cv_terms(
     activity,
     compute_node,
@@ -61,10 +70,10 @@ def _validate_create_simulation_cv_terms(
     model,
     space
     ):
-    """Validates set of create simulation related cv terms.
+    """Validates set of cv terms creating them where necessary.
 
     """
-    # Ensure that cache is loaded.
+    # Ensure that cv cache is loaded.
     db.cache.load()
 
     # Set of handlers.
@@ -103,22 +112,24 @@ def _validate_create_simulation_cv_terms(
         )
     )
 
-    # Iteration 1: Validate and create terms when necesary.
+    # Iteration 1: Validate & create new terms when invalid.
     to_revalidate = []
     for validator, factory in handlers:
         try:
             validator()
         except ValueError:
-            db.session.add(factory())
-            to_revalidate.append(validator)
+            try:
+                db.session.add(factory())
+            except sqlalchemy.exc.IntegrityError:
+                db.session.rollback()
+            finally:
+                to_revalidate.append(validator)
 
-    # Ensure that cache is re-loaded if a term was added.
+    # If a term was added, reload cache and re-validate.
     if to_revalidate:
         db.cache.reload()
-
-    # Iteration 2: Re-validate created terms.
-    for validator in to_revalidate:
-        validator()
+        for validator in to_revalidate:
+            validator()
 
 
 def _validate_create_simulation(
@@ -155,14 +166,6 @@ def _validate_create_simulation(
     validate_simulation_uid(uid)
 
 
-def _validate_update_simulation_status(uid, state):
-    """Validates update simulation status inputs.
-
-    """
-    validate_simulation_uid(uid)
-    validate_simulation_state(state)
-
-
 def _validate_create_simulation_state(uid, state, timestamp, info):
     """Validates create simulation state inputs.
 
@@ -171,6 +174,13 @@ def _validate_create_simulation_state(uid, state, timestamp, info):
     validate_simulation_state(state)
     validate_simulation_state_timestamp(timestamp)
     validate_simulation_state_info(info)
+
+
+def _validate_update_simulation_state(uid):
+    """Validates update simulation state inputs.
+
+    """
+    validate_simulation_uid(uid)
 
 
 def _validate_create_message(
@@ -285,28 +295,6 @@ def create_simulation(
     return sim
 
 
-def update_simulation_status(uid, execution_state):
-    """Updates status of an existing simulation record in db.
-
-    :param str uid: Simulation UID.
-    :param str execution_state: Simulation execution state, e.g. COMPLETE.
-
-    """
-    # Validate inputs.
-    _validate_update_simulation_status(uid, execution_state)
-
-    # Update.
-    sim = retrieve_simulation(uid)
-    sim.execution_state_id = _get_id(db.types.SimulationState, execution_state)
-
-    # Push to db.
-    db.session.update(sim)
-    msg = "Persisted simulation state update to db :: {0} | {1}"
-    rt.log_db(msg.format(uid, execution_state))
-
-    return sim
-
-
 def create_simulation_state(uid, state, timestamp, info):
     """Creates a new simulation state record in db.
 
@@ -332,7 +320,40 @@ def create_simulation_state(uid, state, timestamp, info):
     msg = msg.format(uid, state)
     rt.log_db(msg)
 
+    # Update current state.
+    _update_simulation_state(uid)
+
     return instance
+
+
+def _update_simulation_state(uid):
+    """Updates simulation state.
+
+    :param str uid: Simulation UID.
+
+    """
+    # Validate inputs.
+    _validate_update_simulation_state(uid)
+
+    # Get simulation.
+    simulation = retrieve_simulation(uid)
+    if not simulation:
+        return
+
+    # Get latest state change.
+    change = db.dao.get_latest_simulation_state_change(uid)
+    if not change:
+        return
+
+    # Update simulation state.
+    simulation.execution_state_id = change.state_id
+
+    # Push to db.
+    db.session.update(simulation)
+
+    state_name = _get_name(db.types.SimulationState, change.state_id)
+    msg = "Updated current simulation state :: {0} --> {1}".format(uid, state_name)
+    rt.log_db(msg)
 
 
 def create_message(

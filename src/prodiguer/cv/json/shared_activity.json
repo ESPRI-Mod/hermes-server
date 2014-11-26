@@ -41,7 +41,7 @@
 		"home_page_url": "http://www.wcrp-climate.org/index.php/wgcm-cmip/wgcm-cmip6",
 		"id": 5,
 		"is_active": true,
-		"is_default": true,
+		"is_default": false,
 		"name": "CMIP6"
 	}
 ]

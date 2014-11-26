@@ -29,6 +29,7 @@ from .types import (
     Model,
     Simulation,
     SimulationForcing,
+    SimulationStateChange
     )
 from ..utils import runtime as rt
 
@@ -351,6 +352,22 @@ def get_experiment_group_by_activity_and_name(activity, group):
     q = q.filter(ExperimentGroup.name==group)
 
     return q.first()
+
+
+def get_latest_simulation_state_change(uid):
+    """Returns latest simulation state change entry.
+
+    :param str uid: Simulation unique identifier.
+
+    :returns: Most recent simulation state change entry.
+    :rtype: SimulationStateChange
+
+    """
+    return get_by_facet(
+        SimulationStateChange,
+        SimulationStateChange.simulation_uid==unicode(uid),
+        SimulationStateChange.timestamp.desc(),
+        False)
 
 
 def get_simulations_by_state(state_id):

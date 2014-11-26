@@ -287,36 +287,6 @@ class Simulation(Entity):
     uid = Column(Unicode(63), nullable=False, unique=True, default=lambda: unicode(uuid.uuid4()))
 
 
-    def get_inter_monitor_url(self, cache):
-        """Returns URL used to link out to inter-monitor.
-
-        """
-        result =  cache.get(ComputeNode, self.compute_node_id).dods_server_url;
-        result += '/';
-        result += cache.get(ComputeNodeLogin, self.compute_node_login_id).login;
-        result += '/';
-        result += cache.get(Model, self.model_id).drs_tag_name;
-        result += '/';
-        result += cache.get(SimulationSpace, self.space_id).name;
-        result += '/';
-        result += cache.get(Experiment, self.experiment_id).name;
-        result += '/';
-        result += self.Name;
-
-        return result
-
-
-    def get_monitor_url(self, cache):
-        """Returns URL used to link out to monitor.
-
-        """
-        result =  self.get_inter_monitor_url(cache);
-        result = result.replace('cgi-bin/nph-dods/', '')
-        result += u'/MONITORING'
-
-        return result
-
-
 class SimulationStateChange(Entity):
     """History of simulation status changes.
 
