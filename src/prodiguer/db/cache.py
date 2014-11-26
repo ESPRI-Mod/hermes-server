@@ -42,6 +42,25 @@ def reload():
     load()
 
 
+def _is_matched_name(item, name):
+    """Predicate determining whether an item has a matching name.
+
+    """
+    name = str(name).upper()
+    names = [item.name]
+    try:
+        names += item.synonyms.split(",")
+    except AttributeError:
+        pass
+    else:
+        names = [n for n in names if n]
+        names = [n.strip() for n in names]
+        names = [n for n in names if len(n)]
+    names = [n.upper() for n in names]
+
+    return name in names
+
+
 def exists(collection_key, item_key):
     """Determines whether a cache item exists or not.
 
@@ -55,13 +74,18 @@ def exists(collection_key, item_key):
     # JIT load.
     load()
 
-    if collection_key not in _cache or item_key is None:
+    if collection_key not in _cache:
         return False
-    elif isinstance(item_key, int):
-        return len([i for i in _cache[collection_key] if i.id == item_key]) == 1
+    if item_key is None:
+        return False
+    if len(str(item_key).strip()) == 0:
+        return False
+
+    collection = _cache[collection_key]
+    if isinstance(item_key, int):
+        return len([i for i in collection if i.id == item_key]) == 1
     else:
-        item_key = str(item_key).upper()
-        return len([i for i in _cache[collection_key] if i.name.upper() == item_key]) == 1
+        return  len([i for i in collection if _is_matched_name(i, item_key)]) == 1
 
 
 def get_collection(collection_key):
@@ -130,8 +154,7 @@ def get_item(collection_key, item_key):
     if isinstance(item_key, int):
         collection = [i for i in collection if i.id == item_key]
     else:
-        item_key = str(item_key).upper()
-        collection = [i for i in collection if i.name.upper() == item_key]
+        collection = [i for i in collection if _is_matched_name(i, item_key)]
 
     return collection[0] if collection else None
 

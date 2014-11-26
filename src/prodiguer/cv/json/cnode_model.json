@@ -1,34 +1,34 @@
 [
 	{
 		"description": "IPSL Climate Model 5A - Low Resolution",
-		"drs_tag_name": "IPSLCM5A",
 		"id": 1,
 		"institute_id": 13,
 		"name": "IPSL-CM5A-LR",
+		"synonyms": "IPSLCM5A",
 		"version": "5A"
 	},
 	{
 		"description": "IPSL Climate Model 5A - Medium Resolution",
-		"drs_tag_name": "IPSLCM5A-MR",
 		"id": 2,
 		"institute_id": 13,
 		"name": "IPSL-CM5A-MR",
+		"synonyms": "IPSLCM5A-MR",
 		"version": "5A"
 	},
 	{
 		"description": "LMD CMIP5 model - atmosphere only",
-		"drs_tag_name": "LMDZOR",
 		"id": 3,
 		"institute_id": 13,
 		"name": "LMDZOR_v3",
+		"synonyms": "LMDZOR",
 		"version": "v3"
 	},
 	{
 		"description": "IPSL Climate Model 6",
-		"drs_tag_name": "IPSLCM6",
 		"id": 4,
 		"institute_id": 13,
 		"name": "IPSLCM6",
+		"synonyms": "",
 		"version": "6"
 	}
 ]

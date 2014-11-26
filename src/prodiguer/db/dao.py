@@ -393,14 +393,6 @@ def get_simulations_by_state(state_id):
                             get_iterable=True)
 
 
-def get_model_by_drs_tag_name(name):
-    """Gets an instance of the entity by drs tag name.
-
-    """
-    return get_by_facet(Model,
-                        qfilter=Model.drs_tag_name==name)
-
-
 def delete_simulation_forcing_by_simulation_id(simulation_id):
     """Deletes a set of simulation forcings.
 

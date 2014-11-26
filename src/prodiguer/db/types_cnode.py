@@ -227,7 +227,7 @@ class Model(Entity):
     # Attributes.
     name = Column(Unicode(16), nullable=False, unique=True)
     description = Column(Unicode(127), nullable=False)
-    drs_tag_name = Column(Unicode(16), nullable=False, unique=True)
+    synonyms = Column(Unicode(2047))
     version = Column(Unicode(8))
     is_reviewed = Column(Boolean, nullable=False, default=True)
 

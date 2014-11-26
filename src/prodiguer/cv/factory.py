@@ -152,7 +152,7 @@ def create_model(model, institute=_DEFAULT_INSITUTE):
 
     term = _create_term(db.types.Model)
     term.description = "{0} ?".format(model)
-    term.drs_tag_name = model
+    term.synonyms = model
     term.institute_id = _get_id(db.types.Institute, institute)
     term.name = model
 
