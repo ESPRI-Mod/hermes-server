@@ -24,6 +24,9 @@ _CONFIG = config.data.mail.imap
 # Email format identifier.
 _RFC822 = u'RFC822'
 
+# Email id header filter.
+_MESSAGE_ID_HEADER = u'BODY[HEADER.FIELDS (MESSAGE-ID)]'
+
 
 def get_imap_proxy():
     """Returns IMAP server proxy instance.
@@ -71,7 +74,20 @@ def get_email_uid_list(proxy=None):
     if not proxy:
         proxy = get_imap_proxy()
 
-    return proxy.search(['NOT DELETED'])
+    # Get emails of interest.
+    targets = proxy.search(['NOT DELETED'])
+
+    # Get emails message identifiers.
+    targets = proxy.fetch(targets, _MESSAGE_ID_HEADER)
+
+    # Set de-duplicated email uid map.
+    uid_map = {}
+    for uid in targets.keys():
+        identifier = targets[uid][_MESSAGE_ID_HEADER]
+        if identifier not in uid_map:
+            uid_map[identifier] = uid
+
+    return uid_map.values()
 
 
 def get_email(email_uid, proxy=None):
@@ -97,7 +113,8 @@ def get_email(email_uid, proxy=None):
        raise ValueError("WARNING :: Email {0} content empty.".format(email_uid))
 
     # Unpack email.
-    mail = email.message_from_string(data[email_uid][_RFC822])
+    mail = data[email_uid][_RFC822]
+    mail = email.message_from_string(mail)
     if mail.is_multipart():
         mail, attachment = mail.get_payload()
     else:

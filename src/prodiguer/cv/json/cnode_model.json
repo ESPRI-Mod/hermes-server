@@ -30,5 +30,13 @@
 		"name": "IPSLCM6",
 		"synonyms": "",
 		"version": "6"
+	},
+	{
+		"description": "IPSL ORCHIDEE model",
+		"id": 5,
+		"institute_id": 13,
+		"name": "ORCHIDEE",
+		"synonyms": "ORCHIDEE_OL",
+		"version": "1"
 	}
 ]

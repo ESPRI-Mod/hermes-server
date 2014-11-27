@@ -76,7 +76,7 @@ def _validate_create_simulation_cv_terms(
     # Ensure that cv cache is loaded.
     db.cache.load()
 
-    # Set of handlers.
+    # Set of handlers (order matters).
     handlers = (
         (
             lambda: validate_activity(activity),
