@@ -48,17 +48,10 @@ class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
 
         # Load setup data from db.
         data = {
-            'activity_list': utils.get_list(db.types.Activity),
-            'compute_node_list': utils.get_list(db.types.ComputeNode),
-            'compute_node_machine_list': utils.get_list(db.types.ComputeNodeMachine),
-            'compute_node_login_list': utils.get_list(db.types.ComputeNodeLogin),
-            'experiment_list': utils.get_list(db.types.Experiment),
-            'model_list': utils.get_list(db.types.Model),
             'simulation_list': _get_simulation_list(),
-            'simulation_state_change_list': _get_simulation_state_change_list(),
-            'execution_state_list': utils.get_list(db.types.SimulationState),
-            'space_list': utils.get_list(db.types.SimulationSpace),
+            'simulation_state_change_list': _get_simulation_state_change_list()
         }
+        data.update(utils.get_simulation_filter_facets())
 
         # Convert keys to camel case so as to respect json naming conventions.
         data = convert.dict_keys(data, convert.str_to_camel_case)

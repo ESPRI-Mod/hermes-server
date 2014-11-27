@@ -39,7 +39,23 @@ def get_list(entity_type):
     :rtype: list
 
     """
-    return [get_item(e) for e in db.dao.get_all(entity_type)]
+    collection = [get_item(e) for e in db.dao.get_all(entity_type)]
+
+    return collection
+
+def get_sorted_list(entity_type, key='name'):
+    """Returns a sorted list of db entities formatted for front-end.
+
+    :param db.types.Entity entity: Entity instance.
+    :param expression key: Collection sort key.
+
+    :returns: A sorted list of entites in dictionary format ready to be returned to front-end.
+    :rtype: list
+
+    """
+    collection = get_list(entity_type)
+
+    return sorted(collection, key=lambda instance: instance[key].lower())
 
 
 def format_date_fields(obj):
@@ -51,7 +67,7 @@ def format_date_fields(obj):
             obj[key] = str(val)[:10]
 
 
-def get_item(entity):
+def get_item(instance):
     """Returns a db entity formatted for front-end.
 
     :param db.types.Entity entity: Entity instance.
@@ -61,7 +77,14 @@ def get_item(entity):
 
     """
     # Convert to a dictionary.
-    obj = db.types.Convertor.to_dict(entity)
+    obj = db.types.Convertor.to_dict(instance)
+
+    # Set name attribute if required.
+    if 'name' not in obj:
+        try:
+            obj['name'] = instance.name
+        except AttributeError:
+            pass
 
     # Remove row meta-info.
     del obj["row_create_date"]
@@ -114,3 +137,19 @@ def get_simulation_state_change_dict(ssc):
     d["state"] = _get_name(db.types.SimulationState, ssc.state_id)
 
     return d
+
+
+def get_simulation_filter_facets():
+    """Returns simulation filter facets.
+
+    """
+    return  {
+        'activity_list': get_sorted_list(db.types.Activity),
+        'compute_node_list': get_sorted_list(db.types.ComputeNode),
+        'compute_node_machine_list': get_sorted_list(db.types.ComputeNodeMachine),
+        'compute_node_login_list': get_sorted_list(db.types.ComputeNodeLogin),
+        'experiment_list': get_sorted_list(db.types.Experiment),
+        'model_list': get_sorted_list(db.types.Model),
+        'execution_state_list': get_sorted_list(db.types.SimulationState),
+        'space_list': get_sorted_list(db.types.SimulationSpace),
+    }

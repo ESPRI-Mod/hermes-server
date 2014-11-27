@@ -73,22 +73,27 @@ def _publish_new_simulation(handler):
     """Event publisher: new simulation.
 
     """
-    # Load & format simulation.
+    # Initialise event data.
+    data = {
+        'eventType' : 'new',
+        'eventTimestamp': unicode(datetime.datetime.now())
+        }
+
+    # Set new cv terms.
+    has_new_cv_terms = bool(handler.get_argument('has_new_cv_terms'))
+    data['refreshFilters'] = has_new_cv_terms
+    if has_new_cv_terms:
+        db.cache.reload()
+        new_cv_terms = utils.get_simulation_filter_facets()
+        new_cv_terms = convert.dict_keys(new_cv_terms, convert.str_to_camel_case)
+        data.update(new_cv_terms)
+
+    # Set simulation.
     simulation_id = int(handler.get_argument('id'))
     simulation = db.dao.get_by_id(db.types.Simulation, simulation_id)
     simulation = utils.get_simulation_dict(simulation)
     simulation = convert.dict_keys(simulation, convert.str_to_camel_case)
-
-    # Set event data.
-    data = {
-        'eventType' : 'new',
-        'eventTimestamp': unicode(datetime.datetime.now()),
-        'simulation': simulation
-        }
-    if 'new_cv_terms' in handler.request.arguments:
-        db.cache.reload()
-        # terms = [[type(t).__name__, db.types.Convertor.to_dict(t)] for t in terms]
-        data['newCVTerms'] = handler.get_argument('new_cv_terms')
+    data['simulation'] = simulation
 
     # Publish event.
     _publish(data)

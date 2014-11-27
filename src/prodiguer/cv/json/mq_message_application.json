@@ -5,8 +5,13 @@
 		"id": 1
 	},
 	{
-		"code": "metrics",
-		"description": "Simulation metrics",
+		"code": "monitoring-metrics",
+		"description": "Simulation monitoring metrics",
 		"id": 2
+	},
+	{
+		"code": "simulation-metrics",
+		"description": "Simulation metrics",
+		"id": 3
 	}
 ]

@@ -68,5 +68,10 @@
 		"code": "9999",
 		"description": "FATAL",
 		"id": 14
+	},
+	{
+		"code": "000",
+		"description": "Monitoring metric",
+		"id": 15
 	}
 ]
