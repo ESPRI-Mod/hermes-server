@@ -532,3 +532,18 @@ def str_to_typed_value(s, type):
         # ... exceptions
         except Error as e:
             print "Scalar decoding error", s, type
+
+
+def to_csv(columns, rows):
+    """Converts inputs to csv.
+
+    :param list columns: CSV column headers.
+    :param list rows: CSV row data.
+
+    """
+    csv = ", ".join(columns)
+    for row in rows:
+        csv += "\n"
+        csv += ", ".join(row)
+
+    return csv

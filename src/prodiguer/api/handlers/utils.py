@@ -58,11 +58,28 @@ def write(handler, error=None):
         return
 
     # Write output as json.
-    output = handler.output if hasattr(handler, 'output') else  {}
+    output = handler.output if hasattr(handler, 'output') else {}
     if 'status' not in output:
         output['status'] = 0
     handler.set_header("Content-Type", "application/json; charset=utf-8")
     handler.write(json.dumps(output, default=json_util.default))
+
+
+def write_csv(handler, error=None):
+    """Writes a response in CSV format.
+
+    :param tornado.web.RequestHandler handler: An api handler.
+    :param Exception error: Runtime error.
+
+    """
+    # Write errors as json.
+    if error:
+        write(handler, error)
+
+    # Write output as CSV.
+    output = handler.output if hasattr(handler, 'output') else ""
+    handler.set_header("Content-Type", "text/csv; charset=utf-8")
+    handler.write(output)
 
 
 def log(api_type, handler, error=None):

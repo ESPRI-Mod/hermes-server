@@ -34,6 +34,9 @@ _HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin"
 # Inclide db id query parameter name.
 _PARAM_INCLUDE_DB_ID = 'include_db_id'
 
+# Metrics format query parameter name.
+_PARAM_FORMAT = 'format'
+
 
 def set_cors_white_list(handler):
     """Sets CORS whilte list from configuration.
@@ -114,6 +117,15 @@ def validate_include_db_id(handler):
             raise ValueError("Invalid request parameter {0}".format(_PARAM_INCLUDE_DB_ID))
 
 
+def validate_format(handler):
+    """Validates format query parameter.
+
+    """
+    if _PARAM_FORMAT in handler.request.arguments:
+        if handler.get_argument(_PARAM_FORMAT) not in ('json', 'csv'):
+            raise ValueError("Invalid request parameter {0}".format(_PARAM_FORMAT))
+
+
 def decode_include_db_id(handler):
     """Decodes the include_db_id query parameter.
 
@@ -128,3 +140,18 @@ def decode_include_db_id(handler):
         return False
     else:
         return True
+
+
+def decode_format(handler):
+    """Decodes the format query parameter.
+
+    :param tornado.web.RequestHandler handler: A web request handler.
+
+    :returns: Query parameter value if specified otherwise 'json'.
+    :rtype: str
+
+    """
+    if _PARAM_FORMAT in handler.request.arguments:
+        return handler.get_argument(_PARAM_FORMAT)
+    else:
+        return 'json'

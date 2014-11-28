@@ -14,7 +14,7 @@ import tornado
 
 from . import utils
 from .. import utils as handler_utils
-from .... utils import rt
+from .... utils import rt, convert
 from .... db.mongo import dao_metrics as dao
 
 
@@ -40,6 +40,7 @@ class FetchRequestHandler(tornado.web.RequestHandler):
         """Validates request."""
         if self.request.body:
             utils.validate_http_content_type(self, _CONTENT_TYPE_JSON)
+        utils.validate_format(self)
         utils.validate_group_name(self.get_argument(_PARAM_GROUP))
         utils.validate_include_db_id(self)
 
@@ -48,6 +49,7 @@ class FetchRequestHandler(tornado.web.RequestHandler):
         """Decodes request."""
         self.group = self.get_argument(_PARAM_GROUP)
         self.include_db_id = utils.decode_include_db_id(self)
+        self.format = utils.decode_format(self)
         if self.request.body:
             self.query = utils.decode_json_payload(self, False)
         else:
@@ -55,20 +57,36 @@ class FetchRequestHandler(tornado.web.RequestHandler):
 
 
     def _fetch_data(self):
-        """Fetches data from db."""
+        """Fetches data from db.
+
+        """
         self.columns = dao.fetch_columns(self.group, self.include_db_id)
         self.metrics = dao.fetch(self.group, self.include_db_id, self.query)
+        self.metrics = [m.values() for m in self.metrics]
+
+
+    def _set_output(self):
+        """Sets response to be returned to client.
+
+        """
+        if self.format == 'csv':
+            self.output = convert.to_csv(self.columns, self.metrics)
+        else:
+            self.output = {
+                'group': self.group,
+                'columns': self.columns,
+                'metrics': self.metrics
+            }
 
 
     def _write_response(self, error=None):
         """Write response output."""
-        if not error:
-            self.output = {
-                'group': self.group,
-                'columns': self.columns,
-                'metrics': [m.values() for m in self.metrics]
-            }
-        handler_utils.write(self, error)
+        if error:
+            handler_utils.write(self, error)
+        elif self.format == 'csv':
+            handler_utils.write_csv(self, error)
+        else:
+            handler_utils.write(self, error)
 
 
     def _log(self, error=None):
@@ -84,6 +102,7 @@ class FetchRequestHandler(tornado.web.RequestHandler):
                 self._validate_request,
                 self._decode_request,
                 self._fetch_data,
+                self._set_output,
                 self._write_response,
                 self._log,
                 ),
