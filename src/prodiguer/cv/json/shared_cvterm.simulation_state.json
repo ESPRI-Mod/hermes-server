@@ -1,0 +1,26 @@
+[
+    {
+        "description": "Process has been setup and is awaiting execution.",
+        "name": "QUEUED"
+    },
+    {
+        "description": "Process has been setup and is awaiting execution.",
+        "name": "RUNNING"
+    },
+    {
+        "description": "Process has been suspended.",
+        "name": "SUSPENDED"
+    },
+    {
+        "description": "Process has completed with success.",
+        "name": "COMPLETE"
+    },
+    {
+        "description": "Process is being rolled back.",
+        "name": "ROLLBACK"
+    },
+    {
+        "description": "Process error occurred.",
+        "name": "ERROR"
+    }
+]

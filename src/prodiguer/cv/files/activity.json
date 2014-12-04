@@ -1,0 +1,27 @@
+[
+    {
+        "description": "CMIP5 / IPCC Fifth Assessment Report",
+        "name": "CMIP5",
+        "url": "http://www.wcrp-climate.org/index.php/wgcm-cmip/wgcm-cmip5"
+    },
+    {
+        "description": "A COordinated Regional climate Downscaling EXperiment",
+        "name": "CORDEX",
+        "url": "http://copes.ipsl.jussieu.fr/RCD_CORDEX.html"
+    },
+    {
+        "description": "IPSL research and development",
+        "name": "IPSL",
+        "url": "http://www.ipsl.fr/"
+    },
+    {
+        "description": "Paleoclimate Modelling Intercomparison Project Phase III",
+        "name": "PMIP3",
+        "url": "http://pmip3.lsce.ipsl.fr/"
+    },
+    {
+        "description": "CMIP6 / IPCC Sixth Assessment Report",
+        "name": "CMIP6",
+        "url": "http://www.wcrp-climate.org/index.php/wgcm-cmip/wgcm-cmip6"
+    }
+]

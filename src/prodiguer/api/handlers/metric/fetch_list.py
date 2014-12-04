@@ -6,7 +6,7 @@
    :platform: Unix, Windows
    :synopsis: Simulation metric list group request handler.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """

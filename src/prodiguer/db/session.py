@@ -5,12 +5,10 @@
    :platform: Unix
    :synopsis: Database session manager.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
-
-# Module imports.
 import logging
 
 from sqlalchemy import create_engine

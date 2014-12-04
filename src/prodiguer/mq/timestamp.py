@@ -7,7 +7,7 @@
    :platform: Unix, Windows
    :synopsis: A message timestamp wrapper.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 """
 import arrow

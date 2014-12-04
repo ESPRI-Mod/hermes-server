@@ -1,0 +1,41 @@
+[
+    {
+        "associations": {
+            "institute": "ipsl"
+        },
+        "description": "IPSL Climate Model 5A - Low Resolution",
+        "name": "IPSL-CM5A-LR",
+        "synonyms": "IPSLCM5A"
+    },
+    {
+        "associations": {
+            "institute": "ipsl"
+        },
+        "description": "IPSL Climate Model 5A - Medium Resolution",
+        "name": "IPSL-CM5A-MR",
+        "synonyms": "IPSLCM5A-MR"
+    },
+    {
+        "associations": {
+            "institute": "ipsl"
+        },
+        "description": "LMD CMIP5 model - atmosphere only",
+        "name": "LMDZOR_v3",
+        "synonyms": "LMDZOR"
+    },
+    {
+        "associations": {
+            "institute": "ipsl"
+        },
+        "description": "IPSL Climate Model 6",
+        "name": "IPSLCM6"
+    },
+    {
+        "associations": {
+            "institute": "ipsl"
+        },
+        "description": "IPSL ORCHIDEE model",
+        "name": "ORCHIDEE",
+        "synonyms": "ORCHIDEE_OL"
+    }
+]

@@ -1,0 +1,26 @@
+[
+    {
+        "description": "Centre de Calcul Recherche et Technologie",
+        "dods_server_url": "https://esgf.extra.cea.fr/thredds/fileServer/DODSWORK",
+        "name": "CCRT",
+        "url": "http://www-ccrt.cea.fr/"
+    },
+    {
+        "description": "Institut du Developpement et des Ressources en Informatique Scientifique",
+        "dods_server_url": "https://prodn.idris.fr/thredds/fileServer/IDRISPUBFS",
+        "name": "IDRIS",
+        "url": "http://www.idris.fr/index.html"
+    },
+    {
+        "description": "Centre Informatique National de l'Enseignement Superieur",
+        "is_active": false,
+        "name": "CINES",
+        "url": "http://www.cines.fr/"
+    },
+    {
+        "description": "Tres Grand Centre de calcul du CEA",
+        "dods_server_url": "https://esgf.extra.cea.fr/thredds/fileServer/DODSWORK",
+        "name": "TGCC",
+        "url": "http://www-hpc.cea.fr/fr/complexe/tgcc.htm"
+    }
+]

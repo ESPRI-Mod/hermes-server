@@ -7,7 +7,7 @@
    :platform: Unix
    :synopsis: Encapsulates hooks from MQ platform to database.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """

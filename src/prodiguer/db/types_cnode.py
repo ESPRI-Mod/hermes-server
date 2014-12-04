@@ -7,11 +7,10 @@
    :platform: Unix, Windows
    :synopsis: Set of cnode db types.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
-# Module imports.
 import datetime, uuid
 
 from sqlalchemy import (
@@ -168,21 +167,6 @@ class Experiment(Entity):
     is_reviewed = Column(Boolean, nullable=False, default=True)
 
 
-    @property
-    def FullName(self):
-        """Gets the full name derived by concatanation.
-
-        """
-        return self.activity.name + u" - " + self.name
-
-
-    @classmethod
-    def get_default_sort_key(cls):
-        """Gets default sort key.
-
-        """
-        return lambda x: x.FullName.upper()
-
 
 class ExperimentGroup(Entity):
     """An experiment group.
@@ -285,6 +269,57 @@ class Simulation(Entity):
     output_end_date = Column(DateTime)
     parent_simulation_branch_date = Column(DateTime)
     uid = Column(Unicode(63), nullable=False, unique=True, default=lambda: unicode(uuid.uuid4()))
+
+
+class NewSimulation(Entity):
+    """A simulation being run in order to test a climate model against an experiment.
+
+    """
+    # SQLAlchemy directives.
+    __tablename__ = 'tbl_new_simulation'
+    __table_args__ = (
+        {'schema':_DB_SCHEMA}
+    )
+
+    # Attributes.
+    activity = Column(Unicode(127))
+    compute_node = Column(Unicode(127))
+    compute_node_login = Column(Unicode(127))
+    compute_node_machine = Column(Unicode(127))
+    execution_state = Column(Unicode(127))
+    experiment = Column(Unicode(127))
+    model = Column(Unicode(127))
+    space = Column(Unicode(127))
+
+    name = Column(Unicode(511), nullable=False, unique=True)
+    ensemble_member = Column(Unicode(15))
+    execution_start_date = Column(DateTime, nullable=False, default=datetime.datetime.now)
+    execution_end_date = Column(DateTime)
+    output_start_date = Column(DateTime)
+    output_end_date = Column(DateTime)
+    parent_simulation_name = Column(Unicode(511))
+    parent_simulation_branch_date = Column(DateTime)
+    uid = Column(Unicode(63),
+                 nullable=False,
+                 unique=True,
+                 default=lambda: unicode(uuid.uuid4()))
+
+
+class NewSimulationStateChange(Entity):
+    """History of simulation status changes.
+
+    """
+    # SQLAlchemy directives.
+    __tablename__ = 'tbl_new_simulation_state_change'
+    __table_args__ = (
+        {'schema':_DB_SCHEMA}
+    )
+
+    # Attributes.
+    simulation_uid = Column(Unicode(63), nullable=False)
+    state = Column(Unicode(127))
+    timestamp = Column(DateTime, nullable=False)
+    info = Column(Unicode(63), nullable=False)
 
 
 class SimulationStateChange(Entity):

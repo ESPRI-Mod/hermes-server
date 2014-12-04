@@ -7,7 +7,7 @@
    :platform: Unix, Windows
    :synopsis: Simulation monitoring event request handler.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
@@ -37,7 +37,7 @@ def _publish(data):
     """Publishes event data over web socket channel.
 
     """
-    ws.on_write(_KEY, data)
+    ws.on_write(_KEY, convert.dict_keys(data, convert.str_to_camel_case))
 
 
 def _publish_simulation_state_change(handler):
@@ -45,8 +45,8 @@ def _publish_simulation_state_change(handler):
 
     """
     data = {
-        'eventType' : 'stateChange',
-        'eventTimestamp': unicode(datetime.datetime.now()),
+        'event_type' : 'stateChange',
+        'event_timestamp': unicode(datetime.datetime.now()),
         'uid': unicode(handler.get_argument('uid')),
         'state' : handler.get_argument('state')
         }
@@ -59,9 +59,9 @@ def _publish_simulation_termination(handler):
 
     """
     data = {
+        'event_type' : 'simulationTermination',
+        'event_timestamp': unicode(datetime.datetime.now()),
         'ended': unicode(handler.get_argument('ended')[:10]),
-        'eventType' : 'simulationTermination',
-        'eventTimestamp': unicode(datetime.datetime.now()),
         'uid': unicode(handler.get_argument('uid')),
         'state' : handler.get_argument('state')
         }
@@ -75,25 +75,16 @@ def _publish_new_simulation(handler):
     """
     # Initialise event data.
     data = {
-        'eventType' : 'new',
-        'eventTimestamp': unicode(datetime.datetime.now())
+        'event_type' : 'new',
+        'event_timestamp': unicode(datetime.datetime.now()),
+        'simulation': db.dao.get_by_id(db.types.NewSimulation,
+                                       int(handler.get_argument('id'))),
+        'cv_terms': []
         }
 
     # Set new cv terms.
-    has_new_cv_terms = bool(handler.get_argument('has_new_cv_terms'))
-    data['refreshFilters'] = has_new_cv_terms
-    if has_new_cv_terms:
-        db.cache.reload()
-        new_cv_terms = utils.get_simulation_filter_facets()
-        new_cv_terms = convert.dict_keys(new_cv_terms, convert.str_to_camel_case)
-        data.update(new_cv_terms)
-
-    # Set simulation.
-    simulation_id = int(handler.get_argument('id'))
-    simulation = db.dao.get_by_id(db.types.Simulation, simulation_id)
-    simulation = utils.get_simulation_dict(simulation)
-    simulation = convert.dict_keys(simulation, convert.str_to_camel_case)
-    data['simulation'] = simulation
+    if bool(handler.get_argument('has_new_cv_terms')):
+        data['cv_terms'] = utils.get_sorted_list(db.types.CvTerm)
 
     # Publish event.
     _publish(data)
@@ -113,6 +104,9 @@ class EventRequestHandler(tornado.web.RequestHandler):
     """
     @tornado.web.asynchronous
     def get(self, *args):
+        """HTTP GET handler.
+
+        """
         # Signal asynch.
         self.finish()
 
@@ -123,7 +117,7 @@ class EventRequestHandler(tornado.web.RequestHandler):
         # Set publisher.
         publisher = _publishers[event_type]
 
-        # Start session.
+        # Connect to db.
         db.session.start(config.db.pgres.main)
 
         # Publish event to clients.

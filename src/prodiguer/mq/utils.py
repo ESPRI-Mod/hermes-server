@@ -7,7 +7,7 @@
    :platform: Unix, Windows
    :synopsis: Set of message queue utilty functions.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 """
 import uuid

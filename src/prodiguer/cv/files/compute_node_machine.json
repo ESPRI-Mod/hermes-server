@@ -1,0 +1,56 @@
+[
+    {
+        "associations": {
+            "compute_node": "ccrt"
+        },
+        "manafacturer": "NEC",
+        "name": "CCRT-SX9",
+        "synonyms": "SX9",
+        "type": "SX9"
+    },
+    {
+        "associations": {
+            "compute_node": "ccrt"
+        },
+        "manafacturer": "INTEL",
+        "name": "CCRT-TITANE",
+        "synonyms": "TITANE",
+        "type": "Quad-Core"
+    },
+    {
+        "associations": {
+            "compute_node": "cines"
+        },
+        "manafacturer": "INTEL",
+        "name": "CINES-JADE",
+        "synonyms": "JADE",
+        "type": "Quad-Core"
+    },
+    {
+        "associations": {
+            "compute_node": "idris"
+        },
+        "manafacturer": "IBM",
+        "name": "IDRIS-ADA",
+        "synonyms": "ADA",
+        "type": "PW6"
+    },
+    {
+        "associations": {
+            "compute_node": "idris"
+        },
+        "manafacturer": "IBM",
+        "name": "IDRIS-VARGAS",
+        "synonyms": "VARGAS",
+        "type": "PW6"
+    },
+    {
+        "associations": {
+            "compute_node": "tgcc"
+        },
+        "manafacturer": "IBM",
+        "name": "TGCC-CURIE",
+        "synonyms": "CURIE",
+        "type": "PW6"
+    }
+]

@@ -7,11 +7,10 @@
    :platform: Unix, Windows
    :synopsis: Encapsulates cv tests.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
-# Module imports.
 from os.path import dirname, abspath, exists, join
 
 from sqlalchemy import inspect

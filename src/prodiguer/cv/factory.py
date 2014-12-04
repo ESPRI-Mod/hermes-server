@@ -2,12 +2,12 @@
 
 """
 .. module:: cv.factory.py
-   :copyright: Copyright "May 22, 2013", Earth System Documentation
+   :copyright: Copyright "December 01, 2014", IPSL
    :license: GPL/CeCIL
    :platform: Unix, Windows
    :synopsis: Controlled vocabulary factory for creating new cv terms.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """

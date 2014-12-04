@@ -7,11 +7,10 @@
    :platform: Unix, Windows
    :synopsis: Operations heartbeat request handler.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
-# Module imports.
 import tornado
 
 from ....utils import runtime as rt
@@ -29,7 +28,7 @@ class HeartbeatRequestHandler(tornado.web.RequestHandler):
             "status": 0
         }
 
-        
+
     def _write(self, error=None):
         """Write response output."""
         handler_utils.write(self, error)
@@ -37,7 +36,7 @@ class HeartbeatRequestHandler(tornado.web.RequestHandler):
 
     def _log(self, error=None):
         """Logs execution."""
-        handler_utils.log("ops", self, error)        
+        handler_utils.log("ops", self, error)
 
 
     def get(self):
@@ -45,7 +44,7 @@ class HeartbeatRequestHandler(tornado.web.RequestHandler):
         tasks = {
             "green": (
                 self._write,
-                self._log, 
+                self._log,
                 ),
             "red": (
                 self._write,

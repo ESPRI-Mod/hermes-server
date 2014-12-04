@@ -7,7 +7,7 @@
    :platform: Unix, Windows
    :synopsis: Simulation metric group delete request handler.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """

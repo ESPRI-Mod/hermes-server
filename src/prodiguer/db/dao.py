@@ -5,11 +5,10 @@
    :platform: Unix
    :synopsis: Set of core data access operations.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
-# Module imports.
 import random
 
 from . import constants, session, types
@@ -18,10 +17,6 @@ from .types import (
     ComputeNode,
     ComputeNodeLogin,
     ComputeNodeMachine,
-    DataNode,
-    DataServer,
-    DRSComponent,
-    DRSSchema,
     Experiment,
     ExperimentGroup,
     Institute,
@@ -402,40 +397,5 @@ def delete_simulation_forcing_by_simulation_id(simulation_id):
     """
     delete_by_facet(SimulationForcing,
                     SimulationForcing.simulation_id==simulation_id)
-
-
-def get_data_node_by_institute_and_name(institute, name):
-    """Gets an instance of the entity by institute and name.
-
-    """
-    q = session.query(DataNode, Institute)
-    q = q.filter(DataNode.name==name)
-    q = q.filter(Institute.name==institute)
-
-    return q.first()
-
-
-def get_data_server_by_is_active():
-    """Gets all active instances.
-
-    """
-    q = session.query(DataServer, DataNode)
-    q = q.filter(DataServer.is_active==True)
-    q = q.filter(DataNode.is_active==True)
-
-    return sort(DataServer, q.all())
-
-
-def get_drs_component_by_schema_and_name(schema_name, name):
-    """Gets an instance of the entity by name.
-
-    """
-    q = session.query(DRSComponent, DRSSchema)
-    q = q.filter(DRSComponent.name==name)
-    q = q.filter(DRSSchema.name==schema_name)
-
-    return q.first()
-
-
 
 

@@ -6,7 +6,7 @@
    :platform: Unix, Windows
    :synopsis: Controlled vocabulary package initializer.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
@@ -18,4 +18,4 @@ from .io import (
 	read,
 	write
 	)
-import factory
+import cache, factory

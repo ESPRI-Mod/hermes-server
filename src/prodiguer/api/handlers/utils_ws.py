@@ -1,6 +1,16 @@
 # -*- coding: utf-8 -*-
 
-# Module imports.
+"""
+.. module:: utils_ws.py
+   :copyright: Copyright "Feb 7, 2013", Earth System Documentation
+   :license: GPL/CeCIL
+   :platform: Unix, Windows
+   :synopsis: Web socket utility functions.
+
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
+
+
+"""
 import tornado.websocket
 
 from ... utils import runtime as rt, config

@@ -11,8 +11,6 @@
 .. moduleauthor:: Institute Pierre Simon Laplace (ES-DOC) <dev@esdocumentation.org>
 
 """
-
-# Module imports.
 import datetime
 import inspect
 

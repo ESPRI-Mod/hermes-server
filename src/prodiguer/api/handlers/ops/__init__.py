@@ -7,10 +7,9 @@
    :platform: Unix, Windows
    :synopsis: Operations package initializer.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
-# Module imports.
 from .heartbeat import HeartbeatRequestHandler
 from .list_endpoints import ListEndpointsRequestHandler

@@ -1,0 +1,135 @@
+[
+    {
+        "associations": {
+            "activity": "ipsl"
+        },
+        "description": "Anthropogenic aerosols",
+        "long_description": "Anthropogenic aerosols (a mixture of aerosols, not explicitly defined here)",
+        "name": "AA"
+    },
+    {
+        "associations": {
+            "activity": "ipsl"
+        },
+        "description": "Anthropogenic forcing",
+        "long_description": "Anthropogenic forcing (a mixture, not explicitly defined here, that might include, for example, well-mixed greenhouse gases, aerosols, ozone, and land-use changes)",
+        "name": "Ant"
+    },
+    {
+        "associations": {
+            "activity": "ipsl"
+        },
+        "description": "Black carbon",
+        "name": "BC"
+    },
+    {
+        "associations": {
+            "activity": "ipsl"
+        },
+        "description": "Dust",
+        "name": "Ds"
+    },
+    {
+        "associations": {
+            "activity": "ipsl"
+        },
+        "description": "Well-mixed greenhouse gases",
+        "long_description": "Well-mixed greenhouse gases (a mixture, not explicitly defined here)",
+        "name": "GHG"
+    },
+    {
+        "associations": {
+            "activity": "ipsl"
+        },
+        "description": "Land-use change",
+        "name": "LU"
+    },
+    {
+        "associations": {
+            "activity": "ipsl"
+        },
+        "description": "Mineral dust",
+        "name": "MD"
+    },
+    {
+        "associations": {
+            "activity": "ipsl"
+        },
+        "description": "Natural forcing",
+        "long_description": "Natural forcing (a combination, not explicitly defined here, that might include, for example, solar and volcanic)",
+        "name": "Nat"
+    },
+    {
+        "associations": {
+            "activity": "ipsl"
+        },
+        "description": "Organic carbon",
+        "name": "OC"
+    },
+    {
+        "associations": {
+            "activity": "ipsl"
+        },
+        "description": "Ozone",
+        "long_description": "Ozone (= tropomfheric and stratomfheric ozone)",
+        "name": "Oz(=To+So)"
+    },
+    {
+        "associations": {
+            "activity": "ipsl"
+        },
+        "description": "Anthropogenic sulfate aerosol direct & indirect effects",
+        "name": "SA(=SD+SI)"
+    },
+    {
+        "associations": {
+            "activity": "ipsl"
+        },
+        "description": "Anthropogenic sulfate aerosol, accounting only for direct effects",
+        "name": "SD"
+    },
+    {
+        "associations": {
+            "activity": "ipsl"
+        },
+        "description": "Anthropogenic sulfate aerosol, accounting only for indirect effects",
+        "name": "SI"
+    },
+    {
+        "associations": {
+            "activity": "ipsl"
+        },
+        "description": "Solar irradiance",
+        "long_description": "Solar irradiance (note : Sl is 'S' followed by a lower case 'L', not an upper case 'I')",
+        "name": "Sl"
+    },
+    {
+        "associations": {
+            "activity": "ipsl"
+        },
+        "description": "Stratomfheric ozone",
+        "name": "SO"
+    },
+    {
+        "associations": {
+            "activity": "ipsl"
+        },
+        "description": "Sea salt",
+        "name": "SS"
+    },
+    {
+        "associations": {
+            "activity": "ipsl"
+        },
+        "description": "Tropomfheric ozone",
+        "name": "TO"
+    },
+    {
+        "associations": {
+            "activity": "ipsl"
+        },
+        "description": "Volcanic aerosol",
+        "long_description": "Volcanic aerosol (note : Vl is 'V' followed by a lower case 'L', not an upper case 'I')",
+        "name": "Vl"
+    }
+]

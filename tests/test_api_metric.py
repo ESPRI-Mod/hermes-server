@@ -11,7 +11,6 @@
 .. moduleauthor:: Institute Pierre Simon Laplace (ES-DOC) <dev@esdocumentation.org>
 
 """
-# Module imports.
 from multiprocessing import Process
 
 import nose

@@ -7,11 +7,10 @@
    :platform: Unix, Windows
    :synopsis: Simulation monitoring utility functions.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
-# Module imports.
 import datetime
 
 from .... import db
@@ -42,6 +41,7 @@ def get_list(entity_type):
     collection = [get_item(e) for e in db.dao.get_all(entity_type)]
 
     return collection
+
 
 def get_sorted_list(entity_type, key='name'):
     """Returns a sorted list of db entities formatted for front-end.
@@ -94,62 +94,3 @@ def get_item(instance):
     format_date_fields(obj)
 
     return obj
-
-
-def get_simulation_dict(s):
-    """Returns simulation information formatted for front-end.
-
-    :param db.types.Simulation s: Simulation instance.
-
-    :returns: Simulation information in dictionary format ready to be returned to front-end.
-    :rtype: dict
-
-    """
-    # Convert to dict.
-    obj = get_item(s)
-
-    # Set names
-    obj["activity"] = _get_name(db.types.Activity, s.activity_id)
-    obj["compute_node"] = _get_name(db.types.ComputeNode, s.compute_node_id)
-    obj["compute_node_login"] = _get_name(db.types.ComputeNodeLogin, s.compute_node_login_id),
-    obj["compute_node_machine"] = _get_name(db.types.ComputeNodeMachine, s.compute_node_machine_id)
-    obj["execution_state"] = _get_name(db.types.SimulationState, s.execution_state_id)
-    obj["experiment"] = _get_name(db.types.Experiment, s.experiment_id)
-    obj["model"] = _get_name(db.types.Model, s.model_id)
-    obj["space"] = _get_name(db.types.SimulationSpace, s.space_id)
-
-    return obj
-
-
-def get_simulation_state_change_dict(ssc):
-    """Returns simulation information formatted for front-end.
-
-    :param db.types.Simulation ssc: Simulation state change instance.
-
-    :returns: Simulation state change information in dictionary format ready to be returned to front-end.
-    :rtype: dict
-
-    """
-    # Convert to dict.
-    d = get_item(ssc)
-
-    # Set names
-    d["state"] = _get_name(db.types.SimulationState, ssc.state_id)
-
-    return d
-
-
-def get_simulation_filter_facets():
-    """Returns simulation filter facets.
-
-    """
-    return  {
-        'activity_list': get_sorted_list(db.types.Activity),
-        'compute_node_list': get_sorted_list(db.types.ComputeNode),
-        'compute_node_machine_list': get_sorted_list(db.types.ComputeNodeMachine),
-        'compute_node_login_list': get_sorted_list(db.types.ComputeNodeLogin),
-        'experiment_list': get_sorted_list(db.types.Experiment),
-        'model_list': get_sorted_list(db.types.Model),
-        'execution_state_list': get_sorted_list(db.types.SimulationState),
-        'space_list': get_sorted_list(db.types.SimulationSpace),
-    }

@@ -1,6 +1,16 @@
 # -*- coding: utf-8 -*-
 
-# Module imports.
+"""
+.. module:: prodiguer.api.app.py
+   :copyright: Copyright "Feb 7, 2013", Earth System Documentation
+   :license: GPL/CeCIL
+   :platform: Unix, Windows
+   :synopsis: Web service application entry point.
+
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
+
+
+"""
 import os
 
 import tornado

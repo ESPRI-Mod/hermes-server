@@ -11,10 +11,9 @@
 .. moduleauthor:: Institute Pierre Simon Laplace (ES-DOC) <dev@esdocumentation.org>
 
 """
-__version__ = '0.1.0.0'
+__version__ = '0.2.0.0'
 
 
-# Module imports.
 from os.path import dirname, abspath, join
 
 from . import (
@@ -25,7 +24,6 @@ from . import (
 	utils,
 	)
 from .utils import config, convert, mail, runtime, runtime as rt
-
 
 
 # Module exports.

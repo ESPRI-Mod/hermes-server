@@ -1,0 +1,18 @@
+[
+    {
+        "description": "Recherche, prive IPSL",
+        "name": "DEVT"
+    },
+    {
+        "description": "Trash, recale, KO",
+        "name": "FAIL"
+    },
+    {
+        "description": "Principal, candidate",
+        "name": "PROD"
+    },
+    {
+        "description": "Pre-production testing",
+        "name": "TEST"
+    }
+]

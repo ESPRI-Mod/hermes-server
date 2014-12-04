@@ -1,0 +1,474 @@
+[
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "1 percent per year CO2",
+        "name": "1pctCO2"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "abrupt 4XCO2",
+        "name": "abrupt4xCO2"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-decadal"
+        },
+        "description": "AMIP",
+        "name": "amip"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-decadal"
+        },
+        "description": "AMIP plus 4K anomaly",
+        "name": "amip4K"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-decadal"
+        },
+        "description": "4xCO2 AMIP",
+        "name": "amip4xCO2"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-decadal"
+        },
+        "description": "AMIP plus patterned anomaly",
+        "name": "amipFuture"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-decadal"
+        },
+        "description": "aqua planet plus 4K anomaly",
+        "name": "aqua4K"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-decadal"
+        },
+        "description": "4xCO2 aqua planet",
+        "name": "aqua4xCO2"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-decadal"
+        },
+        "description": "aqua planet control",
+        "name": "aquaControl"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 1960",
+        "name": "decadal1960"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 1965",
+        "name": "decadal1965"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 1970",
+        "name": "decadal1970"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 1975",
+        "name": "decadal1975"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 1980",
+        "name": "decadal1980"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 1985",
+        "name": "decadal1985"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 1990",
+        "name": "decadal1990"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 1995",
+        "name": "decadal1995"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 2000",
+        "name": "decadal2000"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 2001",
+        "name": "decadal2001"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 2002",
+        "name": "decadal2002"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 2003",
+        "name": "decadal2003"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 2004",
+        "name": "decadal2004"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 2005",
+        "name": "decadal2005"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 2006",
+        "name": "decadal2006"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 2007",
+        "name": "decadal2007"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 2008",
+        "name": "decadal2008"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 2009",
+        "name": "decadal2009"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "10- or 30-year run initialized in year 2010",
+        "name": "decadal2010"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "ESM pre-industrial control",
+        "name": "esmControl"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "ESM feedback 1",
+        "name": "esmFdbk1"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "ESM feedback 2",
+        "name": "esmFdbk2"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "ESM fixed climate 1",
+        "name": "esmFixClim1"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "ESM fixed climate 2",
+        "name": "esmFixClim2"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "ESM historical",
+        "name": "esmHistorical"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "ESM RCP8.5",
+        "name": "esmrcp85"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "historical",
+        "name": "historical"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "historical simulation extended through year 2012",
+        "name": "historicalExt"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "historical, well-mixed greenhouse gases only",
+        "name": "historicalGHG"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "historical simulation but with other individual forcing agents or combinations of forcings",
+        "name": "historicalMisc"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "historical, natural forcing only",
+        "name": "historicalNat"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "last glacial maximum",
+        "name": "lgm"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "mid-Holocene",
+        "name": "midHolocene"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "volcano-free hindcasts initiated in 1960",
+        "name": "noVolc1960"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "volcano-free hindcasts initiated in 1975",
+        "name": "noVolc1975"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "volcano-free hindcasts initiated in 1980",
+        "name": "noVolc1980"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "volcano-free hindcasts initiated in 1985",
+        "name": "noVolc1985"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "volcano-free hindcasts initiated in 1990",
+        "name": "noVolc1990"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "last millennium",
+        "name": "past1000"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "pre-industrial control",
+        "name": "piControl"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "RCP2.6",
+        "name": "rcp26"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "RCP4.5",
+        "name": "rcp45"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "RCP6",
+        "name": "rcp60"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "atmosphere-only"
+        },
+        "description": "RCP8.5",
+        "name": "rcp85"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-decadal"
+        },
+        "description": "2030 time-slice",
+        "name": "sst2030"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-decadal"
+        },
+        "description": "control SST climatology",
+        "name": "sstClim"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-decadal"
+        },
+        "description": "CO2 forcing",
+        "name": "sstClim4xCO2"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-decadal"
+        },
+        "description": "all aerosol forcing",
+        "name": "sstClimAerosol"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-decadal"
+        },
+        "description": "sulfate aerosol forcing",
+        "name": "sstClimSulfate"
+    },
+    {
+        "associations": {
+            "activity": "cmip5",
+            "experiment-group": "coupled-longterm"
+        },
+        "description": "prediction with 2010 volcano",
+        "name": "volcIn2010"
+    }
+]

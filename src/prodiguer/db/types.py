@@ -5,7 +5,7 @@
    :platform: Unix
    :synopsis: Prodiguer db types.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
@@ -40,18 +40,9 @@ from .types_cnode import (
     SimulationForcing,
     SimulationSpace,
     SimulationState,
-    SimulationStateChange
-    )
-
-# Import dnode types.
-from .types_dnode import (
-    DataNode,
-    DataServer,
-    DataServerType,
-    DRSComponent,
-    DRSElement,
-    DRSElementMapping,
-    DRSSchema
+    SimulationStateChange,
+    NewSimulation,
+    NewSimulationStateChange
     )
 
 # Import mq types.
@@ -65,6 +56,10 @@ from .types_mq import (
 # Import shared schema
 from .types_shared import (
     Activity,
+    CvTerm,
+    CV_TYPES,
+    CV_TYPE_ACTIVITY,
+    CV_TYPE_INSTITUTE,
     Institute
     )
 
@@ -84,14 +79,8 @@ __all__ = [
     "SimulationSpace",
     "SimulationState",
     "SimulationStateChange",
-    # ... dnode types
-    "DataNode",
-    "DataServer",
-    "DataServerType",
-    "DRSComponent",
-    "DRSElement",
-    "DRSElementMapping",
-    "DRSSchema",
+    "NewSimulation",
+    "NewSimulationStateChange",
     # ... mq types
     "Message",
     "MessageApplication",
@@ -99,6 +88,10 @@ __all__ = [
     "MessageType",
     # ... shared types
     "Activity",
+    "CvTerm",
+    "CV_TYPES",
+    "CV_TYPE_ACTIVITY",
+    "CV_TYPE_INSTITUTE",
     "Institute",
     # ... other
     "Entity",
@@ -115,7 +108,7 @@ __all__ = [
 
 
 # Set of supported model schemas.
-SCHEMAS = ("cnode", "dnode", "mq", "shared")
+SCHEMAS = ("cnode", "mq", "shared")
 
 
 # Set of supported model types.
@@ -133,14 +126,8 @@ TYPES = type_utils.supported_types = [
     SimulationSpace,
     SimulationState,
     SimulationStateChange,
-    # ... dnode
-    DataNode,
-    DataServer,
-    DataServerType,
-    DRSComponent,
-    DRSElement,
-    DRSElementMapping,
-    DRSSchema,
+    NewSimulation,
+    NewSimulationStateChange,
     # ... mq
     Message,
     MessageApplication,
@@ -149,6 +136,7 @@ TYPES = type_utils.supported_types = [
     # ... shared
     Activity,
     Institute,
+    CvTerm
 ]
 
 # Extend type with other fields.
@@ -161,6 +149,7 @@ for type in TYPES:
 CV = (
     # ... shared cv's.
     Activity,
+    CvTerm,
     Institute,
     # ... cnode cv's.
     ComputeNode,
@@ -176,14 +165,6 @@ CV = (
     MessageApplication,
     MessageProducer,
     MessageType,
-    # ... dnode cv's.
-    DataNode,
-    DataServerType,
-    DataServer,
-    DRSSchema,
-    DRSComponent,
-    DRSElement,
-    DRSElementMapping,
     # ... temp cv's.
     Simulation
     )
@@ -207,4 +188,5 @@ CACHEABLE = (
     # ... shared
     Activity,
     Institute,
+    CvTerm,
     )

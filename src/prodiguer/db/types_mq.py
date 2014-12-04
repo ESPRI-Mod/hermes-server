@@ -7,11 +7,10 @@
    :platform: Unix, Windows
    :synopsis: Set of message queue db types.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
-# Module imports.
 import datetime
 import uuid
 

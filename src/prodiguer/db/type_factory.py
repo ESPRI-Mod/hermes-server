@@ -5,11 +5,10 @@
    :platform: Unix
    :synopsis: Database type factory used in unit testing.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
-# Module imports.
 import collections
 import datetime
 import random
@@ -54,7 +53,9 @@ def _get_etype(schema, tbl):
 
 
 def _set_scalar(i, c):
-    """Sets value of a scalue attribute."""
+    """Sets value of a scalue attribute.
+
+    """
     stype = c.type.python_type
     if stype in _scalar_factories:
         setattr(i, c.name, _scalar_factories[stype]())
@@ -63,7 +64,9 @@ def _set_scalar(i, c):
 
 
 def _set_fk(etype, i, c, fk):
-    """Sets value of a foreign key attribute."""
+    """Sets value of a foreign key attribute.
+
+    """
     schema, tbl, col = fk.target_fullname.split('.')
     fk_etype = _get_etype(schema, tbl)
     fki = create(fk_etype)

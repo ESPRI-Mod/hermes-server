@@ -7,11 +7,10 @@
    :platform: Unix, Windows
    :synopsis: Simulation monitoring websocket handler.
 
-.. moduleauthor:: Mark Conway-Greenslade (formerly Morgan) <momipsl@ipsl.jussieu.fr>
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
-# Module imports.
 import tornado.websocket
 
 from .. import utils_ws as ws
@@ -31,6 +30,6 @@ class FrontEndWebSocketHandler(tornado.websocket.WebSocketHandler):
         ws.on_connect(_KEY, self)
 
 
-    def on_close(self):  
+    def on_close(self):
         """WS on close event handler."""
         ws.on_disconnect(_KEY, self)
