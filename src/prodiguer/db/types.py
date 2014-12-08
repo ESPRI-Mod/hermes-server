@@ -46,12 +46,7 @@ from .types_cnode import (
     )
 
 # Import mq types.
-from .types_mq import (
-    Message,
-    MessageApplication,
-    MessageProducer,
-    MessageType
-    )
+from .types_mq import Message
 
 # Import shared schema
 from .types_shared import (
@@ -83,9 +78,6 @@ __all__ = [
     "NewSimulationStateChange",
     # ... mq types
     "Message",
-    "MessageApplication",
-    "MessageProducer",
-    "MessageType",
     # ... shared types
     "Activity",
     "CvTerm",
@@ -130,9 +122,6 @@ TYPES = type_utils.supported_types = [
     NewSimulationStateChange,
     # ... mq
     Message,
-    MessageApplication,
-    MessageProducer,
-    MessageType,
     # ... shared
     Activity,
     Institute,
@@ -161,10 +150,6 @@ CV = (
     Experiment,
     SimulationSpace,
     SimulationState,
-    # ... mq cv's.
-    MessageApplication,
-    MessageProducer,
-    MessageType,
     # ... temp cv's.
     Simulation
     )
@@ -181,10 +166,6 @@ CACHEABLE = (
     Model,
     SimulationSpace,
     SimulationState,
-    # ... mq
-    MessageApplication,
-    MessageProducer,
-    MessageType,
     # ... shared
     Activity,
     Institute,

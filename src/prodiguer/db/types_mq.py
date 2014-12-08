@@ -21,11 +21,7 @@ from sqlalchemy import (
     Unicode
     )
 
-from . type_utils import (
-    create_fk,
-    ControlledVocabularyEntity,
-    Entity
-    )
+from . type_utils import Entity
 
 
 
@@ -44,50 +40,24 @@ class Message(Entity):
         {'schema':_DB_SCHEMA}
     )
 
-    # Foreign keys.
-    app_id = create_fk('mq.tbl_message_application.id')
-    producer_id = create_fk('mq.tbl_message_producer.id')
-    type_id = create_fk('mq.tbl_message_type.id')
-
     # Attributes.
-    uid = Column(Unicode(63), nullable=False, unique=True, default=unicode(uuid.uuid4()))
-    correlation_id = Column(Unicode(63), nullable=True)
+    app_id = Column(Unicode(63), nullable=False)
+    producer_id = Column(Unicode(63), nullable=False)
+    type_id = Column(Unicode(63), nullable=False)
+    user_id = Column(Unicode(63), nullable=False)
+    mode = Column(Unicode(15), nullable=True)
+    uid = Column(Unicode(63),
+                 nullable=False,
+                 unique=True,
+                 default=unicode(uuid.uuid4()))
+    correlation_id_1 = Column(Unicode(63), nullable=True)
+    correlation_id_2 = Column(Unicode(63), nullable=True)
+    correlation_id_3 = Column(Unicode(63), nullable=True)
     timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now)
     timestamp_raw = Column(Unicode(63), nullable=True)
     timestamp_precision = Column(Unicode(7), nullable=False, default=u"ms")
     content_encoding = Column(Unicode(63), nullable=True, default=u"utf-8")
-    content_type = Column(Unicode(63), nullable=True, default=u"application/json")
+    content_type = Column(Unicode(63),
+                          nullable=True,
+                          default=u"application/json")
     content = Column(Text, nullable=True)
-
-
-class MessageApplication(ControlledVocabularyEntity):
-    """Distinguishes the application that will process the message.
-
-    """
-    # SQLAlchemy directives.
-    __tablename__ = 'tbl_message_application'
-    __table_args__ = (
-        {'schema':_DB_SCHEMA}
-    )
-
-
-class MessageProducer(ControlledVocabularyEntity):
-    """Distinguishes the producer that originally dispatched the message.
-
-    """
-    # SQLAlchemy directives.
-    __tablename__ = 'tbl_message_producer'
-    __table_args__ = (
-        {'schema':_DB_SCHEMA}
-    )
-
-
-class MessageType(ControlledVocabularyEntity):
-    """Distinguishes the type of runtime message.
-
-    """
-    # SQLAlchemy directives.
-    __tablename__ = 'tbl_message_type'
-    __table_args__ = (
-        {'schema':_DB_SCHEMA}
-    )

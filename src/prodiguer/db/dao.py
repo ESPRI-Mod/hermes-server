@@ -24,7 +24,9 @@ from .types import (
     Model,
     Simulation,
     SimulationForcing,
-    SimulationStateChange
+    SimulationStateChange,
+    NewSimulation,
+    NewSimulationStateChange,
     )
 from ..utils import runtime as rt
 
@@ -359,33 +361,10 @@ def get_latest_simulation_state_change(uid):
 
     """
     return get_by_facet(
-        SimulationStateChange,
-        SimulationStateChange.simulation_uid==unicode(uid),
-        SimulationStateChange.timestamp.desc(),
+        NewSimulationStateChange,
+        NewSimulationStateChange.simulation_uid==unicode(uid),
+        NewSimulationStateChange.timestamp.desc(),
         False)
-
-
-def get_simulations_by_state(state_id):
-    """Retrieves list of simulation details from backend filtered by execution state.
-
-    :param state_id: id of execution state.
-    :type state_id: int
-
-    :returns: Simulation details.
-    :rtype: types.cnode.simulation.Simulation
-
-    """
-
-    if state_id is not None and \
-       state_id not in constants.EXECUTION_STATE_SET_ID_LIST:
-        rt.throw("Execution state id is invalid : {0}".format(str(state_id)))
-
-    if state_id is None:
-        return get_all(Simulation)
-    else:
-        return get_by_facet(Simulation,
-                            Simulation.execution_state_id==state_id,
-                            get_iterable=True)
 
 
 def delete_simulation_forcing_by_simulation_id(simulation_id):

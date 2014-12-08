@@ -21,10 +21,6 @@ from . import utils as tu
 
 
 
-# Reduce pika logging to warnings + errors only.
-# logging.getLogger("pika").setLevel(logging.ERROR)
-
-
 def assert_msg_props(props,
                      app_id=constants.APP_SMON,
                      cluster_id=None,

@@ -19,3 +19,5 @@ from .io import (
 	write
 	)
 import cache, factory
+from .factory import create
+from .parser import parse

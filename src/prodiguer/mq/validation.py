@@ -17,58 +17,58 @@ from timestamp import Timestamp
 
 
 
-def validate_app_id(identifer):
+def validate_app_id(identifier):
     """Validates a messaging application identifier.
 
-    :param str identifer: A Messaging application identifier.
+    :param str identifier: A Messaging application identifier.
 
     """
-    if identifer not in constants.APPS:
-        raise ValueError('Message application is unknown: {0}'.format(identifer))
+    if identifier not in constants.APPS:
+        raise ValueError('Message application is unknown: {0}'.format(identifier))
 
 
-def validate_producer_id(identifer):
+def validate_producer_id(identifier):
     """Validates a messaging producer identifier.
 
-    :param str identifer: A Messaging producer identifier.
+    :param str identifier: A Messaging producer identifier.
 
     """
-    if identifer not in constants.PRODUCERS:
-        raise ValueError('Message producer is unknown: {0}'.format(identifer))
+    if identifier not in constants.PRODUCERS:
+        raise ValueError('Message producer is unknown: {0}'.format(identifier))
 
 
-def validate_type_id(identifer):
+def validate_type_id(identifier):
     """Validates a messaging type identifier.
 
-    :param str identifer: A Messaging type identifier.
+    :param str identifier: A Messaging type identifier.
 
     """
-    if identifer not in constants.TYPES:
-        raise ValueError('Message type is unknown: {0}'.format(identifer))
+    if identifier not in constants.TYPES:
+        raise ValueError('Message type is unknown: {0}'.format(identifier))
 
 
-def validate_uid(identifer):
+def validate_uid(identifier):
     """Validates a messaging unique identifier.
 
-    :param str identifer: A Messaging unique identifier.
+    :param str identifier: A Messaging unique identifier.
 
     """
     try:
-        uuid.UUID(identifer)
+        uuid.UUID(identifier)
     except ValueError:
-        raise ValueError("Message identifer must be UUID compatible.")
+        raise ValueError("Message identifier must be UUID compatible.")
 
 
-def validate_correlation_id(identifer):
+def validate_correlation_id(identifier):
     """Validates a messaging correlation identifier.
 
-    :param str identifer: A Messaging correlation identifier.
+    :param str identifier: A Messaging correlation identifier.
 
     """
     try:
-        uuid.UUID(identifer)
+        uuid.UUID(identifier)
     except ValueError:
-        raise ValueError("Message correlation identifer must be UUID compatible.")
+        raise ValueError("Message correlation identifier must be UUID compatible.")
 
 
 def validate_content(content, content_encoding, content_type):
@@ -104,3 +104,23 @@ def validate_timestamp(timestamp, precision, raw):
             Timestamp.create(precision, raw)
         except (ValueError, IndexError):
             raise TypeError('Raw timestamp is unparseable.')
+
+
+def validate_mode(mode):
+    """Validates message mode.
+
+    :param str mode: A messaging dispatch mode.
+
+    """
+    if mode not in constants.MODES:
+        raise ValueError('Message mode is unknown: {0}'.format(mode))
+
+
+def validate_user_id(identifier):
+    """Validates message mode.
+
+    :param str identifier: Message user id, e.g. libl-igcm-user.
+
+    """
+    if identifier not in constants.USERS:
+        raise ValueError('Message user id is unknown: {0}'.format(identifier))

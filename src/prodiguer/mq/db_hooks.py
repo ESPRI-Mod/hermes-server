@@ -11,20 +11,8 @@
 
 
 """
-import sqlalchemy
-
-import validation
+from . import validation as msg_validation
 from .. import db
-from ..cv.factory import (
-    create_activity,
-    create_compute_node,
-    create_compute_node_login,
-    create_compute_node_machine,
-    create_experiment,
-    create_model,
-    create_simulation_space,
-    create_simulation_state
-    )
 from ..db.validation import (
     validate_activity,
     validate_compute_node,
@@ -46,92 +34,6 @@ from ..utils import runtime as rt
 
 
 
-def _get_id(cv_type, cv_term):
-    """Utility function to map a CV name to an id.
-
-    """
-    return db.cache.get_id(cv_type, cv_term)
-
-
-def _get_name(cv_type, cv_term):
-    """Utility function to map a CV id to a name.
-
-    """
-    return db.cache.get_name(cv_type, cv_term)
-
-
-def _validate_create_simulation_cv_terms(
-    activity,
-    compute_node,
-    compute_node_login,
-    compute_node_machine,
-    execution_state,
-    experiment,
-    model,
-    space
-    ):
-    """Validates set of cv terms creating them where necessary.
-
-    """
-    # Ensure that cv cache is loaded.
-    db.cache.load()
-
-    # Set of handlers (order matters).
-    handlers = (
-        (
-            lambda: validate_activity(activity),
-            lambda: create_activity(activity)
-        ),
-        (
-            lambda: validate_compute_node(compute_node),
-            lambda: create_compute_node(compute_node)
-        ),
-        (
-            lambda: validate_compute_node_login(compute_node_login),
-            lambda: create_compute_node_login(compute_node, compute_node_login)
-        ),
-        (
-            lambda: validate_compute_node_machine(compute_node_machine),
-            lambda: create_compute_node_machine(compute_node, compute_node_machine)
-        ),
-        (
-            lambda: validate_experiment(experiment),
-            lambda: create_experiment(activity, experiment)
-        ),
-        (
-            lambda: validate_model(model),
-            lambda: create_model(model)
-        ),
-        (
-            lambda: validate_simulation_space(space),
-            lambda: create_simulation_space(space)
-        ),
-        (
-            lambda: validate_simulation_state(execution_state),
-            lambda: create_simulation_state(execution_state)
-        )
-    )
-
-    # Iteration 1: Validate & create new terms when invalid.
-    to_revalidate = []
-    for validator, factory in handlers:
-        try:
-            validator()
-        except ValueError:
-            try:
-                db.session.add(factory())
-            except sqlalchemy.exc.IntegrityError:
-                db.session.rollback()
-            finally:
-                to_revalidate.append(validator)
-
-    # If a term was added, reload cache and re-validate.
-    if to_revalidate:
-        db.cache.reload()
-        for validator in to_revalidate:
-            validator()
-
-
 def _validate_create_simulation(
     activity,
     compute_node,
@@ -149,16 +51,17 @@ def _validate_create_simulation(
     """Validates create simulation inputs.
 
     """
-    _validate_create_simulation_cv_terms(
-        activity,
-        compute_node,
-        compute_node_login,
-        compute_node_machine,
-        state,
-        experiment,
-        model,
-        space
-    )
+    # Validate cv terms.
+    validate_activity(activity)
+    validate_compute_node(compute_node)
+    validate_compute_node_login(compute_node_login)
+    validate_compute_node_machine(compute_node_machine)
+    validate_experiment(experiment)
+    validate_model(model)
+    validate_simulation_space(space)
+    validate_simulation_state(state)
+
+    # Validate other field.
     validate_simulation_execution_start_date(execution_start_date)
     validate_simulation_name(name)
     validate_simulation_output_start_date(output_start_date)
@@ -185,27 +88,37 @@ def _validate_update_simulation_state(uid):
 
 def _validate_create_message(
     uid,
+    user_id,
     app_id,
     producer_id,
     type_id,
     content,
     content_encoding,
     content_type,
-    correlation_id,
+    correlation_id_1,
+    correlation_id_2,
+    correlation_id_3,
     timestamp,
     timestamp_precision,
-    timestamp_raw):
+    timestamp_raw,
+    mode):
     """Validates create message inputs.
 
     """
-    validation.validate_uid(uid)
-    validation.validate_app_id(app_id)
-    validation.validate_producer_id(producer_id)
-    validation.validate_type_id(type_id)
-    if correlation_id:
-        validation.validate_correlation_id(correlation_id)
-    validation.validate_content(content, content_encoding, content_type)
-    validation.validate_timestamp(timestamp, timestamp_precision, timestamp_raw)
+    msg_validation.validate_uid(uid)
+    msg_validation.validate_user_id(user_id)
+    msg_validation.validate_app_id(app_id)
+    msg_validation.validate_producer_id(producer_id)
+    msg_validation.validate_type_id(type_id)
+    if correlation_id_1:
+        msg_validation.validate_correlation_id(correlation_id_1)
+    if correlation_id_2:
+        msg_validation.validate_correlation_id(correlation_id_2)
+    if correlation_id_3:
+        msg_validation.validate_correlation_id(correlation_id_3)
+    msg_validation.validate_content(content, content_encoding, content_type)
+    msg_validation.validate_timestamp(timestamp, timestamp_precision, timestamp_raw)
+    msg_validation.validate_mode(mode)
 
 
 def retrieve_simulation(uid):
@@ -217,9 +130,9 @@ def retrieve_simulation(uid):
     :rtype: db.types.cnode.simulation.Simulation
 
     """
-    qfilter = db.types.Simulation.uid == unicode(uid)
+    qfilter = db.types.NewSimulation.uid == unicode(uid)
 
-    return db.dao.get_by_facet(db.types.Simulation, qfilter=qfilter)
+    return db.dao.get_by_facet(db.types.NewSimulation, qfilter=qfilter)
 
 
 def create_simulation(
@@ -273,19 +186,19 @@ def create_simulation(
         uid)
 
     # Instantiate.
-    sim = db.types.Simulation()
-    sim.activity_id = _get_id(db.types.Activity, activity)
-    sim.compute_node_id = _get_id(db.types.ComputeNode, compute_node)
-    sim.compute_node_login_id = _get_id(db.types.ComputeNodeLogin, compute_node_login)
-    sim.compute_node_machine_id = _get_id(db.types.ComputeNodeMachine, compute_node_machine)
+    sim = db.types.NewSimulation()
+    sim.activity = unicode(activity)
+    sim.compute_node = unicode(compute_node)
+    sim.compute_node_login = unicode(compute_node_login)
+    sim.compute_node_machine = unicode(compute_node_machine)
     sim.execution_start_date = execution_start_date
-    sim.execution_state_id = _get_id(db.types.SimulationState, state)
-    sim.experiment_id = _get_id(db.types.Experiment, experiment)
-    sim.model_id = _get_id(db.types.Model, model)
+    sim.execution_state = unicode(state)
+    sim.experiment = unicode(experiment)
+    sim.model = unicode(model)
     sim.name = unicode(name)
     sim.output_start_date = output_start_date
     sim.output_end_date = output_end_date
-    sim.space_id = _get_id(db.types.SimulationSpace, space)
+    sim.space = unicode(space)
     sim.uid = unicode(uid)
 
     # Push to db.
@@ -308,10 +221,10 @@ def create_simulation_state(uid, state, timestamp, info):
     _validate_create_simulation_state(uid, state, timestamp, info)
 
     # Instantiate instance.
-    instance = db.types.SimulationStateChange()
-    instance.info = info
+    instance = db.types.NewSimulationStateChange()
+    instance.info = unicode(info)
     instance.simulation_uid = unicode(uid)
-    instance.state_id = _get_id(db.types.SimulationState, state)
+    instance.state = unicode(state)
     instance.timestamp = timestamp
 
     # Push to db.
@@ -320,7 +233,7 @@ def create_simulation_state(uid, state, timestamp, info):
     msg = msg.format(uid, state)
     rt.log_db(msg)
 
-    # Update current state.
+    # Update state on simulation table.
     _update_simulation_state(uid)
 
     return instance
@@ -346,40 +259,47 @@ def _update_simulation_state(uid):
         return
 
     # Update simulation state.
-    simulation.execution_state_id = change.state_id
+    simulation.execution_state = change.state
 
     # Push to db.
     db.session.update(simulation)
-
-    state_name = _get_name(db.types.SimulationState, change.state_id)
-    msg = "Updated current simulation state :: {0} --> {1}".format(uid, state_name)
+    msg = "Updated current simulation state :: {0} --> {1}".format(uid, change.state)
     rt.log_db(msg)
 
 
 def create_message(
     uid,
+    user_id,
     app_id,
     producer_id,
     type_id,
     content,
     content_encoding='utf-8',
     content_type='application/json',
-    correlation_id=None,
+    correlation_id_1=None,
+    correlation_id_2=None,
+    correlation_id_3=None,
     timestamp=None,
     timestamp_precision=None,
-    timestamp_raw=None):
+    timestamp_raw=None,
+    mode=None):
     """Creates a new related message record in db.
 
     :param str uid: Message unique identifer.
+    :param str user_id: Message user id, e.g. libl-igcm-user.
     :param str app_id: Message application id, e.g. smon.
     :param str producer_id: Message producer id, e.g. libigcm.
     :param str type_id: Message type id, e.g. 1001000.
     :param str name: Message content.
     :param str content_encoding: Message content encoding, e.g. utf-8.
     :param str content_type: Message content type, e.g. application/json.
+    :param str correlation_id_1: Message correlation identifier.
+    :param str correlation_id_2: Message correlation identifier.
+    :param str correlation_id_3: Message correlation identifier.
     :param datetime.datetime timestamp: Message timestamp.
     :param str timestamp_precision: Message timestamp precision (ns | ms).
     :param str timestamp_raw: Message raw timestamp.
+    :param str mode: Message dispatch mode.
 
     :returns: Newly created message.
     :rtype: db.types.Message
@@ -388,16 +308,20 @@ def create_message(
     # Validate inputs.
     _validate_create_message(
         uid,
+        user_id,
         app_id,
         producer_id,
         type_id,
         content,
         content_encoding,
         content_type,
-        correlation_id,
+        correlation_id_1,
+        correlation_id_2,
+        correlation_id_3,
         timestamp,
         timestamp_precision,
-        timestamp_raw
+        timestamp_raw,
+        mode
         )
 
     # Ensure that cache is loaded.
@@ -405,20 +329,24 @@ def create_message(
 
     # Instantiate instance.
     msg = db.types.Message()
-    msg.app_id = _get_id(db.types.MessageApplication, app_id)
+    msg.app_id = app_id
     msg.content = content
     msg.content_encoding = content_encoding
     msg.content_type = content_type
-    msg.correlation_id = correlation_id
-    msg.producer_id = _get_id(db.types.MessageProducer, producer_id)
+    msg.correlation_id_1 = correlation_id_1
+    msg.correlation_id_2 = correlation_id_2
+    msg.correlation_id_3 = correlation_id_3
+    msg.mode = mode
+    msg.producer_id = producer_id
     if timestamp is not None:
         msg.timestamp = timestamp
     if timestamp_precision is not None:
         msg.timestamp_precision = timestamp_precision
     if timestamp_raw is not None:
         msg.timestamp_raw = timestamp_raw
-    msg.type_id = _get_id(db.types.MessageType, type_id)
+    msg.type_id = type_id
     msg.uid = uid
+    msg.user_id = user_id
 
     # Push to db.
     db.session.add(msg)

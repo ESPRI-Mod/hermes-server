@@ -23,22 +23,25 @@ _DEFAULT_INSITUTE = "IPSL"
 _DEFAULT_EXPERIMENT_GROUP = "ipsl-internal"
 
 
-def _create_term(term_type):
+def create(term_type, term_name):
     """Creates a cv term.
 
+    :param str term_type: Type of CV term being parsed, e.g. activity.
+    :param str term_name: Name of CV term being parsed, e.g. ipsl.
+
+    :returns: Created cv term.
+    :rtype: db.types.CvTerm
+
     """
-    term = term_type()
+    term = db.types.CvTerm()
+    term.cv_type = term_type
+    term.description = "{0} ?".format(term_name)
     term.is_reviewed = False
+    term.name = term_name
+
+    rt.log("CV term created: {0}.{1}".format(term.cv_type, term.name))
 
     return term
-
-
-def _log_new_term(term, term_name=None):
-    """Logs creation of a new term.
-
-    """
-    term_name = term_name or term.name
-    rt.log("CV term created: {0} - {1}".format(type(term).__name__, term_name))
 
 
 def _get_id(term_type, term_name):
@@ -52,13 +55,7 @@ def create_activity(activity):
     """Creates an activity CV term.
 
     """
-    term = _create_term(db.types.Activity)
-    term.description = "{0} ?".format(activity)
-    term.name = activity
-
-    _log_new_term(term)
-
-    return term
+    return create("activity", activity)
 
 
 def create_compute_node(compute_node, institute=_DEFAULT_INSITUTE):
@@ -67,81 +64,53 @@ def create_compute_node(compute_node, institute=_DEFAULT_INSITUTE):
     """
     compute_node = compute_node.upper()
 
-    term = _create_term(db.types.ComputeNode)
-    term.description = "{0} ?".format(compute_node)
-    term.institute_id = _get_id(db.types.Institute, institute)
-    term.name = compute_node
-
-    _log_new_term(term)
-
-    return term
+    return create("compute_node", compute_node)
 
 
 def create_compute_node_login(compute_node, compute_node_login):
     """Creates a compute node login CV term.
 
     """
-    term = _create_term(db.types.ComputeNodeLogin)
-    term.compute_node_id = _get_id(db.types.ComputeNode, compute_node)
-    term.login = compute_node_login
-    term.first_name = "UNKNOWN"
-    term.family_name = "UNKNOWN"
-    term.email = "UNKNOWN"
+    return create("compute_node_login", compute_node_login)
 
-    _log_new_term(term, "{0}-{1}".format(compute_node.upper(), term.login))
-
-    return term
+    # term.compute_node_id = _get_id(db.types.ComputeNode, compute_node)
+    # term.login = compute_node_login
+    # term.first_name = "UNKNOWN"
+    # term.family_name = "UNKNOWN"
+    # term.email = "UNKNOWN"
 
 
 def create_compute_node_machine(compute_node, compute_node_machine):
     """Creates a compute node machine CV term.
 
     """
-    compute_node = compute_node.upper()
-    compute_node_machine = compute_node_machine.upper()
+    compute_node = compute_node.lower()
+    compute_node_machine = compute_node_machine.lower()
+    compute_node_machine = "{0}-{1}".format(compute_node, compute_node_machine)
 
-    term = _create_term(db.types.ComputeNodeMachine)
-    term.compute_node_id = _get_id(db.types.ComputeNode, compute_node)
-    term.manafacturer = "UNKNOWN"
-    term.name = "{0} - {1}".format(compute_node, compute_node_machine)
-    term.short_name = compute_node_machine
-    term.type = "UNKNOWN"
+    return create("compute_node_machine", compute_node_machine)
 
-    _log_new_term(term)
-
-    return term
+    # term.compute_node_id = _get_id(db.types.ComputeNode, compute_node)
 
 
 def create_experiment(activity, experiment, experiment_group=_DEFAULT_EXPERIMENT_GROUP):
     """Creates an experiment CV term.
 
     """
-    term = _create_term(db.types.Experiment)
-    term.activity_id = _get_id(db.types.Activity, activity)
-    term.description = "{0} ?".format(experiment)
-    term.group_id = _get_id(db.types.ExperimentGroup, experiment_group)
-    term.name = experiment
+    return create("experiment", experiment)
 
-    _log_new_term(term)
+    # term.activity_id = _get_id(db.types.Activity, activity)
+    # term.group_id = _get_id(db.types.ExperimentGroup, experiment_group)
 
-    return term
 
 
 def create_experiment_group(activity, experiment_group):
     """Creates an experiment group CV term.
 
     """
-    term = _create_term(db.types.ExperimentGroup)
-    term.activity_id = _get_id(db.types.Activity, activity)
-    term.description = "{0} ?".format(experiment_group)
-    term.name = experiment_group
-    term.ordinal_position = 100000
-    term.short_description = "{0} ?".format(experiment_group)
-    term.short_description_1 = "{0} ?".format(experiment_group)
+    return create("experiment_group", experiment_group)
 
-    _log_new_term(term)
-
-    return term
+    # term.activity_id = _get_id(db.types.Activity, activity)
 
 
 def create_model(model, institute=_DEFAULT_INSITUTE):
@@ -150,15 +119,9 @@ def create_model(model, institute=_DEFAULT_INSITUTE):
     """
     model = model.upper()
 
-    term = _create_term(db.types.Model)
-    term.description = "{0} ?".format(model)
-    term.synonyms = model
-    term.institute_id = _get_id(db.types.Institute, institute)
-    term.name = model
+    return create("model", model)
 
-    _log_new_term(term)
-
-    return term
+    # term.institute_id = _get_id(db.types.Institute, institute)
 
 
 def create_simulation_space(space):
@@ -167,13 +130,7 @@ def create_simulation_space(space):
     """
     space = space.upper()
 
-    term = _create_term(db.types.SimulationSpace)
-    term.description = "{0} ?".format(space)
-    term.name = space
-
-    _log_new_term(term)
-
-    return term
+    return create("simulation_space", space)
 
 
 def create_simulation_state(state):
@@ -182,10 +139,4 @@ def create_simulation_state(state):
     """
     state = state.upper()
 
-    term = _create_term(db.types.SimulationState)
-    term.description = "{0} ?".format(state)
-    term.name = state
-
-    _log_new_term(term)
-
-    return term
+    return create("simulation_state", state)

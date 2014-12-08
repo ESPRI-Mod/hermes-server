@@ -4,7 +4,7 @@
 		"id": 1,
 		"is_active": true,
 		"manafacturer": "NEC",
-		"name": "CCRT - SX9",
+		"name": "CCRT-SX9",
 		"short_name": "SX9",
 		"type": "SX9"
 	},
@@ -13,7 +13,7 @@
 		"id": 2,
 		"is_active": true,
 		"manafacturer": "INTEL",
-		"name": "CCRT - TITANE",
+		"name": "CCRT-TITANE",
 		"short_name": "TITANE",
 		"type": "Quad-Core"
 	},
@@ -22,7 +22,7 @@
 		"id": 6,
 		"is_active": true,
 		"manafacturer": "INTEL",
-		"name": "CINES - JADE",
+		"name": "CINES-JADE",
 		"short_name": "JADE",
 		"type": "Quad-Core"
 	},
@@ -31,7 +31,7 @@
 		"id": 5,
 		"is_active": true,
 		"manafacturer": "IBM",
-		"name": "IDRIS - ADA",
+		"name": "IDRIS-ADA",
 		"short_name": "ADA",
 		"type": "PW6"
 	},
@@ -40,7 +40,7 @@
 		"id": 4,
 		"is_active": true,
 		"manafacturer": "IBM",
-		"name": "IDRIS - VARGAS",
+		"name": "IDRIS-VARGAS",
 		"short_name": "VARGAS",
 		"type": "PW6"
 	},
@@ -49,7 +49,7 @@
 		"id": 3,
 		"is_active": true,
 		"manafacturer": "IBM",
-		"name": "TGCC - CURIE",
+		"name": "TGCC-CURIE",
 		"short_name": "CURIE",
 		"type": "PW6"
 	}

@@ -110,11 +110,16 @@ def create_ampq_message_properties(
     if 'timestamp_precision' not in headers:
         headers['timestamp_precision'] = 'ms'
 
-    # Default headers attached with each property.
-    default_headers = {
+    # Remove null headers.
+    for key, value in headers.iteritems():
+        if value is None:
+            del headers[key]
+
+    # Set default headers.
+    headers.update({
         "mode": mode,
         "producer_id": producer_id
-    }
+    })
 
     # Return a pika BasicProperties instance (follows AMPQ protocol).
     return pika.BasicProperties(
@@ -125,7 +130,7 @@ def create_ampq_message_properties(
         correlation_id=correlation_id,
         delivery_mode = delivery_mode,
         expiration=expiration,
-        headers=dict(default_headers.items() + headers.items()),
+        headers=headers,
         message_id=message_id,
         priority=priority,
         reply_to=reply_to,
@@ -196,6 +201,7 @@ def consume(exchange,
                 rt.log_mq("WARNING :: duplicate message :: {}".format(ctx.properties.message_id))
             except Exception as err:
                 print err
+                print "EE-W"
             else:
                 callback(ctx)
         else:
@@ -249,21 +255,31 @@ def persist(properties, payload):
     :rtype: prodiguer.db.Message
 
     """
-    # TODO: persist message mode ?
-    # TODO: persist message user-id ?
+    def _get_header(key, default=None):
+        """Returns a header field.
 
-    # Get timestamp info.
+        """
+        if key in properties.headers:
+            return properties.headers[key]
+
+        return default
+
+    # Set timestamp info.
     ts_precision, ts_raw, ts_parsed = _get_timestamps(properties)
 
     return db_hooks.create_message(
         properties.message_id,
+        properties.user_id,
         properties.app_id,
-        properties.headers['producer_id'],
+        _get_header('producer_id'),
         properties.type,
         payload,
         properties.content_encoding,
         properties.content_type,
-        properties.correlation_id,
+        _get_header('correlation_id_1'),
+        _get_header('correlation_id_2'),
+        _get_header('correlation_id_3'),
         ts_parsed,
         ts_precision,
-        ts_raw)
+        ts_raw,
+        _get_header('mode'))

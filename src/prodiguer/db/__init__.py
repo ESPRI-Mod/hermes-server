@@ -17,7 +17,8 @@ from . import (
 	session,
 	setup,
 	types,
-	type_factory
+	type_factory,
+	validation
 	)
 from ..utils import config
 
@@ -32,5 +33,6 @@ __all__ = [
 	"session",
 	"setup",
 	"types",
-	"type_factory"
+	"type_factory",
+	"validation"
 ]

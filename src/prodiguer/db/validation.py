@@ -17,6 +17,29 @@ import arrow
 import cache, types
 
 
+def validate_cv_term(cv_type, term_id):
+    """Validates a cv term.
+
+    """
+    cv_type = unicode(cv_type).lower()
+    term_id = unicode(term_id).lower()
+
+    for term in cache.get_collection(types.CvTerm):
+        if term.cv_type != cv_type:
+            continue
+        if term.name.lower() == term_id:
+            return
+        if term.synonyms:
+            names = term.synonyms.split(",")
+            names = [n.strip().lower() for n in names if n and n.strip()]
+            if cv_type == "model":
+                print "validating synonym", term_id, names, term_id in names
+            if term_id in names:
+                print "Validated cv term against synonyms"
+                return
+
+    raise ValueError('Unknown cv term: {0}.{1}'.format(cv_type, term_id))
+
 
 def _validate_date(date, var):
     """Validates a date.
@@ -49,8 +72,7 @@ def validate_activity(identifier):
     :type identifier: str | int
 
     """
-    if not cache.exists(types.Activity, identifier):
-        raise ValueError('Activity is unknown: {0}'.format(identifier))
+    validate_cv_term("activity", identifier)
 
 
 def validate_compute_node(identifier):
@@ -60,8 +82,7 @@ def validate_compute_node(identifier):
     :type identifier: str | int
 
     """
-    if not cache.exists(types.ComputeNode, identifier):
-        raise ValueError('Compute node is unknown: {0}'.format(identifier))
+    validate_cv_term("compute_node", identifier)
 
 
 def validate_compute_node_login(identifier):
@@ -71,8 +92,7 @@ def validate_compute_node_login(identifier):
     :type identifier: str | int
 
     """
-    if not cache.exists(types.ComputeNodeLogin, identifier):
-        raise ValueError('Compute node login is unknown: {0}'.format(identifier))
+    validate_cv_term("compute_node_login", identifier)
 
 
 def validate_compute_node_machine(identifier):
@@ -82,8 +102,7 @@ def validate_compute_node_machine(identifier):
     :type identifier: str | int
 
     """
-    if not cache.exists(types.ComputeNodeMachine, identifier):
-        raise ValueError('Compute node machine is unknown: {0}'.format(identifier))
+    validate_cv_term("compute_node_machine", identifier)
 
 
 def validate_experiment(identifier):
@@ -93,8 +112,7 @@ def validate_experiment(identifier):
     :type identifier: str | int
 
     """
-    if not cache.exists(types.Experiment, identifier):
-        raise ValueError('Experiment is unknown: {0}'.format(identifier))
+    validate_cv_term("experiment", identifier)
 
 
 def validate_model(identifier):
@@ -104,8 +122,7 @@ def validate_model(identifier):
     :type identifier: str | int
 
     """
-    if not cache.exists(types.Model, identifier):
-        raise ValueError('Model is unknown: {0}'.format(identifier))
+    validate_cv_term("model", identifier)
 
 
 def validate_job_uid(identifier):
@@ -167,7 +184,6 @@ def validate_simulation_output_start_date(date):
     _validate_date(date, 'Output start date')
 
 
-
 def validate_simulation_output_end_date(date):
     """Validate simulation output end date.
 
@@ -185,8 +201,7 @@ def validate_simulation_space(identifier):
     :type identifier: str | int
 
     """
-    if not cache.exists(types.SimulationSpace, identifier):
-        raise ValueError('Simulation space is unknown: {0}'.format(identifier))
+    validate_cv_term("simulation_space", identifier)
 
 
 def validate_simulation_state(identifier):
@@ -196,8 +211,7 @@ def validate_simulation_state(identifier):
     :type identifier: str | int
 
     """
-    if not cache.exists(types.SimulationState, identifier):
-        raise ValueError('Simulation state is unknown: {0}'.format(identifier))
+    validate_cv_term("simulation_state", identifier)
 
 
 def validate_simulation_uid(identifier):
