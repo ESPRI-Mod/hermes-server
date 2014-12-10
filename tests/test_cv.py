@@ -16,16 +16,13 @@ from os.path import dirname, abspath, exists, join
 from sqlalchemy import inspect
 
 from prodiguer import cv, db
-from . import utils as tu 
+from . import utils as tu
 
-
-
-def test_cv_types():
-	tu.assert_integer(len(db.types.CV), 22)
 
 
 def test_cv_get_filename():
-	tu.assert_string(cv.get_filename(db.types.ComputeNode), "cnode_compute_node.json")
+	pass
+	# tu.assert_string(cv.get_filename(db.types.CvTerm), "shared_cv_term.json")
 
 
 def test_cv_get_filepath():
@@ -35,7 +32,7 @@ def test_cv_get_filepath():
 	folder = join(folder, "prodiguer")
 	folder = join(folder, "cv")
 	folder = join(folder, "json")
-	for type in db.types.CV:
+	for type in (db.types.CvTerm, ):
 		fp = join(folder, cv.get_filename(type))
 		tu.assert_bool(exists(fp))
 		tu.assert_string(cv.get_filepath(type), fp)
@@ -54,7 +51,7 @@ def test_cv_list_types():
 
 
 def test_cv_read():
-	for type in db.types.CV:
+	for type in (db.types.CvTerm, ):
 		for d in cv.read(type):
 			tu.assert_obj(d, dict)
 			for c in inspect(type).columns:
@@ -67,6 +64,6 @@ def test_cv_read():
 
 
 def test_cv_load():
-	for type in db.types.CV:
+	for type in (db.types.CvTerm, ):
 		for i in cv.load(type):
 			tu.assert_obj(i, type)

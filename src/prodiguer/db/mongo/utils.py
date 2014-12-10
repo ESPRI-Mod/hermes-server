@@ -11,8 +11,8 @@
 """
 import pymongo
 
+from prodiguer.utils import config
 
-from ...utils import config
 
 
 def get_client():

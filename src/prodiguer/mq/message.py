@@ -14,8 +14,8 @@ import base64
 
 import pika
 
-from . import constants
-from ..utils import convert
+from prodiguer.mq import constants
+from prodiguer.utils import convert
 
 
 

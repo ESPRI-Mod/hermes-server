@@ -14,7 +14,7 @@
 import glob, os, random
 from os.path import dirname, abspath
 
-from .. utils import convert
+from prodiguer.utils import convert
 
 
 
@@ -78,7 +78,7 @@ def load():
         return
 
     # Get pointers to cv files.
-    files = os.path.join(dirname(abspath(__file__)), "files")
+    files = os.path.join(dirname(abspath(__file__)), "json")
     files = os.path.join(files, "*.json")
     files = sorted(glob.glob(files))
     files = [f for f in files if not f.endswith("simulation.json")]

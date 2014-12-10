@@ -13,8 +13,8 @@
 """
 import tornado
 
-from ....utils import runtime as rt
-from .. import utils as handler_utils
+from prodiguer.api.handlers import utils as handler_utils
+from prodiguer.utils import rt
 
 
 

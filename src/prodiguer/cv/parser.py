@@ -1,6 +1,3 @@
-from ..db import cache
-from ..db.types import CvTerm
-
 
 def parse(term_type, term_name):
     """Parses a controlled vocabulary term.
@@ -12,6 +9,9 @@ def parse(term_type, term_name):
     :rtype: unicode
 
     """
+    from prodiguer.db import cache
+    from prodiguer.db.types import CvTerm
+
     # Format inputs.
     term_type = unicode(term_type).lower()
     term_name = unicode(term_name).lower()

@@ -13,13 +13,12 @@
 """
 import email, imaplib, imapclient
 
-import config
-
+from prodiguer.utils.config import data as config
 
 
 
 # IMAP config.
-_CONFIG = config.data.mail.imap
+_CONFIG = config.mail.imap
 
 # Email format identifier.
 _RFC822 = u'RFC822'

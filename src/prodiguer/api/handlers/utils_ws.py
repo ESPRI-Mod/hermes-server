@@ -13,7 +13,7 @@
 """
 import tornado.websocket
 
-from ... utils import runtime as rt, config
+from prodiguer.utils import rt, config
 
 
 

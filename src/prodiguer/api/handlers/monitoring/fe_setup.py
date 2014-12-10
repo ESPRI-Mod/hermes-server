@@ -13,9 +13,10 @@
 """
 import tornado.web
 
-from . import utils
-from .... import db
-from ....utils import convert, config
+from prodiguer import db
+from prodiguer.api.handlers.monitoring import utils
+from prodiguer.utils import config, convert
+
 
 
 
@@ -35,7 +36,7 @@ class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
             'cv_terms':
                 utils.get_sorted_list(db.types.CvTerm),
             'simulation_list':
-                utils.get_list(db.types.NewSimulation),
+                utils.get_list(db.types.Simulation),
             'simulation_state_change_list':
-                utils.get_list(db.types.NewSimulationStateChange)
+                utils.get_list(db.types.SimulationStateChange)
         }, convert.str_to_camel_case))

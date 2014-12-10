@@ -13,8 +13,8 @@
 """
 import json, re
 
-from .... utils import config, convert
-from .... db.mongo import dao_metrics as dao
+from prodiguer.db.mongo import dao_metrics as dao
+from prodiguer.utils import convert
 
 
 

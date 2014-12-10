@@ -3,12 +3,12 @@
 """
 .. module:: test_mq_mock_producers.py
 
-   :copyright: @2013 Institute Pierre Simon Laplace (http://esdocumentation.org)
+   :copyright: @2013 IPSL (http://esdocumentation.org)
    :license: GPL / CeCILL
    :platform: Unix
    :synopsis: Encapsulates mq mock publisher testing.
 
-.. moduleauthor:: Institute Pierre Simon Laplace (ES-DOC) <dev@esdocumentation.org>
+.. moduleauthor:: IPSL (ES-DOC) <dev@esdocumentation.org>
 
 """
 import inspect

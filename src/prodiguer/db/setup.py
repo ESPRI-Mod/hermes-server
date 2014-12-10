@@ -14,47 +14,57 @@ from os.path import dirname, abspath
 
 from sqlalchemy.schema import CreateSchema
 
-from . import session, types
-from .. utils import convert, runtime as rt
+from prodiguer.db import session, types
+from prodiguer.utils import convert, rt
 
 
 
-def _init_from_types():
-    """Initialises CV terms from entity types.
+def _init_cv_terms():
+    """Initialises set of controlled vocabulary terms.
 
     """
-    from .. import cv
+    def _extend_term(cv_type, term):
+        """Injects extra information into a CV term.
+
+        """
+        term['cv_type'] = cv_type
+        if 'sort_key' not in term:
+            term['sort_key'] = "{0}.{1}".format(term['cv_type'], term['name'])
+        term['sort_key'] = term['sort_key'].lower()
+
+    from prodiguer import cv
 
     # Iterate cv types.
-    for etype in types.CV:
-        if etype == types.CvTerm:
-            continue
+    cv.cache.load()
+    for cv_type in cv.cache.get_types():
+        rt.log_db("SEEDING CV TERMS :: {0}".format(cv_type))
 
-        rt.log_db("SEEDING TABLE :: {0}.{1}".format(etype.__table__.schema,
-                                                    etype.__table__.name))
+        # Load & sort collection.
+        terms = cv.cache.get_collection(cv_type)
+        for term in terms:
+            _extend_term(cv_type, term)
+        terms = sorted(terms, key=lambda k: k['sort_key'])
 
-        # Iterate cv terms.
-        cv_terms = cv.read(etype)
-        cv_terms = sorted(cv_terms, key=lambda k: k['id'])
-        for cv_term in cv_terms:
-            cv_term = types.Convertor.from_dict(etype, cv_term)
-            session.add(cv_term)
+        # Insert into db.
+        for term in terms:
+            term = types.Convertor.from_dict(types.CvTerm, term)
+            session.add(term)
 
 
-def _init_simulation():
+def _init_simulations():
     """Initialises set of simulations.
 
     """
     # Set simulations from simulation.json file.
     fpath = "/".join(dirname(abspath(__file__)).split("/")[0:-1])
     fpath = os.path.join(fpath, "cv")
-    fpath = os.path.join(fpath, "files")
+    fpath = os.path.join(fpath, "json")
     fpath = os.path.join(fpath, "simulation.json")
     simulations = convert.json_file_to_namedtuple(fpath)
 
     # Insert into db.
     for simulation in simulations:
-        sim = types.NewSimulation()
+        sim = types.Simulation()
         sim.activity = simulation.associations.activity
         sim.compute_node = simulation.associations.compute_node
         sim.compute_node_login = simulation.associations.compute_node_login
@@ -81,47 +91,10 @@ def _init_simulation():
         session.add(sim)
 
 
-def _init_cvocab():
-    """Initialises set of controlled vocabulary terms.
-
-    """
-    def _extend_term(cv_type, term):
-        """Extends a CV term.
-
-        """
-        term['cv_type'] = cv_type
-        if 'sort_key' not in term:
-            term['sort_key'] = "{0}.{1}".format(term['cv_type'], term['name'])
-        term['sort_key'] = term['sort_key'].lower()
-
-    from .. import cv
-
-    # Iterate cv types.
-    cv.cache.load()
-    for cv_type in cv.cache.get_types():
-        rt.log_db("SEEDING CV TERMS :: {0}".format(cv_type))
-
-        # Load & sort collection.
-        terms = cv.cache.get_collection(cv_type)
-        for term in terms:
-            _extend_term(cv_type, term)
-        terms = sorted(terms, key=lambda k: k['sort_key'])
-
-        # Insert into db.
-        for term in terms:
-            term = types.Convertor.from_dict(types.CvTerm, term)
-            session.add(term)
-
-
 def _setup_cv():
     """Sets up cv tables."""
-    rt.log_db("SEEDING BEGINS")
-
-    _init_from_types()
-    _init_cvocab()
-    _init_simulation()
-
-    rt.log_db("SEEDING ENDS")
+    _init_cv_terms()
+    _init_simulations()
 
 
 def execute():
@@ -131,8 +104,8 @@ def execute():
     session.assert_is_live()
 
     # Create schemas.
-    for s in types.SCHEMAS:
-        session.sa_engine.execute(CreateSchema(s))
+    for schema in types.SCHEMAS:
+        session.sa_engine.execute(CreateSchema(schema))
 
     # Create tables.
     types.metadata.create_all(session.sa_engine)

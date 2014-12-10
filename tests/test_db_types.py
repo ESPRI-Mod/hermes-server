@@ -3,12 +3,12 @@
 """
 .. module:: test_db_types.py
 
-   :copyright: @2013 Institute Pierre Simon Laplace (http://esdocumentation.org)
+   :copyright: @2013 IPSL (http://esdocumentation.org)
    :license: GPL / CeCILL
    :platform: Unix
    :synopsis: Encapsulates db type tests.
 
-.. moduleauthor:: Institute Pierre Simon Laplace (ES-DOC) <dev@esdocumentation.org>
+.. moduleauthor:: IPSL (ES-DOC) <dev@esdocumentation.org>
 
 """
 import inspect
@@ -34,7 +34,6 @@ def test_db_types_import_model_types():
 
 	assert len(db.types.SCHEMAS) == 4
 	assert len(db.types.TYPES) == 27
-	assert len(db.types.CV) == 22
 	assert len(db.types.CACHEABLE) == 13
 
 

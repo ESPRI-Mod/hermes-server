@@ -11,24 +11,7 @@
 """
 import random
 
-from . import constants, session, types
-from .types import (
-    Activity,
-    ComputeNode,
-    ComputeNodeLogin,
-    ComputeNodeMachine,
-    Experiment,
-    ExperimentGroup,
-    Institute,
-    Message,
-    Model,
-    Simulation,
-    SimulationForcing,
-    SimulationStateChange,
-    NewSimulation,
-    NewSimulationStateChange,
-    )
-from ..utils import runtime as rt
+from prodiguer.db import session, types
 
 
 
@@ -261,120 +244,17 @@ def delete_by_name(etype, name):
     delete_by_facet(etype, etype.name==name)
 
 
-def get_compute_node_by_institute_and_name(institute, name):
-    """Gets a compute node by institute & name.
-
-    """
-    q = session.query(ComputeNode, Institute)
-    q = q.filter(ComputeNode.name==name)
-    q = q.filter(Institute.name==institute)
-
-    return q.first()
-
-
-def get_compute_node_login_by_login(login):
-    """Gets a compute node login by login.
-
-    """
-    q = session.query(ComputeNodeLogin)
-    q = q.filter(ComputeNodeLogin.login==login)
-
-    return q.first()
-
-
-def get_compute_node_login_by_is_active():
-    """Gets a list of active compute node logins.
-
-    """
-    q = session.query(ComputeNodeLogin, ComputeNode)
-    q = q.filter(ComputeNodeLogin.is_active==True)
-    q = q.filter(ComputeNode.is_active==True)
-
-    return sort(ComputeNodeLogin, q.all())
-
-
-def get_compute_node_machine_by_is_active():
-    """Gets a list of active compute node machines.
-
-    """
-    q = session.query(ComputeNodeMachine, ComputeNode)
-    q = q.filter(ComputeNodeMachine.is_active==True)
-    q = q.filter(ComputeNode.is_active==True)
-
-    return sort(ComputeNodeMachine, q.all())
-
-
-def get_experiment_by_activity(activity):
-    """Gets a list of experiments by activity name.
-
-    """
-    q = session.query(Experiment, Activity)
-    q = q.filter(Activity.name==activity.upper())
-
-    return sort(Experiment, q.all())
-
-
-def get_experiment_by_activity_and_name(activity, experiment_name):
-    """Gets an experiment by activity and experiment name.
-
-    """
-    q = session.query(Experiment, Activity)
-    q = q.filter(Activity.name==activity.upper())
-    q = q.filter(Experiment.name==experiment_name)
-
-    return q.first()
-
-
-def get_experiment_by_is_active(activity=None):
-    """Gets all active instances.
-
-    """
-    q = None
-    if activity is not None:
-        q = session.query(Experiment, Activity)
-        q = q.filter(Activity.name==activity.upper())
-    else:
-        q = session.query(Experiment)
-    q = q.filter(Experiment.is_active==True)
-
-    return sort(Experiment, q.all())
-
-
-def get_experiment_group_by_activity_and_name(activity, group):
-    """Gets an experiment group by activity and experiment name.
-
-    """
-    q = session.query(ExperimentGroup, Activity)
-    q = q.filter(Activity.name==activity)
-    q = q.filter(ExperimentGroup.name==group)
-
-    return q.first()
-
-
 def get_latest_simulation_state_change(uid):
     """Returns latest simulation state change entry.
 
     :param str uid: Simulation unique identifier.
 
     :returns: Most recent simulation state change entry.
-    :rtype: SimulationStateChange
+    :rtype: types.SimulationStateChange
 
     """
     return get_by_facet(
-        NewSimulationStateChange,
-        NewSimulationStateChange.simulation_uid==unicode(uid),
-        NewSimulationStateChange.timestamp.desc(),
+        types.SimulationStateChange,
+        types.SimulationStateChange.simulation_uid==unicode(uid),
+        types.SimulationStateChange.timestamp.desc(),
         False)
-
-
-def delete_simulation_forcing_by_simulation_id(simulation_id):
-    """Deletes a set of simulation forcings.
-
-    :param simulation_id: id of a simulation.
-    :type simulation_id: int
-
-    """
-    delete_by_facet(SimulationForcing,
-                    SimulationForcing.simulation_id==simulation_id)
-
-

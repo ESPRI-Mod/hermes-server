@@ -3,12 +3,12 @@
 """
 .. module:: test_api_utils_ep_api.py
 
-   :copyright: @2013 Institute Pierre Simon Laplace (http://esdocumentation.org)
+   :copyright: @2013 IPSL (http://esdocumentation.org)
    :license: GPL / CeCILL
    :platform: Unix
    :synopsis: Encapsulates api endpoint utils tests.
 
-.. moduleauthor:: Institute Pierre Simon Laplace (ES-DOC) <dev@esdocumentation.org>
+.. moduleauthor:: IPSL (ES-DOC) <dev@esdocumentation.org>
 
 """
 from . import utils as tu

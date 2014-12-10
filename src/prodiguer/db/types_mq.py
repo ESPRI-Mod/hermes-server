@@ -21,23 +21,18 @@ from sqlalchemy import (
     Unicode
     )
 
-from . type_utils import Entity
-
-
-
-# PostGres schema to which the types are attached.
-_DB_SCHEMA = 'mq'
+from prodiguer.db.type_utils import Entity
 
 
 
 class Message(Entity):
-    """Represents a runtime messsage.
+    """Represents a message flowing through the MQ platform.
 
     """
     # SQLAlchemy directives.
     __tablename__ = 'tbl_message'
     __table_args__ = (
-        {'schema':_DB_SCHEMA}
+        {'schema':'mq'}
     )
 
     # Attributes.

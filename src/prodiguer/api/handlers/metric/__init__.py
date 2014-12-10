@@ -11,10 +11,11 @@
 
 
 """
-from .add import AddRequestHandler
-from .delete import DeleteRequestHandler
-from .fetch import FetchRequestHandler
-from .fetch_columns import FetchColumnsRequestHandler
-from .fetch_count import FetchCountRequestHandler
-from .fetch_list import FetchListRequestHandler
-from .fetch_setup import FetchSetupRequestHandler
+from prodiguer.api.handlers.metric.add import AddRequestHandler
+from prodiguer.api.handlers.metric.delete import DeleteRequestHandler
+from prodiguer.api.handlers.metric.fetch import FetchRequestHandler
+from prodiguer.api.handlers.metric.fetch_columns \
+	import FetchColumnsRequestHandler
+from prodiguer.api.handlers.metric.fetch_count import FetchCountRequestHandler
+from prodiguer.api.handlers.metric.fetch_list import FetchListRequestHandler
+from prodiguer.api.handlers.metric.fetch_setup import FetchSetupRequestHandler

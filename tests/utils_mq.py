@@ -3,12 +3,12 @@
 """
 .. module:: utils_mq.py
 
-   :copyright: @2013 Institute Pierre Simon Laplace (http://esdocumentation.org)
+   :copyright: @2013 IPSL (http://esdocumentation.org)
    :license: GPL / CeCILL
    :platform: Unix
    :synopsis: Message queue platform utilty test functions.
 
-.. moduleauthor:: Institute Pierre Simon Laplace (ES-DOC) <dev@esdocumentation.org>
+.. moduleauthor:: IPSL (ES-DOC) <dev@esdocumentation.org>
 
 """
 import logging

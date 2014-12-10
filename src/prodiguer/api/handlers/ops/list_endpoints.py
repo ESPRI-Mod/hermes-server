@@ -13,8 +13,8 @@
 """
 import tornado
 
-from ....utils import runtime as rt
-from .. import utils as handler_utils
+from prodiguer.api.handlers import utils as handler_utils
+from prodiguer.utils import rt
 
 
 
@@ -34,10 +34,10 @@ class ListEndpointsRequestHandler(tornado.web.RequestHandler):
                 r'/api/1/metric/add',
                 r'/api/1/metric/delete',
                 r'/api/1/metric/fetch',
-                r'/api/1/metric/fetch_headers',
-                r'/api/1/metric/fetch_setup',
                 r'/api/1/metric/fetch_count',
-                r'/api/1/metric/list'
+                r'/api/1/metric/fetch_columns',
+                r'/api/1/metric/fetch_list',
+                r'/api/1/metric/fetch_setup'
             ],
             "ops": [
                 r'/api/1/ops/heartbeat',

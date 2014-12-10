@@ -11,7 +11,9 @@
 
 
 """
-from . event import EventRequestHandler
-from . fe_setup import FrontEndSetupRequestHandler
-from . fe_ws import FrontEndWebSocketHandler
-
+from prodiguer.api.handlers.monitoring.event \
+	import EventRequestHandler
+from prodiguer.api.handlers.monitoring.fe_setup \
+	import FrontEndSetupRequestHandler
+from prodiguer.api.handlers.monitoring.fe_ws \
+	import FrontEndWebSocketHandler

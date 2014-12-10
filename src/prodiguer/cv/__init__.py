@@ -10,14 +10,6 @@
 
 
 """
-from .io import (
-	get_filename,
-	get_filepath,
-	list_types,
-	load,
-	read,
-	write
-	)
-import cache, factory
-from .factory import create
-from .parser import parse
+from prodiguer.cv import cache, constants, factory
+from prodiguer.cv.factory import create
+from prodiguer.cv.parser import parse

@@ -15,12 +15,12 @@ import uuid
 import arrow, pika
 from sqlalchemy.exc import IntegrityError
 
-from . import constants, message
-from .consumer import Consumer
-from .producer import Producer
-from .timestamp import Timestamp
-from ..utils import rt
-import db_hooks
+from prodiguer import db
+from prodiguer.mq import constants, message
+from prodiguer.mq.consumer import Consumer
+from prodiguer.mq.producer import Producer
+from prodiguer.mq.timestamp import Timestamp
+from prodiguer.utils import rt
 
 
 
@@ -267,7 +267,7 @@ def persist(properties, payload):
     # Set timestamp info.
     ts_precision, ts_raw, ts_parsed = _get_timestamps(properties)
 
-    return db_hooks.create_message(
+    return db.dao_mq.create_message(
         properties.message_id,
         properties.user_id,
         properties.app_id,

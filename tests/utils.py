@@ -3,12 +3,12 @@
 """
 .. module:: utils.py
 
-   :copyright: @2013 Institute Pierre Simon Laplace (http://esdocumentation.org)
+   :copyright: @2013 IPSL (http://esdocumentation.org)
    :license: GPL / CeCILL
    :platform: Unix
    :synopsis: Set of test utility functions.
 
-.. moduleauthor:: Institute Pierre Simon Laplace (ES-DOC) <dev@esdocumentation.org>
+.. moduleauthor:: IPSL (ES-DOC) <dev@esdocumentation.org>
 
 """
 import json
@@ -22,7 +22,7 @@ from dateutil import parser as dateutil_parser
 from prodiguer import db
 from prodiguer.utils import (
     convert,
-    runtime as rt
+    rt
     )
 
 
@@ -315,13 +315,13 @@ def assert_db_type_creation(type):
     # Create instance directly.
     x = type()
     assert_obj(x, type)
-    assert_obj(x, [db.types.Entity, db.types.ControlledVocabularyEntity])
+    assert_obj(x, db.types.Entity)
 
     # Create instance via type factory.
     y = db.type_factory.create(type)
     assert_obj(y, type)
 
-    assert_obj(y, [db.types.Entity, db.types.ControlledVocabularyEntity])
+    assert_obj(y, db.types.Entity)
 
     # Reset type factory.
     db.type_factory.reset()

@@ -12,10 +12,10 @@
 """
 import tornado
 
-from . import utils
-from .. import utils as handler_utils
-from .... utils import rt, convert
-from .... db.mongo import dao_metrics as dao
+from prodiguer.api.handlers import utils as handler_utils
+from prodiguer.api.handlers.metric import utils
+from prodiguer.db.mongo import dao_metrics as dao
+from prodiguer.utils import rt, convert
 
 
 

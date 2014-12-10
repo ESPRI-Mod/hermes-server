@@ -13,20 +13,8 @@
 """
 import datetime
 
-from .... import db
+from prodiguer import db
 
-
-
-def _get_name(entity_type, entity_id):
-    """Utility function to map a db entity id to an entity name.
-
-    :param db.types.Entity entity: Entity instance.
-
-    :returns: Entity instance name.
-    :rtype: str
-
-    """
-    return db.cache.get_name(entity_type, entity_id)
 
 
 def get_list(entity_type):

@@ -11,7 +11,7 @@
 
 
 """
-from . import (
+from prodiguer.api.handlers import (
 	metric,
 	monitoring,
 	ops,

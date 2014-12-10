@@ -17,17 +17,9 @@ import tornado
 from tornado.web import Application
 
 
-from . handlers import (
-    metric,
-    monitoring,
-    ops,
-    ws
-    )
-from .. import db
-from .. utils import (
-    config,
-    runtime as rt
-    )
+from prodiguer import db
+from prodiguer.api import handlers
+from prodiguer.utils import config, rt
 
 
 
@@ -57,20 +49,20 @@ def _get_app_routes():
     """
     return (
         # Monitoring routes.
-        (r'/api/1/monitoring/fe/setup', monitoring.FrontEndSetupRequestHandler),
-        (r'/api/1/monitoring/fe/ws', monitoring.FrontEndWebSocketHandler),
-        (r'/api/1/monitoring/event', monitoring.EventRequestHandler),
+        (r'/api/1/monitoring/fe/setup', handlers.monitoring.FrontEndSetupRequestHandler),
+        (r'/api/1/monitoring/fe/ws', handlers.monitoring.FrontEndWebSocketHandler),
+        (r'/api/1/monitoring/event', handlers.monitoring.EventRequestHandler),
         # Metric routes.
-        (r'/api/1/metric/add', metric.AddRequestHandler),
-        (r'/api/1/metric/delete', metric.DeleteRequestHandler),
-        (r'/api/1/metric/fetch', metric.FetchRequestHandler),
-        (r'/api/1/metric/fetch_count', metric.FetchCountRequestHandler),
-        (r'/api/1/metric/fetch_columns', metric.FetchColumnsRequestHandler),
-        (r'/api/1/metric/fetch_list', metric.FetchListRequestHandler),
-        (r'/api/1/metric/fetch_setup', metric.FetchSetupRequestHandler),
+        (r'/api/1/metric/add', handlers.metric.AddRequestHandler),
+        (r'/api/1/metric/delete', handlers.metric.DeleteRequestHandler),
+        (r'/api/1/metric/fetch', handlers.metric.FetchRequestHandler),
+        (r'/api/1/metric/fetch_count', handlers.metric.FetchCountRequestHandler),
+        (r'/api/1/metric/fetch_columns', handlers.metric.FetchColumnsRequestHandler),
+        (r'/api/1/metric/fetch_list', handlers.metric.FetchListRequestHandler),
+        (r'/api/1/metric/fetch_setup', handlers.metric.FetchSetupRequestHandler),
         # Operational routes.
-        (r'/api/1/ops/heartbeat', ops.HeartbeatRequestHandler),
-        (r'/api/1/ops/list_endpoints', ops.ListEndpointsRequestHandler),
+        (r'/api/1/ops/heartbeat', handlers.ops.HeartbeatRequestHandler),
+        (r'/api/1/ops/list_endpoints', handlers.ops.ListEndpointsRequestHandler),
     )
 
 
@@ -112,7 +104,7 @@ def run():
     app.listen(config.api.port)
 
     # Set web-socket keep alive.
-    ws.keep_alive()
+    handlers.ws.keep_alive()
 
     # Start io loop.
     rt.log_api("Ready")

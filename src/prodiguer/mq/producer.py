@@ -12,8 +12,8 @@
 """
 import pika
 
-from . import constants
-from ..utils import config, rt
+from prodiguer.mq import constants
+from prodiguer.utils import config, rt
 
 
 

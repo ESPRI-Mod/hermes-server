@@ -13,7 +13,7 @@
 """
 import os
 
-from .convert import json_file_to_namedtuple
+from prodiguer.utils.convert import json_file_to_namedtuple
 
 
 # Default prodiguer stack home directory.

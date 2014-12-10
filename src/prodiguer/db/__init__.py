@@ -10,26 +10,25 @@
 
 
 """
-from . import (
+from prodiguer.db import (
 	cache,
 	constants,
 	dao,
+	dao_mq,
 	session,
 	setup,
 	types,
 	type_factory,
 	validation
 	)
-from ..utils import config
+from prodiguer.utils import config
 
 
-
-# Module exports.
 __all__ = [
 	"cache",
 	"constants",
 	"dao",
-	"initialize",
+	"dao_mq",
 	"session",
 	"setup",
 	"types",

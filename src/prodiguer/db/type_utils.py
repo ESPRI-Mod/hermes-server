@@ -10,26 +10,18 @@
 
 """
 import datetime
-import json
-import random
-import uuid
 
 from dateutil import parser as date_parser
 from sqlalchemy import (
     Column,
-    DateTime,
     ForeignKey,
     inspect,
     Integer,
-    MetaData,
-    Unicode
+    MetaData
     )
 from sqlalchemy.ext.declarative import declarative_base
 
-from .. utils import (
-    convert,
-    runtime as rt
-    )
+from prodiguer.utils import convert, rt
 
 
 
@@ -49,35 +41,6 @@ def assert_type(etype):
     """
     if etype not in supported_types:
         rt.throw('DB entity type is unknown :: {0}'.format(type))
-
-
-def create_fk(fk, nullable=False):
-    """Factory function to return a foreign key column.
-
-    :param fk: Name of foreign key to be created.
-    :type fk: str
-
-    :param nullable: Flag indicating whether foreign key is nullable or not.
-    :type nullable: bool
-
-    :returns: A foreign key reference.
-    :rtype: sqlalchemy.Column
-
-    """
-    return Column(Integer, ForeignKey(fk), nullable=nullable)
-
-
-def parse_attr_value(v, expected_type):
-    """Parses an attribute value."""
-    if v.__class__ != expected_type:
-        if expected_type is datetime.datetime:
-            if (v.__class__ in (str, unicode)) and len(v):
-                try:
-                    v = date_parser.parse(str(v))
-                except (ValueError, TypeError):
-                    pass
-
-    return v
 
 
 class BaseEntity(object):
@@ -136,27 +99,8 @@ class BaseEntity(object):
         return sorted(collection, key=sort_key)
 
 
-
-class BaseControlledVocabularyEntity(BaseEntity):
-    """A controlled vocabulary base class.
-
-    """
-    # Attributes.
-    code = Column(Unicode(63))
-    description = Column(Unicode(511))
-
-
-    @property
-    def name(self):
-        """Helper property for use with cache."""
-        return self.code
-
-
 # Mixin with sql alchemy.
 Entity = declarative_base(metadata=metadata, cls=BaseEntity)
-ControlledVocabularyEntity = \
-    declarative_base(metadata=metadata, cls=BaseControlledVocabularyEntity)
-
 
 
 class Convertor(object):

@@ -13,7 +13,7 @@
 """
 import tornado.websocket
 
-from .. import utils_ws as ws
+from prodiguer.api.handlers import utils_ws as ws
 
 
 

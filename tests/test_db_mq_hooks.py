@@ -3,12 +3,12 @@
 """
 .. module:: test_mq.py
 
-   :copyright: @2013 Institute Pierre Simon Laplace (http://esdocumentation.org)
+   :copyright: @2013 IPSL (http://esdocumentation.org)
    :license: GPL / CeCILL
    :platform: Unix
    :synopsis: Encapsulates mq tests.
 
-.. moduleauthor:: Institute Pierre Simon Laplace (ES-DOC) <dev@esdocumentation.org>
+.. moduleauthor:: IPSL (ES-DOC) <dev@esdocumentation.org>
 
 """
 import datetime
@@ -19,9 +19,9 @@ import nose
 from . import utils as tu
 from prodiguer import db
 from prodiguer.db.types import (
+    CvTerm,
     Message,
-    Simulation,
-    SimulationState
+    Simulation
     )
 
 
@@ -31,7 +31,7 @@ _SIM_COMPUTE_NODE = 'CCRT'
 _SIM_COMPUTE_NODE_LOGIN = 'dcugnet'
 _SIM_COMPUTE_NODE_MACHINE = 'CCRT - SX9'
 _SIM_EXECUTION_START_DATE = datetime.datetime.now()
-_SIM_EXECUTION_STATE = db.constants.EXECUTION_STATE_RUNNING
+_SIM_EXECUTION_STATE = db.constants.SIMULATION_STATE_RUNNING
 _SIM_EXPERIMENT = '1pctCO2'
 _SIM_MODEL_ENGINE = 'IPSL-CM5A-LR'
 _SIM_SPACE = db.constants.SIMULATION_SPACE_TEST
@@ -44,7 +44,7 @@ _MSG_CONTENT2 = "12345690"
 
 
 def _create_simulation(name=tu.get_string(63)):
-    import prodiguer.mq.db_hooks as db_hooks
+    import prodiguer.db.dao_mq as db_hooks
 
     s = db_hooks.create_simulation(_SIM_ACTIVITY,
                                    _SIM_COMPUTE_NODE,
@@ -73,11 +73,11 @@ def _update_simulation_state(name, state):
 
     s = db_hooks.retrieve_simulation(name)
     tu.assert_obj(s, Simulation)
-    tu.assert_obj(db.dao.get_by_id(SimulationState, s.execution_state_id), SimulationState)
+    tu.assert_obj(db.dao.get_by_id(CvTerm, s.execution_state), CvTerm)
 
 
 def _delete_simulation(name):
-    import prodiguer.db.db_hooks as db_hooks
+    import prodiguer.db.dao_mq as db_hooks
 
     db_hooks.delete_simulation(name)
     s = db_hooks.retrieve_simulation(name)
@@ -85,7 +85,7 @@ def _delete_simulation(name):
 
 
 def _create_simulation_message(s):
-    import prodiguer.db.db_hooks as db_hooks
+    import prodiguer.db.dao_mq as db_hooks
     
     m = db_hooks.create_simulation_message(s.name,
                                            _MSG_APP,
@@ -121,7 +121,7 @@ def test_simulation_cycle():
     tu.assert_integer(s2.id, s1.id)
 
     # Update status.
-    for state in db.constants.EXECUTION_STATE_SET:
+    for state in db.constants.SIMULATION_STATE_SET:
         _update_simulation_state(s1.name, state)
 
     # Delete.
@@ -129,7 +129,7 @@ def test_simulation_cycle():
 
 
 def test_simulation_message_cycle():
-    import prodiguer.db.db_hooks as db_hooks
+    import prodiguer.db.dao_mq as db_hooks
 
     # Create simulation.
     s1 = _create_simulation()

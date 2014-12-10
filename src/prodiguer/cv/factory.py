@@ -11,8 +11,7 @@
 
 
 """
-from .. import db
-from ..utils import runtime as rt
+from prodiguer.utils import rt
 
 
 
@@ -33,6 +32,8 @@ def create(term_type, term_name):
     :rtype: db.types.CvTerm
 
     """
+    from prodiguer import db
+
     term = db.types.CvTerm()
     term.cv_type = term_type
     term.description = "{0} ?".format(term_name)

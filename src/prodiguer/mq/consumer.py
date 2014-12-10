@@ -15,8 +15,8 @@ import inspect
 import pika
 
 from prodiguer.utils import rt
-from . import constants, message
-from ..utils import config
+from prodiguer.mq import constants, message
+from prodiguer.utils import config
 
 
 

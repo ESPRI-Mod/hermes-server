@@ -12,8 +12,8 @@
 """
 import datetime, uuid
 
-import constants
-from timestamp import Timestamp
+from prodiguer.mq import constants
+from prodiguer.mq.timestamp import Timestamp
 
 
 

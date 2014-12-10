@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.mq.db_hooks.py
-   :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
+.. module:: prodiguer.db.dao_mq.py
+   :copyright: Copyright "Apr 26, 2013", IPSL
    :license: GPL/CeCIL
    :platform: Unix
    :synopsis: Encapsulates hooks from MQ platform to database.
@@ -11,9 +11,8 @@
 
 
 """
-from . import validation as msg_validation
-from .. import db
-from ..db.validation import (
+from prodiguer.db import dao, types, session
+from prodiguer.db.validation import (
     validate_activity,
     validate_compute_node,
     validate_compute_node_login,
@@ -30,7 +29,7 @@ from ..db.validation import (
     validate_simulation_state_timestamp,
     validate_simulation_uid
     )
-from ..utils import runtime as rt
+from prodiguer.utils import rt
 
 
 
@@ -105,6 +104,8 @@ def _validate_create_message(
     """Validates create message inputs.
 
     """
+    from prodiguer.mq import validation as msg_validation
+
     msg_validation.validate_uid(uid)
     msg_validation.validate_user_id(user_id)
     msg_validation.validate_app_id(app_id)
@@ -127,12 +128,12 @@ def retrieve_simulation(uid):
     :param str uid: UID of simulation.
 
     :returns: Simulation details.
-    :rtype: db.types.cnode.simulation.Simulation
+    :rtype: types.monitoring.Simulation
 
     """
-    qfilter = db.types.NewSimulation.uid == unicode(uid)
+    qfilter = types.Simulation.uid == unicode(uid)
 
-    return db.dao.get_by_facet(db.types.NewSimulation, qfilter=qfilter)
+    return dao.get_by_facet(types.Simulation, qfilter=qfilter)
 
 
 def create_simulation(
@@ -166,7 +167,7 @@ def create_simulation(
     :param str uid: Simulation unique identifier.
 
     :returns: Newly created simulation.
-    :rtype: db.types.Simulation
+    :rtype: types.Simulation
 
     """
     # Validate inputs.
@@ -186,7 +187,7 @@ def create_simulation(
         uid)
 
     # Instantiate.
-    sim = db.types.NewSimulation()
+    sim = types.Simulation()
     sim.activity = unicode(activity)
     sim.compute_node = unicode(compute_node)
     sim.compute_node_login = unicode(compute_node_login)
@@ -202,7 +203,7 @@ def create_simulation(
     sim.uid = unicode(uid)
 
     # Push to db.
-    db.session.add(sim)
+    session.add(sim)
     rt.log_db("Created simulation: {0}.".format(uid))
 
     return sim
@@ -221,14 +222,14 @@ def create_simulation_state(uid, state, timestamp, info):
     _validate_create_simulation_state(uid, state, timestamp, info)
 
     # Instantiate instance.
-    instance = db.types.NewSimulationStateChange()
+    instance = types.SimulationStateChange()
     instance.info = unicode(info)
     instance.simulation_uid = unicode(uid)
     instance.state = unicode(state)
     instance.timestamp = timestamp
 
     # Push to db.
-    db.session.add(instance)
+    session.add(instance)
     msg = "Persisted simulation state to db :: {0} | {1}"
     msg = msg.format(uid, state)
     rt.log_db(msg)
@@ -254,7 +255,7 @@ def _update_simulation_state(uid):
         return
 
     # Get latest state change.
-    change = db.dao.get_latest_simulation_state_change(uid)
+    change = dao.get_latest_simulation_state_change(uid)
     if not change:
         return
 
@@ -262,7 +263,7 @@ def _update_simulation_state(uid):
     simulation.execution_state = change.state
 
     # Push to db.
-    db.session.update(simulation)
+    session.update(simulation)
     msg = "Updated current simulation state :: {0} --> {1}".format(uid, change.state)
     rt.log_db(msg)
 
@@ -302,7 +303,7 @@ def create_message(
     :param str mode: Message dispatch mode.
 
     :returns: Newly created message.
-    :rtype: db.types.Message
+    :rtype: types.Message
 
     """
     # Validate inputs.
@@ -324,11 +325,8 @@ def create_message(
         mode
         )
 
-    # Ensure that cache is loaded.
-    db.cache.load()
-
     # Instantiate instance.
-    msg = db.types.Message()
+    msg = types.Message()
     msg.app_id = app_id
     msg.content = content
     msg.content_encoding = content_encoding
@@ -349,6 +347,6 @@ def create_message(
     msg.user_id = user_id
 
     # Push to db.
-    db.session.add(msg)
+    session.add(msg)
 
     return msg

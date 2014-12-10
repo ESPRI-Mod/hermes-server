@@ -13,8 +13,8 @@
 """
 import random
 
-from . import dao, types
-from .. utils import runtime as rt
+from prodiguer.db import dao, types
+from prodiguer.utils import rt
 
 
 

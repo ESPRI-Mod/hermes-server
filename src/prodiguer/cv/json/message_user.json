@@ -1,0 +1,10 @@
+[
+    {
+        "name": "libigcm-mq-user",
+        "description": "liblIGCM user"
+    },
+    {
+        "name": "prodiguer-mq-user",
+        "description": "Internal prodiguer system user"
+    }
+]

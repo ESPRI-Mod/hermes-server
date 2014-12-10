@@ -16,8 +16,8 @@ import uuid
 
 from sqlalchemy import inspect
 
-from . import session, types
-from .. utils import runtime as rt
+from prodiguer.db import session, types
+from prodiguer.utils import convert, rt
 
 
 
@@ -85,7 +85,7 @@ def create(etype, force=False, commit=False):
     :param class etype: Type of instance being created.
     :param bool force: Flag indicating whether the instance must be created.
     :param bool commit: Flag indicating whether the instance will be committed.
-    
+
     :returns: A type instance.
     :rtype: A instance of a sub-class of types.Entity.
 
@@ -106,11 +106,11 @@ def create(etype, force=False, commit=False):
             _set_scalar(i, c)
         elif len(c.foreign_keys) == 1:
             _set_fk(etype, i, c, list(c.foreign_keys)[0])
-            
+
     # Update session.
     session.add(i)
     if commit:
-        session.commit()        
+        session.commit()
 
     return i
 

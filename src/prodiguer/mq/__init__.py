@@ -1,6 +1,5 @@
 
-from . import constants, utils
-from .message import Message
-from .utils import create_ampq_message_properties, produce, consume
-from .timestamp import Timestamp
-import db_hooks
+from prodiguer.mq import constants, utils
+from prodiguer.mq.message import Message
+from prodiguer.mq.utils import create_ampq_message_properties, produce, consume
+from prodiguer.mq.timestamp import Timestamp

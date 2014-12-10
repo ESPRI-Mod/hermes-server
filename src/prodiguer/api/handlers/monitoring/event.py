@@ -15,10 +15,10 @@ import datetime
 
 import tornado.web
 
-from . import utils
-from .. import utils_ws as ws
-from .... import db
-from .... utils import config, convert, rt
+from prodiguer import db
+from prodiguer.api.handlers import utils_ws as ws
+from prodiguer.api.handlers.monitoring import utils
+from prodiguer.utils import config, convert, rt
 
 
 
@@ -77,7 +77,7 @@ def _publish_new_simulation(handler):
     data = {
         'event_type' : 'new',
         'event_timestamp': unicode(datetime.datetime.now()),
-        'simulation': db.dao.get_by_id(db.types.NewSimulation,
+        'simulation': db.dao.get_by_id(db.types.Simulation,
                                        int(handler.get_argument('id'))),
         'cv_terms': []
         }

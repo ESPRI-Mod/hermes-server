@@ -15,10 +15,7 @@ import json
 
 from bson import json_util
 
-from ... utils import (
-    config,
-    runtime as rt
-    )
+from prodiguer.utils import config, rt
 
 
 

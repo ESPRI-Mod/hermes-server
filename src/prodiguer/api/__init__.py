@@ -11,4 +11,4 @@
 
 
 """
-from .app import run
+from prodiguer.api.app import run

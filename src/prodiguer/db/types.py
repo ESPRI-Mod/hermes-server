@@ -17,157 +17,62 @@ from sqlalchemy import (
     DateTime
     )
 
-from . import type_utils
-from . type_utils import (
+from prodiguer.db import type_utils
+from prodiguer.db.type_utils import (
     assert_type,
     Entity,
-    ControlledVocabularyEntity,
     Convertor,
-    metadata,
-    parse_attr_value
+    metadata
     )
-
-# Import cnode types.
-from .types_cnode import (
-    ComputeNode,
-    ComputeNodeLogin,
-    ComputeNodeMachine,
-    Experiment,
-    ExperimentGroup,
-    Model,
-    ModelForcing,
-    Simulation,
+from prodiguer.db.types_monitoring import (
     SimulationForcing,
-    SimulationSpace,
-    SimulationState,
-    SimulationStateChange,
-    NewSimulation,
-    NewSimulationStateChange
+    Simulation,
+    SimulationStateChange
     )
-
-# Import mq types.
-from .types_mq import Message
-
-# Import shared schema
-from .types_shared import (
-    Activity,
-    CvTerm,
-    CV_TYPES,
-    CV_TYPE_ACTIVITY,
-    CV_TYPE_INSTITUTE,
-    Institute
-    )
+from prodiguer.db.types_mq import Message
+from prodiguer.db.types_shared import CvTerm
 
 
 
 __all__ = [
-    # ... cnode types
-    "ComputeNode",
-    "ComputeNodeLogin",
-    "ComputeNodeMachine",
-    "Experiment",
-    "ExperimentGroup",
-    "Model",
-    "ModelForcing",
-    "Simulation",
+    # ... type related
     "SimulationForcing",
-    "SimulationSpace",
-    "SimulationState",
+    "Simulation",
     "SimulationStateChange",
-    "NewSimulation",
-    "NewSimulationStateChange",
-    # ... mq types
     "Message",
-    # ... shared types
-    "Activity",
     "CvTerm",
-    "CV_TYPES",
-    "CV_TYPE_ACTIVITY",
-    "CV_TYPE_INSTITUTE",
-    "Institute",
     # ... other
     "Entity",
     "Convertor",
     "metadata",
-    "parse_attr_value",
     "assert_type",
     "SCHEMAS",
     "TYPES",
-    "CACHEABLE",
-    "CV",
+    "CACHEABLE"
     ]
 
 
 
 # Set of supported model schemas.
-SCHEMAS = ("cnode", "mq", "shared")
+SCHEMAS = ("monitoring", "mq", "shared")
 
 
 # Set of supported model types.
 TYPES = type_utils.supported_types = [
-    # ... cnode
-    ComputeNode,
-    ComputeNodeLogin,
-    ComputeNodeMachine,
-    Experiment,
-    ExperimentGroup,
-    Model,
-    ModelForcing,
+    CvTerm,
+    Message,
     Simulation,
     SimulationForcing,
-    SimulationSpace,
-    SimulationState,
-    SimulationStateChange,
-    NewSimulation,
-    NewSimulationStateChange,
-    # ... mq
-    Message,
-    # ... shared
-    Activity,
-    Institute,
-    CvTerm
+    SimulationStateChange
 ]
 
 # Extend type with other fields.
-for type in TYPES:
-    type.row_create_date = Column(DateTime, nullable=False, default=datetime.datetime.now)
-    type.row_update_date = Column(DateTime, onupdate=datetime.datetime.now)
-
-
-# Supported cv types - order matters so as to ensure population can take place smoothly.
-CV = (
-    # ... shared cv's.
-    Activity,
-    CvTerm,
-    Institute,
-    # ... cnode cv's.
-    ComputeNode,
-    ComputeNodeLogin,
-    ComputeNodeMachine,
-    Model,
-    ModelForcing,
-    ExperimentGroup,
-    Experiment,
-    SimulationSpace,
-    SimulationState,
-    # ... temp cv's.
-    Simulation
-    )
+for entity_type in TYPES:
+    entity_type.row_create_date = \
+        Column(DateTime, nullable=False, default=datetime.datetime.now)
+    entity_type.row_update_date = \
+        Column(DateTime, onupdate=datetime.datetime.now)
 
 
 # Supported cacheable types.
-CACHEABLE = (
-    # ... cnode
-    ComputeNode,
-    ComputeNodeLogin,
-    ComputeNodeMachine,
-    Experiment,
-    ExperimentGroup,
-    Model,
-    SimulationSpace,
-    SimulationState,
-    # ... shared
-    Activity,
-    Institute,
-    CvTerm,
-    )
+CACHEABLE = (CvTerm, )
