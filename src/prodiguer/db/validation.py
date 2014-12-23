@@ -14,31 +14,6 @@ import uuid
 
 import arrow
 
-import cache, types
-
-
-def validate_cv_term(cv_type, term_id):
-    """Validates a cv term.
-
-    """
-    cv_type = unicode(cv_type).lower()
-    term_id = unicode(term_id).lower()
-
-    for term in cache.get_collection(types.CvTerm):
-        if term.cv_type != cv_type:
-            continue
-        if term.name.lower() == term_id:
-            return
-        if term.synonyms:
-            names = term.synonyms.split(",")
-            names = [n.strip().lower() for n in names if n and n.strip()]
-            if cv_type == "model":
-                print "validating synonym", term_id, names, term_id in names
-            if term_id in names:
-                print "Validated cv term against synonyms"
-                return
-
-    raise ValueError('Unknown cv term: {0}.{1}'.format(cv_type, term_id))
 
 
 def _validate_date(date, var):
@@ -65,67 +40,7 @@ def _validate_uid(identifier, var):
             raise ValueError("{0} must be UUID compatible.".format(var))
 
 
-def validate_activity(identifier):
-    """Validate activity identifier.
-
-    :param identifier: An activity identifier.
-    :type identifier: str | int
-
-    """
-    validate_cv_term("activity", identifier)
-
-
-def validate_compute_node(identifier):
-    """Validate compute node identifier.
-
-    :param identifier: A compute node identifier.
-    :type identifier: str | int
-
-    """
-    validate_cv_term("compute_node", identifier)
-
-
-def validate_compute_node_login(identifier):
-    """Validate compute node login identifier.
-
-    :param identifier: A compute node login identifier.
-    :type identifier: str | int
-
-    """
-    validate_cv_term("compute_node_login", identifier)
-
-
-def validate_compute_node_machine(identifier):
-    """Validate compute node machine identifier.
-
-    :param identifier: A compute node machine identifier.
-    :type identifier: str | int
-
-    """
-    validate_cv_term("compute_node_machine", identifier)
-
-
-def validate_experiment(identifier):
-    """Validate experiment identifier.
-
-    :param identifier: An experiment identifier.
-    :type identifier: str | int
-
-    """
-    validate_cv_term("experiment", identifier)
-
-
-def validate_model(identifier):
-    """Validate model identifier.
-
-    :param identifier: A model identifier.
-    :type identifier: str | int
-
-    """
-    validate_cv_term("model", identifier)
-
-
-def validate_job_uid(identifier):
+def validate_simulation_job_uid(identifier):
     """Validates a simulation job unique identifier.
 
     :param str identifier: A simulation job unique identifier.
@@ -192,26 +107,6 @@ def validate_simulation_output_end_date(date):
 
     """
     _validate_date(date, 'Output end date')
-
-
-def validate_simulation_space(identifier):
-    """Validate simulation space identifier.
-
-    :param identifier: A simulation space identifier.
-    :type identifier: str | int
-
-    """
-    validate_cv_term("simulation_space", identifier)
-
-
-def validate_simulation_state(identifier):
-    """Validate simulation state identifier.
-
-    :param identifier: A simulation state identifier.
-    :type identifier: str | int
-
-    """
-    validate_cv_term("simulation_state", identifier)
 
 
 def validate_simulation_uid(identifier):

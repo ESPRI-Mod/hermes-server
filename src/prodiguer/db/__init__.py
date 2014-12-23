@@ -11,27 +11,29 @@
 
 """
 from prodiguer.db import (
-	cache,
-	constants,
 	dao,
+	dao_monitoring,
 	dao_mq,
 	session,
 	setup,
 	types,
 	type_factory,
+	utils,
 	validation
 	)
+from prodiguer.db.types import Entity
 from prodiguer.utils import config
 
 
 __all__ = [
-	"cache",
-	"constants",
 	"dao",
+	"dao_monitoring",
 	"dao_mq",
+	"Entity",
 	"session",
 	"setup",
 	"types",
 	"type_factory",
+	"utils",
 	"validation"
 ]

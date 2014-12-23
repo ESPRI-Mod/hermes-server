@@ -151,13 +151,13 @@ class _JSONEncoder(json.JSONEncoder):
     """
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
-            return obj.isoformat().replace('T', ' ')
+            return unicode(obj.isoformat().replace('T', ' '))
         elif isinstance(obj, datetime.date):
-            return obj.isoformat()
+            return unicode(obj.isoformat())
         elif isinstance(obj, datetime.time):
-            return obj.isoformat()
+            return unicode(obj.isoformat())
         elif isinstance(obj, uuid.UUID):
-            return str(obj)
+            return unicode(obj)
         else:
             raise TypeError(repr(obj) + " is not JSON serializable")
 
@@ -194,6 +194,9 @@ class _JSONDecoder(json.JSONDecoder):
 
 
     def unicode_to_datetime(self, d, k, v):
+        """Attempts to convert a unicode value to a datetime.
+
+        """
         if isinstance(v, unicode) and len(v):
             try:
                 float(v)
@@ -211,6 +214,9 @@ class _JSONDecoder(json.JSONDecoder):
 
 
     def unicode_to_uuid(self, d, k, v):
+        """Attempts to convert a unicode value to a UUID.
+
+        """
         if isinstance(v, unicode) and len(v):
             try:
                 v = uuid.UUID(v)
@@ -547,3 +553,41 @@ def to_csv(columns, rows):
         csv += ", ".join(row)
 
     return csv
+
+
+# Set of types to be ignored when jsonifying.
+_JSONIFYING_TYPES_IGNORE = (int, float, long, type(None), unicode)
+
+# Set of unicodeable types used in jsonifying.
+_JSONIFYING_TYPES_UNICODEABLE = (basestring, datetime.datetime, uuid.UUID)
+
+
+def _jsonify(data):
+    """Converts a dictionary in readines for json encoding.
+
+    """
+    if isinstance(data, _JSONIFYING_TYPES_IGNORE):
+        return data
+
+    if isinstance(data, _JSONIFYING_TYPES_UNICODEABLE):
+        return unicode(data)
+
+    if isinstance(data, collections.Mapping):
+        mapped = [(str_to_camel_case(k), _jsonify(data[k])) for k in data.keys()]
+        mapped = sorted(mapped, key = lambda i: i[0].lower())
+        return collections.OrderedDict(mapped)
+
+    if isinstance(data, collections.Iterable):
+        return [_jsonify(i) for i in data]
+
+
+def jsonify(data):
+    """Converts input dictionary to json.
+
+    :param dict data: Data in dictionary format.
+
+    :returns: JSON encoded string.
+    :rtype: str
+
+    """
+    return json.dumps(_jsonify(data), indent=4)

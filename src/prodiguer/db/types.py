@@ -30,7 +30,6 @@ from prodiguer.db.types_monitoring import (
     SimulationStateChange
     )
 from prodiguer.db.types_mq import Message
-from prodiguer.db.types_shared import CvTerm
 
 
 
@@ -40,7 +39,6 @@ __all__ = [
     "Simulation",
     "SimulationStateChange",
     "Message",
-    "CvTerm",
     # ... other
     "Entity",
     "Convertor",
@@ -54,12 +52,11 @@ __all__ = [
 
 
 # Set of supported model schemas.
-SCHEMAS = ("monitoring", "mq", "shared")
+SCHEMAS = ("monitoring", "mq")
 
 
 # Set of supported model types.
 TYPES = type_utils.supported_types = [
-    CvTerm,
     Message,
     Simulation,
     SimulationForcing,
@@ -75,4 +72,4 @@ for entity_type in TYPES:
 
 
 # Supported cacheable types.
-CACHEABLE = (CvTerm, )
+CACHEABLE = []

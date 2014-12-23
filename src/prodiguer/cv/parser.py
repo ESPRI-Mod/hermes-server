@@ -1,5 +1,21 @@
+# -*- coding: utf-8 -*-
 
-def parse(term_type, term_name):
+"""
+.. module:: cv.parser.py
+   :copyright: Copyright "December 01, 2014", IPSL
+   :license: GPL/CeCIL
+   :platform: Unix, Windows
+   :synopsis: Controlled vocabulary parser.
+
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
+
+
+"""
+from prodiguer.cv import validation
+
+
+
+def parse_term_name(term_type, term_name):
     """Parses a controlled vocabulary term.
 
     :param str term_type: Type of CV term being parsed, e.g. activity.
@@ -9,29 +25,5 @@ def parse(term_type, term_name):
     :rtype: unicode
 
     """
-    from prodiguer.db import cache
-    from prodiguer.db.types import CvTerm
-
-    # Format inputs.
-    term_type = unicode(term_type).lower()
-    term_name = unicode(term_name).lower()
-
-    # Set filtered terms.
-    terms = cache.get_collection(CvTerm)
-    terms = [i for i in terms if i.cv_type == term_type]
-
-    # Match term by name or synonym.
-    for term in terms:
-        # ... name match.
-        if term.name.lower() == term_name:
-            return term.name
-        # ... synonym match.
-        if term.synonyms:
-            names = term.synonyms.split(",")
-            names = [n.strip().lower() for n in names if n and n.strip()]
-            if term_name in names:
-                return term.name
-
-    # Term was unmatched therefore error.
-    err = "Unknown cv term: {0}.{1}".format(term_type, term_name)
-    raise ValueError(err)
+    # Delegate to validator as this returns parsed term name.
+    return validation.validate_term_name(term_type, term_name)

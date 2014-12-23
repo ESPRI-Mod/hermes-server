@@ -11,14 +11,12 @@
 
 
 """
-import os
-
 import tornado
 from tornado.web import Application
 
 
-from prodiguer import db
-from prodiguer.api import handlers
+from prodiguer import cv
+from prodiguer.api import metric, monitoring, ops, utils
 from prodiguer.utils import config, rt
 
 
@@ -27,20 +25,10 @@ def _get_path_to_front_end():
     """Return path to the front end javascript application.
 
     """
-    # N.B. deriving path on assumption that software
-    # has been installed using the prodiguer bootstrapper.
+    dir_fe = rt.get_path_to_repo(['prodiguer-fe', 'src'])
+    rt.log_api("Front-end static files @ {0}".format(dir_fe))
 
-    # Get directory to prodiguer repos.
-    repos = os.path.dirname(__file__)
-    for i in range(4):
-        repos = os.path.dirname(repos)
-
-    # Get directory to front end source code.
-    path = os.path.join(repos, 'prodiguer-fe')
-    path = os.path.join(path, 'src')
-    rt.log_api("Front-end static files @ {0}".format(path))
-
-    return path
+    return dir_fe
 
 
 def _get_app_routes():
@@ -49,20 +37,20 @@ def _get_app_routes():
     """
     return (
         # Monitoring routes.
-        (r'/api/1/monitoring/fe/setup', handlers.monitoring.FrontEndSetupRequestHandler),
-        (r'/api/1/monitoring/fe/ws', handlers.monitoring.FrontEndWebSocketHandler),
-        (r'/api/1/monitoring/event', handlers.monitoring.EventRequestHandler),
+        (r'/api/1/monitoring/fe/setup', monitoring.FrontEndSetupRequestHandler),
+        (r'/api/1/monitoring/fe/ws', monitoring.FrontEndWebSocketHandler),
+        (r'/api/1/monitoring/event', monitoring.EventRequestHandler),
         # Metric routes.
-        (r'/api/1/metric/add', handlers.metric.AddRequestHandler),
-        (r'/api/1/metric/delete', handlers.metric.DeleteRequestHandler),
-        (r'/api/1/metric/fetch', handlers.metric.FetchRequestHandler),
-        (r'/api/1/metric/fetch_count', handlers.metric.FetchCountRequestHandler),
-        (r'/api/1/metric/fetch_columns', handlers.metric.FetchColumnsRequestHandler),
-        (r'/api/1/metric/fetch_list', handlers.metric.FetchListRequestHandler),
-        (r'/api/1/metric/fetch_setup', handlers.metric.FetchSetupRequestHandler),
+        (r'/api/1/metric/add', metric.AddRequestHandler),
+        (r'/api/1/metric/delete', metric.DeleteRequestHandler),
+        (r'/api/1/metric/fetch', metric.FetchRequestHandler),
+        (r'/api/1/metric/fetch_count', metric.FetchCountRequestHandler),
+        (r'/api/1/metric/fetch_columns', metric.FetchColumnsRequestHandler),
+        (r'/api/1/metric/fetch_list', metric.FetchListRequestHandler),
+        (r'/api/1/metric/fetch_setup', metric.FetchSetupRequestHandler),
         # Operational routes.
-        (r'/api/1/ops/heartbeat', handlers.ops.HeartbeatRequestHandler),
-        (r'/api/1/ops/list_endpoints', handlers.ops.ListEndpointsRequestHandler),
+        (r'/api/1/ops/heartbeat', ops.HeartbeatRequestHandler),
+        (r'/api/1/ops/list_endpoints', ops.ListEndpointsRequestHandler),
     )
 
 
@@ -76,15 +64,6 @@ def _get_app_settings():
     }
 
 
-def _init_db_cache():
-    """Initializes db cache.
-
-    """
-    db.session.start(config.db.pgres.main)
-    db.cache.load()
-    db.session.end()
-
-
 def run():
     """Runs the prodiguer web api.
 
@@ -92,8 +71,8 @@ def run():
     # Setup app.
     rt.log_api("Initializing")
 
-    # Initialize db cache.
-    _init_db_cache()
+    # Initialise cv session.
+    cv.session.init()
 
     # Instantiate.
     app = Application(_get_app_routes(),
@@ -104,7 +83,7 @@ def run():
     app.listen(config.api.port)
 
     # Set web-socket keep alive.
-    handlers.ws.keep_alive()
+    utils.ws.keep_alive()
 
     # Start io loop.
     rt.log_api("Ready")

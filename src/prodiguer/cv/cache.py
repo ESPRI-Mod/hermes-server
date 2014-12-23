@@ -11,206 +11,169 @@
 
 
 """
-import glob, os, random
-from os.path import dirname, abspath
+import collections, random
 
-from prodiguer.utils import convert
-
-
-
-# Loaded set of cv's.
-_cache = {}
+from prodiguer.utils import rt
+from prodiguer.cv import constants, io, term_accessor as ta
 
 
-def _is_matched_name(term, name):
-    """Predicate determining whether a term has a matching name.
 
-    """
-    name = str(name).upper()
-    names = [term['name']]
-    try:
-        names += term['synonyms'].split(",")
-    except KeyError:
-        pass
-    else:
-        names = [n for n in names if n]
-        names = [n.strip() for n in names]
-        names = [n for n in names if len(n)]
-    names = [n.upper() for n in names]
-
-    return name in names
+# Cached set of loaded cv's keyed by type.
+_DATA = collections.defaultdict(list)
 
 
-def _get_as_namedtuple(term):
-    """Converts a term to a namedtuple.
+def _extend_term(term):
+    """Extends a CV term with information derived from it's declared attributes.
 
     """
-    return convert.dict_to_namedtuple(term)
+    ta.set_sort_key(term)
 
 
 def sort():
-    """Sorts cached CV collection.
+    """Sorts cache.
 
     """
-    for cv_type, collection in _cache.iteritems():
-        _cache[cv_type] = sorted(collection, key=lambda i: i['name'])
+    for cv_type, collection in _DATA.iteritems():
+        _DATA[cv_type] = sorted(collection, key=ta.get_sort_key)
 
 
 def load():
     """Loads cache.
 
     """
-    def _get_cv_type(fpath):
-        """Returns cv type from a path to a CV file.
-
-        """
-        return fpath.split("/")[-1].split(".")[0]
-
-
-    def _get_cv_terms(fpath):
-        """Returns cv terms from a path to a CV file.
-
-        """
-        return convert.json_file_to_dict(fpath)
-
-
-    if len(_cache) > 0:
+    # Escape if already loaded.
+    if _DATA:
         return
 
-    # Get pointers to cv files.
-    files = os.path.join(dirname(abspath(__file__)), "json")
-    files = os.path.join(files, "*.json")
-    files = sorted(glob.glob(files))
-    files = [f for f in files if not f.endswith("simulation.json")]
+    # Read CV terms from file system.
+    termset = io.read()
 
-    # Load cv terms from cv files.
-    _cache.update({_get_cv_type(f) : _get_cv_terms(f) for f in files})
+    # Extend terms.
+    for term in termset:
+        _extend_term(term)
 
-    # Sort.
+    # Initialize cache.
+    for term in termset:
+        _DATA[ta.get_type(term)].append(term)
+
+    # Sort terms.
     sort()
 
 
-def get_all():
-    """Returns all CV terms.
+def reload():
+    """Reloads cache.
 
-    :returns: All CV items.
+    """
+    if _DATA:
+        rt.log_cv("RELOADING CV CACHE ...")
+        _DATA.clear()
+    load()
+
+
+def add_term(term):
+    """Adds a term to the cache.
+
+    :param dict term: Term to be added to cache.
+
+    """
+    _DATA[ta.get_type(term)].append(term)
+
+
+def remove_term(term):
+    """Remvoes a term from the cache.
+
+    :param dict term: Term to be removed to cache.
+
+    """
+    _DATA[ta.get_type(term)].remove(term)
+
+
+def get_all_termsets():
+    """Returns all cv term sets.
+
+    :returns: List of 2 member tuples containing term type and sorted terms.
     :rtype: list
 
     """
-    result = []
-    for cv_type in _cache.keys():
-        for term in _cache[cv_type]:
-            result.append(term)
-
-    return result
+    return _DATA
 
 
-def get_names(cv_type):
-    """Returns set of a CV term names.
+def get_termset(term_type):
+    """Returns set of cv term types.
 
-    :param str cv_type: Type of CV term.
+    :returns: List of 2 member tuples containing term type and sorted terms.
+    :rtype: list
 
     """
-    if cv_type not in _cache:
-        return None
+    term_type = unicode(term_type).lower()
+    if term_type not in constants.TERM_TYPESET:
+        raise ValueError("Unknown CV type :{}".format(term_type))
 
-    return [i['name'] for i in _cache[cv_type]]
-
-
-def get_collection(cv_type, as_namedtuple=False):
-    """Returns a CV collection.
-
-    :param str cv_type: Type of CV term.
-    :param bool as_namedtuple: Flag indicating whether to return the result in namedtuple format.
-
-    """
-    if cv_type not in _cache:
-        return None
-    collection = _cache[cv_type]
-
-    if as_namedtuple:
-        return [_get_as_namedtuple(t) for t in collection]
-    else:
-        return collection
+    return _DATA[term_type] if term_type in _DATA else []
 
 
-def get_term(cv_type, term_id, as_namedtuple=False):
-    """Returns a CV term.
+def get_term(term_type, term_name):
+    """Returns set of cv term types.
 
-    :param str cv_type: Type of CV term.
-    :param str term_id: A CV term identifier.
-    :param bool as_namedtuple: Flag indicating whether to return the result in namedtuple format.
+    :param term_type: Type of term being retrieved.
+    :param term_name: Name of term being retrieved.
+
+    :returns: List of 2 member tuples containing term type and sorted terms.
+    :rtype: list
 
     """
-    collection = get_collection(cv_type)
-    if collection is None:
-        return None
-
-    for term in collection:
-        if _is_matched_name(term, term_id):
-            if as_namedtuple:
-                term = _get_as_namedtuple(term)
+    termset = get_termset(term_type)
+    term_name = unicode(term_name).lower()
+    for term in termset:
+        if ta.get_name(term) == term_name:
             return term
 
 
-def get_term_name(cv_type, term_id):
-    """Returns a CV term name.
+def get_term_count():
+    """Returns count of terms.
 
-    :param str cv_type: Type of CV term.
-    :param str term_id: A CV term identifier.
-
-    :returns: A cached CV term name.
-    :rtype: str
-
-    """
-    term = get_term(cv_type, term_id)
-
-    return None if term is None else term['name']
-
-
-def get_types():
-    """Returns set of cv types.
-
-    """
-    return sorted(_cache.keys())
-
-
-def get_count():
-    """Returns count of items in cache.
-
-    :returns: Count of items in cache.
+    :returns: Count of terms.
     :rtype: int
 
     """
     count = 0
-    for cv_type in _cache.keys():
-        count += len(_cache[cv_type])
+    for term_type in _DATA.keys():
+        count += len(_DATA[term_type])
 
     return count
 
 
-def get_random_term(cv_type):
-    """Returns a random cache item.
+def get_term_typeset():
+    """Returns set of term types.
 
-    :param str cv_type: Type of CV term.
+    :returns: Set of term types.
+    :rtype: list
+
+    """
+    return sorted(_DATA.keys())
+
+
+def get_random_term(term_type):
+    """Returns a randomly selected term.
+
+    :param term_type: Type of term being retrieved.
 
     :returns: A randomly selected term.
     :rtype: dict
 
     """
-    collection = _cache[cv_type]
-    term_id = random.randint(0, len(collection) - 1)
+    termset = get_termset(term_type)
 
-    return collection[term_id]
+    return termset[random.randint(0, len(termset) - 1)]
 
 
-def get_random_name(cv_type):
-    """Returns a random cache item name.
+def get_random_term_name(term_type):
+    """Returns name of a randomly selected term.
 
-    :param str cv_type: Type of CV term.
+    :param term_type: Type of term being retrieved.
 
     :returns: A randomly selected term name.
     :rtype: str
 
     """
-    return get_random_term(cv_type)['name']
+    return ta.get_name(get_random_term(term_type))

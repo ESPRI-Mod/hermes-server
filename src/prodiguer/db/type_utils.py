@@ -21,7 +21,7 @@ from sqlalchemy import (
     )
 from sqlalchemy.ext.declarative import declarative_base
 
-from prodiguer.utils import convert, rt
+from prodiguer.utils import convert
 
 
 
@@ -40,7 +40,7 @@ def assert_type(etype):
 
     """
     if etype not in supported_types:
-        rt.throw('DB entity type is unknown :: {0}'.format(type))
+        raise TypeError('DB entity type is unknown :: {0}'.format(type))
 
 
 class BaseEntity(object):

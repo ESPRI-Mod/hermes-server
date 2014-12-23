@@ -242,19 +242,3 @@ def delete_by_name(etype, name):
 
     """
     delete_by_facet(etype, etype.name==name)
-
-
-def get_latest_simulation_state_change(uid):
-    """Returns latest simulation state change entry.
-
-    :param str uid: Simulation unique identifier.
-
-    :returns: Most recent simulation state change entry.
-    :rtype: types.SimulationStateChange
-
-    """
-    return get_by_facet(
-        types.SimulationStateChange,
-        types.SimulationStateChange.simulation_uid==unicode(uid),
-        types.SimulationStateChange.timestamp.desc(),
-        False)

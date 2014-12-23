@@ -12,9 +12,31 @@
 """
 import datetime, uuid
 
-from prodiguer.mq import constants
-from prodiguer.mq.timestamp import Timestamp
+import pika
 
+from prodiguer.mq import constants, timestamp as Timestamp
+
+
+
+def validate_ampq_basic_properties(props):
+    """Validates AMPQ basic properties associated with message being processed.
+
+    """
+    # print "TODO - refoactor prodiguer.mq.message.py_validate_ampq_basic_properties"
+    if not isinstance(props, pika.BasicProperties):
+        raise ValueError("AMPQ message basic properties is invalid.")
+    if 'mode' not in props.headers:
+        msg = "[mode] is a required header field."
+        raise ValueError(msg)
+    if props.headers['mode'] not in constants.MODES:
+        msg = "Unsupported mode: {0}."
+        raise ValueError(msg.format(props.headers['mode']))
+    if 'producer_id' not in props.headers:
+        msg = "[producer_id] is a required header field."
+        raise ValueError(msg)
+    if props.headers['producer_id'] not in constants.PRODUCERS:
+        msg = "Unsupported producer_id: {0}."
+        raise ValueError(msg.format(props.headers['producer_id']))
 
 
 def validate_app_id(identifier):

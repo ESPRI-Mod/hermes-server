@@ -17,7 +17,14 @@ __version__ = '0.2.0.0'
 from os.path import dirname, abspath, join
 
 from prodiguer import api, cv, db, mq, utils
-from prodiguer.utils import config, convert, mail, rt
+from prodiguer.utils import (
+	config,
+	convert,
+	data_convertor,
+	mail,
+	rt,
+	string_convertor
+	)
 
 
 # Module exports.

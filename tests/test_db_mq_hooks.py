@@ -17,9 +17,8 @@ import inspect
 import nose
 
 from . import utils as tu
-from prodiguer import db
+from prodiguer import cv
 from prodiguer.db.types import (
-    CvTerm,
     Message,
     Simulation
     )
@@ -31,10 +30,10 @@ _SIM_COMPUTE_NODE = 'CCRT'
 _SIM_COMPUTE_NODE_LOGIN = 'dcugnet'
 _SIM_COMPUTE_NODE_MACHINE = 'CCRT - SX9'
 _SIM_EXECUTION_START_DATE = datetime.datetime.now()
-_SIM_EXECUTION_STATE = db.constants.SIMULATION_STATE_RUNNING
+_SIM_EXECUTION_STATE = cv.constants.SIMULATION_STATE_RUNNING
 _SIM_EXPERIMENT = '1pctCO2'
 _SIM_MODEL_ENGINE = 'IPSL-CM5A-LR'
-_SIM_SPACE = db.constants.SIMULATION_SPACE_TEST
+_SIM_SPACE = cv.constants.SIMULATION_SPACE_TEST
 _MSG_APP = "smon"
 _MSG_PUBLISHER = "libigcm"
 _MSG_TYPE = "1000000"
@@ -44,7 +43,7 @@ _MSG_CONTENT2 = "12345690"
 
 
 def _create_simulation(name=tu.get_string(63)):
-    import prodiguer.db.dao_mq as db_hooks
+    import prodiguer.db.dao_monitoring as db_hooks
 
     s = db_hooks.create_simulation(_SIM_ACTIVITY,
                                    _SIM_COMPUTE_NODE,
@@ -73,7 +72,7 @@ def _update_simulation_state(name, state):
 
     s = db_hooks.retrieve_simulation(name)
     tu.assert_obj(s, Simulation)
-    tu.assert_obj(db.dao.get_by_id(CvTerm, s.execution_state), CvTerm)
+    # tu.assert_obj(db.dao.get_by_id(CvTerm, s.execution_state), CvTerm)
 
 
 def _delete_simulation(name):
@@ -121,7 +120,7 @@ def test_simulation_cycle():
     tu.assert_integer(s2.id, s1.id)
 
     # Update status.
-    for state in db.constants.SIMULATION_STATE_SET:
+    for state in cv.constants.SIMULATION_STATE_SET:
         _update_simulation_state(s1.name, state)
 
     # Delete.

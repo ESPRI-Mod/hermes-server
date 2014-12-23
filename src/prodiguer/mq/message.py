@@ -10,33 +10,13 @@
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 """
-import base64
+import base64, json
 
 import pika
 
-from prodiguer.mq import constants
+from prodiguer.mq import constants, validation
 from prodiguer.utils import convert
 
-
-
-def _validate_ampq_basic_properties(props):
-    """Validates AMPQ basic properties associated with message being processed.
-
-    """
-    if not isinstance(props, pika.BasicProperties):
-        raise ValueError("AMPQ message basic properties is invalid.")
-    if 'mode' not in props.headers:
-        msg = "[mode] is a required header field."
-        raise ValueError(msg)
-    if props.headers['mode'] not in constants.MODES:
-        msg = "Unsupported mode: {0}."
-        raise ValueError(msg.format(props.headers['mode']))
-    if 'producer_id' not in props.headers:
-        msg = "[producer_id] is a required header field."
-        raise ValueError(msg)
-    if props.headers['producer_id'] not in constants.PRODUCERS:
-        msg = "Unsupported producer_id: {0}."
-        raise ValueError(msg.format(props.headers['producer_id']))
 
 
 class Message(object):
@@ -50,8 +30,7 @@ class Message(object):
         :param bool decode: Flag indicating whether message payload is to be decoded.
 
         """
-        # Validate inputs.
-        _validate_ampq_basic_properties(props)
+        validation.validate_ampq_basic_properties(props)
 
         self.content = content
         self.content_raw = content
@@ -72,9 +51,13 @@ class Message(object):
         """Decodes message content."""
         def _json(content):
             try:
-                return convert.json_to_dict(content)
+                return json.loads(content)
             except ValueError:
                 raise Exception("json encoding error:\n{0}".format(content))
+            # try:
+            #     return convert.json_to_dict(content)
+            # except ValueError:
+            #     raise Exception("json encoding error:\n{0}".format(content))
 
         def _base64(content):
             try:

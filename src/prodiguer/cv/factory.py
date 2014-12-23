@@ -11,6 +11,11 @@
 
 
 """
+import uuid
+
+import arrow
+
+from prodiguer.cv import constants
 from prodiguer.utils import rt
 
 
@@ -20,6 +25,47 @@ _DEFAULT_INSITUTE = "IPSL"
 
 # Default experiment group.
 _DEFAULT_EXPERIMENT_GROUP = "ipsl-internal"
+
+
+def create1(term_type, term_name, term_data=None):
+    """Creates a cv term.
+
+    :param str term_type: Type of CV term being parsed, e.g. activity.
+    :param str term_name: Name of CV term being parsed, e.g. ipsl.
+    :param dict term_data: User defined term data.
+
+    :returns: Created cv term.
+    :rtype: dict
+
+    """
+    # Format inputs.
+    term_name = unicode(term_name)
+    term_type = unicode(term_type.lower())
+    term_data = term_data or {}
+
+    # Verify that reserved attribute is not defined.
+    if 'meta' in term_data:
+        raise ValueError("meta is a reserved CV attribute name")
+
+    # Instantiate term.
+    term = {
+        "description": term_name,
+        "meta": {
+            "associations": [],
+            "create_date": unicode(arrow.utcnow()),
+            "domain": "climate",
+            "name": term_name.lower(),
+            "status": constants.TERM_GOVERNANCE_STATE_NEW,
+            "type": term_type,
+            "uid": unicode(uuid.uuid4())
+        },
+        "name": term_name
+    }
+
+    # Update with user defined term data.
+    term.update(term_data)
+
+    return term
 
 
 def create(term_type, term_name):
@@ -43,13 +89,6 @@ def create(term_type, term_name):
     rt.log("CV term created: {0}.{1}".format(term.cv_type, term.name))
 
     return term
-
-
-def _get_id(term_type, term_name):
-    """Utility function to map a name to an id.
-
-    """
-    return db.cache.get_id(term_type, term_name)
 
 
 def create_activity(activity):

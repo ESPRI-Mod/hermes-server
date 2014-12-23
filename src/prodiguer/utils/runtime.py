@@ -11,7 +11,7 @@
 
 
 """
-import inspect
+import inspect, os
 
 
 
@@ -49,6 +49,28 @@ _DEFAULT_APP = "PRODIGUER"
 _DEFAULT_INSTITUTE = "IPSL"
 
 
+def get_path_to_repos():
+    """Returns path to Prodiguer source code repositories.
+
+    """
+    dir_repos = os.path.dirname(__file__)
+    for _ in range(4):
+        dir_repos = os.path.dirname(dir_repos)
+
+    return dir_repos
+
+
+def get_path_to_repo(subpaths):
+    """Returns path to Prodiguer source code repositories.
+
+    """
+    dir_repo = get_path_to_repos()
+    for subpath in subpaths:
+        dir_repo = os.path.join(dir_repo, subpath)
+
+    return dir_repo
+
+
 def log(msg=None, module=_DEFAULT_MODULE, level=LOG_LEVEL_INFO, app=_DEFAULT_APP, institute=_DEFAULT_INSTITUTE):
     """Outputs a message to log.
 
@@ -80,6 +102,33 @@ def log_error(err,
     """
     msg = "{0} :: {1}.".format(err.__class__, err)
     log(msg, module=module, level=LOG_LEVEL_ERROR, app=app, institute=institute)
+
+
+def log_cv(msg,
+           level=LOG_LEVEL_INFO,
+           app=_DEFAULT_APP,
+           institute=_DEFAULT_INSTITUTE):
+    """Logs controlled vocabulary related events.
+
+    :param msg: Message for writing to log.
+    :type msg: str
+
+    """
+    log(msg, module="CV", level=level, app=app, institute=institute)
+
+
+def log_cv_warning(
+    msg,
+    level=LOG_LEVEL_WARNING,
+    app=_DEFAULT_APP,
+    institute=_DEFAULT_INSTITUTE):
+    """Logs controlled vocabulary warning related events.
+
+    :param msg: Message for writing to log.
+    :type msg: str
+
+    """
+    log(msg, module="CV", level=level, app=app, institute=institute)
 
 
 def log_mq(msg,
@@ -156,6 +205,20 @@ def log_api(msg,
             app=_DEFAULT_APP,
             institute=_DEFAULT_INSTITUTE):
     """Logs api related events.
+
+    :param msg: Message for writing to log.
+    :type msg: str
+
+    """
+    log(msg, module="API", level=level, app=app, institute=institute)
+
+
+def log_api_warning(
+    msg,
+    level=LOG_LEVEL_WARNING,
+    app=_DEFAULT_APP,
+    institute=_DEFAULT_INSTITUTE):
+    """Logs api warning events.
 
     :param msg: Message for writing to log.
     :type msg: str

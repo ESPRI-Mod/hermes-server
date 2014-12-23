@@ -20,7 +20,6 @@ def test_db_import_package():
 
     modules = [
         db,
-        db.cache,
         db.dao,
         db.session,
         db.setup,

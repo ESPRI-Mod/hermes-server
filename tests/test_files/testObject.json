@@ -34,9 +34,9 @@
 			"s": "ABC"
 		},
 		{
-			"s": "ABC"			
+			"s": "ABC"
 		}
-	],	
+	],
 	"test_none": null,
 	"test_unicode": "abc",
 	"test_uid": "29d79d5e-5765-4d63-8059-0ad1b92628cc",
