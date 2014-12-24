@@ -95,7 +95,11 @@ def get_all_termsets():
     :rtype: list
 
     """
-    return _DATA
+    result = {}
+    for term_type, termset in _DATA.iteritems():
+        result[term_type] = { term['meta']['name']: term for term in termset }
+
+    return result
 
 
 def get_termset(term_type):

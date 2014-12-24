@@ -375,7 +375,7 @@
             "compute_node_machine": "ccrt-sx9",
             "execution_state": "complete",
             "experiment": "amip",
-            "model": "lmdzor_v3",
+            "model": "lmdzor-v3",
             "space": "prod"
         },
         "ensemble_member": "1",
@@ -393,7 +393,7 @@
             "compute_node_machine": "ccrt-sx9",
             "execution_state": "complete",
             "experiment": "amip",
-            "model": "lmdzor_v3",
+            "model": "lmdzor-v3",
             "space": "prod"
         },
         "ensemble_member": "2",
@@ -411,7 +411,7 @@
             "compute_node_machine": "ccrt-sx9",
             "execution_state": "complete",
             "experiment": "amip",
-            "model": "lmdzor_v3",
+            "model": "lmdzor-v3",
             "space": "prod"
         },
         "ensemble_member": "3",
@@ -429,7 +429,7 @@
             "compute_node_machine": "ccrt-sx9",
             "execution_state": "complete",
             "experiment": "amip",
-            "model": "lmdzor_v3",
+            "model": "lmdzor-v3",
             "space": "prod"
         },
         "ensemble_member": "4",
@@ -447,7 +447,7 @@
             "compute_node_machine": "ccrt-sx9",
             "execution_state": "complete",
             "experiment": "amip4K",
-            "model": "lmdzor_v3",
+            "model": "lmdzor-v3",
             "space": "prod"
         },
         "ensemble_member": "1",
@@ -465,7 +465,7 @@
             "compute_node_machine": "ccrt-sx9",
             "execution_state": "complete",
             "experiment": "amip4xCO2",
-            "model": "lmdzor_v3",
+            "model": "lmdzor-v3",
             "space": "prod"
         },
         "ensemble_member": "1",
@@ -483,7 +483,7 @@
             "compute_node_machine": "ccrt-sx9",
             "execution_state": "complete",
             "experiment": "amip",
-            "model": "lmdzor_v3",
+            "model": "lmdzor-v3",
             "space": "prod"
         },
         "ensemble_member": "5",
@@ -501,7 +501,7 @@
             "compute_node_machine": "ccrt-sx9",
             "execution_state": "complete",
             "experiment": "amipFuture",
-            "model": "lmdzor_v3",
+            "model": "lmdzor-v3",
             "space": "prod"
         },
         "ensemble_member": "1",
@@ -519,7 +519,7 @@
             "compute_node_machine": "ccrt-sx9",
             "execution_state": "complete",
             "experiment": "aqua4K",
-            "model": "lmdzor_v3",
+            "model": "lmdzor-v3",
             "space": "prod"
         },
         "ensemble_member": "1",
@@ -537,7 +537,7 @@
             "compute_node_machine": "ccrt-sx9",
             "execution_state": "complete",
             "experiment": "aqua4xCO2",
-            "model": "lmdzor_v3",
+            "model": "lmdzor-v3",
             "space": "prod"
         },
         "ensemble_member": "1",
@@ -555,7 +555,7 @@
             "compute_node_machine": "ccrt-sx9",
             "execution_state": "complete",
             "experiment": "aquaControl",
-            "model": "lmdzor_v3",
+            "model": "lmdzor-v3",
             "space": "prod"
         },
         "ensemble_member": "1",
@@ -845,7 +845,7 @@
             "compute_node_machine": "ccrt-sx9",
             "execution_state": "complete",
             "experiment": "sstClim",
-            "model": "lmdzor_v3",
+            "model": "lmdzor-v3",
             "space": "prod"
         },
         "ensemble_member": "1",
@@ -863,7 +863,7 @@
             "compute_node_machine": "ccrt-sx9",
             "execution_state": "complete",
             "experiment": "sstClim4xCO2",
-            "model": "lmdzor_v3",
+            "model": "lmdzor-v3",
             "space": "prod"
         },
         "ensemble_member": "1",
@@ -881,7 +881,7 @@
             "compute_node_machine": "ccrt-sx9",
             "execution_state": "complete",
             "experiment": "sstClimSulfate",
-            "model": "lmdzor_v3",
+            "model": "lmdzor-v3",
             "space": "prod"
         },
         "ensemble_member": "1",
