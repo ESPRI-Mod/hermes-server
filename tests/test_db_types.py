@@ -34,7 +34,6 @@ def test_db_types_import_model_types():
 
 	assert len(db.types.SCHEMAS) == 4
 	assert len(db.types.TYPES) == 27
-	assert len(db.types.CACHEABLE) == 13
 
 
 def test_db_types_creation():

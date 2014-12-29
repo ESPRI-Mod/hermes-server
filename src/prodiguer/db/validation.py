@@ -49,6 +49,16 @@ def validate_simulation_job_uid(identifier):
     _validate_uid(identifier, "Job uid")
 
 
+def validate_simulation_configuration_card(card):
+    """Validate simulation configuration.
+
+    :param str card: A simulation config card.
+
+    """
+    if card is None or not len(str(card).strip()):
+        raise ValueError("Simulation configuration card is empty.")
+
+
 def validate_simulation_execution_start_date(date):
     """Validate simulation execution start date.
 

@@ -16,6 +16,7 @@ import datetime, uuid
 from sqlalchemy import (
     Column,
     DateTime,
+    Text,
     Unicode
     )
 
@@ -71,6 +72,25 @@ class SimulationStateChange(Entity):
     state = Column(Unicode(127))
     timestamp = Column(DateTime, nullable=False)
     info = Column(Unicode(63), nullable=False)
+
+
+class SimulationConfiguration(Entity):
+    """Simulation configuration cards.
+
+    """
+    # SQLAlchemy directives.
+    __tablename__ = 'tbl_simulation_configuration'
+    __table_args__ = (
+        {'schema':'monitoring'}
+    )
+
+    # Attributes.
+    simulation_uid = Column(Unicode(63), nullable=False)
+    card = Column(Text, nullable=True)
+    card_encoding = Column(Unicode(63), nullable=True, default=u"utf-8")
+    card_mime_type = Column(Unicode(63),
+                            nullable=True,
+                            default=u"application/base64")
 
 
 class SimulationForcing(Entity):

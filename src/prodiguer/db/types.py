@@ -27,6 +27,7 @@ from prodiguer.db.type_utils import (
 from prodiguer.db.types_monitoring import (
     SimulationForcing,
     Simulation,
+    SimulationConfiguration,
     SimulationStateChange
     )
 from prodiguer.db.types_mq import Message
@@ -37,6 +38,7 @@ __all__ = [
     # ... type related
     "SimulationForcing",
     "Simulation",
+    "SimulationConfiguration",
     "SimulationStateChange",
     "Message",
     # ... other
@@ -45,8 +47,7 @@ __all__ = [
     "metadata",
     "assert_type",
     "SCHEMAS",
-    "TYPES",
-    "CACHEABLE"
+    "TYPES"
     ]
 
 
@@ -59,6 +60,7 @@ SCHEMAS = ("monitoring", "mq")
 TYPES = type_utils.supported_types = [
     Message,
     Simulation,
+    SimulationConfiguration,
     SimulationForcing,
     SimulationStateChange
 ]
@@ -69,7 +71,3 @@ for entity_type in TYPES:
         Column(DateTime, nullable=False, default=datetime.datetime.now)
     entity_type.row_update_date = \
         Column(DateTime, onupdate=datetime.datetime.now)
-
-
-# Supported cacheable types.
-CACHEABLE = []

@@ -23,6 +23,7 @@ from prodiguer.cv.validation import (
     validate_simulation_state
     )
 from prodiguer.db.validation import (
+    validate_simulation_configuration_card,
     validate_simulation_execution_start_date,
     validate_simulation_name,
     validate_simulation_output_end_date,
@@ -41,7 +42,7 @@ def _validate_create_simulation(
     compute_node_login,
     compute_node_machine,
     execution_start_date,
-    state,
+    execution_state,
     experiment,
     model,
     name,
@@ -60,14 +61,22 @@ def _validate_create_simulation(
     validate_experiment(experiment)
     validate_model(model)
     validate_simulation_space(space)
-    validate_simulation_state(state)
+    validate_simulation_state(execution_state)
 
-    # Validate other field.
+    # Validate other fields.
     validate_simulation_execution_start_date(execution_start_date)
     validate_simulation_name(name)
     validate_simulation_output_start_date(output_start_date)
     validate_simulation_output_end_date(output_end_date)
     validate_simulation_uid(uid)
+
+
+def _validate_create_simulation_configuration(uid, card):
+    """Validates create simulation configuration inputs.
+
+    """
+    validate_simulation_uid(uid)
+    validate_simulation_configuration_card(card)
 
 
 def _validate_create_simulation_state(uid, state, timestamp, info):
@@ -123,7 +132,7 @@ def create_simulation(
     compute_node_login,
     compute_node_machine,
     execution_start_date,
-    state,
+    execution_state,
     experiment,
     model,
     name,
@@ -138,7 +147,7 @@ def create_simulation(
     :param str compute_node_login: Name of compute node login, e.g. dcugnet.
     :param str compute_node_machine: Name of compute machine, e.g. SX9.
     :param datetime execution_start_date: Simulation start date.
-    :param str state: State of simulation execution, e.g. COMPLETE.
+    :param str execution_state: State of simulation execution, e.g. COMPLETE.
     :param str experiment: Name of experiment, e.g. piControl.
     :param str model: Name of model, e.g. IPSLCM5A.
     :param str name: Name of simulation, e.g. v3.aqua4K.
@@ -158,7 +167,7 @@ def create_simulation(
         compute_node_login,
         compute_node_machine,
         execution_start_date,
-        state,
+        execution_state,
         experiment,
         model,
         name,
@@ -174,7 +183,7 @@ def create_simulation(
     sim.compute_node_login = unicode(compute_node_login)
     sim.compute_node_machine = unicode(compute_node_machine)
     sim.execution_start_date = execution_start_date
-    sim.execution_state = unicode(state)
+    sim.execution_state = unicode(execution_state)
     sim.experiment = unicode(experiment)
     sim.model = unicode(model)
     sim.name = unicode(name)
@@ -188,6 +197,27 @@ def create_simulation(
     rt.log_db("Created simulation: {0}.".format(uid))
 
     return sim
+
+def create_simulation_configuration(uid, card):
+    """Creates a new simulation configuration db record.
+
+    :param str uid: Simulation UID.
+    :param str card: Simulation configuration card.
+
+    """
+    # Validate inputs.
+    _validate_create_simulation_configuration(uid, card)
+
+    # Instantiate instance.
+    instance = types.SimulationConfiguration()
+    instance.simulation_uid = unicode(uid)
+    instance.card = unicode(card)
+
+    # Push to db.
+    session.add(instance)
+    rt.log_db("Created simulation configuration: {0}.".format(uid))
+
+    return instance
 
 
 def create_simulation_state(uid, state, timestamp, info):
