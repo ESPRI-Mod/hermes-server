@@ -120,3 +120,24 @@ def get_email(email_uid, proxy=None):
         attachment = None
 
     return mail, attachment
+
+
+def move_email(email_uid, folder=None, proxy=None):
+    """Moves an email to new mail box.
+
+    :param str email_uid: Unique email identifier.
+    :param str folder: Destination mailbox to which email will be moved.
+    :param imapclient.IMAPClient proxy: An imap proxy.
+
+    """
+    if not proxy:
+        proxy = get_imap_proxy()
+    if not folder:
+        folder = _CONFIG.mailbox_processed
+
+    # Copy to new folder.
+    proxy.copy(email_uid, folder)
+
+    # Delete from old folder.
+    proxy.delete_messages(email_uid)
+    proxy.expunge()
