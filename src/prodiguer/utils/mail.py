@@ -26,58 +26,69 @@ _RFC822 = u'RFC822'
 # Email id header filter.
 _MESSAGE_ID_HEADER = u'BODY[HEADER.FIELDS (MESSAGE-ID)]'
 
+# Email search filter.
+_SEARCH_FILTER_UNDELETED = ['NOT DELETED']
 
-def get_imap_proxy():
-    """Returns IMAP server proxy instance.
+
+def connect():
+    """Connects to IMAP server and returns client.
 
     """
     # Connect to server.
-    proxy = imapclient.IMAPClient(_CONFIG.host, use_uid=True, ssl=True)
+    client = imapclient.IMAPClient(_CONFIG.host, use_uid=True, ssl=True)
 
     # Login.
-    proxy.login(_CONFIG.username, _CONFIG.password)
+    client.login(_CONFIG.username, _CONFIG.password)
 
     # Select folder.
-    proxy.select_folder(_CONFIG.mailbox)
+    client.select_folder(_CONFIG.mailbox)
 
-    return proxy
+    return client
 
 
-def close_imap_proxy(proxy):
-    """Closes imap server proxy.
+def disconnect(client):
+    """Closes imap server client.
 
-    :param imapclient.IMAPClient proxy: An imap proxy.
+    :param imapclient.IMAPClient client: An imap server client.
 
     """
-    if proxy:
-        for func in (
-            proxy.idle_done,
-            proxy.close_folder,
-            proxy.logout
-            ):
-            try:
-                func()
-            except imaplib.IMAP4.abort:
-                pass
+    if not client:
+        return
+
+    for func in (
+        client.idle_done,
+        client.close_folder,
+        client.logout
+        ):
+        try:
+            func()
+        except imaplib.IMAP4.abort:
+            pass
 
 
-def get_email_uid_list(proxy=None):
+def get_email_uid_list(client=None):
     """Returns emails for processing.
 
-    :param imapclient.IMAPClient proxy: An imap proxy.
+    :param imapclient.IMAPClient client: An imap server client.
 
     :returns: List of emails for processing.
     :rtype: list
 
     """
-    if not proxy:
-        proxy = get_imap_proxy()
+    # Set imap client.
+    is_new_client = client is None
+    if is_new_client:
+        client = connect()
 
     # Get emails of interest.
-    targets = proxy.search(['NOT DELETED'])
+    targets = client.search(_SEARCH_FILTER_UNDELETED)
 
     # Get emails message identifiers.
-    targets = proxy.fetch(targets, _MESSAGE_ID_HEADER)
+    targets = client.fetch(targets, _MESSAGE_ID_HEADER)
+
+    # Close imap client (if necessary).
+    if is_new_client:
+        disconnect(client)
 
     # Set de-duplicated email uid map.
     uid_map = {}
@@ -89,21 +100,27 @@ def get_email_uid_list(proxy=None):
     return uid_map.values()
 
 
-def get_email(email_uid, proxy=None):
+def get_email(email_uid, client=None):
     """Returns an email plus attachment from IMAP server.
 
     :param str email_uid: Unique email identifier.
-    :param imapclient.IMAPClient proxy: An imap proxy.
+    :param imapclient.IMAPClient client: An imap server client.
 
     :returns: 2 member tuple of mail body and attachment.
     :rtype: tuple
 
     """
-    if not proxy:
-        proxy = get_imap_proxy()
+    # Set imap client.
+    is_new_client = client is None
+    if is_new_client:
+        client = connect()
 
     # Fetch email.
-    data = proxy.fetch(email_uid, _RFC822)
+    data = client.fetch(email_uid, _RFC822)
+
+    # Close imap client (if necessary).
+    if is_new_client:
+        disconnect(client)
 
     # Validate imap response.
     if email_uid not in data:
@@ -122,22 +139,30 @@ def get_email(email_uid, proxy=None):
     return mail, attachment
 
 
-def move_email(email_uid, folder=None, proxy=None):
+def move_email(email_uid, folder=None, client=None):
     """Moves an email to new mail box.
 
     :param str email_uid: Unique email identifier.
     :param str folder: Destination mailbox to which email will be moved.
-    :param imapclient.IMAPClient proxy: An imap proxy.
+    :param imapclient.IMAPClient client: An imap server client.
 
     """
-    if not proxy:
-        proxy = get_imap_proxy()
+    # Set imap client.
+    is_new_client = client is None
+    if is_new_client:
+        client = connect()
+
+    # Set folder.
     if not folder:
         folder = _CONFIG.mailbox_processed
 
     # Copy to new folder.
-    proxy.copy(email_uid, folder)
+    client.copy(email_uid, folder)
 
     # Delete from old folder.
-    proxy.delete_messages(email_uid)
-    proxy.expunge()
+    client.delete_messages(email_uid)
+    client.expunge()
+
+    # Close imap client (if necessary).
+    if is_new_client:
+        disconnect(client)
