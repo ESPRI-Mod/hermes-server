@@ -516,31 +516,36 @@ def invoke1(tasks, error_tasks=None, ctx=None, module=_DEFAULT_MODULE):
             else:
                 return taskset
 
+
     def _invoke(task, err=None):
         """Invokes an individual task."""
-        if ctx:
-            if err:
-                task(ctx, err)
-            else:
-                task(ctx)
+        if ctx and err:
+            task(ctx, err)
+        elif ctx:
+            task(ctx)
+        elif err:
+            task(err)
         else:
-            if err:
-                task(err)
-            else:
-                task()
+            task()
+
 
     # Execute tasks.
     for task in _get(tasks):
         try:
             _invoke(task)
+        # ... error tasks.
         except Exception as err:
-            # Execute error tasks.
             try:
                 log_error(err, module)
                 for error_task in _get(error_tasks):
                     _invoke(error_task, err)
-            # N.B. ensure error tasks execute.
             except:
                 pass
-            # N.B. break out of green line.
             break
+        # ... abort tasks.
+        else:
+            try:
+                if ctx.abort:
+                    break
+            except AttributeError:
+                pass

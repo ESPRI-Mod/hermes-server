@@ -29,6 +29,9 @@ _MESSAGE_ID_HEADER = u'BODY[HEADER.FIELDS (MESSAGE-ID)]'
 # Email search filter.
 _SEARCH_FILTER_UNDELETED = ['NOT DELETED']
 
+# Size of chunks used to split email downloads.
+_CHUNK_SIZE = 50
+
 
 def connect():
     """Connects to IMAP server and returns client.
@@ -75,29 +78,33 @@ def get_email_uid_list(client=None):
     :rtype: list
 
     """
-    # Set imap client.
-    is_new_client = client is None
-    if is_new_client:
-        client = connect()
+    def _chunkify(uids):
+        """Returns chunks of email uid's to be processed.
 
-    # Get emails of interest.
-    targets = client.search(_SEARCH_FILTER_UNDELETED)
+        """
+        return [uids[i:i + _CHUNK_SIZE] for i in \
+                range(0, len(uids), _CHUNK_SIZE)]
 
-    # Get emails message identifiers.
-    targets = client.fetch(targets, _MESSAGE_ID_HEADER)
+    # Set imap proxy.
+    proxy = client or connect()
 
-    # Close imap client (if necessary).
-    if is_new_client:
-        disconnect(client)
+    # Set chunks of emails to be downloaded.
+    chunks = [proxy.fetch(c, _MESSAGE_ID_HEADER) for c in \
+              _chunkify(proxy.search(_SEARCH_FILTER_UNDELETED))]
+
+    # Close imap proxy (if necessary).
+    if not client:
+        disconnect(proxy)
 
     # Set de-duplicated email uid map.
     uid_map = {}
-    for uid in targets.keys():
-        identifier = targets[uid][_MESSAGE_ID_HEADER]
-        if identifier not in uid_map:
-            uid_map[identifier] = uid
+    for chunk in chunks:
+        for uid in chunk.keys():
+            header = chunk[uid][_MESSAGE_ID_HEADER]
+            if header not in uid_map:
+                uid_map[header] = uid
 
-    return uid_map.values()
+    return sorted(uid_map.values())
 
 
 def get_email(email_uid, client=None):
@@ -110,17 +117,15 @@ def get_email(email_uid, client=None):
     :rtype: tuple
 
     """
-    # Set imap client.
-    is_new_client = client is None
-    if is_new_client:
-        client = connect()
+    # Set imap proxy.
+    proxy = client or connect()
 
     # Fetch email.
-    data = client.fetch(email_uid, _RFC822)
+    data = proxy.fetch(email_uid, _RFC822)
 
-    # Close imap client (if necessary).
-    if is_new_client:
-        disconnect(client)
+    # Close imap proxy (if necessary).
+    if not client:
+        disconnect(proxy)
 
     # Validate imap response.
     if email_uid not in data:
@@ -147,22 +152,20 @@ def move_email(email_uid, folder=None, client=None):
     :param imapclient.IMAPClient client: An imap server client.
 
     """
-    # Set imap client.
-    is_new_client = client is None
-    if is_new_client:
-        client = connect()
+    # Set imap proxy.
+    proxy = client or connect()
 
     # Set folder.
     if not folder:
         folder = _CONFIG.mailbox_processed
 
     # Copy to new folder.
-    client.copy(email_uid, folder)
+    proxy.copy(email_uid, folder)
 
     # Delete from old folder.
-    client.delete_messages(email_uid)
-    client.expunge()
+    proxy.delete_messages(email_uid)
+    proxy.expunge()
 
-    # Close imap client (if necessary).
-    if is_new_client:
-        disconnect(client)
+    # Close imap proxy (if necessary).
+    if not client:
+        disconnect(proxy)
