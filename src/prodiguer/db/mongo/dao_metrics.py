@@ -228,6 +228,7 @@ def fetch_setup(group_id, query=None):
 
     return [sorted(cursor.distinct(f)) for f in fields]
 
+
 def rename(group_id, new_group_id):
     """Renames an existing group of metrics.
 
