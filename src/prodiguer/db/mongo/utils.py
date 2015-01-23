@@ -49,8 +49,6 @@ def get_db_collection(db_name, collection_name):
     :rtype: pymongo.collection.Collection
 
     """
-    mg_db = get_db(db_name)
+    db = get_db(db_name)
 
-    return mg_db[collection_name]
-
-
+    return db[collection_name]

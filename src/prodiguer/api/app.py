@@ -48,6 +48,7 @@ def _get_app_routes():
         (r'/api/1/metric/fetch_columns', metric.FetchColumnsRequestHandler),
         (r'/api/1/metric/fetch_list', metric.FetchListRequestHandler),
         (r'/api/1/metric/fetch_setup', metric.FetchSetupRequestHandler),
+        (r'/api/1/metric/rename', metric.RenameRequestHandler),
         # Operational routes.
         (r'/api/1/ops/heartbeat', ops.HeartbeatRequestHandler),
         (r'/api/1/ops/list_endpoints', ops.ListEndpointsRequestHandler),

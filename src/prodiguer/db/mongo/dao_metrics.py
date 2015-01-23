@@ -227,3 +227,15 @@ def fetch_setup(group_id, query=None):
     fields = fetch_columns(group_id, False)
 
     return [sorted(cursor.distinct(f)) for f in fields]
+
+def rename(group_id, new_group_id):
+    """Renames an existing group of metrics.
+
+    :param str group_id: ID of a metric group.
+    :param str new_group_id: New ID of the metric group.
+
+    """
+    group_id = _format_group_id(group_id)
+    new_group_id = _format_group_id(new_group_id)
+    collection = utils.get_db_collection(_DB_NAME, group_id)
+    collection.rename(new_group_id)
