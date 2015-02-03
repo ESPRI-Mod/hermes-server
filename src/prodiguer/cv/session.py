@@ -13,13 +13,25 @@
 """
 import collections
 
-from prodiguer.cv import cache, constants, io, factory, term_accessor as ta
+from prodiguer.cv import cache, constants, io, factory, accessor as ta
 from prodiguer.utils import rt
 
 
 
 # Session state.
 _STATE = collections.defaultdict(list)
+
+
+def _do(data, action):
+    """Executes an action over cv data.
+
+    """
+    if not data:
+        return
+
+    terms = [data] if isinstance(data, collections.Mapping) else data
+
+    return [action(term) for term in terms]
 
 
 def init():
@@ -52,40 +64,50 @@ def commit():
     _STATE.clear()
 
 
-def insert(term_type, term_name, term_data=None):
-    """Marks a term for creatom.
+def insert(data):
+    """Marks a previously created term for creation.
 
-    :param str term_type: Type of term being created.
-    :param str term_name: Name of term being created.
-    :param dict term_data: Associated term data.
-
-    :returns: Newly created term.
-    :rtype: dict
+    :param obj data: Either a term or collection to be inserted.
 
     """
-    term = factory.create1(term_type, term_name, term_data)
-    _STATE["insertions"].append(term)
+    def _insert(term):
+        """Processes a term.
 
-    return term
+        """
+        _STATE["insertions"].append(term)
+
+    return _do(data, _insert)
 
 
-def delete(term):
+def delete(data):
     """Marks a term for deletion.
 
-    :param dict term: Term being deleted.
+    :param obj data: Either a term or collection to be deleted.
 
     """
-    ta.set_status(term, constants.TERM_GOVERNANCE_STATE_DELETED)
-    ta.set_update_date(term)
-    _STATE["deletions"].append(term)
+    def _delete(term):
+        """Processes a term.
+
+        """
+        ta.set_status(term, constants.TERM_GOVERNANCE_STATE_DELETED)
+        ta.set_update_date(term)
+        _STATE["deletions"].append(term)
+
+    _do(data, _delete)
 
 
-def destroy(term):
+def destroy(data):
     """Marks a term for desctruction.
 
-    :param dict term: Term being destroyed.
+    :param obj data: Either a term or collection to be destroyed.
 
     """
-    ta.set_status(term, constants.TERM_GOVERNANCE_STATE_DESTROYED)
-    ta.set_update_date(term)
-    _STATE["destructions"].append(term)
+    def _destroy(term):
+        """Processes a term.
+
+        """
+        ta.set_status(term, constants.TERM_GOVERNANCE_STATE_DESTROYED)
+        ta.set_update_date(term)
+        _STATE["destructions"].append(term)
+
+    _do(data, _destroy)

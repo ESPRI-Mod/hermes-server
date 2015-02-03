@@ -61,6 +61,11 @@ TERM_TYPESET = [
     TERM_TYPE_SIMULATION_STATE
 ]
 
+# Case sensitive term typeset.
+CASE_SENSITIVE_TERM_TYPESET = [
+    TERM_TYPE_EXPERIMENT
+]
+
 # Constants pertaining to simulation space.
 SIMULATION_SPACE_DEVT = 'devt'
 SIMULATION_SPACE_FAIL = 'fail'

@@ -166,6 +166,7 @@ def update(instance, auto_commit=True):
         if auto_commit:
             commit()
 
+
 def query(*etypes):
     """Begins a query operation against a session.
 

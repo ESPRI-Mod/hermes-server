@@ -11,7 +11,13 @@
 
 
 """
-from prodiguer.cv import constants, cache, term_accessor as ta
+from prodiguer.cv import (
+    constants,
+    cache,
+    exceptions,
+    formatter,
+    accessor as ta
+    )
 
 
 
@@ -42,30 +48,45 @@ def validate_term_name(term_type, term_name):
 
     """
     # Format inputs.
-    term_name = unicode(term_name).lower()
-    term_type = unicode(term_type).lower()
+    term_type = formatter.format_term_type(term_type)
+    term_name = formatter.format_term_name(term_name)
 
     # Validate term set.
     validate_term_type(term_type)
 
-    # Match term by name or synonyms.
+    # Match term either by name or synonyms.
     for term in cache.get_termset(term_type):
-        for predicate in _NAME_MATCHING_PREDICATES:
-            if predicate(term, term_name):
+        for is_matched in _NAME_MATCHING_PREDICATES:
+            if is_matched(term, term_name):
                 return ta.get_name(term)
 
     # Term was unmatched therefore error.
-    err = "Unknown cv term: {0}.{1}".format(term_type, term_name)
-    raise ValueError(err)
+    raise exceptions.TermNameError(term_type, term_name)
 
 
 def validate_term_type(term_type):
     """Validates that a term type is supported.
 
     """
-    term_type = unicode(term_type).lower()
+    term_type = formatter.format_term_type(term_type)
     if term_type not in constants.TERM_TYPESET:
-        raise ValueError("Unknown CV type :{}".format(term_type))
+        raise exceptions.TermTypeError(term_type)
+
+
+def validate_term_display_name(term_display_name):
+    """Validates a term's display name.
+
+    """
+    pass
+
+
+def validate_term_data(term_data):
+    """Validates data associated with a term.
+
+    """
+    term_data = formatter.format_term_data(term_data)
+    if not isinstance(term_data, dict) or 'meta' in term_data:
+        raise exceptions.TermUserDataError()
 
 
 def validate_activity(term_name):

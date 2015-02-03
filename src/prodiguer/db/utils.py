@@ -40,7 +40,19 @@ def get_list(entity_type):
     :rtype: list
 
     """
-    return [get_item(e) for e in dao.get_all(entity_type)]
+    return get_collection(dao.get_all(entity_type))
+
+
+def get_collection(entity_collection):
+    """Returns a list of db entities formatted for front-end.
+
+    :param db.types.Entity entity: Entity instance.
+
+    :returns: A list of entites in dictionary format ready to be returned to front-end.
+    :rtype: list
+
+    """
+    return [get_item(e) for e in entity_collection]
 
 
 def format_date_fields(obj):

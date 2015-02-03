@@ -14,7 +14,7 @@
 import collections, random
 
 from prodiguer.utils import rt
-from prodiguer.cv import constants, io, term_accessor as ta
+from prodiguer.cv import constants, io, accessor as ta
 
 
 

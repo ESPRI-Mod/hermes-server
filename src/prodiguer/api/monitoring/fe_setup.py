@@ -13,7 +13,7 @@
 """
 import tornado.web
 
-from prodiguer import cv, db
+from prodiguer import db
 from prodiguer.api.utils import handler as hu
 from prodiguer.utils import config
 
@@ -32,7 +32,7 @@ class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
 
         # Load setup data from db.
         data = {
-            'cv_terms': cv.cache.get_all_termsets(),
+            'cv_terms': db.utils.get_list(db.types.ControlledVocabularyTerm),
             'simulation_list': db.utils.get_list(db.types.Simulation)
             }
 

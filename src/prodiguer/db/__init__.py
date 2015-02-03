@@ -12,6 +12,7 @@
 """
 from prodiguer.db import (
 	dao,
+	dao_cv,
 	dao_monitoring,
 	dao_mq,
 	session,
@@ -27,6 +28,7 @@ from prodiguer.utils import config
 
 __all__ = [
 	"dao",
+	"dao_cv",
 	"dao_monitoring",
 	"dao_mq",
 	"Entity",

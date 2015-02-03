@@ -10,4 +10,21 @@
 
 
 """
-from prodiguer.cv import cache, factory, io, parser, session, validation
+from prodiguer.cv import (
+	cache,
+	exceptions,
+	factory,
+	io,
+	parser,
+	session,
+	accessor,
+	validation
+	)
+from accessor import (
+	get_display_name,
+	get_name,
+	get_synonyms,
+	get_type
+	)
+from factory import create
+from exceptions import TermNameError, TermTypeError, TermUserDataError

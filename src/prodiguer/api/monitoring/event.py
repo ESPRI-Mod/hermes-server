@@ -11,13 +11,18 @@
 
 
 """
-import datetime
+import datetime, json
 
 import tornado.web
 
 from prodiguer import db
 from prodiguer.api.utils import ws
-from prodiguer.utils import config, rt, string_convertor
+from prodiguer.utils import (
+    config,
+    rt,
+    string_convertor as sc,
+    data_convertor as dc
+    )
 
 
 
@@ -26,55 +31,76 @@ _WS_KEY = 'monitoring'
 
 
 def _log(msg):
-    """Logging utilty function.
+    """Helper function: logging.
 
     """
     rt.log_api("{0} :: {1}".format(_WS_KEY, msg))
 
 
-def _get_simulation_state_change_data(handler):
-    """Event publisher: simulation state change.
+def _on_simulation_state_change(data):
+    """Event handler: simulation state change.
 
     """
     return {
-        'uid': handler.get_argument('uid'),
-        'state' : handler.get_argument('state')
+        'uid': data['uid'],
+        'state' : data['state']
         }
 
 
-def _get_simulation_termination_data(handler):
-    """Event publisher: simulation termination.
+def _on_simulation_termination(data):
+    """Event handler: simulation termination.
 
     """
     return {
-        'ended': handler.get_argument('ended'),
-        'uid': handler.get_argument('uid'),
-        'state' : handler.get_argument('state')
+        'ended': data['ended'],
+        'uid': data['uid'],
+        'state' : data['state']
         }
 
 
-def _get_new_simulation_data(handler):
-    """Event publisher: new simulation.
+def _on_new_simulation(data):
+    """Event handler: new simulation.
 
     """
     # Load simulation.
-    simulation_uid = handler.get_argument('uid')
-    simulation = db.dao_monitoring.retrieve_simulation(simulation_uid)
+    simulation = db.dao_monitoring.retrieve_simulation(data['uid'])
     if simulation is None:
-        raise ValueError("Unknown simulation: {}".format(simulation_uid))
+        raise ValueError("Unknown simulation: {}".format(data['uid']))
 
     # Initialise event data.
     return {
-        'simulation': simulation
+        'simulation': simulation,
+        'cv_terms': data['cv_terms']
         }
 
 
-# Map of event data factory functions.
-_DATA_FACTORIES = {
-    'new_simulation': _get_new_simulation_data,
-    'simulation_state_change': _get_simulation_state_change_data,
-    'simulation_termination': _get_simulation_termination_data
+# Map of event handlers.
+_EVENT_HANDLERS = {
+    'new_simulation': _on_new_simulation,
+    'simulation_state_change': _on_simulation_state_change,
+    'simulation_termination': _on_simulation_termination
 }
+
+class _EventInfo(object):
+    """Encpasulates incoming event information.
+
+    """
+    def __init__(self, request_body):
+        """Object initializer.
+
+        """
+        self.data = json.loads(request_body)
+        self.type = self.data['event_type']
+        self.handler = _EVENT_HANDLERS[self.type]
+
+
+    def get_ws_data(self):
+        """Returns data to be dispatched to web-socket clients.
+
+        """
+        handler = _EVENT_HANDLERS[self.type]
+
+        return handler(self.data)
 
 
 class EventRequestHandler(tornado.web.RequestHandler):
@@ -82,31 +108,36 @@ class EventRequestHandler(tornado.web.RequestHandler):
 
     """
     @tornado.web.asynchronous
-    def get(self, *args):
-        """HTTP GET handler.
+    def post(self):
+        """HTTP POST handler.
 
         """
         # Signal asynch.
         self.finish()
 
-        # Set event type / data factory.
-        event = self.get_argument('event_type')
-        _log("{0} event received: {1}".format(event, self.request.arguments))
+        # Escape if there are no connected clients.
+        # if not ws.get_client_count(_WS_KEY):
+        #     return
 
         # Connect to db.
         db.session.start(config.db.pgres.main)
 
-        # Set data to be published.
-        data_factory = _DATA_FACTORIES[event]
-        data = data_factory(self)
-        data.update({
-            'event_type' : string_convertor.to_camel_case(event),
-            'event_timestamp': datetime.datetime.now(),
-        })
+        try:
+            # Decode event information.
+            event = _EventInfo(self.request.body)
+            _log("{0} event received: {1}".format(event.type, event.data))
 
-        # End db session.
-        db.session.end()
+            # Set data to be dispatched to web-socket clients.
+            ws_data = event.get_ws_data()
+            ws_data.update({
+                'event_type' : sc.to_camel_case(event.type),
+                'event_timestamp': datetime.datetime.now(),
+            })
 
-        # Broadcast event to clients.
-        ws.on_write(_WS_KEY, data)
-        _log("{0} event published".format(event))
+            # Broadcast event data to clients.
+            ws.on_write(_WS_KEY, ws_data)
+            _log("{0} event published".format(event.type))
+
+        # Close db session.
+        finally:
+            db.session.end()

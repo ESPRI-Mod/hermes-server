@@ -11,11 +11,30 @@
 """
 import os
 
-from sqlalchemy.schema import CreateSchema
+from sqlalchemy.schema import CreateSchema, DropSchema
 
-from prodiguer.db import session, types
+from prodiguer import cv
+from prodiguer.db import (
+    session as db_session,
+    types as db_types
+    )
 from prodiguer.utils import convert, rt
 
+
+
+def _init_cv_terms():
+    """Initialises set of cv terms.
+
+    """
+    rt.log_db("Seeding cv.tbl_cv_term")
+
+    for term in cv.io.read():
+        item = db_types.ControlledVocabularyTerm()
+        item.typeof = cv.get_type(term)
+        item.name = cv.get_name(term)
+        item.display_name = cv.get_display_name(term)
+        item.synonyms = ", ".join(cv.get_synonyms(term)) or None
+        db_session.add(item)
 
 
 def _init_simulations():
@@ -30,7 +49,6 @@ def _init_simulations():
     fpath = os.path.join(fpath, "simulation.json")
     simulations = convert.json_file_to_dict(fpath)
 
-
     # Insert into db.
     for simulation in simulations:
         # ... ensure CV cross references are lower-case.
@@ -38,7 +56,7 @@ def _init_simulations():
             simulation['associations'][key] = simulation['associations'][key].lower()
 
         # ... hydrate new simulation;
-        sim = types.Simulation()
+        sim = db_types.Simulation()
         sim.activity = simulation['associations']['activity']
         sim.compute_node = simulation['associations']['compute_node']
         sim.compute_node_login = simulation['associations']['compute_node_login']
@@ -63,21 +81,23 @@ def _init_simulations():
             pass
 
         # ... insert into db.
-        session.add(sim)
+        db_session.add(sim)
 
 
 def execute():
     """Sets up a database.
 
     """
-    session.assert_is_live()
+    db_session.assert_is_live()
 
-    # Create schemas.
-    for schema in types.SCHEMAS:
-        session.sa_engine.execute(CreateSchema(schema))
+    # Initialize schemas.
+    db_session.sa_engine.execute(DropSchema('public'))
+    for schema in db_types.SCHEMAS:
+        db_session.sa_engine.execute(CreateSchema(schema))
 
-    # Create tables.
-    types.metadata.create_all(session.sa_engine)
+    # Initialize tables.
+    db_types.metadata.create_all(db_session.sa_engine)
 
     # Seed tables.
+    _init_cv_terms()
     _init_simulations()

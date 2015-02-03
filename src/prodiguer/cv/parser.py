@@ -11,19 +11,75 @@
 
 
 """
-from prodiguer.cv import validation
+from prodiguer.cv import accessor as ta, cache, constants, formatter, validation
 
 
 
-def parse_term_name(term_type, term_name):
-    """Parses a controlled vocabulary term.
+def parse_term_type(term_type):
+    """Parses a controlled vocabulary term type.
 
-    :param str term_type: Type of CV term being parsed, e.g. activity.
-    :param str term_name: Name of CV term being parsed, e.g. ipsl.
+    :param str term_type: Type of CV term being parsed, e.g. experiment.
 
-    :returns: Parsed cv term name.
-    :rtype: unicode
+    :returns: Parsed cv term type.
+    :rtype: str
 
     """
-    # Delegate to validator as this returns parsed term name.
-    return validation.validate_term_name(term_type, term_name)
+    validation.validate_term_type(term_type)
+
+    return formatter.format_term_type(term_type)
+
+
+def parse_term_name(term_type, term_name, must_exist=True):
+    """Parses a controlled vocabulary term.
+
+    :param str term_type: Type of CV term being parsed, e.g. experiment.
+    :param str term_name: Name of CV term being parsed, e.g. picontrol.
+    :param bool must_exist: Flag indicating whether the name shoudl exist or not.
+
+    :returns: Parsed cv term name.
+    :rtype: str
+
+    """
+    validation.validate_term_type(term_type)
+    if must_exist:
+        validation.validate_term_name(term_type, term_name)
+
+    term_name = formatter.format_term_name(term_name)
+    for term in cache.get_termset(term_type):
+        if term_name == ta.get_name(term):
+            return term_name
+        elif term_name in ta.get_synonyms(term):
+            return ta.get_name(term)
+
+    return term_name
+
+
+def parse_term_display_name(term_type, term_name):
+    """Returns a parsed term display name.
+
+    :param str term_type: Type of CV term being parsed, e.g. experiment.
+    :param str term_name: Name of CV term being parsed, e.g. picontrol.
+
+    :returns: Parsed cv term display name.
+    :rtype: str
+
+    """
+    term_type = parse_term_type(term_type)
+    if term_type in constants.CASE_SENSITIVE_TERM_TYPESET:
+        return unicode(term_name)
+    else:
+        return parse_term_name(term_type, term_name)
+
+
+def parse_term_data(term_data):
+    """Returns parsed term data.
+
+    :param dict term_data: Data associated with a term.
+
+    :returns: Parsed cv term data.
+    :rtype: dict
+
+    """
+    validation.validate_term_data(term_data)
+
+    return formatter.format_term_data(term_data)

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: cv.term_accessor.py
+.. module:: cv.accessor.py
    :copyright: Copyright "December 01, 2014", IPSL
    :license: GPL/CeCIL
    :platform: Unix, Windows
-   :synopsis: Controlled vocabulary term access manager.
+   :synopsis: Controlled vocabulary term access wrapper.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
@@ -27,6 +27,18 @@ def get_name(term):
 
     """
     return term['meta']['name']
+
+
+def get_display_name(term):
+    """Returns a term's display name.
+
+    """
+    if 'display_name' in term['meta']:
+        return term['meta']['display_name']
+    elif 'name' in term:
+        return term['name']
+    else:
+        return get_name(term)
 
 
 def get_type(term):

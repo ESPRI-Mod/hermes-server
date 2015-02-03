@@ -13,7 +13,7 @@
 """
 import json, os
 
-from prodiguer.cv import term_accessor as ta
+from prodiguer.cv import accessor as ta
 from prodiguer.utils import rt
 
 
@@ -91,3 +91,4 @@ def delete(term):
     term_filepath = _get_path_to_term(term)
     os.remove(term_filepath)
     rt.log_cv("CV file deleted: {0}".format(term_filepath))
+
