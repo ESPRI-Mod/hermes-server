@@ -13,6 +13,8 @@
 """
 import inspect, os
 
+import arrow
+
 
 
 class ProdiguerException(Exception):
@@ -80,8 +82,8 @@ def log(msg=None, module=_DEFAULT_MODULE, level=LOG_LEVEL_INFO, app=_DEFAULT_APP
     """
     # Format.
     if msg is not None:
-        msg = "{0} {1} {2} {3} > {4}".format(
-            institute, app, level, module, str(msg).strip())
+        msg = "{0} :: {1} {2} {3} {4} > {5}".format(
+            unicode(arrow.get()), institute, app, level, module, str(msg).strip())
 
     else:
         msg = "-------------------------------------------------------------------------------"
@@ -505,7 +507,9 @@ def invoke1(tasks, error_tasks=None, ctx=None, module=_DEFAULT_MODULE):
 
     """
     def  _get(taskset):
-        """Gets formatted tasks in readiness for execution."""
+        """Gets formatted tasks in readiness for execution.
+
+        """
         if taskset is None:
             return []
         else:
@@ -518,7 +522,10 @@ def invoke1(tasks, error_tasks=None, ctx=None, module=_DEFAULT_MODULE):
 
 
     def _invoke(task, err=None):
-        """Invokes an individual task."""
+        """Invokes an individual task.
+
+        """
+        # log("TASK EXECUTION: {}".format(task.__name__), module=module)
         if ctx and err:
             task(ctx, err)
         elif ctx:
@@ -527,7 +534,6 @@ def invoke1(tasks, error_tasks=None, ctx=None, module=_DEFAULT_MODULE):
             task(err)
         else:
             task()
-
 
     # Execute tasks.
     for task in _get(tasks):
