@@ -68,7 +68,7 @@ def create_message(
     timestamp_precision=None,
     timestamp_raw=None,
     mode=None):
-    """Creates a new related message record in db.
+    """Creates a new message record in db.
 
     :param str uid: Message unique identifer.
     :param str user_id: Message user id, e.g. libl-igcm-user.
@@ -134,3 +134,16 @@ def create_message(
     session.add(msg)
 
     return msg
+
+
+def create_message_email(uid):
+    """Creates a new message email record in db.
+
+    """
+    instance = types.MessageEmail()
+    instance.uid = uid
+
+    # Push to db.
+    session.add(instance)
+
+    return instance

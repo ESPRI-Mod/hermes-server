@@ -14,6 +14,7 @@ import datetime, uuid
 from sqlalchemy import (
     Column,
     DateTime,
+    BigInteger,
     Text,
     Unicode,
     UniqueConstraint
@@ -37,6 +38,7 @@ __all__ = [
     "SimulationConfiguration",
     "SimulationStateChange",
     "Message",
+    "MessageEmail",
     # ... other
     "Entity",
     "Convertor",
@@ -189,10 +191,25 @@ class Message(Entity):
     content = Column(Text, nullable=True)
 
 
+class MessageEmail(Entity):
+    """Represents an email received from a computing centre.
+
+    """
+    # SQLAlchemy directives.
+    __tablename__ = 'tbl_message_email'
+    __table_args__ = (
+        {'schema':_SCHEMA_MQ}
+    )
+
+    # Attributes.
+    uid = Column(BigInteger, nullable=False, unique=True)
+
+
 # Set of supported model types.
 TYPES = type_utils.supported_types = [
     ControlledVocabularyTerm,
     Message,
+    MessageEmail,
     Simulation,
     SimulationConfiguration,
     SimulationForcing,
