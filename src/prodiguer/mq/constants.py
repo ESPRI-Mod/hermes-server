@@ -117,10 +117,14 @@ USERS = set([
 
 # Message application identifiers.
 APP_MONITORING = "monitoring"
+APP_SYSTEM_METRICS = "sys-metrics"
+APP_SIMULATION_METRICS = "sim-metrics"
 
 # All apps.
 APPS = set([
 	APP_MONITORING,
+	APP_SYSTEM_METRICS,
+	APP_SIMULATION_METRICS
 	])
 
 # Default application.
