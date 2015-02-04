@@ -88,6 +88,9 @@ def get_email_uid_list(client=None):
     # Set imap proxy.
     proxy = client or connect()
 
+    # Clear items marked for deletion.
+    proxy.expunge()
+
     # Set chunks of emails to be downloaded.
     chunks = [proxy.fetch(c, _MESSAGE_ID_HEADER) for c in \
               _chunkify(proxy.search(_SEARCH_FILTER_UNDELETED))]
