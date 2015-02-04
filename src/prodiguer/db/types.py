@@ -93,7 +93,7 @@ class Simulation(Entity):
     experiment = Column(Unicode(127))
     model = Column(Unicode(127))
     space = Column(Unicode(127))
-    name = Column(Unicode(511), nullable=False, unique=True)
+    name = Column(Unicode(511), nullable=False)
     ensemble_member = Column(Unicode(15))
     execution_start_date = Column(DateTime, nullable=False, default=datetime.datetime.now)
     execution_end_date = Column(DateTime)
