@@ -120,7 +120,7 @@ class EventRequestHandler(tornado.web.RequestHandler):
         #     return
 
         # Connect to db.
-        db.session.start(config.db.pgres.main)
+        db.session.start()
 
         try:
             # Decode event information.

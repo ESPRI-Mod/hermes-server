@@ -6,4 +6,5 @@ from prodiguer.utils import (
 	string_convertor
 	)
 from prodiguer.utils.config import data as config
+from prodiguer.utils.config import data as configuration
 from prodiguer.utils import mail

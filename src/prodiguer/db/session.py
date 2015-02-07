@@ -15,6 +15,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.engine import Engine
 
+from prodiguer.utils import config
+
 
 
 # Module exports.
@@ -75,16 +77,18 @@ def start(connection=None):
     # Implicit end.
     end()
 
-    # Connect (when instructed).
-    if connection is not None:
-        # Set engine.
-        if isinstance(connection, Engine):
-            sa_engine = connection
-        else:
-            sa_engine = create_engine(unicode(connection), echo=False)
+    # Set connection if necessary.
+    if connection is None:
+        connection = config.db.pgres.main
 
-        # Set session - note should be scoped sesssion.
-        sa_session = sessionmaker(bind=sa_engine)()
+    # Set engine.
+    if isinstance(connection, Engine):
+        sa_engine = connection
+    else:
+        sa_engine = create_engine(unicode(connection), echo=False)
+
+    # Set session.
+    sa_session = sessionmaker(bind=sa_engine)()
 
 
 def end():
@@ -155,6 +159,7 @@ def delete(instance, auto_commit=True):
         if auto_commit:
             commit()
 
+
 def update(instance, auto_commit=True):
     """Marks a type instance for update and optionally commits the session.
 
@@ -178,5 +183,3 @@ def query(*etypes):
     for etype in etypes:
         q = sa_session.query(etype) if q is None else q.join(etype)
     return q
-
-

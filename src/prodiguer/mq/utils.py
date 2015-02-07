@@ -190,18 +190,18 @@ def consume(exchange,
     :param bool verbose: Flag indicating whether logging level is verbose.
 
     """
-    # Handles message being consumed.
     def msg_handler(ctx):
-        """Handles message being consumed."""
+        """Handles message being consumed.
+
+        """
         if auto_persist:
             # Abort processing of duplicate messages.
             try:
                 ctx.msg = persist(ctx.properties, ctx.content_raw)
             except IntegrityError as err:
-                rt.log_mq("WARNING :: duplicate message :: {}".format(ctx.properties.message_id))
+                db.session.rollback()
             except Exception as err:
                 print err
-                print "EE-W"
             else:
                 callback(ctx)
         else:

@@ -28,7 +28,7 @@ class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
 
         """
         # Start db session.
-        db.session.start(config.db.pgres.main)
+        db.session.start()
 
         # Load setup data from db.
         data = {

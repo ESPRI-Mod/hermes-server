@@ -69,6 +69,17 @@ def disconnect(client):
             pass
 
 
+def reconnect(client):
+    """Closes existing imap server client and returns a new instance.
+
+    :param imapclient.IMAPClient client: An imap server client.
+
+    """
+    disconnect(client)
+
+    return connect()
+
+
 def get_email_uid_list(client=None):
     """Returns emails for processing.
 
@@ -103,9 +114,13 @@ def get_email_uid_list(client=None):
     uid_map = {}
     for chunk in chunks:
         for uid in chunk.keys():
-            header = chunk[uid][_MESSAGE_ID_HEADER]
-            if header not in uid_map:
-                uid_map[header] = uid
+            try:
+                header = chunk[uid][_MESSAGE_ID_HEADER]
+            except KeyError:
+                pass
+            else:
+                if header not in uid_map:
+                    uid_map[header] = uid
 
     return sorted(uid_map.values())
 
