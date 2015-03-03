@@ -29,6 +29,27 @@ def get_name(term):
     return term['meta']['name']
 
 
+def get_description(term):
+    """Returns a term description.
+
+    """
+    return term.get('description', None)
+
+
+def get_uid(term):
+    """Returns a term unique identifier.
+
+    """
+    return term['meta']['uid']
+
+
+def get_create_date(term):
+    """Returns a term create date.
+
+    """
+    return arrow.get(term['meta']['create_date'])
+
+
 def get_display_name(term):
     """Returns a term's display name.
 
@@ -65,6 +86,13 @@ def get_synonyms(term):
         synonyms = [n.strip().lower() for n in synonyms]
 
     return synonyms
+
+
+def get_associations(term):
+    """Returns a term's associations.
+
+    """
+    return term['meta'].get('associations', [])
 
 
 def get_sort_key(term):

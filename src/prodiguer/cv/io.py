@@ -37,7 +37,7 @@ def _get_path_to_term(term):
     return term_fpath
 
 
-def read():
+def read(log=True):
     """Reads terms from file system.
 
     """
@@ -55,7 +55,8 @@ def read():
 
     # Set directory to CV archive.
     dir_archive = _get_path_to_archive()
-    rt.log_cv("CV data files @ {0}".format(dir_archive))
+    if log:
+        rt.log_cv("CV data files @ {0}".format(dir_archive))
 
     # Set CV files to be loaded from archive.
     termset = []

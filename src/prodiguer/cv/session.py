@@ -13,7 +13,7 @@
 """
 import collections
 
-from prodiguer.cv import cache, constants, io, factory, accessor as ta
+from prodiguer.cv import cache, constants, io, accessor as ta
 from prodiguer.utils import rt
 
 

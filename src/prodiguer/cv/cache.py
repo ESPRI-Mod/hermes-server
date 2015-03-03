@@ -37,7 +37,7 @@ def sort():
         _DATA[cv_type] = sorted(collection, key=ta.get_sort_key)
 
 
-def load():
+def load(log=True):
     """Loads cache.
 
     """
@@ -46,7 +46,7 @@ def load():
         return
 
     # Read CV terms from file system.
-    termset = io.read()
+    termset = io.read(log)
 
     # Extend terms.
     for term in termset:
@@ -181,3 +181,4 @@ def get_random_term_name(term_type):
 
     """
     return ta.get_name(get_random_term(term_type))
+
