@@ -58,15 +58,22 @@ def disconnect(client):
     if not client:
         return
 
-    for func in (
-        client.idle_done,
-        client.close_folder,
-        client.logout
-        ):
-        try:
-            func()
-        except imaplib.IMAP4.abort:
+    try:
+        client.idle_done()
+    except imaplib.IMAP4.abort:
+        pass
+    except AttributeError:
             pass
+
+    try:
+        client.close_folder()
+    except imaplib.IMAP4.abort:
+        pass
+
+    try:
+        client.logout()
+    except imaplib.IMAP4.abort:
+        pass
 
 
 def reconnect(client):
