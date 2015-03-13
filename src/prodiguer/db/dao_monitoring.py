@@ -23,6 +23,7 @@ from prodiguer.cv.validation import (
     validate_simulation_state
     )
 from prodiguer.db.validation import (
+    validate_job_uid,
     validate_simulation_configuration_card,
     validate_simulation_execution_start_date,
     validate_simulation_name,
@@ -84,6 +85,17 @@ def _validate_create_simulation_state(uid, state, timestamp, info):
 
     """
     validate_simulation_uid(uid)
+    validate_simulation_state(state)
+    validate_simulation_state_timestamp(timestamp)
+    validate_simulation_state_info(info)
+
+
+def _validate_create_job_state(simulation_uid, job_uid, state, timestamp, info):
+    """Validates create job state inputs.
+
+    """
+    validate_simulation_uid(simulation_uid)
+    validate_job_uid(job_uid)
     validate_simulation_state(state)
     validate_simulation_state_timestamp(timestamp)
     validate_simulation_state_info(info)
@@ -247,6 +259,36 @@ def create_simulation_state(uid, state, timestamp, info):
 
     # Update state on simulation table.
     _update_simulation_state(uid)
+
+    return instance
+
+
+def create_job_state(simulation_uid, job_uid, state, timestamp, info):
+    """Creates a new job state record in db.
+
+    :param str simulation_uid: Simulation UID.
+    :param str job_uid: Job UID.
+    :param str state: Execution state, e.g. COMPLETE.
+    :param datetime.datetime timestamp: State timestamp.
+    :param str info: Short contextual description of state change.
+
+    """
+    # Validate inputs.
+    _validate_create_job_state(simulation_uid, job_uid, state, timestamp, info)
+
+    # Instantiate instance.
+    instance = types.SimulationStateChange()
+    instance.info = unicode(info)
+    instance.job_uid = unicode(job_uid)
+    instance.simulation_uid = unicode(simulation_uid)
+    instance.state = unicode(state)
+    instance.timestamp = timestamp
+
+    # Push to db.
+    session.add(instance)
+    msg = "Persisted job state to db :: {0} | {1} | {2}"
+    msg = msg.format(simulation_uid, job_uid, state)
+    rt.log_db(msg)
 
     return instance
 

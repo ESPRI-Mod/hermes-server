@@ -127,3 +127,12 @@ def validate_simulation_uid(identifier):
     """
     _validate_uid(identifier, "Simulation uid")
 
+
+def validate_job_uid(identifier):
+    """Validates a job unique identifier.
+
+    :param str identifier: A job unique identifier.
+
+    """
+    _validate_uid(identifier, "Job uid")
+

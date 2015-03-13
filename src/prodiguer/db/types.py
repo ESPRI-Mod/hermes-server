@@ -119,6 +119,7 @@ class SimulationStateChange(Entity):
 
     # Attributes.
     simulation_uid = Column(Unicode(63), nullable=False)
+    job_uid = Column(Unicode(63), nullable=True)
     state = Column(Unicode(127))
     timestamp = Column(DateTime, nullable=False)
     info = Column(Unicode(63), nullable=False)
