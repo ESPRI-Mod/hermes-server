@@ -68,7 +68,7 @@ class AddRequestHandler(tornado.web.RequestHandler):
         # Validate that length of each metric is same as length of group columns.
         for metric in payload.metrics:
             if len(metric) != len(payload.columns):
-                raise ValueError("Invalid metric: number of columns does not match group columns")
+                raise ValueError("Invalid metric: number of values does not match number of columns")
 
         # Validation passed therefore cache decoded payload.
         self.payload = payload
