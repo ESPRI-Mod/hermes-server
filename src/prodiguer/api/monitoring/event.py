@@ -41,20 +41,14 @@ def _on_simulation_state_change(data):
     """Event handler: simulation state change.
 
     """
+    # Load simulation state history.
+    state_history = db.dao_monitoring.retrieve_simulation_states(data['uid'])
+    if not state_history:
+        raise ValueError("Unknown simulation states: {}".format(data['uid']))
+
     return {
-        'uid': data['uid'],
-        'state' : data['state']
-        }
-
-
-def _on_simulation_termination(data):
-    """Event handler: simulation termination.
-
-    """
-    return {
-        'ended': data['ended'],
-        'uid': data['uid'],
-        'state' : data['state']
+        'simulation_state_history' : state_history,
+        'simulation_uid': data['uid']
         }
 
 
@@ -64,22 +58,28 @@ def _on_new_simulation(data):
     """
     # Load simulation.
     simulation = db.dao_monitoring.retrieve_simulation(data['uid'])
-    if simulation is None:
+    if not simulation:
         raise ValueError("Unknown simulation: {}".format(data['uid']))
+
+    # Load simulation state history.
+    state_history = db.dao_monitoring.retrieve_simulation_states(data['uid'])
+    if not state_history:
+        raise ValueError("Unknown simulation states: {}".format(data['uid']))
 
     # Initialise event data.
     return {
+        'cv_terms': data['cv_terms'],
         'simulation': simulation,
-        'cv_terms': data['cv_terms']
+        'simulation_state_history': state_history
         }
 
 
 # Map of event handlers.
 _EVENT_HANDLERS = {
     'new_simulation': _on_new_simulation,
-    'simulation_state_change': _on_simulation_state_change,
-    'simulation_termination': _on_simulation_termination
+    'simulation_state_change': _on_simulation_state_change
 }
+
 
 class _EventInfo(object):
     """Encpasulates incoming event information.

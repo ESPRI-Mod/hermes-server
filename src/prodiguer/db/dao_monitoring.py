@@ -24,6 +24,7 @@ from prodiguer.cv.validation import (
     )
 from prodiguer.db.validation import (
     validate_job_uid,
+    validate_job_warning_delay,
     validate_simulation_configuration_card,
     validate_simulation_execution_start_date,
     validate_simulation_name,
@@ -45,6 +46,7 @@ def _validate_create_simulation(
     execution_start_date,
     execution_state,
     experiment,
+    job_warning_delay,
     model,
     name,
     output_start_date,
@@ -65,6 +67,7 @@ def _validate_create_simulation(
     validate_simulation_state(execution_state)
 
     # Validate other fields.
+    validate_job_warning_delay(job_warning_delay)
     validate_simulation_execution_start_date(execution_start_date)
     validate_simulation_name(name)
     validate_simulation_output_start_date(output_start_date)
@@ -122,6 +125,22 @@ def retrieve_simulation(uid):
     return dao.get_by_facet(types.Simulation, qfilter=qfilter)
 
 
+def retrieve_simulation_states(uid):
+    """Retrieves simulation states from db.
+
+    :param str uid: UID of simulation.
+
+    :returns: Simulation states.
+    :rtype: types.monitoring.SimulationStateChange
+
+    """
+    return dao.get_by_facet(
+        types.SimulationStateChange,
+        types.SimulationStateChange.simulation_uid==unicode(uid),
+        types.SimulationStateChange.timestamp.desc(),
+        True)
+
+
 def get_latest_simulation_state_change(uid):
     """Returns latest simulation state change entry.
 
@@ -146,6 +165,7 @@ def create_simulation(
     execution_start_date,
     execution_state,
     experiment,
+    job_warning_delay,
     model,
     name,
     output_start_date,
@@ -161,6 +181,7 @@ def create_simulation(
     :param datetime execution_start_date: Simulation start date.
     :param str execution_state: State of simulation execution, e.g. COMPLETE.
     :param str experiment: Name of experiment, e.g. piControl.
+    :param int job_warning_delay: Delay in seconds before a simulation job warning needs to be raised.
     :param str model: Name of model, e.g. IPSLCM5A.
     :param str name: Name of simulation, e.g. v3.aqua4K.
     :param datetime output_start_date: Output start date.
@@ -181,6 +202,7 @@ def create_simulation(
         execution_start_date,
         execution_state,
         experiment,
+        job_warning_delay,
         model,
         name,
         output_start_date,
@@ -197,6 +219,7 @@ def create_simulation(
     sim.execution_start_date = execution_start_date
     sim.execution_state = unicode(execution_state)
     sim.experiment = unicode(experiment)
+    sim.job_warning_delay = int(job_warning_delay)
     sim.model = unicode(model)
     sim.name = unicode(name)
     sim.output_start_date = output_start_date
@@ -209,6 +232,7 @@ def create_simulation(
     rt.log_db("Created simulation: {0}.".format(uid))
 
     return sim
+
 
 def create_simulation_configuration(uid, card):
     """Creates a new simulation configuration db record.

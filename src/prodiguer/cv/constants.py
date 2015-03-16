@@ -95,3 +95,15 @@ SIMULATION_STATE_SET = [
     SIMULATION_STATE_COMPLETE,
     SIMULATION_STATE_ERROR
 ]
+
+# Constants pertaining to job states.
+JOB_STATE_RUNNING = u"running"
+JOB_STATE_COMPLETE = u"complete"
+JOB_STATE_ERROR = u"error"
+
+# Set of supported job states.
+JOB_STATE_SET = [
+    JOB_STATE_RUNNING,
+    JOB_STATE_COMPLETE,
+    JOB_STATE_ERROR
+]

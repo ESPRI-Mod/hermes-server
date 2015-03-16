@@ -16,15 +16,28 @@ import arrow
 
 
 
-def _validate_date(date, var):
-    """Validates a date.
+def _validate_int(val, var):
+    """Validates an integer.
 
     """
-    if date is None:
+    if val is None:
         raise ValueError('{0} is undefined'.format(var))
 
     try:
-        arrow.get(date)
+        int(val)
+    except ValueError:
+        raise ValueError('{0} is invalid'.format(var))
+
+
+def _validate_date(val, var):
+    """Validates a date.
+
+    """
+    if val is None:
+        raise ValueError('{0} is undefined'.format(var))
+
+    try:
+        arrow.get(val)
     except arrow.parser.ParserError:
         raise ValueError('{0} is invalid'.format(var))
 
@@ -136,3 +149,11 @@ def validate_job_uid(identifier):
     """
     _validate_uid(identifier, "Job uid")
 
+
+def validate_job_warning_delay(delay):
+    """Validates a job warning delay time step.
+
+    :param int delay: Number of seconds before a job warning needs to be raised.
+
+    """
+    _validate_int(delay, "Job warning delay")

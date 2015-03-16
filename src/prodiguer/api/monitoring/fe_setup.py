@@ -15,7 +15,6 @@ import tornado.web
 
 from prodiguer import db
 from prodiguer.api.utils import handler as hu
-from prodiguer.utils import config
 
 
 
@@ -33,7 +32,8 @@ class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
         # Load setup data from db.
         data = {
             'cv_terms': db.utils.get_list(db.types.ControlledVocabularyTerm),
-            'simulation_list': db.utils.get_list(db.types.Simulation)
+            'simulation_list': db.utils.get_list(db.types.Simulation),
+            'simulation_state_history': db.utils.get_list(db.types.SimulationStateChange)
             }
 
         # End db session.

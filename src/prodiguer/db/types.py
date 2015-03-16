@@ -14,6 +14,7 @@ import datetime, uuid
 from sqlalchemy import (
     Column,
     DateTime,
+    Integer,
     BigInteger,
     Text,
     Unicode,
@@ -91,6 +92,7 @@ class Simulation(Entity):
     compute_node_machine = Column(Unicode(127))
     execution_state = Column(Unicode(127))
     experiment = Column(Unicode(127))
+    job_warning_delay = Column(Integer)
     model = Column(Unicode(127))
     space = Column(Unicode(127))
     name = Column(Unicode(511), nullable=False)
@@ -114,6 +116,7 @@ class SimulationStateChange(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_simulation_state_change'
     __table_args__ = (
+        UniqueConstraint('simulation_uid' ,'job_uid', 'state'),
         {'schema':_SCHEMA_MONITORING}
     )
 
