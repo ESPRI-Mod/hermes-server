@@ -169,6 +169,26 @@ def get_email(email_uid, client=None):
     return mail, attachment
 
 
+def delete_email(email_uid, client=None):
+    """Deletes an email.
+
+    :param str email_uid: Identifier of email to be deleted.
+    :param str folder: Destination mailbox to which email will be moved.
+    :param imapclient.IMAPClient client: An imap server client.
+
+    """
+    # Set imap proxy.
+    proxy = client or connect()
+
+    # Delete from old folder.
+    proxy.delete_messages(email_uid)
+    proxy.expunge()
+
+    # Close imap proxy (if necessary).
+    if not client:
+        disconnect(proxy)
+
+
 def move_email(email_uid, folder=None, client=None):
     """Moves an email to new mail box.
 
@@ -188,8 +208,7 @@ def move_email(email_uid, folder=None, client=None):
     proxy.copy(email_uid, folder)
 
     # Delete from old folder.
-    proxy.delete_messages(email_uid)
-    proxy.expunge()
+    delete_email(email_uid, proxy)
 
     # Close imap proxy (if necessary).
     if not client:
