@@ -92,7 +92,6 @@ class Simulation(Entity):
     compute_node_machine = Column(Unicode(127))
     execution_state = Column(Unicode(127))
     experiment = Column(Unicode(127))
-    job_warning_delay = Column(Integer)
     model = Column(Unicode(127))
     space = Column(Unicode(127))
     name = Column(Unicode(511), nullable=False)
@@ -125,6 +124,7 @@ class SimulationStateChange(Entity):
     job_uid = Column(Unicode(63), nullable=True)
     state = Column(Unicode(127))
     timestamp = Column(DateTime, nullable=False)
+    expected_transition_delay = Column(Integer)
     info = Column(Unicode(63), nullable=False)
 
 

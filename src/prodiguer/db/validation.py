@@ -150,10 +150,10 @@ def validate_job_uid(identifier):
     _validate_uid(identifier, "Job uid")
 
 
-def validate_job_warning_delay(delay):
-    """Validates a job warning delay time step.
+def validate_expected_state_transition_delay(delay):
+    """Validates an expected state transition delay time step.
 
-    :param int delay: Number of seconds before a job warning needs to be raised.
+    :param int delay: Number of seconds before a state transition warning needs to be raised.
 
     """
-    _validate_int(delay, "Job warning delay")
+    _validate_int(delay, "Expected state transition delay")

@@ -23,8 +23,8 @@ from prodiguer.cv.validation import (
     validate_simulation_state
     )
 from prodiguer.db.validation import (
+    validate_expected_state_transition_delay,
     validate_job_uid,
-    validate_job_warning_delay,
     validate_simulation_configuration_card,
     validate_simulation_execution_start_date,
     validate_simulation_name,
@@ -46,7 +46,6 @@ def _validate_create_simulation(
     execution_start_date,
     execution_state,
     experiment,
-    job_warning_delay,
     model,
     name,
     output_start_date,
@@ -67,7 +66,6 @@ def _validate_create_simulation(
     validate_simulation_state(execution_state)
 
     # Validate other fields.
-    validate_job_warning_delay(job_warning_delay)
     validate_simulation_execution_start_date(execution_start_date)
     validate_simulation_name(name)
     validate_simulation_output_start_date(output_start_date)
@@ -93,7 +91,14 @@ def _validate_create_simulation_state(uid, state, timestamp, info):
     validate_simulation_state_info(info)
 
 
-def _validate_create_job_state(simulation_uid, job_uid, state, timestamp, info):
+def _validate_create_job_state(
+    simulation_uid,
+    job_uid,
+    state,
+    timestamp,
+    info,
+    expected_transition_delay=None
+    ):
     """Validates create job state inputs.
 
     """
@@ -102,6 +107,8 @@ def _validate_create_job_state(simulation_uid, job_uid, state, timestamp, info):
     validate_simulation_state(state)
     validate_simulation_state_timestamp(timestamp)
     validate_simulation_state_info(info)
+    if expected_transition_delay:
+        validate_expected_state_transition_delay(expected_transition_delay)
 
 
 def _validate_update_simulation_state(uid):
@@ -165,7 +172,6 @@ def create_simulation(
     execution_start_date,
     execution_state,
     experiment,
-    job_warning_delay,
     model,
     name,
     output_start_date,
@@ -181,7 +187,6 @@ def create_simulation(
     :param datetime execution_start_date: Simulation start date.
     :param str execution_state: State of simulation execution, e.g. COMPLETE.
     :param str experiment: Name of experiment, e.g. piControl.
-    :param int job_warning_delay: Delay in seconds before a simulation job warning needs to be raised.
     :param str model: Name of model, e.g. IPSLCM5A.
     :param str name: Name of simulation, e.g. v3.aqua4K.
     :param datetime output_start_date: Output start date.
@@ -202,7 +207,6 @@ def create_simulation(
         execution_start_date,
         execution_state,
         experiment,
-        job_warning_delay,
         model,
         name,
         output_start_date,
@@ -219,7 +223,6 @@ def create_simulation(
     sim.execution_start_date = execution_start_date
     sim.execution_state = unicode(execution_state)
     sim.experiment = unicode(experiment)
-    sim.job_warning_delay = int(job_warning_delay)
     sim.model = unicode(model)
     sim.name = unicode(name)
     sim.output_start_date = output_start_date
@@ -287,7 +290,14 @@ def create_simulation_state(uid, state, timestamp, info):
     return instance
 
 
-def create_job_state(simulation_uid, job_uid, state, timestamp, info):
+def create_job_state(
+    simulation_uid,
+    job_uid,
+    state,
+    timestamp,
+    info,
+    expected_transition_delay=None
+    ):
     """Creates a new job state record in db.
 
     :param str simulation_uid: Simulation UID.
@@ -298,7 +308,13 @@ def create_job_state(simulation_uid, job_uid, state, timestamp, info):
 
     """
     # Validate inputs.
-    _validate_create_job_state(simulation_uid, job_uid, state, timestamp, info)
+    _validate_create_job_state(
+        simulation_uid,
+        job_uid, state,
+        timestamp,
+        info,
+        expected_transition_delay
+        )
 
     # Instantiate instance.
     instance = types.SimulationStateChange()
@@ -307,6 +323,8 @@ def create_job_state(simulation_uid, job_uid, state, timestamp, info):
     instance.simulation_uid = unicode(simulation_uid)
     instance.state = unicode(state)
     instance.timestamp = timestamp
+    instance.expected_transition_delay = None if not expected_transition_delay else \
+                                         int(expected_transition_delay)
 
     # Push to db.
     session.add(instance)
