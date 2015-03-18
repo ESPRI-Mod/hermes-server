@@ -80,6 +80,9 @@ def _init_simulations():
         except KeyError:
             pass
 
+        # Set hash id.
+        sim.hashid = sim.get_hashid()
+
         # ... insert into db.
         db_session.add(sim)
 

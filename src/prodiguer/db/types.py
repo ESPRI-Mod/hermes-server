@@ -9,7 +9,7 @@
 
 
 """
-import datetime, uuid
+import datetime, hashlib, uuid
 
 from sqlalchemy import (
     Column,
@@ -92,6 +92,7 @@ class Simulation(Entity):
     compute_node_machine = Column(Unicode(127))
     execution_state = Column(Unicode(127))
     experiment = Column(Unicode(127))
+    hashid = Column(Unicode(63), nullable=False)
     model = Column(Unicode(127))
     space = Column(Unicode(127))
     name = Column(Unicode(511), nullable=False)
@@ -106,6 +107,27 @@ class Simulation(Entity):
                  nullable=False,
                  unique=True,
                  default=lambda: unicode(uuid.uuid4()))
+
+
+    def get_hashid(self):
+        """Returns the computed hash id for a simulation.
+
+        """
+        hashid = ""
+        for field in [
+            self.activity,
+            self.compute_node,
+            self.compute_node_login,
+            self.compute_node_machine,
+            self.experiment,
+            self.model,
+            self.space,
+
+            self.name
+            ]:
+            hashid += field
+
+        return hashlib.md5(hashid).hexdigest()
 
 
 class SimulationStateChange(Entity):

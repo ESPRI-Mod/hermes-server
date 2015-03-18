@@ -230,6 +230,9 @@ def create_simulation(
     sim.space = unicode(space)
     sim.uid = unicode(uid)
 
+    # Set hash id.
+    sim.hashid = sim.get_hashid()
+
     # Push to db.
     session.add(sim)
     rt.log_db("Created simulation: {0}.".format(uid))
@@ -361,3 +364,18 @@ def _update_simulation_state(uid):
     session.update(simulation)
     msg = "Updated current simulation state :: {0} --> {1}".format(uid, change.state)
     rt.log_db(msg)
+
+
+def archive_dead_simulation_runs(hashid, uid):
+    """Archives so-called simulations dead runs (i.e. simulations that were rerun).
+
+    :param str uid: Simulation UID of new simulation.
+    :param str hashid: Simulation hash identifier.
+
+    """
+    qry = session.query(types.Simulation)
+    qry = qry.filter(types.Simulation.hashid == hashid)
+    qry = qry.filter(types.Simulation.uid != uid)
+    dead = qry.all()
+
+    print("DEAD SIMULATIONS : {}".format(len(dead)))
