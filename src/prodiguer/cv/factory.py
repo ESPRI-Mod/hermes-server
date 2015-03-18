@@ -40,7 +40,7 @@ def create(term_type, term_name, term_data=None):
         "meta": {
             "associations": [],
             "create_date": unicode(arrow.utcnow()),
-            "display_name": parse_term_display_name(term_type, term_name),
+            "display_name": parse_term_display_name(term_type, term_name, False),
             "domain": "climate",
             "name": parse_term_name(term_type, term_name, False),
             "status": constants.TERM_GOVERNANCE_STATE_NEW,

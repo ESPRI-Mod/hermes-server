@@ -34,7 +34,7 @@ def parse_term_name(term_type, term_name, must_exist=True):
 
     :param str term_type: Type of CV term being parsed, e.g. experiment.
     :param str term_name: Name of CV term being parsed, e.g. picontrol.
-    :param bool must_exist: Flag indicating whether the name shoudl exist or not.
+    :param bool must_exist: Flag indicating whether the name should exist or not.
 
     :returns: Parsed cv term name.
     :rtype: str
@@ -54,11 +54,12 @@ def parse_term_name(term_type, term_name, must_exist=True):
     return term_name
 
 
-def parse_term_display_name(term_type, term_name):
+def parse_term_display_name(term_type, term_name, must_exist=True):
     """Returns a parsed term display name.
 
     :param str term_type: Type of CV term being parsed, e.g. experiment.
     :param str term_name: Name of CV term being parsed, e.g. picontrol.
+    :param bool must_exist: Flag indicating whether the name should exist or not.
 
     :returns: Parsed cv term display name.
     :rtype: str
@@ -68,7 +69,7 @@ def parse_term_display_name(term_type, term_name):
     if term_type in constants.CASE_SENSITIVE_TERM_TYPESET:
         return unicode(term_name)
     else:
-        return parse_term_name(term_type, term_name)
+        return parse_term_name(term_type, term_name, must_exist)
 
 
 def parse_term_data(term_data):
