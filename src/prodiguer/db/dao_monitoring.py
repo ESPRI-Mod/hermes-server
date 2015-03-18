@@ -366,16 +366,39 @@ def _update_simulation_state(uid):
     rt.log_db(msg)
 
 
-def archive_dead_simulation_runs(hashid, uid):
-    """Archives so-called simulations dead runs (i.e. simulations that were rerun).
+def delete_dead_simulation_runs(hashid, uid):
+    """Deletes so-called simulations dead runs (i.e. simulations that were rerun).
 
     :param str uid: Simulation UID of new simulation.
     :param str hashid: Simulation hash identifier.
 
     """
+    # Get dead simulations.
     qry = session.query(types.Simulation)
     qry = qry.filter(types.Simulation.hashid == hashid)
     qry = qry.filter(types.Simulation.uid != uid)
     dead = qry.all()
+    if not dead:
+        return
 
-    print("DEAD SIMULATIONS : {}".format(len(dead)))
+    # Delete.
+    for simulation in dead:
+        delete_simulation(simulation.uid)
+
+    # Log.
+    msg = "Deleted dead simulations :: {}".format([i.uid for i in dead])
+    rt.log_db(msg)
+
+
+def delete_simulation(uid):
+    """Deletes a simulation from database.
+
+    """
+    for etype in [
+        types.SimulationConfiguration,
+        types.SimulationForcing,
+        types.SimulationStateChange
+        ]:
+        dao.delete_by_facet(etype, etype.simulation_uid == uid)
+    dao.delete_by_facet(types.Message, types.Message.correlation_id_1 == uid)
+    dao.delete_by_facet(types.Simulation, types.Simulation.uid == uid)
