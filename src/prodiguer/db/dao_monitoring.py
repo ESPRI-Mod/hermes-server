@@ -44,7 +44,6 @@ def _validate_create_simulation(
     compute_node_login,
     compute_node_machine,
     execution_start_date,
-    execution_state,
     experiment,
     model,
     name,
@@ -63,7 +62,6 @@ def _validate_create_simulation(
     validate_experiment(experiment)
     validate_model(model)
     validate_simulation_space(space)
-    validate_simulation_state(execution_state)
 
     # Validate other fields.
     validate_simulation_execution_start_date(execution_start_date)
@@ -109,13 +107,6 @@ def _validate_create_job_state(
     validate_simulation_state_info(info)
     if expected_transition_delay:
         validate_expected_state_transition_delay(expected_transition_delay)
-
-
-def _validate_update_simulation_state(uid):
-    """Validates update simulation state inputs.
-
-    """
-    validate_simulation_uid(uid)
 
 
 def retrieve_simulation(uid):
@@ -170,7 +161,6 @@ def create_simulation(
     compute_node_login,
     compute_node_machine,
     execution_start_date,
-    execution_state,
     experiment,
     model,
     name,
@@ -185,7 +175,6 @@ def create_simulation(
     :param str compute_node_login: Name of compute node login, e.g. dcugnet.
     :param str compute_node_machine: Name of compute machine, e.g. SX9.
     :param datetime execution_start_date: Simulation start date.
-    :param str execution_state: State of simulation execution, e.g. COMPLETE.
     :param str experiment: Name of experiment, e.g. piControl.
     :param str model: Name of model, e.g. IPSLCM5A.
     :param str name: Name of simulation, e.g. v3.aqua4K.
@@ -205,7 +194,6 @@ def create_simulation(
         compute_node_login,
         compute_node_machine,
         execution_start_date,
-        execution_state,
         experiment,
         model,
         name,
@@ -221,7 +209,6 @@ def create_simulation(
     sim.compute_node_login = unicode(compute_node_login)
     sim.compute_node_machine = unicode(compute_node_machine)
     sim.execution_start_date = execution_start_date
-    sim.execution_state = unicode(execution_state)
     sim.experiment = unicode(experiment)
     sim.model = unicode(model)
     sim.name = unicode(name)
@@ -287,9 +274,6 @@ def create_simulation_state(uid, state, timestamp, info):
     msg = msg.format(uid, state)
     rt.log_db(msg)
 
-    # Update state on simulation table.
-    _update_simulation_state(uid)
-
     return instance
 
 
@@ -336,34 +320,6 @@ def create_job_state(
     rt.log_db(msg)
 
     return instance
-
-
-def _update_simulation_state(uid):
-    """Updates simulation state.
-
-    :param str uid: Simulation UID.
-
-    """
-    # Validate inputs.
-    _validate_update_simulation_state(uid)
-
-    # Get simulation.
-    simulation = retrieve_simulation(uid)
-    if not simulation:
-        return
-
-    # Get latest state change.
-    change = get_latest_simulation_state_change(uid)
-    if not change:
-        return
-
-    # Update simulation state.
-    simulation.execution_state = change.state
-
-    # Push to db.
-    session.update(simulation)
-    msg = "Updated current simulation state :: {0} --> {1}".format(uid, change.state)
-    rt.log_db(msg)
 
 
 def delete_dead_simulation_runs(hashid, uid):

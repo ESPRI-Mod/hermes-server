@@ -90,7 +90,6 @@ class Simulation(Entity):
     compute_node = Column(Unicode(127))
     compute_node_login = Column(Unicode(127))
     compute_node_machine = Column(Unicode(127))
-    execution_state = Column(Unicode(127))
     experiment = Column(Unicode(127))
     hashid = Column(Unicode(63), nullable=False)
     model = Column(Unicode(127))
@@ -127,7 +126,7 @@ class Simulation(Entity):
             ]:
             hashid += field
 
-        return hashlib.md5(hashid).hexdigest()
+        return unicode(hashlib.md5(hashid).hexdigest())
 
 
 class SimulationStateChange(Entity):
@@ -137,7 +136,6 @@ class SimulationStateChange(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_simulation_state_change'
     __table_args__ = (
-        UniqueConstraint('simulation_uid' ,'job_uid', 'state'),
         {'schema':_SCHEMA_MONITORING}
     )
 

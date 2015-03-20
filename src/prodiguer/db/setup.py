@@ -63,7 +63,6 @@ def _init_simulations():
         sim.compute_node_machine = simulation['associations']['compute_node_machine']
         sim.ensemble_member = simulation['ensemble_member']
         sim.execution_end_date = simulation['execution_end_date']
-        sim.execution_state = simulation['associations']['execution_state']
         sim.execution_start_date = simulation['execution_start_date']
         sim.experiment = simulation['associations']['experiment']
         sim.model = simulation['associations']['model']

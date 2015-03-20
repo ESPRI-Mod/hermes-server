@@ -44,7 +44,6 @@ def test_cc_smon_messages():
             'compute_node_login',
             'compute_node_machine',
             'execution_start_date',
-            'execution_state',
             'experiment',
             'model',
             'name',
