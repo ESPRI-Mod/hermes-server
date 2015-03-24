@@ -37,7 +37,7 @@ __all__ = [
     "SimulationForcing",
     "Simulation",
     "SimulationConfiguration",
-    "SimulationStateChange",
+    "SimulationState",
     "Message",
     "MessageEmail",
     # ... other
@@ -129,12 +129,12 @@ class Simulation(Entity):
         return unicode(hashlib.md5(hashid).hexdigest())
 
 
-class SimulationStateChange(Entity):
-    """History of simulation status changes.
+class SimulationState(Entity):
+    """History of simulation state events.
 
     """
     # SQLAlchemy directives.
-    __tablename__ = 'tbl_simulation_state_change'
+    __tablename__ = 'tbl_simulation_state'
     __table_args__ = (
         {'schema':_SCHEMA_MONITORING}
     )
@@ -237,7 +237,7 @@ TYPES = type_utils.supported_types = [
     Simulation,
     SimulationConfiguration,
     SimulationForcing,
-    SimulationStateChange
+    SimulationState
 ]
 
 # Extend type with other fields.

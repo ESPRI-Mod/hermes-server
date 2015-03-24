@@ -33,7 +33,7 @@ class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
         data = {
             'cv_terms': db.utils.get_list(db.types.ControlledVocabularyTerm),
             'simulation_list': db.utils.get_list(db.types.Simulation),
-            'simulation_state_history': db.utils.get_list(db.types.SimulationStateChange)
+            'simulation_state_history': db.utils.get_list(db.types.SimulationState)
             }
 
         # End db session.

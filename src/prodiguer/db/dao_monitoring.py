@@ -129,13 +129,13 @@ def retrieve_simulation_states(uid):
     :param str uid: UID of simulation.
 
     :returns: Simulation states.
-    :rtype: types.monitoring.SimulationStateChange
+    :rtype: types.monitoring.SimulationState
 
     """
     return dao.get_by_facet(
-        types.SimulationStateChange,
-        types.SimulationStateChange.simulation_uid==unicode(uid),
-        types.SimulationStateChange.timestamp.desc(),
+        types.SimulationState,
+        types.SimulationState.simulation_uid==unicode(uid),
+        types.SimulationState.timestamp.desc(),
         True)
 
 
@@ -145,13 +145,13 @@ def get_latest_simulation_state_change(uid):
     :param str uid: Simulation unique identifier.
 
     :returns: Most recent simulation state change entry.
-    :rtype: types.SimulationStateChange
+    :rtype: types.SimulationState
 
     """
     return dao.get_by_facet(
-        types.SimulationStateChange,
-        types.SimulationStateChange.simulation_uid==unicode(uid),
-        types.SimulationStateChange.timestamp.desc(),
+        types.SimulationState,
+        types.SimulationState.simulation_uid==unicode(uid),
+        types.SimulationState.timestamp.desc(),
         False)
 
 
@@ -262,7 +262,7 @@ def create_simulation_state(uid, state, timestamp, info):
     _validate_create_simulation_state(uid, state, timestamp, info)
 
     # Instantiate instance.
-    instance = types.SimulationStateChange()
+    instance = types.SimulationState()
     instance.info = unicode(info)
     instance.simulation_uid = unicode(uid)
     instance.state = unicode(state)
@@ -304,7 +304,7 @@ def create_job_state(
         )
 
     # Instantiate instance.
-    instance = types.SimulationStateChange()
+    instance = types.SimulationState()
     instance.info = unicode(info)
     instance.job_uid = unicode(job_uid)
     instance.simulation_uid = unicode(simulation_uid)
@@ -353,7 +353,7 @@ def delete_simulation(uid):
     for etype in [
         types.SimulationConfiguration,
         types.SimulationForcing,
-        types.SimulationStateChange
+        types.SimulationState
         ]:
         dao.delete_by_facet(etype, etype.simulation_uid == uid)
     dao.delete_by_facet(types.Message, types.Message.correlation_id_1 == uid)

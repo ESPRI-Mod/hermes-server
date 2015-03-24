@@ -46,9 +46,8 @@ def read(log=True):
 
         """
         with open(filepath, 'r') as cv_file:
-            cv_data = cv_file.read()
             try:
-                return json.loads(cv_data)
+                return json.loads(cv_file.read())
             except ValueError:
                 rt.log_cv_warning("CV file load error: {0}".format(filepath))
                 return None
