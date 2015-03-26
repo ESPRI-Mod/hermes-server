@@ -84,14 +84,16 @@ class AddRequestHandler(tornado.web.RequestHandler):
             """Returns list of formatted metrics."""
             return [OrderedDict(_format(m)) for m in self.payload.metrics]
 
-        dao.add(self.payload.group, _format_metrics())
+        self.added, self.duplicates = dao.add(self.payload.group, _format_metrics())
 
 
     def _write_response(self, error=None):
         """Write response output."""
         if not error:
             self.output = {
-                'group': self.payload.group
+                'group': self.payload.group,
+                'added_count': len(self.added),
+                'duplicate_count': len(self.duplicates)
             }
         handler_utils.write_response(self, error)
 

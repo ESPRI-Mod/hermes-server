@@ -9,11 +9,13 @@
 
 
 """
+import hashlib, operator
 from collections import OrderedDict
 
+import pymongo
 from bson.objectid import ObjectId
 
-import utils
+from prodiguer.db.mongo import utils
 
 
 
@@ -26,6 +28,12 @@ _MONGO_FIELD_PREFIX = "_"
 # Token of object identifier that each inserted record is associated with.
 _MONGO_OBJECT_ID = "_id"
 
+# Token of field used to store record hash identifier.
+_HASH_ID_FIELD = u"_hashID"
+
+# Token of collection index: hash id.
+_IDX_HASH_ID = u"idx_hash_id"
+
 # Default field limiter to use when querying a collection.
 _DEFAULT_FIELD_LIMITER = {
     _MONGO_OBJECT_ID: 0
@@ -33,12 +41,16 @@ _DEFAULT_FIELD_LIMITER = {
 
 
 def _format_group_id(group_id):
-    """Returns a formatted group id."""
+    """Returns a formatted group id.
+
+    """
     return None if not group_id else group_id.strip().lower()
 
 
 def _fetch(action, include_db_id=True, query=None):
-    """Fetches data form db."""
+    """Fetches data form db.
+
+    """
     # Parse params.
     query = query or {}
     field_limiter = _DEFAULT_FIELD_LIMITER if not include_db_id else None
@@ -50,8 +62,8 @@ def _fetch(action, include_db_id=True, query=None):
         return action(query, as_class=OrderedDict)
 
 
-def build_indexes(group_id):
-    """Builds metric group db indexes.
+def _init_indexes(group_id):
+    """Initialiszes metric group db indexes.
 
     :param str group_id: ID of a metric group.
 
@@ -59,15 +71,27 @@ def build_indexes(group_id):
     group_id = _format_group_id(group_id)
     collection = utils.get_db_collection(_DB_NAME, group_id)
 
-    # TODO index factory by group id.
-    indexes = [
-        ("Institute", pymongo.ASCENDING),
-        ("Model", pymongo.ASCENDING),
-        ("Var", pymongo.ASCENDING),
-        ("Freq", pymongo.ASCENDING),
-    ]
+    # Create hash id index to enforce row uniqueness.
+    if _IDX_HASH_ID not in collection.index_information():
+        collection.create_index(_HASH_ID_FIELD, name=_IDX_HASH_ID, unique=True)
 
-    collection.create_index(indexes)
+
+def _get_metric_hashid(group_id, metric):
+    """Returns the hashid associated with a metric set.
+
+    """
+    hashid = unicode(group_id) + unicode(metric)
+
+    return unicode(hashlib.md5(hashid).hexdigest())
+
+
+def _set_hash_identifiers(group_id, metrics):
+    """Sets unique hash identifiers so as to prevent duplicates metrics.
+
+    """
+    group_id = _format_group_id(group_id)
+    for metric in [m for m in metrics if _HASH_ID_FIELD not in m]:
+        metric[_HASH_ID_FIELD] = _get_metric_hashid(group_id, metric)
 
 
 def add(group_id, metrics):
@@ -80,10 +104,23 @@ def add(group_id, metrics):
     :rtype: list
 
     """
+    # Initialize indexes.
+    _init_indexes(group_id)
+
+    # Set hashes.
+    _set_hash_identifiers(group_id, metrics)
+
+    # Insert metrics (ignore duplicates).
     group_id = _format_group_id(group_id)
     collection = utils.get_db_collection(_DB_NAME, group_id)
+    duplicates = []
+    for metric in metrics:
+        try:
+            collection.insert(metrics)
+        except pymongo.errors.DuplicateKeyError:
+            duplicates.append(metric)
 
-    return collection.insert(metrics)
+    return [m for m in metrics if m not in duplicates], duplicates
 
 
 def delete(group_id, query=None):
