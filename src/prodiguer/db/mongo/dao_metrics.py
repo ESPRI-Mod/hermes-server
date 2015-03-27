@@ -9,7 +9,7 @@
 
 
 """
-import hashlib, operator
+import hashlib
 from collections import OrderedDict
 
 import pymongo
