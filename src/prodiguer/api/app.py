@@ -49,6 +49,7 @@ def _get_app_routes():
         (r'/api/1/metric/fetch_list', metric.FetchListRequestHandler),
         (r'/api/1/metric/fetch_setup', metric.FetchSetupRequestHandler),
         (r'/api/1/metric/rename', metric.RenameRequestHandler),
+        (r'/api/1/metric/set_hashes', metric.SetHashesRequestHandler),
         # Operational routes.
         (r'/api/1/ops/heartbeat', ops.HeartbeatRequestHandler),
         (r'/api/1/ops/list_endpoints', ops.ListEndpointsRequestHandler),

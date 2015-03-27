@@ -67,6 +67,16 @@ def validate_group_name(group, validate_db_collection=True):
         raise ValueError("{0} db collection not found".format(group))
 
 
+def validate_duplicate_action(action):
+    """Validates duplicate hash action.
+
+    :param str action: Action to take when processing a metric set with a duplicate hash identifier.
+
+    """
+    if action not in ['skip', 'force']:
+        raise ValueError("Invalid duplicate metric action")
+
+
 def decode_json_payload(handler, as_namedtuple=True):
     """Decode request body.
 

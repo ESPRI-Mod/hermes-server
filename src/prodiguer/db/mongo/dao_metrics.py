@@ -9,7 +9,7 @@
 
 
 """
-import hashlib
+import os, hashlib
 from collections import OrderedDict
 
 import pymongo
@@ -28,9 +28,6 @@ _MONGO_FIELD_PREFIX = "_"
 # Token of object identifier that each inserted record is associated with.
 _MONGO_OBJECT_ID = "_id"
 
-# Token of field used to store record hash identifier.
-_HASH_ID_FIELD = u"_hashID"
-
 # Token of collection index: hash id.
 _IDX_HASH_ID = u"idx_hash_id"
 
@@ -38,6 +35,15 @@ _IDX_HASH_ID = u"idx_hash_id"
 _DEFAULT_FIELD_LIMITER = {
     _MONGO_OBJECT_ID: 0
 }
+
+# Name of config fiel containing hash fieldset.
+_HASH_FIELDSET_CONFIG_FILENAME = "hash_fieldset.config"
+
+# Set of fields used to create a metric hash.
+_HASH_FIELDSET = set()
+
+# Name of hash id field.
+_HASH_FIELDNAME = '_hashID'
 
 
 def _format_group_id(group_id):
@@ -73,32 +79,40 @@ def _init_indexes(group_id):
 
     # Create hash id index to enforce row uniqueness.
     if _IDX_HASH_ID not in collection.index_information():
-        collection.create_index(_HASH_ID_FIELD, name=_IDX_HASH_ID, unique=True)
+        collection.create_index(_HASH_FIELDNAME, name=_IDX_HASH_ID, unique=True)
 
 
-def _get_metric_hashid(group_id, metric):
-    """Returns the hashid associated with a metric set.
+def _init_hash_fieldset():
+    """Initializes set of hash fields.
 
     """
-    hashid = unicode(group_id) + unicode(metric)
+    if _HASH_FIELDSET:
+        return
+
+    path = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(path, _HASH_FIELDSET_CONFIG_FILENAME)
+    with open(path, 'r') as config_file:
+        _HASH_FIELDSET.update([l.strip() for l in config_file.readlines() if l])
+
+
+def _get_hash(group_id, data):
+    """Returns the hash of a metric set.
+
+    """
+    hashid = unicode(_format_group_id(group_id))
+    for key in [k for k in data.keys() if k in _HASH_FIELDSET]:
+        hashid += unicode(key)
+        hashid += unicode(data[key])
 
     return unicode(hashlib.md5(hashid).hexdigest())
 
 
-def _set_hash_identifiers(group_id, metrics):
-    """Sets unique hash identifiers so as to prevent duplicates metrics.
-
-    """
-    group_id = _format_group_id(group_id)
-    for metric in [m for m in metrics if _HASH_ID_FIELD not in m]:
-        metric[_HASH_ID_FIELD] = _get_metric_hashid(group_id, metric)
-
-
-def add(group_id, metrics):
+def add(group_id, metrics, duplicate_action):
     """Persists a set of metrics to the database.
 
     :param str group_id: ID of the metric group being added.
     :param list metrics: Set of metric being added.
+    :param str duplicate_action: Action to take when encountering a metric set with a duplicate hash identifier.
 
     :returns: Set of line id's of newly inserted metrics.
     :rtype: list
@@ -107,20 +121,26 @@ def add(group_id, metrics):
     # Initialize indexes.
     _init_indexes(group_id)
 
-    # Set hashes.
-    _set_hash_identifiers(group_id, metrics)
-
-    # Insert metrics (ignore duplicates).
+    # Set target db collection.
     group_id = _format_group_id(group_id)
     collection = utils.get_db_collection(_DB_NAME, group_id)
+
+    # Insert metrics.
     duplicates = []
     for metric in metrics:
         try:
-            collection.insert(metrics)
+            collection.insert(metric)
         except pymongo.errors.DuplicateKeyError:
             duplicates.append(metric)
+            if duplicate_action == 'force':
+                collection.remove({ _HASH_FIELDNAME: metric[_HASH_FIELDNAME] })
+                collection.insert(metric)
 
-    return [m for m in metrics if m not in duplicates], duplicates
+    # Return inserted & duplicates.
+    if duplicate_action == 'force':
+        return metrics, duplicates
+    else:
+        return [m for m in metrics if m not in duplicates], duplicates
 
 
 def delete(group_id, query=None):
@@ -277,3 +297,16 @@ def rename(group_id, new_group_id):
     new_group_id = _format_group_id(new_group_id)
     collection = utils.get_db_collection(_DB_NAME, group_id)
     collection.rename(new_group_id)
+
+
+def set_hashes(group_id):
+    """Resets the hash identifiers of an existing group of metrics.
+
+    :param str group_id: ID of a metric group.
+
+    """
+    _init_hash_fieldset()
+    for metric in fetch(group_id, True):
+        print "BEFORE", metric.get(_HASH_FIELDNAME)
+        metric[_HASH_FIELDNAME] = _get_hash(group_id, metric)
+        print "AFTER", metric.get(_HASH_FIELDNAME)

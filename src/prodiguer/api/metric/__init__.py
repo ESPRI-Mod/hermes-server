@@ -20,3 +20,4 @@ from prodiguer.api.metric.fetch_count import FetchCountRequestHandler
 from prodiguer.api.metric.fetch_list import FetchListRequestHandler
 from prodiguer.api.metric.fetch_setup import FetchSetupRequestHandler
 from prodiguer.api.metric.rename import RenameRequestHandler
+from prodiguer.api.metric.set_hashes import SetHashesRequestHandler

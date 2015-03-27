@@ -35,14 +35,30 @@ _PAYLOAD_FIELDS = set([
     ('metrics', list),
     ])
 
+# Query parameter names.
+_PARAM_DUPLICATE_ACTION = 'duplicate_action'
+
+
 
 class AddRequestHandler(tornado.web.RequestHandler):
     """Simulation metric group add method request handler.
 
     """
     def _validate_request_headers(self):
-        """Validates request headers."""
+        """Validates request headers.
+
+        """
         utils.validate_http_content_type(self, _CONTENT_TYPE_JSON)
+
+
+    def _validate_request_params(self):
+        """Validates request query parameters.
+
+        """
+        utils.validate_duplicate_action(self.get_argument(_PARAM_DUPLICATE_ACTION))
+
+        # Validation passed therefore decode query params.
+        self.duplicate_action = self.get_argument(_PARAM_DUPLICATE_ACTION)
 
 
     def _validate_request_payload(self):
@@ -84,7 +100,8 @@ class AddRequestHandler(tornado.web.RequestHandler):
             """Returns list of formatted metrics."""
             return [OrderedDict(_format(m)) for m in self.payload.metrics]
 
-        self.added, self.duplicates = dao.add(self.payload.group, _format_metrics())
+        self.added, self.duplicates = \
+            dao.add(self.payload.group, _format_metrics(), self.duplicate_action)
 
 
     def _write_response(self, error=None):
@@ -108,6 +125,7 @@ class AddRequestHandler(tornado.web.RequestHandler):
         tasks = {
             "green": (
                 self._validate_request_headers,
+                self._validate_request_params,
                 self._validate_request_payload,
                 self._insert_metrics,
                 self._write_response,
