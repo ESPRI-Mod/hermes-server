@@ -9,12 +9,12 @@
 
 
 """
-import os, hashlib
 from collections import OrderedDict
 
 import pymongo
 from bson.objectid import ObjectId
 
+from metrics_formatter import hashifier
 from prodiguer.db.mongo import utils
 
 
@@ -35,12 +35,6 @@ _IDX_HASH_ID = u"idx_hash_id"
 _DEFAULT_FIELD_LIMITER = {
     _MONGO_OBJECT_ID: 0
 }
-
-# Name of config fiel containing hash fieldset.
-_HASH_FIELDSET_CONFIG_FILENAME = "hash_fieldset.config"
-
-# Set of fields used to create a metric hash.
-_HASH_FIELDSET = set()
 
 # Name of hash id field.
 _HASH_FIELDNAME = '_hashID'
@@ -80,31 +74,6 @@ def _init_indexes(group_id):
     # Create hash id index to enforce row uniqueness.
     if _IDX_HASH_ID not in collection.index_information():
         collection.create_index(_HASH_FIELDNAME, name=_IDX_HASH_ID, unique=True)
-
-
-def _init_hash_fieldset():
-    """Initializes set of hash fields.
-
-    """
-    if _HASH_FIELDSET:
-        return
-
-    path = os.path.dirname(os.path.abspath(__file__))
-    path = os.path.join(path, _HASH_FIELDSET_CONFIG_FILENAME)
-    with open(path, 'r') as config_file:
-        _HASH_FIELDSET.update([l.strip() for l in config_file.readlines() if l])
-
-
-def _get_hash(group_id, data):
-    """Returns the hash of a metric set.
-
-    """
-    hashid = unicode(_format_group_id(group_id))
-    for key in [k for k in data.keys() if k in _HASH_FIELDSET]:
-        hashid += unicode(key)
-        hashid += unicode(data[key])
-
-    return unicode(hashlib.md5(hashid).hexdigest())
 
 
 def add(group_id, metrics, duplicate_action):
@@ -305,8 +274,4 @@ def set_hashes(group_id):
     :param str group_id: ID of a metric group.
 
     """
-    _init_hash_fieldset()
-    for metric in fetch(group_id, True):
-        print "BEFORE", metric.get(_HASH_FIELDNAME)
-        metric[_HASH_FIELDNAME] = _get_hash(group_id, metric)
-        print "AFTER", metric.get(_HASH_FIELDNAME)
+    hashifier.set_hashes(group_id, fetch(group_id, True))
