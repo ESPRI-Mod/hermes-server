@@ -67,7 +67,8 @@ class FetchRequestHandler(tornado.web.RequestHandler):
         """
         # MongoDb appends the _id column to the beginning of each metric sets,
         # however we want it to be appended to the end of each metric set.
-        self.metrics = [m[1:] + [m[0]] for m in [m.values() for m in self.metrics]]
+        self.metrics = [m[1:] + [m[0]] for m in
+                        [m.values() for m in self.metrics]]
 
 
     def _set_output(self):
