@@ -107,6 +107,7 @@ class FetchRequestHandler(tornado.web.RequestHandler):
                 self._validate_request,
                 self._decode_request,
                 self._fetch_data,
+                self._format_data,
                 self._set_output,
                 self._write_response,
                 self._log,
