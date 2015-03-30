@@ -146,7 +146,7 @@ def fetch(group_id, query=None):
     return list(cursor)
 
 
-def fetch_columns(group_id):
+def fetch_columns(group_id, include_id_column=False):
     """Returns set of column names associated with a group of metrics.
 
     :param str group_id: ID of a metric group.
@@ -155,11 +155,21 @@ def fetch_columns(group_id):
     :rtype: list
 
     """
+    # Get columns from first record.
     group_id = _format_group_id(group_id)
     collection = utils.get_db_collection(_DB_NAME, group_id)
     cursor = _fetch(collection.find_one, None)
+    columns = cursor.keys() if cursor else []
 
-    return cursor.keys() if cursor else []
+    # Split columns into user defined and control.
+    user_columns = [k for k in columns if not k.startswith('_')]
+    ctl_columns = [k for k in columns if k.startswith('_')]
+
+    # Exclude _id column when instructed.
+    if not include_id_column:
+        ctl_columns.remove(_MONGO_OBJECT_ID)
+
+    return sorted(user_columns) + sorted(ctl_columns)
 
 
 def fetch_count(group_id, query=None):
@@ -215,7 +225,7 @@ def fetch_setup(group_id, query=None):
     cursor = _fetch(collection.find, query)
     fields = fetch_columns(group_id)
 
-    return [sorted(cursor.distinct(f)) for f in fields]
+    return [sorted(cursor.distinct(f)) for f in fields if f != _MONGO_OBJECT_ID]
 
 
 def rename(group_id, new_group_id):

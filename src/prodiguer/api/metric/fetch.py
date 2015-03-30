@@ -57,9 +57,10 @@ class FetchRequestHandler(tornado.web.RequestHandler):
         """Fetches data from db.
 
         """
-        self.columns = dao.fetch_columns(self.group)
+        self.columns = dao.fetch_columns(self.group, True)
         self.metrics = dao.fetch(self.group, self.query)
         self.metrics = [m.values() for m in self.metrics]
+        self.metrics = [m[1:] + [m[0]] for m in self.metrics]
 
 
     def _set_output(self):
