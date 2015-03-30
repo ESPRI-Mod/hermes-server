@@ -24,7 +24,6 @@ _CONTENT_TYPE_JSON = ["application/json", "application/json; charset=UTF-8"]
 
 # Query parameter names.
 _PARAM_GROUP = 'group'
-_PARAM_INCLUDE_DB_ID = 'include_db_id'
 
 
 class FetchRequestHandler(tornado.web.RequestHandler):
@@ -42,13 +41,11 @@ class FetchRequestHandler(tornado.web.RequestHandler):
             utils.validate_http_content_type(self, _CONTENT_TYPE_JSON)
         utils.validate_format(self)
         utils.validate_group_name(self.get_argument(_PARAM_GROUP))
-        utils.validate_include_db_id(self)
 
 
     def _decode_request(self):
         """Decodes request."""
         self.group = self.get_argument(_PARAM_GROUP)
-        self.include_db_id = utils.decode_include_db_id(self)
         self.format = utils.decode_format(self)
         if self.request.body:
             self.query = utils.decode_json_payload(self, False)
@@ -60,8 +57,8 @@ class FetchRequestHandler(tornado.web.RequestHandler):
         """Fetches data from db.
 
         """
-        self.columns = dao.fetch_columns(self.group, self.include_db_id)
-        self.metrics = dao.fetch(self.group, self.include_db_id, self.query)
+        self.columns = dao.fetch_columns(self.group)
+        self.metrics = dao.fetch(self.group, self.query)
         self.metrics = [m.values() for m in self.metrics]
 
 

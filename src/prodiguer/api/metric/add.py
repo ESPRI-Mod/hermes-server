@@ -22,9 +22,6 @@ from prodiguer.utils import rt
 
 
 
-# Set of reserved column names that cannot appear in metrics.
-_RESERVED_FIELD_NAMES = set(["_id"])
-
 # Supported content types.
 _CONTENT_TYPE_JSON = ["application/json", "application/json; charset=UTF-8"]
 
@@ -71,11 +68,6 @@ class AddRequestHandler(tornado.web.RequestHandler):
 
         # Validate group name.
         utils.validate_group_name(payload.group, False)
-
-        # Validate reserved field names.
-        illegal = _RESERVED_FIELD_NAMES.intersection(set(payload.columns))
-        if illegal:
-            raise KeyError("Metrics contains illegal field names: {0}".format(illegal))
 
         # Validate metrics count > 0.
         if len(payload.metrics) == 0:

@@ -31,9 +31,6 @@ _HTTP_HEADER_CONTENT_TYPE = "Content-Type"
 # HTTP CORS header.
 _HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin"
 
-# Inclide db id query parameter name.
-_PARAM_INCLUDE_DB_ID = 'include_db_id'
-
 # Metrics format query parameter name.
 _PARAM_FORMAT = 'format'
 
@@ -116,17 +113,6 @@ def validate_http_content_type(handler, expected_types):
         raise ValueError("Unsupported content-type")
 
 
-def validate_include_db_id(handler):
-    """Validates the include_db_id query parameter.
-
-    :param tornado.web.RequestHandler handler: A web request handler.
-
-    """
-    if _PARAM_INCLUDE_DB_ID in handler.request.arguments:
-        if handler.get_argument(_PARAM_INCLUDE_DB_ID) not in ('true', 'false'):
-            raise ValueError("Invalid request parameter {0}".format(_PARAM_INCLUDE_DB_ID))
-
-
 def validate_format(handler):
     """Validates format query parameter.
 
@@ -134,22 +120,6 @@ def validate_format(handler):
     if _PARAM_FORMAT in handler.request.arguments:
         if handler.get_argument(_PARAM_FORMAT) not in ('json', 'csv'):
             raise ValueError("Invalid request parameter {0}".format(_PARAM_FORMAT))
-
-
-def decode_include_db_id(handler):
-    """Decodes the include_db_id query parameter.
-
-    :param tornado.web.RequestHandler handler: A web request handler.
-
-    :returns: Query parameter value if specified otherwise True.
-    :rtype: bool
-
-    """
-    if _PARAM_INCLUDE_DB_ID not in handler.request.arguments or \
-       handler.get_argument(_PARAM_INCLUDE_DB_ID) == 'false':
-        return False
-    else:
-        return True
 
 
 def decode_format(handler):

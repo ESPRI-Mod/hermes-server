@@ -53,7 +53,7 @@ class FetchSetupRequestHandler(tornado.web.RequestHandler):
 
     def _fetch_data(self):
         """Fetches data from db."""
-        self.columns = dao.fetch_columns(self.group, False)
+        self.columns = dao.fetch_columns(self.group)
         self.data = dao.fetch_setup(self.group, self.query)
 
 

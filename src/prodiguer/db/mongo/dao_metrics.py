@@ -22,22 +22,8 @@ from prodiguer.db.mongo import utils
 # Name of pymongo db in which metrics are stored.
 _DB_NAME = "metrics"
 
-# Token that mongo injected fields are preffixed with.
-_MONGO_FIELD_PREFIX = "_"
-
 # Token of object identifier that each inserted record is associated with.
 _MONGO_OBJECT_ID = "_id"
-
-# Token of collection index: hash id.
-_IDX_HASH_ID = u"idx_hash_id"
-
-# Default field limiter to use when querying a collection.
-_DEFAULT_FIELD_LIMITER = {
-    _MONGO_OBJECT_ID: 0
-}
-
-# Name of hash id field.
-_HASH_FIELDNAME = '_hashID'
 
 
 def _format_group_id(group_id):
@@ -47,33 +33,15 @@ def _format_group_id(group_id):
     return None if not group_id else group_id.strip().lower()
 
 
-def _fetch(action, include_db_id=True, query=None):
+def _fetch(action, query):
     """Fetches data form db.
 
     """
     # Parse params.
     query = query or {}
-    field_limiter = _DEFAULT_FIELD_LIMITER if not include_db_id else None
 
     # Return data.
-    if field_limiter:
-        return action(query, field_limiter, as_class=OrderedDict)
-    else:
-        return action(query, as_class=OrderedDict)
-
-
-def _init_indexes(group_id):
-    """Initialiszes metric group db indexes.
-
-    :param str group_id: ID of a metric group.
-
-    """
-    group_id = _format_group_id(group_id)
-    collection = utils.get_db_collection(_DB_NAME, group_id)
-
-    # Create hash id index to enforce row uniqueness.
-    if _IDX_HASH_ID not in collection.index_information():
-        collection.create_index(_HASH_FIELDNAME, name=_IDX_HASH_ID, unique=True)
+    return action(query, as_class=OrderedDict)
 
 
 def add(group_id, metrics, duplicate_action):
@@ -87,9 +55,6 @@ def add(group_id, metrics, duplicate_action):
     :rtype: list
 
     """
-    # Initialize indexes.
-    _init_indexes(group_id)
-
     # Set target db collection.
     group_id = _format_group_id(group_id)
     collection = utils.get_db_collection(_DB_NAME, group_id)
@@ -102,7 +67,7 @@ def add(group_id, metrics, duplicate_action):
         except pymongo.errors.DuplicateKeyError:
             duplicates.append(metric)
             if duplicate_action == 'force':
-                collection.remove({ _HASH_FIELDNAME: metric[_HASH_FIELDNAME] })
+                collection.remove({ _MONGO_OBJECT_ID: metric[_MONGO_OBJECT_ID] })
                 collection.insert(metric)
 
     # Return inserted & duplicates.
@@ -164,11 +129,10 @@ def exists(group_id):
     return group_id in fetch_list()
 
 
-def fetch(group_id, include_db_id, query=None):
+def fetch(group_id, query=None):
     """Returns a group of metrics.
 
     :param str group_id: ID of the metric group being returned.
-    :param bool include_db_id: Flag indicating whether to include db id.
     :param dict query: Query filter to be applied.
 
     :returns: A group of metrics.
@@ -177,16 +141,15 @@ def fetch(group_id, include_db_id, query=None):
     """
     group_id = _format_group_id(group_id)
     collection = utils.get_db_collection(_DB_NAME, group_id)
-    cursor = _fetch(collection.find, include_db_id=include_db_id, query=query)
+    cursor = _fetch(collection.find, query)
 
     return list(cursor)
 
 
-def fetch_columns(group_id, include_db_id):
+def fetch_columns(group_id):
     """Returns set of column names associated with a group of metrics.
 
     :param str group_id: ID of a metric group.
-    :param bool include_db_id: Flag indicating whether to include db id.
 
     :returns: Set of column names associated with a group of metrics.
     :rtype: list
@@ -194,7 +157,7 @@ def fetch_columns(group_id, include_db_id):
     """
     group_id = _format_group_id(group_id)
     collection = utils.get_db_collection(_DB_NAME, group_id)
-    cursor = _fetch(collection.find_one, include_db_id)
+    cursor = _fetch(collection.find_one, None)
 
     return cursor.keys() if cursor else []
 
@@ -211,7 +174,7 @@ def fetch_count(group_id, query=None):
     """
     group_id = _format_group_id(group_id)
     collection = utils.get_db_collection(_DB_NAME, group_id)
-    cursor = _fetch(collection.find, query=query)
+    cursor = _fetch(collection.find, query)
 
     return cursor.count()
 
@@ -249,8 +212,8 @@ def fetch_setup(group_id, query=None):
     group_id = _format_group_id(group_id)
     query = query or {}
     collection = utils.get_db_collection(_DB_NAME, group_id)
-    cursor = _fetch(collection.find, query=query)
-    fields = fetch_columns(group_id, False)
+    cursor = _fetch(collection.find, query)
+    fields = fetch_columns(group_id)
 
     return [sorted(cursor.distinct(f)) for f in fields]
 
@@ -274,4 +237,4 @@ def set_hashes(group_id):
     :param str group_id: ID of a metric group.
 
     """
-    hashifier.set_hashes(group_id, fetch(group_id, True))
+    hashifier.set_identifiers(group_id, fetch(group_id))

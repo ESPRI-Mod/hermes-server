@@ -21,7 +21,6 @@ from prodiguer.utils import rt
 
 # Query parameter names.
 _PARAM_GROUP = 'group'
-_PARAM_INCLUDE_DB_ID = 'include_db_id'
 
 
 class FetchColumnsRequestHandler(tornado.web.RequestHandler):
@@ -36,18 +35,16 @@ class FetchColumnsRequestHandler(tornado.web.RequestHandler):
     def _validate_request_params(self):
         """Validates query params."""
         utils.validate_group_name(self.get_argument(_PARAM_GROUP))
-        utils.validate_include_db_id(self)
 
 
     def _decode_request_params(self):
         """Decodes request query parameters."""
         self.group = self.get_argument(_PARAM_GROUP)
-        self.include_db_id = utils.decode_include_db_id(self)
 
 
     def _fetch_data(self):
         """Fetches data from db."""
-        self.columns = dao.fetch_columns(self.group, self.include_db_id)
+        self.columns = dao.fetch_columns(self.group)
 
 
     def _write_response(self, error=None):
