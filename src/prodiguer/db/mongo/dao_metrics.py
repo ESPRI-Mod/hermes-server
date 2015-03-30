@@ -95,11 +95,11 @@ def delete(group_id, query=None):
         collection.drop()
 
 
-def delete_lines(group_id, line_ids):
-    """Deletes a group of metrics.
+def delete_sets(group_id, set_ids):
+    """Deletes sets of metrics.
 
     :param str group_id: ID of a metric group.
-    :param list line_ids: ID's of individual lines within a metric group.
+    :param list set_ids: ID's of individual sets within a metric group.
 
     :returns: Original and updated line counts.
     :rtype: tuple
@@ -109,8 +109,8 @@ def delete_lines(group_id, line_ids):
     collection = utils.get_db_collection(_DB_NAME, group_id)
 
     count = collection.count()
-    for line_id in line_ids:
-        collection.remove({_MONGO_OBJECT_ID: ObjectId(line_id)})
+    for set_id in set_ids:
+        collection.remove({_MONGO_OBJECT_ID: set_id})
 
     return count, collection.count()
 
