@@ -3,7 +3,7 @@
 """
 .. module:: utils_api_metric.py
 
-   :copyright: @2013 IPSL (http://esdocumentation.org)
+   :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL / CeCILL
    :platform: Unix
    :synopsis: Simulation metrics api utilty test functions.

@@ -3,7 +3,7 @@
 """
 .. module:: test_api_simulation_metrics.py
 
-   :copyright: @2013 IPSL (http://esdocumentation.org)
+   :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL / CeCILL
    :platform: Unix
    :synopsis: Encapsulates simulation metrics api tests.

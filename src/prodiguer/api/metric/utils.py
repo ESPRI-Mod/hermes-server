@@ -111,27 +111,3 @@ def validate_http_content_type(handler, expected_types):
     header = handler.request.headers[_HTTP_HEADER_CONTENT_TYPE]
     if not header in expected_types:
         raise ValueError("Unsupported content-type")
-
-
-def validate_format(handler):
-    """Validates format query parameter.
-
-    """
-    if _PARAM_FORMAT in handler.request.arguments:
-        if handler.get_argument(_PARAM_FORMAT) not in ('json', 'csv'):
-            raise ValueError("Invalid request parameter {0}".format(_PARAM_FORMAT))
-
-
-def decode_format(handler):
-    """Decodes the format query parameter.
-
-    :param tornado.web.RequestHandler handler: A web request handler.
-
-    :returns: Query parameter value if specified otherwise 'json'.
-    :rtype: str
-
-    """
-    if _PARAM_FORMAT in handler.request.arguments:
-        return handler.get_argument(_PARAM_FORMAT)
-    else:
-        return 'json'

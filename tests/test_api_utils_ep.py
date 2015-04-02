@@ -3,7 +3,7 @@
 """
 .. module:: test_api_utils_ep_api.py
 
-   :copyright: @2013 IPSL (http://esdocumentation.org)
+   :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL / CeCILL
    :platform: Unix
    :synopsis: Encapsulates api endpoint utils tests.

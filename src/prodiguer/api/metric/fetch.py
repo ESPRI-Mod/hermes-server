@@ -15,7 +15,7 @@ import tornado
 from prodiguer.api.utils import handler as handler_utils
 from prodiguer.api.metric import utils
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.utils import rt, convert
+from prodiguer.utils import rt
 
 
 
@@ -31,22 +31,26 @@ class FetchRequestHandler(tornado.web.RequestHandler):
 
     """
     def set_default_headers(self):
-        """Set default HTTP response headers."""
+        """Set default HTTP response headers.
+
+        """
         utils.set_cors_white_list(self)
 
 
     def _validate_request(self):
-        """Validates request."""
+        """Validates request.
+
+        """
         if self.request.body:
             utils.validate_http_content_type(self, _CONTENT_TYPE_JSON)
-        utils.validate_format(self)
         utils.validate_group_name(self.get_argument(_PARAM_GROUP))
 
 
     def _decode_request(self):
-        """Decodes request."""
+        """Decodes request.
+
+        """
         self.group = self.get_argument(_PARAM_GROUP)
-        self.format = utils.decode_format(self)
         if self.request.body:
             self.query = utils.decode_json_payload(self, False)
         else:
@@ -75,33 +79,31 @@ class FetchRequestHandler(tornado.web.RequestHandler):
         """Sets response to be returned to client.
 
         """
-        if self.format == 'csv':
-            self.output = convert.to_csv(self.columns, self.metrics)
-        else:
-            self.output = {
-                'group': self.group,
-                'columns': self.columns,
-                'metrics': self.metrics
-            }
+        self.output = {
+            'group': self.group,
+            'columns': self.columns,
+            'metrics': self.metrics
+        }
 
 
     def _write_response(self, error=None):
-        """Write response output."""
-        if error:
-            handler_utils.write_response(self, error)
-        elif self.format == 'csv':
-            handler_utils.write_csv_response(self)
-        else:
-            handler_utils.write_response(self)
+        """Write response output.
+
+        """
+        handler_utils.write_response(self, error)
 
 
     def _log(self, error=None):
-        """Logs request processing completion."""
+        """Logs request processing completion.
+
+        """
         handler_utils.log("metric", self, error)
 
 
     def _process(self):
-        """Process one of the support HTTP actions."""
+        """Process one of the support HTTP actions.
+
+        """
         # Define tasks.
         tasks = {
             "green": (
@@ -124,8 +126,14 @@ class FetchRequestHandler(tornado.web.RequestHandler):
 
 
     def get(self):
+        """HTTP GET handler.
+
+        """
         self._process()
 
 
     def post(self):
+        """HTTP POST handler.
+
+        """
         self._process()

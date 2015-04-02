@@ -3,7 +3,7 @@
 """
 .. module:: test_api_ws_utils_ws.py
 
-   :copyright: @2013 IPSL (http://esdocumentation.org)
+   :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL / CeCILL
    :platform: Unix
    :synopsis: Encapsulates api web socket ws_utils tests.
