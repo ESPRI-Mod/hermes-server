@@ -37,7 +37,9 @@ class ListEndpointsRequestHandler(tornado.web.RequestHandler):
                 r'/api/1/metric/fetch_count',
                 r'/api/1/metric/fetch_columns',
                 r'/api/1/metric/fetch_list',
-                r'/api/1/metric/fetch_setup'
+                r'/api/1/metric/fetch_setup',
+                r'/api/1/metric/rename',
+                r'/api/1/metric/set_hashes'
             ],
             "ops": [
                 r'/api/1/ops/heartbeat',
