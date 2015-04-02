@@ -83,9 +83,6 @@ def delete(group_id, query=None):
     :param str group_id: ID of a metric group to be deleted.
     :param dict query: Query filter to be applied.
 
-    :returns: Names of remaining metric groups.
-    :rtype: list
-
     """
     group_id = _format_group_id(group_id)
     collection = utils.get_db_collection(_DB_NAME, group_id)
