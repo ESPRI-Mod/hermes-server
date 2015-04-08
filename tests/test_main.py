@@ -2,7 +2,7 @@
 
 """
 .. module:: test_cv.py
-   :copyright: Copyright "May 15, 2013", Earth System Documentation
+   :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
    :synopsis: Encapsulates cv tests.

@@ -2,7 +2,7 @@
 
 """
 .. module:: prodiguer.mq.utils.py
-   :copyright: Copyright "May 21, 2013", Earth System Documentation
+   :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
    :synopsis: Set of message queue utilty functions.

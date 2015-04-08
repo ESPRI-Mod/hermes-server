@@ -2,7 +2,7 @@
 
 """
 .. module:: prodiguer.utils.email.py
-   :copyright: Copyright "Feb 7, 2013", Earth System Documentation
+   :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
    :synopsis: Email utility functions.
