@@ -58,7 +58,8 @@ def write_response(handler, error=None):
         handler.clear()
         data = {
             'status': 1,
-            'error': unicode(error)
+            'error': unicode(error),
+            'error_type': unicode(type(error))
             }
     else:
         try:
