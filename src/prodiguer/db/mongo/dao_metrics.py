@@ -14,7 +14,7 @@ from collections import OrderedDict
 import pymongo
 from bson.objectid import ObjectId
 
-from metrics_formatter import hashifier
+from prodiguer.db.mongo import dao_metrics_hashifier as hashifier
 from prodiguer.db.mongo import utils
 
 
