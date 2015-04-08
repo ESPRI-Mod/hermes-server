@@ -25,12 +25,10 @@ class ListEndpointsRequestHandler(tornado.web.RequestHandler):
     def prepare(self):
         """Called at the beginning of request handling."""
         self.output = {
-            "monitoring": [
+            'endpoints': [
                 r'/api/1/monitoring/fe/setup',
                 r'/api/1/monitoring/fe/ws',
                 r'/api/1/monitoring/event',
-            ],
-            "metric": [
                 r'/api/1/metric/add',
                 r'/api/1/metric/delete',
                 r'/api/1/metric/fetch',
@@ -39,13 +37,11 @@ class ListEndpointsRequestHandler(tornado.web.RequestHandler):
                 r'/api/1/metric/fetch_list',
                 r'/api/1/metric/fetch_setup',
                 r'/api/1/metric/rename',
-                r'/api/1/metric/set_hashes'
-            ],
-            "ops": [
+                r'/api/1/metric/set_hashes',
                 r'/api/1/ops/heartbeat',
                 r'/api/1/ops/endpoints'
-            ]
-        }
+                ]
+            }
 
 
     def _write(self, error=None):

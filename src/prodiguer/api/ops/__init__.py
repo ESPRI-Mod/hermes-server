@@ -12,5 +12,4 @@
 
 """
 from prodiguer.api.ops.heartbeat import HeartbeatRequestHandler
-from prodiguer.api.ops.list_endpoints \
-	import ListEndpointsRequestHandler
+from prodiguer.api.ops.list_endpoints import ListEndpointsRequestHandler
