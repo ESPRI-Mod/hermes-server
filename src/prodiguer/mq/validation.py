@@ -90,7 +90,7 @@ def validate_correlation_id(identifier):
     try:
         uuid.UUID(identifier)
     except ValueError:
-        raise ValueError("Message correlation identifier must be UUID compatible.")
+        raise ValueError("Message correlation identifier must be UUID compatible: {}".format(identifier))
 
 
 def validate_content(content, content_encoding, content_type):

@@ -95,14 +95,18 @@ def log(msg=None, module=_DEFAULT_MODULE, level=LOG_LEVEL_INFO, app=_DEFAULT_APP
 def log_error(err,
               module=_DEFAULT_MODULE,
               app=_DEFAULT_APP,
-              institute=_DEFAULT_INSTITUTE):
+              institute=_DEFAULT_INSTITUTE,
+              format_err=True):
     """Logs a runtime error.
 
     :param err: Message for writing to log.
     :type err: Sub-class of BaseException
 
     """
-    msg = "{0} :: {1}.".format(err.__class__, err)
+    if format_err:
+        msg = "{0} :: {1}.".format(err.__class__, err)
+    else:
+        msg = err
     log(msg, module=module, level=LOG_LEVEL_ERROR, app=app, institute=institute)
 
 
@@ -499,10 +503,12 @@ def invoke(tasks, ctx=None, module=_DEFAULT_MODULE):
             break
 
 
-def invoke1(tasks, error_tasks=None, ctx=None, module=_DEFAULT_MODULE):
-    """Invokes a set of tasks and handles errors.
+def invoke_mq(agent_type, tasks, error_tasks=None, ctx=None):
+    """Invokes a set of message queue tasks and handles errors.
 
-    :param dict tasks: A set of tasks divided into green/red.
+    :param str: MQ agent type.
+    :param list tasks: A set of tasks.
+    :param list error_tasks: A set of error tasks.
     :param object ctx: Task processing context object.
 
     """
@@ -525,7 +531,6 @@ def invoke1(tasks, error_tasks=None, ctx=None, module=_DEFAULT_MODULE):
         """Invokes an individual task.
 
         """
-        # log("TASK EXECUTION: {}".format(task.__name__), module=module)
         if ctx and err:
             task(ctx, err)
         elif ctx:
@@ -541,12 +546,15 @@ def invoke1(tasks, error_tasks=None, ctx=None, module=_DEFAULT_MODULE):
             _invoke(task)
         # ... error tasks.
         except Exception as err:
+            err_msg = "{0} :: {1} :: {2} :: {3}.".format(agent_type, task, type(err), err)
+            log_error(err_msg, "MQ", format_err=False)
             try:
-                log_error(err, module)
                 for error_task in _get(error_tasks):
+                    print agent_type, "ERROR TASK", error_task
                     _invoke(error_task, err)
             except:
                 pass
+            # Escape out of main loop.
             break
         # ... abort tasks.
         else:

@@ -366,6 +366,7 @@ class Consumer(object):
         # Increment consumed count.
         self._consumed += 1
 
+        # Log.
         msg = "Received message # {0}::{1} from {2}"
         msg = msg.format(basic_deliver.delivery_tag,
                          properties.message_id,
@@ -385,7 +386,9 @@ class Consumer(object):
 
 
     def _process_message(self, props, payload):
-        """Processes message being consumed."""
+        """Processes message being consumed.
+
+        """
         ctx = self._context_type(props, payload)
         ctx.decode()
         self._callback(ctx)

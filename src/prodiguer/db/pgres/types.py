@@ -96,7 +96,7 @@ class Simulation(Entity):
     space = Column(Unicode(127))
     name = Column(Unicode(511), nullable=False)
     ensemble_member = Column(Unicode(15))
-    execution_start_date = Column(DateTime, nullable=False, default=datetime.datetime.now)
+    execution_start_date = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
     execution_end_date = Column(DateTime)
     output_start_date = Column(DateTime)
     output_end_date = Column(DateTime)
@@ -205,7 +205,7 @@ class Message(Entity):
     correlation_id_1 = Column(Unicode(63), nullable=True)
     correlation_id_2 = Column(Unicode(63), nullable=True)
     correlation_id_3 = Column(Unicode(63), nullable=True)
-    timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now)
+    timestamp = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
     timestamp_raw = Column(Unicode(63), nullable=True)
     timestamp_precision = Column(Unicode(7), nullable=False, default=u"ms")
     content_encoding = Column(Unicode(63), nullable=True, default=u"utf-8")
@@ -243,6 +243,6 @@ TYPES = type_utils.supported_types = [
 # Extend type with other fields.
 for entity_type in TYPES:
     entity_type.row_create_date = \
-        Column(DateTime, nullable=False, default=datetime.datetime.now)
+        Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
     entity_type.row_update_date = \
-        Column(DateTime, onupdate=datetime.datetime.now)
+        Column(DateTime, onupdate=datetime.datetime.utcnow)

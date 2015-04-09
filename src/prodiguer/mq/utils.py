@@ -20,7 +20,7 @@ from prodiguer.mq import constants, message
 from prodiguer.mq.consumer import Consumer
 from prodiguer.mq.producer import Producer
 from prodiguer.mq.timestamp import Timestamp
-
+from prodiguer.utils import rt
 
 
 def create_ampq_message_properties(
@@ -99,12 +99,12 @@ def create_ampq_message_properties(
 
     # Set timestamps.
     if timestamp is None:
-        timestamp = arrow.now('Europe/Paris')
+        timestamp = arrow.utcnow()
         headers['timestamp'] = unicode(timestamp)
         headers['timestamp_precision'] = 'ms'
         timestamp = int(repr(timestamp.float_timestamp).replace(".", ""))
     if 'timestamp' not in headers:
-        headers['timestamp'] = unicode(arrow.now('Europe/Paris'))
+        headers['timestamp'] = unicode(arrow.utcnow())
         headers['timestamp_precision'] = 'ms'
     if 'timestamp_precision' not in headers:
         headers['timestamp_precision'] = 'ms'
@@ -171,7 +171,6 @@ def produce(msg_source,
 def consume(exchange,
             queue,
             callback,
-            auto_persist=False,
             connection_url=None,
             consume_limit=0,
             context_type=message.Message,
@@ -182,7 +181,6 @@ def consume(exchange,
     :param str queue: Name of queue to bind to.
     :param func callback: Function to invoke when message has been handled.
 
-    :param bool auto_persist: Flag indicating whether message is to be persisted to db.
     :param str connection_url: An MQ server connection URL.
     :param int consume_limit: Limit upon number of message to be consumed.
     :param class context_type: Type of message processing context object to instantiate.
@@ -193,16 +191,16 @@ def consume(exchange,
         """Handles message being consumed.
 
         """
-        if auto_persist:
-            # Abort processing of duplicate messages.
-            try:
-                ctx.msg = persist(ctx.properties, ctx.content_raw)
-            except IntegrityError as err:
-                db.session.rollback()
-            except Exception as err:
-                print err
-            else:
-                callback(ctx)
+        # Persist message.
+        try:
+            ctx.msg = persist(ctx.properties, ctx.content_raw)
+        # Skip duplicate messages.
+        except IntegrityError:
+            db.session.rollback()
+        # Log persistence errors.
+        except Exception as err:
+            rt.log_mq_error(err)
+        # Invoke message processing callback.
         else:
             callback(ctx)
 
@@ -281,4 +279,5 @@ def persist(properties, payload):
         ts_parsed,
         ts_precision,
         ts_raw,
-        _get_header('mode'))
+        _get_header('mode')
+        )

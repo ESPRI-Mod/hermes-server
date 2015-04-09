@@ -14,7 +14,7 @@ import arrow
 
 
 # Default timezone to apply.
-_DEFAULT_TZ = 'Europe/Paris'
+_DEFAULT_TZ = 'UTC'
 
 
 class Timestamp(object):

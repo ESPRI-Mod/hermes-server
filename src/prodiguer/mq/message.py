@@ -54,10 +54,6 @@ class Message(object):
                 return json.loads(content)
             except ValueError:
                 raise Exception("json encoding error:\n{0}".format(content))
-            # try:
-            #     return convert.json_to_dict(content)
-            # except ValueError:
-            #     raise Exception("json encoding error:\n{0}".format(content))
 
         def _base64(content):
             try:

@@ -37,6 +37,13 @@ from prodiguer.db.pgres.validation import (
 from prodiguer.utils import rt
 
 
+def _log(msg, force=False):
+    """Logging helper function.
+
+    """
+    if force:
+        rt.log_db(msg)
+
 
 def _validate_create_simulation(
     activity,
@@ -222,7 +229,9 @@ def create_simulation(
 
     # Push to db.
     session.add(sim)
-    rt.log_db("Created simulation: {0}.".format(uid))
+
+    # Log.
+    _log("Created simulation: {0}.".format(uid))
 
     return sim
 
@@ -244,7 +253,9 @@ def create_simulation_configuration(uid, card):
 
     # Push to db.
     session.add(instance)
-    rt.log_db("Created simulation configuration: {0}.".format(uid))
+
+    # Log.
+    _log("Created simulation configuration: {0}.".format(uid))
 
     return instance
 
@@ -270,9 +281,11 @@ def create_simulation_state(uid, state, timestamp, info):
 
     # Push to db.
     session.add(instance)
+
+    # Log.
     msg = "Persisted simulation state to db :: {0} | {1}"
     msg = msg.format(uid, state)
-    rt.log_db(msg)
+    _log(msg)
 
     return instance
 
@@ -315,9 +328,11 @@ def create_job_state(
 
     # Push to db.
     session.add(instance)
+
+    # Log.
     msg = "Persisted job state to db :: {0} | {1} | {2}"
     msg = msg.format(simulation_uid, job_uid, state)
-    rt.log_db(msg)
+    _log(msg)
 
     return instance
 
@@ -340,10 +355,7 @@ def delete_dead_simulation_runs(hashid, uid):
     # Delete.
     for simulation in dead:
         delete_simulation(simulation.uid)
-
-    # Log.
-    msg = "Deleted dead simulations :: {}".format([i.uid for i in dead])
-    rt.log_db(msg)
+        _log("Deleting dead simulation :: {}".format(simulation.uid))
 
 
 def delete_simulation(uid):
