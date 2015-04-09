@@ -14,7 +14,7 @@ import os
 from sqlalchemy.schema import CreateSchema, DropSchema
 
 from prodiguer import cv
-from prodiguer.db import (
+from prodiguer.db.pgres import (
     session as db_session,
     types as db_types
     )
@@ -45,7 +45,7 @@ def _init_simulations():
 
     # Set simulations from simulation.json file.
     fpath = os.path.dirname(os.path.abspath(__file__))
-    fpath = os.path.join(fpath, "data")
+    fpath = os.path.join(fpath, "setup_data")
     fpath = os.path.join(fpath, "simulation.json")
     simulations = convert.json_file_to_dict(fpath)
 

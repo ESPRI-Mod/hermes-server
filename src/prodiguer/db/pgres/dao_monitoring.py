@@ -11,7 +11,7 @@
 
 
 """
-from prodiguer.db import dao, types, session
+from prodiguer.db.pgres import dao, types, session
 from prodiguer.cv.validation import (
     validate_activity,
     validate_compute_node,
@@ -22,7 +22,7 @@ from prodiguer.cv.validation import (
     validate_simulation_space,
     validate_simulation_state
     )
-from prodiguer.db.validation import (
+from prodiguer.db.pgres.validation import (
     validate_expected_state_transition_delay,
     validate_job_uid,
     validate_simulation_configuration_card,

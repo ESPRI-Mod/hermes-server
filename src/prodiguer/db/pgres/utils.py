@@ -13,7 +13,7 @@
 """
 import datetime
 
-from prodiguer.db import dao, types
+from prodiguer.db.pgres import dao, types
 
 
 

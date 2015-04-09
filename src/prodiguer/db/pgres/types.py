@@ -21,8 +21,8 @@ from sqlalchemy import (
     UniqueConstraint
     )
 
-from prodiguer.db import type_utils
-from prodiguer.db.type_utils import (
+from prodiguer.db.pgres import type_utils
+from prodiguer.db.pgres.type_utils import (
     assert_type,
     Entity,
     Convertor,

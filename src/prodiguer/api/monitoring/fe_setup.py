@@ -13,8 +13,8 @@
 """
 import tornado.web
 
-from prodiguer import db
 from prodiguer.api.utils import handler as hu
+from prodiguer.db import pgres as db
 
 
 

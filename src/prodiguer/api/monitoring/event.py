@@ -15,8 +15,8 @@ import datetime, json
 
 import tornado.web
 
-from prodiguer import db
 from prodiguer.api.utils import ws
+from prodiguer.db import pgres as db
 from prodiguer.utils import (
     config,
     rt,

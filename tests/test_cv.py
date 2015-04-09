@@ -15,7 +15,8 @@ from os.path import dirname, abspath, exists, join
 
 from sqlalchemy import inspect
 
-from prodiguer import cv, db
+from prodiguer import cv
+from prodiguer.db import pgres as db
 from . import utils as tu
 
 

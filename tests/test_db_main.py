@@ -16,7 +16,7 @@ import inspect
 
 
 def test_db_import_package():
-    from prodiguer import db
+    from prodiguer.db import pgres as db
 
     modules = [
         db,

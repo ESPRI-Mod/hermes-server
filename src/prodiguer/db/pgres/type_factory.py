@@ -16,7 +16,7 @@ import uuid
 
 from sqlalchemy import inspect
 
-from prodiguer.db import session, types
+from prodiguer.db.pgres import session, types
 from prodiguer.utils import convert, rt
 
 

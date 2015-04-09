@@ -15,12 +15,11 @@ import uuid
 import arrow, pika
 from sqlalchemy.exc import IntegrityError
 
-from prodiguer import db
+from prodiguer.db import pgres as db
 from prodiguer.mq import constants, message
 from prodiguer.mq.consumer import Consumer
 from prodiguer.mq.producer import Producer
 from prodiguer.mq.timestamp import Timestamp
-from prodiguer.utils import rt
 
 
 
