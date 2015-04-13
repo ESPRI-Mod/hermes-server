@@ -12,7 +12,7 @@
 
 """
 from . import utils as tu
-from prodiguer.api.utils import handler as handler_utils
+from prodiguer.api import utils_handler
 
 
 
@@ -22,4 +22,4 @@ _TEST_EP_SUFFIX = "/XXX"
 
 
 def test_api_ep_get_endpoint():	
-	tu.assert_string(handler_utils.get_endpoint(_TEST_EP_SUFFIX), _TEST_EP)
+	tu.assert_string(utils_handler.get_endpoint(_TEST_EP_SUFFIX), _TEST_EP)

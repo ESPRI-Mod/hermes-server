@@ -12,7 +12,7 @@
 """
 import tornado
 
-from prodiguer.api.utils import handler as handler_utils
+from prodiguer.api import utils_handler
 from prodiguer.api.metric import utils
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.utils import rt
@@ -39,12 +39,12 @@ class FetchListRequestHandler(tornado.web.RequestHandler):
             self.output = {
                 'groups': self.groups
             }
-        handler_utils.write_response(self, error)
+        utils_handler.write_response(self, error)
 
 
     def _log(self, error=None):
         """Logs request processing completion."""
-        handler_utils.log("metric", self, error)
+        utils_handler.log("metric", self, error)
 
 
     def get(self):

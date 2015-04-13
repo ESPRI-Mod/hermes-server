@@ -13,7 +13,7 @@
 """
 import tornado
 
-from prodiguer.api.utils import handler as handler_utils
+from prodiguer.api import utils_handler
 from prodiguer.utils import rt
 
 
@@ -46,12 +46,12 @@ class ListEndpointsRequestHandler(tornado.web.RequestHandler):
 
     def _write(self, error=None):
         """Write response output."""
-        handler_utils.write_response(self, error)
+        utils_handler.write_response(self, error)
 
 
     def _log(self, error=None):
         """Logs execution."""
-        handler_utils.log("ops", self, error)
+        utils_handler.log("ops", self, error)
 
 
     def get(self):

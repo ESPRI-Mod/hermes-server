@@ -15,7 +15,7 @@ import datetime, json
 
 import tornado.web
 
-from prodiguer.api.utils import ws
+from prodiguer.api import utils_ws
 from prodiguer.db import pgres as db
 from prodiguer.utils import (
     config,
@@ -116,7 +116,7 @@ class EventRequestHandler(tornado.web.RequestHandler):
         self.finish()
 
         # Escape if there are no connected clients.
-        # if not ws.get_client_count(_WS_KEY):
+        # if not utils_ws.get_client_count(_WS_KEY):
         #     return
 
         # Connect to db.
@@ -135,7 +135,7 @@ class EventRequestHandler(tornado.web.RequestHandler):
             })
 
             # Broadcast event data to clients.
-            ws.on_write(_WS_KEY, ws_data)
+            utils_ws.on_write(_WS_KEY, ws_data)
             _log("{0} event published".format(event.type))
 
         # Close db session.

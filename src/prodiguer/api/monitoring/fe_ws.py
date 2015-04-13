@@ -13,7 +13,7 @@
 """
 import tornado.websocket
 
-from prodiguer.api.utils import ws
+from prodiguer.api import utils_ws
 
 
 
@@ -29,11 +29,11 @@ class FrontEndWebSocketHandler(tornado.websocket.WebSocketHandler):
         """WS on open event handler.
 
         """
-        ws.on_connect(_WS_KEY, self)
+        utils_ws.on_connect(_WS_KEY, self)
 
 
     def on_close(self):
         """WS on close event handler.
 
         """
-        ws.on_disconnect(_WS_KEY, self)
+        utils_ws.on_disconnect(_WS_KEY, self)

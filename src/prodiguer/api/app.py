@@ -16,7 +16,7 @@ from tornado.web import Application
 
 
 from prodiguer import cv
-from prodiguer.api import metric, monitoring, ops, utils
+from prodiguer.api import metric, monitoring, ops, utils_ws
 from prodiguer.utils import config, rt
 
 
@@ -85,7 +85,7 @@ def run():
     app.listen(config.api.port)
 
     # Set web-socket keep alive.
-    utils.ws.keep_alive()
+    utils_ws.keep_alive()
 
     # Start io loop.
     rt.log_api("Ready")
