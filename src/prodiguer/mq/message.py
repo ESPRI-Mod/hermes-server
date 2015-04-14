@@ -12,8 +12,6 @@
 """
 import base64, json
 
-import pika
-
 from prodiguer.mq import constants, validation
 from prodiguer.utils import convert
 

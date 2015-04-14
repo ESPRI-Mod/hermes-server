@@ -23,9 +23,6 @@ AMPQ_EXCHANGE_TYPES = set([
 	AMPQ_EXCHANGE_TYPE_TOPIC
 	])
 
-# Default message exchange type.
-DEFAULT_EXCHANGE_TYPE = AMPQ_EXCHANGE_TYPE_TOPIC
-
 # AMPQ message delivery modes.
 AMPQ_DELIVERY_MODE_NON_PERSISTENT = 1
 AMPQ_DELIVERY_MODE_PERSISTENT = 2
@@ -35,9 +32,6 @@ AMPQ_DELIVERY_MODES = set([
 	AMPQ_DELIVERY_MODE_NON_PERSISTENT,
 	AMPQ_DELIVERY_MODE_PERSISTENT
 	])
-
-# Default delivery mode.
-DEFAULT_DELIVERY_MODE = AMPQ_DELIVERY_MODE_PERSISTENT
 
 # Message server virtual host.
 VHOST = "prodiguer"
@@ -106,9 +100,6 @@ PRODUCERS = set([
 	PRODUCER_PRODIGUER
 	])
 
-# Default message producer.
-DEFAULT_PRODUCER = PRODUCER_IGCM
-
 # Message server users.
 USER_IGCM = "libigcm-mq-user"
 USER_PRODIGUER = "prodiguer-mq-user"
@@ -130,9 +121,6 @@ APPS = set([
 	APP_SYSTEM_METRICS,
 	APP_SIMULATION_METRICS
 	])
-
-# Default application.
-DEFAULT_APP = APP_MONITORING
 
 # Message types:
 # ... general message types.
@@ -194,9 +182,6 @@ MODES = set([
 	MODE_PROD,
 	])
 
-# Default system mode.
-DEFAULT_MODE = MODE_TEST
-
 # Content types.
 CONTENT_TYPE_JSON = 'application/json'
 CONTENT_TYPE_BASE64 = 'application/base64'
@@ -209,9 +194,6 @@ CONTENT_TYPES = set([
 	CONTENT_TYPE_BASE64_JSON,
 	])
 
-# Default content type.
-DEFAULT_CONTENT_TYPE = CONTENT_TYPE_JSON
-
 # Content encodings.
 CONTENT_ENCODING_UNICODE = "utf-8"
 
@@ -219,9 +201,6 @@ CONTENT_ENCODING_UNICODE = "utf-8"
 CONTENT_ENCODINGS = set([
 	CONTENT_ENCODING_UNICODE
 	])
-
-# Default content encoding.
-DEFAULT_CONTENT_ENCODING = CONTENT_ENCODING_UNICODE
 
 # Message priorities.
 PRIORITY_LOW = 1
@@ -239,21 +218,3 @@ PRIORITIES = set([
 	PRIORITY_CRITICAL,
 	])
 
-# Default message priority.
-DEFAULT_PRIORITY = PRIORITY_NORMAL
-
-# Default publishing limit (used in automated tests).
-DEFAULT_PUBLISH_LIMIT = 1
-
-# Default publishing interval (used in automated tests).
-DEFAULT_PUBLISH_INTERVAL = 0
-
-# Default publishing frequency (used in automated tests).
-DEFAULT_PUBLISH_FREQUENCY = 1
-
-# Default message expiration.
-DEFAULT_EXPIRATION = None
-
-# Default delay (in seconds) before an MQ server connection
-# retry is attempted.
-DEFAULT_CONNECTION_REOPEN_DELAY = 5

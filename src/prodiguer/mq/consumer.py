@@ -15,7 +15,7 @@ import inspect
 import pika
 
 from prodiguer.utils import rt
-from prodiguer.mq import constants, message
+from prodiguer.mq import constants, defaults, message
 from prodiguer.utils import config
 
 
@@ -75,7 +75,7 @@ class Consumer(object):
         # Initialize properties from inputs.
         self._callback = callback
         self._connection_reopen_delay = \
-            constants.DEFAULT_CONNECTION_REOPEN_DELAY
+            defaults.DEFAULT_CONNECTION_REOPEN_DELAY
         self._consume_limit = consume_limit
         self._context_type = context_type
         self._exchange = exchange

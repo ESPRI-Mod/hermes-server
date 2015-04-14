@@ -22,21 +22,32 @@ def validate_ampq_basic_properties(props):
     """Validates AMPQ basic properties associated with message being processed.
 
     """
-    # print "TODO - refoactor prodiguer.mq.message.py_validate_ampq_basic_properties"
     if not isinstance(props, pika.BasicProperties):
         raise ValueError("AMPQ message basic properties is invalid.")
+
+    # Validate application id.
+    validate_app_id(props.app_id)
+    validate_cluster_id(props.cluster_id)
+    validate_content_encoding(props.content_encoding)
+    validate_content_type(props.content_type)
+    validate_delivery_mode(props.delivery_mode)
+    validate_message_type(props.message_type)
+    validate_message_id(props.message_id)
+    validate_delivery_mode(props.delivery_mode)
+    validate_delivery_mode(props.delivery_mode)
+
+    # Validate mode.
     if 'mode' not in props.headers:
         msg = "[mode] is a required header field."
         raise ValueError(msg)
-    if props.headers['mode'] not in constants.MODES:
-        msg = "Unsupported mode: {0}."
-        raise ValueError(msg.format(props.headers['mode']))
+    validate_mode(props.headers['mode'])
+
+    # Validate producer.
     if 'producer_id' not in props.headers:
         msg = "[producer_id] is a required header field."
         raise ValueError(msg)
-    if props.headers['producer_id'] not in constants.PRODUCERS:
-        msg = "Unsupported producer_id: {0}."
-        raise ValueError(msg.format(props.headers['producer_id']))
+    validate_producer_id(props.headers['producer_id'])
+
 
 
 def validate_app_id(identifier):
@@ -103,8 +114,26 @@ def validate_content(content, content_encoding, content_type):
     """
     if content is None or not len(content):
         raise TypeError('Message content is empty.')
+    validate_content_encoding(content_encoding)
+    validate_content_type(content_type)
+
+
+def validate_content_encoding(content_encoding):
+    """Validates message content encoding.
+
+    :param str content_encoding: Message content encoding.
+
+    """
     if content_encoding not in constants.CONTENT_ENCODINGS:
         raise TypeError('Message content encoding is unknown.')
+
+
+def validate_content_type(content_type):
+    """Validates message content type.
+
+    :param str content_type: Message content type.
+
+    """
     if content_type not in constants.CONTENT_TYPES:
         raise TypeError('Message content type is unknown.')
 

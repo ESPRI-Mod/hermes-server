@@ -12,7 +12,7 @@
 """
 import pika
 
-from prodiguer.mq import constants
+from prodiguer.mq import defaults
 from prodiguer.utils import config, rt
 
 
@@ -32,8 +32,8 @@ class Producer(object):
                  msg_source,
                  connection_url=None,
                  enable_confirmations=True,
-                 publish_limit=constants.DEFAULT_PUBLISH_LIMIT,
-                 publish_interval=constants.DEFAULT_PUBLISH_INTERVAL,
+                 publish_limit=defaults.DEFAULT_PUBLISH_LIMIT,
+                 publish_interval=defaults.DEFAULT_PUBLISH_INTERVAL,
                  verbose=False):
         """Setup the example publisher object, passing in the URL we will use
         to connect to RabbitMQ.
@@ -52,13 +52,11 @@ class Producer(object):
             connection_url=config.mq.connections.main
 
         self._msg_source = msg_source
-        self._connection_reopen_delay = \
-            constants.DEFAULT_CONNECTION_REOPEN_DELAY
+        self._connection_reopen_delay = defaults.DEFAULT_CONNECTION_REOPEN_DELAY
         self._enable_confirmations = enable_confirmations
         self._publish_limit = publish_limit
         self._publish_interval = publish_interval
-        self._stop_ioloop_on_disconnect = \
-            not (self._connection_reopen_delay > 0)
+        self._stop_ioloop_on_disconnect = not (self._connection_reopen_delay > 0)
         self._url = connection_url
         self._verbose = verbose
 

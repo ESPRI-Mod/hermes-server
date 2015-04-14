@@ -16,7 +16,7 @@ import arrow, pika
 from sqlalchemy.exc import IntegrityError
 
 from prodiguer.db import pgres as db
-from prodiguer.mq import constants, message
+from prodiguer.mq import constants, defaults, message
 from prodiguer.mq.consumer import Consumer
 from prodiguer.mq.producer import Producer
 from prodiguer.mq.timestamp import Timestamp
@@ -31,13 +31,13 @@ def create_ampq_message_properties(
     message_id=None,
     headers=None,
     cluster_id=None,
-    content_encoding=constants.DEFAULT_CONTENT_ENCODING,
-    content_type=constants.DEFAULT_CONTENT_TYPE,
+    content_encoding=defaults.DEFAULT_CONTENT_ENCODING,
+    content_type=defaults.DEFAULT_CONTENT_TYPE,
     correlation_id=None,
-    delivery_mode = constants.DEFAULT_DELIVERY_MODE,
-    expiration=constants.DEFAULT_EXPIRATION,
-    mode=constants.DEFAULT_MODE,
-    priority=constants.DEFAULT_PRIORITY,
+    delivery_mode = defaults.DEFAULT_DELIVERY_MODE,
+    expiration=defaults.DEFAULT_EXPIRATION,
+    mode=defaults.DEFAULT_MODE,
+    priority=defaults.DEFAULT_PRIORITY,
     reply_to=None,
     timestamp=None):
     """Factory function to return set of AMQP message properties.
@@ -141,8 +141,8 @@ def create_ampq_message_properties(
 
 def produce(msg_source,
             connection_url=None,
-            publish_limit=constants.DEFAULT_PUBLISH_LIMIT,
-            publish_interval=constants.DEFAULT_PUBLISH_INTERVAL,
+            publish_limit=defaults.DEFAULT_PUBLISH_LIMIT,
+            publish_interval=defaults.DEFAULT_PUBLISH_INTERVAL,
             verbose=False):
     """Publishes message(s) to MQ server.
 

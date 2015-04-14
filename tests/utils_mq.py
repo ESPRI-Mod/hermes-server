@@ -11,11 +11,9 @@
 .. moduleauthor:: IPSL (ES-DOC) <dev@esdocumentation.org>
 
 """
-import logging
-
 import pika
 
-from prodiguer.mq import constants
+from prodiguer.mq import constants, defaults
 
 from . import utils as tu
 
@@ -24,14 +22,14 @@ from . import utils as tu
 def assert_msg_props(props,
                      app_id=constants.APP_SMON,
                      cluster_id=None,
-                     content_encoding=constants.DEFAULT_CONTENT_ENCODING,
-                     content_type=constants.DEFAULT_CONTENT_TYPE,
+                     content_encoding=defaults.DEFAULT_CONTENT_ENCODING,
+                     content_type=defaults.DEFAULT_CONTENT_TYPE,
                      correlation_id=None,
                      delivery_mode=constants.AMPQ_DELIVERY_MODE_PERSISTENT,
                      expiration=None,
                      headers={},
                      message_id=None,
-                     priority=constants.DEFAULT_PRIORITY,
+                     priority=defaults.DEFAULT_PRIORITY,
                      reply_to=None,
                      timestamp=None,
                      type_id=None,
