@@ -14,6 +14,7 @@ import datetime, uuid
 
 import pika
 
+from prodiguer.cv import validation as cv_validator
 from prodiguer.mq import constants, timestamp as Timestamp
 
 
@@ -52,8 +53,8 @@ def validate_app_id(identifier):
     :param str identifier: A Messaging application identifier.
 
     """
-    if identifier not in constants.APPS:
-        raise ValueError('Message application is unknown: {}'.format(identifier))
+    # Delegate to cv validator.
+    cv_validator.validate_message_application(identifier)
 
 
 def validate_cluster_id(identifier):
@@ -63,6 +64,26 @@ def validate_cluster_id(identifier):
 
     """
     # Not using clusters at this point in time.
+    pass
+
+
+def validate_expiration(expiration):
+    """Validates a message expiration delta.
+
+    :param int expiration: A message expiration delta.
+
+    """
+    # Not using expiration deltas at this point in time.
+    pass
+
+
+def validate_reply_to(reply_to):
+    """Validates a message RPC callback name.
+
+    :param str reply_to: A message RPC callback name.
+
+    """
+    # Not using RPC callbacks at this point in time.
     pass
 
 
@@ -78,14 +99,24 @@ def validate_message_id(identifier):
         raise ValueError("Message identifier must be UUID compatible.")
 
 
+def validate_priority(priority):
+    """Validates a messaging producer identifier.
+
+    :param int priority: A message priority.
+
+    """
+    if priority not in constants.PRIORITIES:
+        raise ValueError('Message priority is unknown: {}'.format(priority))
+
+
 def validate_producer_id(identifier):
     """Validates a messaging producer identifier.
 
     :param str identifier: A Messaging producer identifier.
 
     """
-    if identifier not in constants.PRODUCERS:
-        raise ValueError('Message producer is unknown: {}'.format(identifier))
+    # Delegate to cv validator.
+    cv_validator.validate_message_producer(identifier)
 
 
 def validate_type(identifier):
@@ -94,8 +125,8 @@ def validate_type(identifier):
     :param str identifier: A Messaging type identifier.
 
     """
-    if identifier not in constants.TYPES:
-        raise ValueError('Message type is unknown: {}'.format(identifier))
+    # Delegate to cv validator.
+    cv_validator.validate_message_type(identifier)
 
 
 def validate_correlation_id(identifier):
@@ -188,5 +219,5 @@ def validate_user_id(identifier):
     :param str identifier: Message user id, e.g. libl-igcm-user.
 
     """
-    if identifier not in constants.USERS:
-        raise ValueError('Message user id is unknown: {}'.format(identifier))
+    # Delegate to cv validator.
+    cv_validator.validate_message_user(identifier)

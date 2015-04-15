@@ -31,9 +31,6 @@ DEFAULT_PUBLISH_LIMIT = 1
 # Default publishing interval (used in automated tests).
 DEFAULT_PUBLISH_INTERVAL = 0
 
-# Default message expiration.
-DEFAULT_EXPIRATION = None
-
 # Default delay (in seconds) before an MQ server connection
 # retry is attempted.
 DEFAULT_CONNECTION_REOPEN_DELAY = 5

@@ -16,7 +16,7 @@ import arrow, pika
 from sqlalchemy.exc import IntegrityError
 
 from prodiguer.db import pgres as db
-from prodiguer.mq import constants, defaults, message
+from prodiguer.mq import defaults, message, validation
 from prodiguer.mq.consumer import Consumer
 from prodiguer.mq.producer import Producer
 from prodiguer.mq.timestamp import Timestamp
@@ -35,7 +35,7 @@ def create_ampq_message_properties(
     content_type=defaults.DEFAULT_CONTENT_TYPE,
     correlation_id=None,
     delivery_mode = defaults.DEFAULT_DELIVERY_MODE,
-    expiration=defaults.DEFAULT_EXPIRATION,
+    expiration=None,
     priority=defaults.DEFAULT_PRIORITY,
     reply_to=None,
     timestamp=None
@@ -61,59 +61,51 @@ def create_ampq_message_properties(
     :returns pika.BasicProperties: Set of AMPQ message basic properties.
 
     """
-    # Validate inputs.
-    if producer_id not in constants.PRODUCERS:
-        msg = "Unsupported producer identifier: {0}."
-        raise ValueError(msg.format(producer_id))
-    if app_id not in constants.APPS:
-        msg = "Unsupported application identifier: {0}."
-        raise ValueError(msg.format(app_id))
-    if message_type not in constants.TYPES:
-        msg = "Unsupported message type identifier: {0}."
-        raise ValueError(msg.format(message_type))
-    if user_id not in constants.USERS:
-        msg = "Unsupported user identifier: {0}."
-        raise ValueError(msg.format(user_id))
-    if content_encoding not in constants.CONTENT_ENCODINGS:
-        msg = "Unsupported content encoding: {0}."
-        raise ValueError(msg.format(content_encoding))
-    if content_type not in constants.CONTENT_TYPES:
-        msg = "Unsupported content type: {0}."
-        raise ValueError(msg.format(content_type))
-    if delivery_mode not in constants.AMPQ_DELIVERY_MODES:
-        msg = "Unsupported delivery mode: {0}."
-        raise ValueError(msg.format(delivery_mode))
-    if priority not in constants.PRIORITIES:
-        msg = "Unsupported priority: {0}."
-        raise ValueError(msg.format(priority))
-
     # Override null inputs.
     if headers is None:
         headers = {}
     if message_id is None:
         message_id = unicode(uuid.uuid4())
 
+    # Validate inputs.
+    validation.validate_app_id(app_id)
+    validation.validate_cluster_id(cluster_id)
+    validation.validate_content_encoding(content_encoding)
+    validation.validate_content_type(content_type)
+    if correlation_id:
+        validation.validate_correlation_id(correlation_id)
+    validation.validate_delivery_mode(delivery_mode)
+    validation.validate_expiration(expiration)
+    validation.validate_message_id(message_id)
+    validation.validate_priority(priority)
+    validation.validate_producer_id(producer_id)
+    validation.validate_reply_to(reply_to)
+    validation.validate_type(message_type)
+    validation.validate_user_id(user_id)
+
     # Set timestamps.
+    # ... if provided then use.
     if timestamp is None:
         timestamp = arrow.utcnow()
         headers['timestamp'] = unicode(timestamp)
         headers['timestamp_precision'] = 'ms'
         timestamp = int(repr(timestamp.float_timestamp).replace(".", ""))
+    # ... if timestamp not in header then inject.
     if 'timestamp' not in headers:
         headers['timestamp'] = unicode(arrow.utcnow())
         headers['timestamp_precision'] = 'ms'
+    # ... if precision not in header then inject.
     if 'timestamp_precision' not in headers:
         headers['timestamp_precision'] = 'ms'
+
+    # Set other headers.
+    if 'producer_id' not in headers:
+        headers['producer_id'] = producer_id
 
     # Remove null headers.
     for key, value in headers.iteritems():
         if value is None:
             del headers[key]
-
-    # Set default headers.
-    headers.update({
-        "producer_id": producer_id
-    })
 
     # Return a pika BasicProperties instance (follows AMPQ protocol).
     return pika.BasicProperties(
@@ -134,11 +126,13 @@ def create_ampq_message_properties(
         )
 
 
-def produce(msg_source,
-            connection_url=None,
-            publish_limit=defaults.DEFAULT_PUBLISH_LIMIT,
-            publish_interval=defaults.DEFAULT_PUBLISH_INTERVAL,
-            verbose=False):
+def produce(
+    msg_source,
+    connection_url=None,
+    publish_limit=defaults.DEFAULT_PUBLISH_LIMIT,
+    publish_interval=defaults.DEFAULT_PUBLISH_INTERVAL,
+    verbose=False
+    ):
     """Publishes message(s) to MQ server.
 
     :param msg_source: Source of messages for publishing.
@@ -163,19 +157,20 @@ def produce(msg_source,
         producer.stop()
 
 
-def consume(exchange,
-            queue,
-            callback,
-            connection_url=None,
-            consume_limit=0,
-            context_type=message.Message,
-            verbose=False):
+def consume(
+    exchange,
+    queue,
+    callback,
+    connection_url=None,
+    consume_limit=0,
+    context_type=message.Message,
+    verbose=False
+    ):
     """Consumes message(s) from an MQ server.
 
     :param str exchange: Name of an exchange to bind to.
     :param str queue: Name of queue to bind to.
     :param func callback: Function to invoke when message has been handled.
-
     :param str connection_url: An MQ server connection URL.
     :param int consume_limit: Limit upon number of message to be consumed.
     :param class context_type: Type of message processing context object to instantiate.

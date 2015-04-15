@@ -20,7 +20,7 @@ from . import utils as tu
 
 
 def assert_msg_props(props,
-                     app_id=constants.APP_SMON,
+                     app_id=constants.APP_MONITORING,
                      cluster_id=None,
                      content_encoding=defaults.DEFAULT_CONTENT_ENCODING,
                      content_type=defaults.DEFAULT_CONTENT_TYPE,

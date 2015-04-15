@@ -47,14 +47,15 @@ def validate_term_name(term_type, term_name):
     """Validates a term name.
 
     """
-    # Format inputs.
-    term_type = formatter.format_term_type(term_type)
-    term_name = formatter.format_term_name(term_name)
+    # Ensure cache is loaded.
+    cache.load()
 
     # Validate term set.
+    term_type = formatter.format_term_type(term_type)
     validate_term_type(term_type)
 
     # Match term either by name or synonyms.
+    term_name = formatter.format_term_name(term_name)
     for term in cache.get_termset(term_type):
         for is_matched in _NAME_MATCHING_PREDICATES:
             if is_matched(term, term_name):
@@ -68,6 +69,9 @@ def validate_term_type(term_type):
     """Validates that a term type is supported.
 
     """
+    # Ensure cache is loaded.
+    cache.load()
+
     term_type = formatter.format_term_type(term_type)
     if term_type not in constants.TERM_TYPESET:
         raise exceptions.TermTypeError(term_type)
