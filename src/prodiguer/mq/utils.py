@@ -36,10 +36,10 @@ def create_ampq_message_properties(
     correlation_id=None,
     delivery_mode = defaults.DEFAULT_DELIVERY_MODE,
     expiration=defaults.DEFAULT_EXPIRATION,
-    mode=defaults.DEFAULT_MODE,
     priority=defaults.DEFAULT_PRIORITY,
     reply_to=None,
-    timestamp=None):
+    timestamp=None
+    ):
     """Factory function to return set of AMQP message properties.
 
     :param str user_id: ID of AMPQ user account under which messages are being dispatched.
@@ -54,7 +54,6 @@ def create_ampq_message_properties(
     :param str correlation_id: Application correlation identifier.
     :param int delivery_mode: Message delivery mode (2 = with acknowledgement).
     :param int expiration: Ticks until message will no be considered as active.
-    :param str mode: Messaging mode (dev|test|prod).
     :param int priority: Messaging priority.
     :param str reply_to: Messaging RPC callback.
     :param str timestamp: Timestamp.
@@ -84,9 +83,6 @@ def create_ampq_message_properties(
     if delivery_mode not in constants.AMPQ_DELIVERY_MODES:
         msg = "Unsupported delivery mode: {0}."
         raise ValueError(msg.format(delivery_mode))
-    if mode not in constants.MODES:
-        msg = "Unsupported mode: {0}."
-        raise ValueError(msg.format(mode))
     if priority not in constants.PRIORITIES:
         msg = "Unsupported priority: {0}."
         raise ValueError(msg.format(priority))
@@ -116,7 +112,6 @@ def create_ampq_message_properties(
 
     # Set default headers.
     headers.update({
-        "mode": mode,
         "producer_id": producer_id
     })
 
@@ -278,6 +273,5 @@ def persist(properties, payload):
         _get_header('correlation_id_3'),
         ts_parsed,
         ts_precision,
-        ts_raw,
-        _get_header('mode')
+        ts_raw
         )

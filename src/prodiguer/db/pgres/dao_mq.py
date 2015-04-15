@@ -29,27 +29,28 @@ def _validate_create_message(
     correlation_id_3,
     timestamp,
     timestamp_precision,
-    timestamp_raw,
-    mode):
+    timestamp_raw
+    ):
     """Validates create message inputs.
 
     """
     from prodiguer.mq import validation as msg_validation
 
-    msg_validation.validate_uid(uid)
-    msg_validation.validate_user_id(user_id)
     msg_validation.validate_app_id(app_id)
-    msg_validation.validate_producer_id(producer_id)
-    msg_validation.validate_type_id(type_id)
+    msg_validation.validate_content(content)
+    msg_validation.validate_content_encoding(content_encoding)
+    msg_validation.validate_content_type(content_type)
     if correlation_id_1:
         msg_validation.validate_correlation_id(correlation_id_1)
     if correlation_id_2:
         msg_validation.validate_correlation_id(correlation_id_2)
     if correlation_id_3:
         msg_validation.validate_correlation_id(correlation_id_3)
-    msg_validation.validate_content(content, content_encoding, content_type)
-    msg_validation.validate_timestamp(timestamp, timestamp_precision, timestamp_raw)
-    msg_validation.validate_mode(mode)
+    msg_validation.validate_message_id(uid)
+    msg_validation.validate_producer_id(producer_id)
+    msg_validation.validate_timestamp_info(timestamp, timestamp_precision, timestamp_raw)
+    msg_validation.validate_type(type_id)
+    msg_validation.validate_user_id(user_id)
 
 
 def create_message(
@@ -66,8 +67,8 @@ def create_message(
     correlation_id_3=None,
     timestamp=None,
     timestamp_precision=None,
-    timestamp_raw=None,
-    mode=None):
+    timestamp_raw=None
+    ):
     """Creates a new message record in db.
 
     :param str uid: Message unique identifer.
@@ -84,7 +85,6 @@ def create_message(
     :param datetime.datetime timestamp: Message timestamp.
     :param str timestamp_precision: Message timestamp precision (ns | ms).
     :param str timestamp_raw: Message raw timestamp.
-    :param str mode: Message dispatch mode.
 
     :returns: Newly created message.
     :rtype: types.Message
@@ -105,8 +105,7 @@ def create_message(
         correlation_id_3,
         timestamp,
         timestamp_precision,
-        timestamp_raw,
-        mode
+        timestamp_raw
         )
 
     # Instantiate instance.
@@ -118,7 +117,6 @@ def create_message(
     msg.correlation_id_1 = correlation_id_1
     msg.correlation_id_2 = correlation_id_2
     msg.correlation_id_3 = correlation_id_3
-    msg.mode = mode
     msg.producer_id = producer_id
     if timestamp is not None:
         msg.timestamp = timestamp

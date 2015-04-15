@@ -197,7 +197,6 @@ class Message(Entity):
     producer_id = Column(Unicode(63), nullable=False)
     type_id = Column(Unicode(63), nullable=False)
     user_id = Column(Unicode(63), nullable=False)
-    mode = Column(Unicode(15), nullable=True)
     uid = Column(Unicode(63),
                  nullable=False,
                  unique=True,

@@ -12,3 +12,5 @@
 
 """
 from prodiguer.api.app import run
+from prodiguer.api import utils_handler as handler_utils
+from prodiguer.api import utils_ws as ws_utils

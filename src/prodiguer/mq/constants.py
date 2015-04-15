@@ -170,18 +170,6 @@ TIMESTAMP_PRECISIONS = set([
 	TIMESTAMP_PRECISION_MS
 	])
 
-# Message modes.
-MODE_DEV = 'dev'
-MODE_TEST = 'test'
-MODE_PROD = 'prod'
-
-# All modes.
-MODES = set([
-	MODE_DEV,
-	MODE_TEST,
-	MODE_PROD,
-	])
-
 # Content types.
 CONTENT_TYPE_JSON = 'application/json'
 CONTENT_TYPE_BASE64 = 'application/base64'

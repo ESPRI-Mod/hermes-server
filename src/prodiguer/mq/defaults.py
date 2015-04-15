@@ -16,9 +16,6 @@ from prodiguer.mq import constants
 # Default delivery mode.
 DEFAULT_DELIVERY_MODE = constants.AMPQ_DELIVERY_MODE_PERSISTENT
 
-# Default system mode.
-DEFAULT_MODE = constants.MODE_TEST
-
 # Default content type.
 DEFAULT_CONTENT_TYPE = constants.CONTENT_TYPE_JSON
 

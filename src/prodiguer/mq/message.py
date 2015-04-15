@@ -13,7 +13,7 @@
 import base64, json
 
 from prodiguer.mq import constants, validation
-from prodiguer.utils import convert
+from prodiguer.utils import convert, config
 
 
 
@@ -36,7 +36,7 @@ class Message(object):
         self.exchange = exchange
         self.msg = None
         self.props = self.properties = props
-        self.routing_key = "{0}.{1}.{2}.{3}.{4}".format(props.headers['mode'],
+        self.routing_key = "{0}.{1}.{2}.{3}.{4}".format(config.deploymentMode,
                                                         props.user_id,
                                                         props.headers['producer_id'],
                                                         props.app_id,
