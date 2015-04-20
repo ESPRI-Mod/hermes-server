@@ -110,23 +110,26 @@ def create_message(
 
     # Instantiate instance.
     msg = types.Message()
-    msg.app_id = app_id
+    msg.app_id = unicode(app_id)
     msg.content = content
-    msg.content_encoding = content_encoding
-    msg.content_type = content_type
-    msg.correlation_id_1 = correlation_id_1
-    msg.correlation_id_2 = correlation_id_2
-    msg.correlation_id_3 = correlation_id_3
-    msg.producer_id = producer_id
+    msg.content_encoding = unicode(content_encoding)
+    msg.content_type = unicode(content_type)
+    if correlation_id_1:
+        msg.correlation_id_1 = unicode(correlation_id_1)
+    if correlation_id_2:
+        msg.correlation_id_2 = unicode(correlation_id_2)
+    if correlation_id_3:
+        msg.correlation_id_3 = unicode(correlation_id_3)
+    msg.producer_id = unicode(producer_id)
     if timestamp is not None:
         msg.timestamp = timestamp
     if timestamp_precision is not None:
-        msg.timestamp_precision = timestamp_precision
+        msg.timestamp_precision = unicode(timestamp_precision)
     if timestamp_raw is not None:
-        msg.timestamp_raw = timestamp_raw
-    msg.type_id = type_id
-    msg.uid = uid
-    msg.user_id = user_id
+        msg.timestamp_raw = unicode(timestamp_raw)
+    msg.type_id = unicode(type_id)
+    msg.uid = unicode(uid)
+    msg.user_id = unicode(user_id)
 
     # Push to db.
     session.add(msg)

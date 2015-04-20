@@ -72,14 +72,24 @@ def validate_simulation_configuration_card(card):
         raise ValueError("Simulation configuration card is empty.")
 
 
-def validate_simulation_execution_start_date(date):
-    """Validate simulation execution start date.
+def validate_execution_start_date(date):
+    """Validate an execution start date.
 
-    :param date: A simulation execution start date.
+    :param date: An execution start date.
     :type date: str | datetime.datetime
 
     """
     _validate_date(date, 'Execution start date')
+
+
+def validate_execution_end_date(date):
+    """Validate an execution end date.
+
+    :param date: An execution end date.
+    :type date: str | datetime.datetime
+
+    """
+    _validate_date(date, 'Execution end date')
 
 
 def validate_simulation_state_timestamp(date):
@@ -150,10 +160,31 @@ def validate_job_uid(identifier):
     _validate_uid(identifier, "Job uid")
 
 
-def validate_expected_state_transition_delay(delay):
-    """Validates an expected state transition delay time step.
+def validate_job_state_timestamp(date):
+    """Validate job state timestamp.
 
-    :param int delay: Number of seconds before a state transition warning needs to be raised.
+    :param date: A job state timestamp.
+    :type date: str | datetime.datetime
 
     """
-    _validate_int(delay, "Expected state transition delay")
+    _validate_date(date, 'Job state timestamp')
+
+
+def validate_job_state_info(info):
+    """Validate job state info.
+
+    :param str info: A job state information.
+
+    """
+    if info is None or len(info.strip()) == 0:
+        raise TypeError('Job state info is undefined')
+
+
+def validate_expected_completion_delay(delay):
+    """Validates an expected completion transition delay time step.
+
+    :param int delay: Number of seconds before a completion warning needs to be raised.
+
+    """
+    if delay:
+        _validate_int(delay, "Expected completion delay")

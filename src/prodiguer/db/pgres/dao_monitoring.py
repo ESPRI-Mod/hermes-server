@@ -11,29 +11,12 @@
 
 
 """
+import datetime
+
 from prodiguer.db.pgres import dao, types, session
-from prodiguer.cv.validation import (
-    validate_activity,
-    validate_compute_node,
-    validate_compute_node_login,
-    validate_compute_node_machine,
-    validate_experiment,
-    validate_model,
-    validate_simulation_space,
-    validate_simulation_state
-    )
-from prodiguer.db.pgres.validation import (
-    validate_expected_state_transition_delay,
-    validate_job_uid,
-    validate_simulation_configuration_card,
-    validate_simulation_execution_start_date,
-    validate_simulation_name,
-    validate_simulation_output_end_date,
-    validate_simulation_output_start_date,
-    validate_simulation_state_info,
-    validate_simulation_state_timestamp,
-    validate_simulation_uid
-    )
+from prodiguer.cv import validation as cv_validator
+from prodiguer.cv import constants as cv_constants
+from prodiguer.db.pgres import validation as db_validator
 from prodiguer.utils import rt
 
 
@@ -61,59 +44,64 @@ def _validate_create_simulation(
     """Validates create simulation inputs.
 
     """
-    # Validate cv terms.
-    validate_activity(activity)
-    validate_compute_node(compute_node)
-    validate_compute_node_login(compute_node_login)
-    validate_compute_node_machine(compute_node_machine)
-    validate_experiment(experiment)
-    validate_model(model)
-    validate_simulation_space(space)
-
-    # Validate other fields.
-    validate_simulation_execution_start_date(execution_start_date)
-    validate_simulation_name(name)
-    validate_simulation_output_start_date(output_start_date)
-    validate_simulation_output_end_date(output_end_date)
-    validate_simulation_uid(uid)
+    cv_validator.validate_activity(activity)
+    cv_validator.validate_compute_node(compute_node)
+    cv_validator.validate_compute_node_login(compute_node_login)
+    cv_validator.validate_compute_node_machine(compute_node_machine)
+    cv_validator.validate_experiment(experiment)
+    cv_validator.validate_model(model)
+    cv_validator.validate_simulation_space(space)
+    db_validator.validate_execution_start_date(execution_start_date)
+    db_validator.validate_simulation_name(name)
+    db_validator.validate_simulation_output_start_date(output_start_date)
+    db_validator.validate_simulation_output_end_date(output_end_date)
+    db_validator.validate_simulation_uid(uid)
 
 
 def _validate_create_simulation_configuration(uid, card):
     """Validates create simulation configuration inputs.
 
     """
-    validate_simulation_uid(uid)
-    validate_simulation_configuration_card(card)
+    db_validator.validate_simulation_uid(uid)
+    db_validator.validate_simulation_configuration_card(card)
 
 
 def _validate_create_simulation_state(uid, state, timestamp, info):
     """Validates create simulation state inputs.
 
     """
-    validate_simulation_uid(uid)
-    validate_simulation_state(state)
-    validate_simulation_state_timestamp(timestamp)
-    validate_simulation_state_info(info)
+    cv_validator.validate_simulation_state(state)
+    db_validator.validate_simulation_state_info(info)
+    db_validator.validate_simulation_state_timestamp(timestamp)
+    db_validator.validate_simulation_uid(uid)
 
 
-def _validate_create_job_state(
+def _validate_create_job(
     simulation_uid,
     job_uid,
-    state,
-    timestamp,
-    info,
-    expected_transition_delay=None
+    execution_start_date,
+    expected_completion_delay
     ):
-    """Validates create job state inputs.
+    """Validates create job inputs.
 
     """
-    validate_simulation_uid(simulation_uid)
-    validate_job_uid(job_uid)
-    validate_simulation_state(state)
-    validate_simulation_state_timestamp(timestamp)
-    validate_simulation_state_info(info)
-    if expected_transition_delay:
-        validate_expected_state_transition_delay(expected_transition_delay)
+    db_validator.validate_job_uid(job_uid)
+    db_validator.validate_simulation_uid(simulation_uid)
+    db_validator.validate_execution_start_date(execution_start_date)
+    db_validator.validate_expected_completion_delay(expected_completion_delay)
+
+
+def _validate_update_job_status(
+    job_uid,
+    timestamp,
+    new_state
+    ):
+    """Validates update job status inputs.
+
+    """
+    db_validator.validate_job_uid(job_uid)
+    db_validator.validate_execution_end_date(timestamp)
+    cv_validator.validate_job_state(new_state)
 
 
 def retrieve_simulation(uid):
@@ -130,6 +118,34 @@ def retrieve_simulation(uid):
     return dao.get_by_facet(types.Simulation, qfilter=qfilter)
 
 
+def retrieve_simulation_jobs(uid):
+    """Retrieves job details from db.
+
+    :param str uid: UID of simulation.
+
+    :returns: List of jobs associated with a simulation.
+    :rtype: types.monitoring.Job
+
+    """
+    qfilter = types.Job.simulation_uid == unicode(uid)
+
+    return dao.get_by_facet(types.Job, qfilter=qfilter, get_iterable=True)
+
+
+def retrieve_job(uid):
+    """Retrieves job details from db.
+
+    :param str uid: UID of job.
+
+    :returns: Job details.
+    :rtype: types.monitoring.Job
+
+    """
+    qfilter = types.Job.job_uid == unicode(uid)
+
+    return dao.get_by_facet(types.Job, qfilter=qfilter)
+
+
 def retrieve_simulation_states(uid):
     """Retrieves simulation states from db.
 
@@ -144,22 +160,6 @@ def retrieve_simulation_states(uid):
         types.SimulationState.simulation_uid==unicode(uid),
         types.SimulationState.timestamp.desc(),
         True)
-
-
-def get_latest_simulation_state_change(uid):
-    """Returns latest simulation state change entry.
-
-    :param str uid: Simulation unique identifier.
-
-    :returns: Most recent simulation state change entry.
-    :rtype: types.SimulationState
-
-    """
-    return dao.get_by_facet(
-        types.SimulationState,
-        types.SimulationState.simulation_uid==unicode(uid),
-        types.SimulationState.timestamp.desc(),
-        False)
 
 
 def create_simulation(
@@ -290,48 +290,81 @@ def create_simulation_state(uid, state, timestamp, info):
     return instance
 
 
-def create_job_state(
+def create_job(
     simulation_uid,
     job_uid,
-    state,
-    timestamp,
-    info,
-    expected_transition_delay=None
+    execution_start_date,
+    expected_completion_delay
     ):
-    """Creates a new job state record in db.
+    """Creates a new job record in db.
 
     :param str simulation_uid: Simulation UID.
     :param str job_uid: Job UID.
-    :param str state: Execution state, e.g. COMPLETE.
-    :param datetime.datetime timestamp: State timestamp.
-    :param str info: Short contextual description of state change.
+    :param datetime execution_start_date: Simulation start date.
+    :param int expected_completion_delay: Delay before job completion is considered to be late.
 
     """
     # Validate inputs.
-    _validate_create_job_state(
+    _validate_create_job(
         simulation_uid,
-        job_uid, state,
-        timestamp,
-        info,
-        expected_transition_delay
+        job_uid,
+        execution_start_date,
+        expected_completion_delay
         )
 
     # Instantiate instance.
-    instance = types.SimulationState()
-    instance.info = unicode(info)
+    instance = types.Job()
     instance.job_uid = unicode(job_uid)
     instance.simulation_uid = unicode(simulation_uid)
-    instance.state = unicode(state)
-    instance.timestamp = timestamp
-    instance.expected_transition_delay = None if not expected_transition_delay else \
-                                         int(expected_transition_delay)
+    instance.execution_start_date = execution_start_date
+    instance.execution_state = cv_constants.JOB_STATE_RUNNING
+    instance.expected_execution_end_date = \
+        execution_start_date + datetime.timedelta(seconds=int(expected_completion_delay))
 
     # Push to db.
     session.add(instance)
 
     # Log.
-    msg = "Persisted job state to db :: {0} | {1} | {2}"
-    msg = msg.format(simulation_uid, job_uid, state)
+    msg = "Persisted job to db :: {0} | {1}"
+    msg = msg.format(simulation_uid, job_uid)
+    _log(msg)
+
+    return instance
+
+
+def update_job_status(
+    job_uid,
+    timestamp,
+    new_state
+    ):
+    """Updates the status of a job record in db.
+
+    :param str job_uid: Job UID.
+    :param datetime timestamp: Status update timestamp.
+    :param str new_state: New exeution status (COMPLETE | ERROR).
+
+    """
+    # Validate inputs.
+    _validate_update_job_status(
+        job_uid,
+        timestamp,
+        new_state
+        )
+
+    # Retrieve job.
+    instance = retrieve_job(job_uid)
+    if not instance or instance.execution_state == new_state:
+        return None
+
+    # Update job.
+    instance.execution_end_date = timestamp
+    instance.execution_state = new_state
+    instance.was_late = timestamp > instance.expected_execution_end_date
+    session.update(instance)
+
+    # Log.
+    msg = "Updated job state :: {0} | {1}"
+    msg = msg.format(job_uid, new_state)
     _log(msg)
 
     return instance
@@ -363,6 +396,7 @@ def delete_simulation(uid):
 
     """
     for etype in [
+        types.Job,
         types.SimulationConfiguration,
         types.SimulationForcing,
         types.SimulationState

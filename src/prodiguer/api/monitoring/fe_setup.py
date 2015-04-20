@@ -18,19 +18,6 @@ from prodiguer.db import pgres as db
 
 
 
-# Set of states to exclude from pushing to front end.
-_STATE_BLACKLIST = {u'q-in-monitoring-9000'}
-
-
-def _get_simulation_state_history():
-    """Returns set of simulation state history entries for passing to UI.
-
-    """
-    states = db.utils.get_list(db.types.SimulationState)
-
-    return [s for s in states if s[u'info'] not in _STATE_BLACKLIST]
-
-
 class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
     """Simulation monitoring front end setup request handler.
 
@@ -44,9 +31,14 @@ class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
 
         # Load setup data from db.
         data = {
-            'cv_terms': db.utils.get_list(db.types.ControlledVocabularyTerm),
-            'simulation_list': db.utils.get_list(db.types.Simulation),
-            'simulation_state_history': _get_simulation_state_history()
+            'cv_terms':
+                db.utils.get_list(db.types.ControlledVocabularyTerm),
+            'job_list':
+                db.utils.get_list(db.types.Job),
+            'simulation_list':
+                db.utils.get_list(db.types.Simulation),
+            'simulation_state_history':
+                db.utils.get_list(db.types.SimulationState)
             }
 
         # End db session.

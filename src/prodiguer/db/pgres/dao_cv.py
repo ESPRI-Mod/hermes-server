@@ -11,7 +11,7 @@
 
 
 """
-from prodiguer import cv
+from prodiguer.cv import validation as cv_validator
 from prodiguer.db.pgres import types, session
 
 
@@ -24,9 +24,9 @@ def _validate_create_term(
     """Validates create term inputs.
 
     """
-    cv.validation.validate_term_type(term_type)
-    cv.validation.validate_term_name(term_type, term_name)
-    cv.validation.validate_term_display_name(term_display_name)
+    cv_validator.validate_term_type(term_type)
+    cv_validator.validate_term_name(term_type, term_name)
+    cv_validator.validate_term_display_name(term_display_name)
 
 
 def create_term(

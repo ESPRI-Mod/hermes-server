@@ -14,7 +14,6 @@ import datetime, uuid
 
 import pika
 
-from prodiguer.cv import validation as cv_validator
 from prodiguer.mq import constants, timestamp as Timestamp
 
 
@@ -53,8 +52,8 @@ def validate_app_id(identifier):
     :param str identifier: A Messaging application identifier.
 
     """
-    # Delegate to cv validator.
-    cv_validator.validate_message_application(identifier)
+    if identifier not in constants.APPS:
+        raise ValueError('Message application id is unknown: {}'.format(identifier))
 
 
 def validate_cluster_id(identifier):
@@ -115,8 +114,8 @@ def validate_producer_id(identifier):
     :param str identifier: A Messaging producer identifier.
 
     """
-    # Delegate to cv validator.
-    cv_validator.validate_message_producer(identifier)
+    if identifier not in constants.PRODUCERS:
+        raise ValueError('Message producer id is unknown: {}'.format(identifier))
 
 
 def validate_type(identifier):
@@ -125,8 +124,8 @@ def validate_type(identifier):
     :param str identifier: A Messaging type identifier.
 
     """
-    # Delegate to cv validator.
-    cv_validator.validate_message_type(identifier)
+    if identifier not in constants.TYPES:
+        raise ValueError('Message type is unknown: {}'.format(identifier))
 
 
 def validate_correlation_id(identifier):
@@ -219,5 +218,5 @@ def validate_user_id(identifier):
     :param str identifier: Message user id, e.g. libl-igcm-user.
 
     """
-    # Delegate to cv validator.
-    cv_validator.validate_message_user(identifier)
+    if identifier not in constants.USERS:
+        raise ValueError('Message user id is unknown: {}'.format(identifier))

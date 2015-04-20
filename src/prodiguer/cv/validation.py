@@ -201,3 +201,13 @@ def validate_simulation_state(term_name):
 
     """
     validate_term_name(constants.TERM_TYPE_SIMULATION_STATE, term_name)
+
+
+def validate_job_state(term_name):
+    """Validate jon state term name.
+
+    :param str term_name: A job state term name.
+    :type term_name: str
+
+    """
+    validate_term_name(constants.TERM_TYPE_SIMULATION_STATE, term_name)

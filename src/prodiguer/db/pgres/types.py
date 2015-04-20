@@ -12,6 +12,7 @@
 import datetime, hashlib, uuid
 
 from sqlalchemy import (
+    Boolean,
     Column,
     DateTime,
     Integer,
@@ -34,6 +35,7 @@ from prodiguer.db.pgres.type_utils import (
 __all__ = [
     # ... type related
     "ControlledVocabularyTerm",
+    "Job",
     "SimulationForcing",
     "Simulation",
     "SimulationConfiguration",
@@ -129,6 +131,26 @@ class Simulation(Entity):
         return unicode(hashlib.md5(hashid).hexdigest())
 
 
+class Job(Entity):
+    """History of job state events.
+
+    """
+    # SQLAlchemy directives.
+    __tablename__ = 'tbl_job'
+    __table_args__ = (
+        {'schema':_SCHEMA_MONITORING}
+    )
+
+    # Attributes.
+    simulation_uid = Column(Unicode(63), nullable=False)
+    job_uid = Column(Unicode(63), nullable=False, unique=True)
+    execution_state = Column(Unicode(127))
+    execution_start_date = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    expected_execution_end_date = Column(DateTime, nullable=False)
+    execution_end_date = Column(DateTime)
+    was_late = Column(Boolean)
+
+
 class SimulationState(Entity):
     """History of simulation state events.
 
@@ -141,10 +163,8 @@ class SimulationState(Entity):
 
     # Attributes.
     simulation_uid = Column(Unicode(63), nullable=False)
-    job_uid = Column(Unicode(63), nullable=True)
     state = Column(Unicode(127))
     timestamp = Column(DateTime, nullable=False)
-    expected_transition_delay = Column(Integer)
     info = Column(Unicode(63), nullable=False)
 
 
@@ -231,6 +251,7 @@ class MessageEmail(Entity):
 # Set of supported model types.
 TYPES = type_utils.supported_types = [
     ControlledVocabularyTerm,
+    Job,
     Message,
     MessageEmail,
     Simulation,
