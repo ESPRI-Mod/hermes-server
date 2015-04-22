@@ -18,6 +18,13 @@ from prodiguer.db import pgres as db
 
 
 
+def _get_data(func):
+    """Returns data for front-end.
+
+    """
+    return db.utils.get_collection(func())
+
+
 class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
     """Simulation monitoring front end setup request handler.
 
@@ -33,12 +40,10 @@ class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
         data = {
             'cv_terms':
                 db.utils.get_list(db.types.ControlledVocabularyTerm),
-            'job_list':
-                db.utils.get_list(db.types.Job),
+            'job_history':
+                _get_data(db.dao_monitoring.retrieve_active_jobs),
             'simulation_list':
-                db.utils.get_list(db.types.Simulation),
-            'simulation_state_history':
-                db.utils.get_list(db.types.SimulationState)
+                _get_data(db.dao_monitoring.retrieve_active_simulations)
             }
 
         # End db session.

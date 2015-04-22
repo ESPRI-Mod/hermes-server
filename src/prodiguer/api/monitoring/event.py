@@ -49,141 +49,34 @@ def _get_simulation_event_data(data):
     if not simulation:
         raise ValueError("Unknown simulation: {}".format(simulation_uid))
 
-    # Load simulation state history.
-    state_history = db.dao_monitoring.retrieve_simulation_states(simulation_uid)
-    if not state_history:
-        raise ValueError("Unknown simulation states: {}".format(simulation_uid))
-
     # Load simulation jobs.
     jobs = db.dao_monitoring.retrieve_simulation_jobs(simulation_uid)
 
     # Return event data.
     return {
+        'cv_terms': data.get('cv_terms', []),
         'simulation': simulation,
-        'simulation_state_history': state_history,
-        'simulation_jobs': jobs
+        'job_history': jobs
         }
 
 
 def _get_job_event_data(data):
-    """Helper: retuns common job event data.
+    """Helper: retuns common simulation event data.
 
     """
-    # Unpack event data.
-    simulation_uid = data['simulation_uid']
-    job_uid = data['job_uid']
-
-    # Load job.
-    job = db.dao_monitoring.retrieve_job(job_uid)
-    if not job:
-        raise ValueError("Unknown job: {}".format(job_uid))
-
-    # Load simulation state history.
-    state_history = db.dao_monitoring.retrieve_simulation_states(simulation_uid)
-    if not state_history:
-        raise ValueError("Unknown simulation states: {}".format(simulation_uid))
-
-    # Return event data.
     return {
-        'job': job,
-        'simulation_uid': simulation_uid,
-        'simulation_state_history': state_history
-        }
-
-
-def _on_simulation_start(data):
-    """Event handler: simulation start.
-
-    """
-    # Get common simulation event data.
-    result = _get_simulation_event_data(data)
-
-    # Update with cv terms.
-    result['cv_terms'] = data['cv_terms']
-
-    return result
-
-
-def _on_simulation_complete(data):
-    """Event handler: simulation complete.
-
-    """
-    return _get_simulation_event_data(data)
-
-
-def _on_simulation_error(data):
-    """Event handler: simulation error.
-
-    """
-    return _get_simulation_event_data(data)
-
-
-def _on_job_start(data):
-    """Event handler: job start.
-
-    """
-    return _get_job_event_data(data)
-
-
-def _on_job_complete(data):
-    """Event handler: job complete.
-
-    """
-    return _get_job_event_data(data)
-
-
-def _on_job_error(data):
-    """Event handler: job error.
-
-    """
-    return _get_job_event_data(data)
-
-
-def _on_simulation_state_change(data):
-    """Event handler: simulation state change.
-
-    """
-    # Load simulation state history.
-    state_history = db.dao_monitoring.retrieve_simulation_states(data['uid'])
-    if not state_history:
-        raise ValueError("Unknown simulation states: {}".format(data['uid']))
-
-    return {
-        'simulation_state_history' : state_history,
-        'simulation_uid': data['uid']
-        }
-
-
-def _on_new_simulation(data):
-    """Event handler: new simulation.
-
-    """
-    # Load simulation.
-    simulation = db.dao_monitoring.retrieve_simulation(data['uid'])
-    if not simulation:
-        raise ValueError("Unknown simulation: {}".format(data['uid']))
-
-    # Load simulation state history.
-    state_history = db.dao_monitoring.retrieve_simulation_states(data['uid'])
-    if not state_history:
-        raise ValueError("Unknown simulation states: {}".format(data['uid']))
-
-    # Initialise event data.
-    return {
-        'cv_terms': data['cv_terms'],
-        'simulation': simulation,
-        'simulation_state_history': state_history
+        'job': db.dao_monitoring.retrieve_job(data['job_uid'])
         }
 
 
 # Map of event type to event handlers.
 _EVENT_HANDLERS = {
-    'simulation_start': _on_simulation_start,
-    'simulation_complete': _on_simulation_complete,
-    'simulation_error': _on_simulation_error,
-    'job_start': _on_job_start,
-    'job_complete': _on_job_complete,
-    'job_error': _on_job_error
+    'simulation_start': _get_simulation_event_data,
+    'simulation_complete': _get_simulation_event_data,
+    'simulation_error': _get_simulation_event_data,
+    'job_start': _get_simulation_event_data,
+    'job_complete': _get_simulation_event_data,
+    'job_error': _get_simulation_event_data
 }
 
 
@@ -237,8 +130,6 @@ class EventRequestHandler(tornado.web.RequestHandler):
                 'event_type' : sc.to_camel_case(event.type),
                 'event_timestamp': datetime.datetime.now(),
             })
-
-            print ws_data
 
             # Broadcast event data to clients.
             utils_ws.on_write(_WS_KEY, ws_data)

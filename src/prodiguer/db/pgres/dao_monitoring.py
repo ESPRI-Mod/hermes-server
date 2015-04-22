@@ -15,7 +15,6 @@ import datetime
 
 from prodiguer.db.pgres import dao, types, session
 from prodiguer.cv import validation as cv_validator
-from prodiguer.cv import constants as cv_constants
 from prodiguer.db.pgres import validation as db_validator
 from prodiguer.utils import rt
 
@@ -66,16 +65,6 @@ def _validate_create_simulation_configuration(uid, card):
     db_validator.validate_simulation_configuration_card(card)
 
 
-def _validate_create_simulation_state(uid, state, timestamp, info):
-    """Validates create simulation state inputs.
-
-    """
-    cv_validator.validate_simulation_state(state)
-    db_validator.validate_simulation_state_info(info)
-    db_validator.validate_simulation_state_timestamp(timestamp)
-    db_validator.validate_simulation_uid(uid)
-
-
 def _validate_create_job(
     simulation_uid,
     job_uid,
@@ -91,17 +80,33 @@ def _validate_create_job(
     db_validator.validate_expected_completion_delay(expected_completion_delay)
 
 
-def _validate_update_job_status(
-    job_uid,
-    timestamp,
-    new_state
-    ):
-    """Validates update job status inputs.
+def retrieve_active_simulations():
+    """Retrieves active simulation details from db.
+
+    :returns: Simulation details.
+    :rtype: list
 
     """
-    db_validator.validate_job_uid(job_uid)
-    db_validator.validate_execution_end_date(timestamp)
-    cv_validator.validate_job_state(new_state)
+    qfilter = types.Simulation.is_dead == False
+
+    return dao.get_by_facet(types.Simulation,
+                            qfilter=qfilter,
+                            get_iterable=True)
+
+
+def retrieve_active_jobs():
+    """Retrieves active job details from db.
+
+    :returns: Job details.
+    :rtype: list
+
+    """
+    qry = session.query(types.Job)
+    qry = qry.join(types.Simulation,
+                   types.Job.simulation_uid==types.Simulation.uid)
+    qry = qry.filter(types.Simulation.is_dead == False)
+
+    return dao.sort(types.Job, qry.all())
 
 
 def retrieve_simulation(uid):
@@ -144,22 +149,6 @@ def retrieve_job(uid):
     qfilter = types.Job.job_uid == unicode(uid)
 
     return dao.get_by_facet(types.Job, qfilter=qfilter)
-
-
-def retrieve_simulation_states(uid):
-    """Retrieves simulation states from db.
-
-    :param str uid: UID of simulation.
-
-    :returns: Simulation states.
-    :rtype: types.monitoring.SimulationState
-
-    """
-    return dao.get_by_facet(
-        types.SimulationState,
-        types.SimulationState.simulation_uid==unicode(uid),
-        types.SimulationState.timestamp.desc(),
-        True)
 
 
 def create_simulation(
@@ -260,36 +249,6 @@ def create_simulation_configuration(uid, card):
     return instance
 
 
-def create_simulation_state(uid, state, timestamp, info):
-    """Creates a new simulation state record in db.
-
-    :param str uid: Simulation UID.
-    :param str state: Simulation execution state, e.g. COMPLETE.
-    :param datetime.datetime timestamp: Simulation state update timestamp.
-    :param str info: Short contextual description of state change.
-
-    """
-    # Validate inputs.
-    _validate_create_simulation_state(uid, state, timestamp, info)
-
-    # Instantiate instance.
-    instance = types.SimulationState()
-    instance.info = unicode(info)
-    instance.simulation_uid = unicode(uid)
-    instance.state = unicode(state)
-    instance.timestamp = timestamp
-
-    # Push to db.
-    session.add(instance)
-
-    # Log.
-    msg = "Persisted simulation state to db :: {0} | {1}"
-    msg = msg.format(uid, state)
-    _log(msg)
-
-    return instance
-
-
 def create_job(
     simulation_uid,
     job_uid,
@@ -317,7 +276,6 @@ def create_job(
     instance.job_uid = unicode(job_uid)
     instance.simulation_uid = unicode(simulation_uid)
     instance.execution_start_date = execution_start_date
-    instance.execution_state = cv_constants.JOB_STATE_RUNNING
     instance.expected_execution_end_date = \
         execution_start_date + datetime.timedelta(seconds=int(expected_completion_delay))
 
@@ -332,46 +290,8 @@ def create_job(
     return instance
 
 
-def update_job_status(
-    job_uid,
-    timestamp,
-    new_state
-    ):
-    """Updates the status of a job record in db.
-
-    :param str job_uid: Job UID.
-    :param datetime timestamp: Status update timestamp.
-    :param str new_state: New exeution status (COMPLETE | ERROR).
-
-    """
-    # Validate inputs.
-    _validate_update_job_status(
-        job_uid,
-        timestamp,
-        new_state
-        )
-
-    # Retrieve job.
-    instance = retrieve_job(job_uid)
-    if not instance or instance.execution_state == new_state:
-        return None
-
-    # Update job.
-    instance.execution_end_date = timestamp
-    instance.execution_state = new_state
-    instance.was_late = timestamp > instance.expected_execution_end_date
-    session.update(instance)
-
-    # Log.
-    msg = "Updated job state :: {0} | {1}"
-    msg = msg.format(job_uid, new_state)
-    _log(msg)
-
-    return instance
-
-
-def delete_dead_simulation_runs(hashid, uid):
-    """Deletes so-called simulations dead runs (i.e. simulations that were rerun).
+def update_dead_simulation_runs(hashid, uid):
+    """Updates so-called simulations dead runs (i.e. simulations that were rerun).
 
     :param str uid: Simulation UID of new simulation.
     :param str hashid: Simulation hash identifier.
@@ -381,14 +301,12 @@ def delete_dead_simulation_runs(hashid, uid):
     qry = session.query(types.Simulation)
     qry = qry.filter(types.Simulation.hashid == hashid)
     qry = qry.filter(types.Simulation.uid != uid)
-    dead = qry.all()
-    if not dead:
-        return
+    qry = qry.filter(types.Simulation.is_dead == False)
 
-    # Delete.
-    for simulation in dead:
-        delete_simulation(simulation.uid)
-        _log("Deleting dead simulation :: {}".format(simulation.uid))
+    # Update is_dead flag.
+    for simulation in qry.all():
+        simulation.is_dead = True
+        _log("Updating dead simulation :: {}".format(simulation.uid))
 
 
 def delete_simulation(uid):
@@ -397,9 +315,7 @@ def delete_simulation(uid):
     """
     for etype in [
         types.Job,
-        types.SimulationConfiguration,
-        types.SimulationForcing,
-        types.SimulationState
+        types.SimulationConfiguration
         ]:
         dao.delete_by_facet(etype, etype.simulation_uid == uid)
     dao.delete_by_facet(types.Message, types.Message.correlation_id_1 == uid)

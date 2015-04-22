@@ -33,19 +33,6 @@ def sort(etype, collection):
     return [] if collection is None else etype.get_sorted(collection)
 
 
-def get_active(etype):
-    """Gets all active instances.
-
-    :param etype: A supported entity type.
-    :type etype: class
-
-    :returns: Active entity collection.
-    :rtype: list
-
-    """
-    return get_by_facet(etype, qfilter=etype.is_active==True, get_iterable=True)
-
-
 def get_all(etype):
     """Gets all instances of the entity.
 
@@ -73,13 +60,13 @@ def get_by_facet(etype, qfilter=None, order_by=None, get_iterable=False):
     """
     types.assert_type(etype)
 
-    q = session.query(etype)
+    qry = session.query(etype)
     if qfilter is not None:
-        q = q.filter(qfilter)
+        qry = qry.filter(qfilter)
     if order_by is not None:
-        q = q.order_by(order_by)
+        qry = qry.order_by(order_by)
 
-    return sort(etype, q.all()) if get_iterable else q.first()
+    return sort(etype, qry.all()) if get_iterable else qry.first()
 
 
 def get_random(etype):

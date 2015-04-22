@@ -36,10 +36,8 @@ __all__ = [
     # ... type related
     "ControlledVocabularyTerm",
     "Job",
-    "SimulationForcing",
     "Simulation",
     "SimulationConfiguration",
-    "SimulationState",
     "Message",
     "MessageEmail",
     # ... other
@@ -94,6 +92,8 @@ class Simulation(Entity):
     compute_node_machine = Column(Unicode(127))
     experiment = Column(Unicode(127))
     hashid = Column(Unicode(63), nullable=False)
+    is_dead = Column(Boolean, nullable=False, default=False)
+    is_error = Column(Boolean, nullable=False, default=False)
     model = Column(Unicode(127))
     space = Column(Unicode(127))
     name = Column(Unicode(511), nullable=False)
@@ -144,28 +144,11 @@ class Job(Entity):
     # Attributes.
     simulation_uid = Column(Unicode(63), nullable=False)
     job_uid = Column(Unicode(63), nullable=False, unique=True)
-    execution_state = Column(Unicode(127))
     execution_start_date = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
     expected_execution_end_date = Column(DateTime, nullable=False)
     execution_end_date = Column(DateTime)
+    is_error = Column(Boolean, nullable=False, default=False)
     was_late = Column(Boolean)
-
-
-class SimulationState(Entity):
-    """History of simulation state events.
-
-    """
-    # SQLAlchemy directives.
-    __tablename__ = 'tbl_simulation_state'
-    __table_args__ = (
-        {'schema':_SCHEMA_MONITORING}
-    )
-
-    # Attributes.
-    simulation_uid = Column(Unicode(63), nullable=False)
-    state = Column(Unicode(127))
-    timestamp = Column(DateTime, nullable=False)
-    info = Column(Unicode(63), nullable=False)
 
 
 class SimulationConfiguration(Entity):
@@ -185,21 +168,6 @@ class SimulationConfiguration(Entity):
     card_mime_type = Column(Unicode(63),
                             nullable=True,
                             default=u"application/base64")
-
-
-class SimulationForcing(Entity):
-    """The simulation forcing, i.e. related to configuration.
-
-    """
-    # SQLAlchemy directives.
-    __tablename__ = 'tbl_simulation_forcing'
-    __table_args__ = (
-        {'schema':_SCHEMA_MONITORING}
-    )
-
-    # Foreign keys.
-    simulation_uid = Column(Unicode(63), nullable=False)
-    forcing = Column(Unicode(127))
 
 
 class Message(Entity):
@@ -255,9 +223,7 @@ TYPES = type_utils.supported_types = [
     Message,
     MessageEmail,
     Simulation,
-    SimulationConfiguration,
-    SimulationForcing,
-    SimulationState
+    SimulationConfiguration
 ]
 
 # Extend type with other fields.
