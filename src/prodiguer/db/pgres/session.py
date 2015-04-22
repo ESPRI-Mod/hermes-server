@@ -133,6 +133,8 @@ def insert(instance, auto_commit=True):
         if auto_commit:
             commit()
 
+    return instance
+
 
 def add(instance, auto_commit=True):
     """Adds a newly created type instance to the session and optionally commits the session.
@@ -141,7 +143,7 @@ def add(instance, auto_commit=True):
     :param bool auto_commit: Flag indicating whether a commit is to be issued.
 
     """
-    insert(instance, auto_commit)
+    return insert(instance, auto_commit)
 
 
 def delete(instance, auto_commit=True):
@@ -170,6 +172,8 @@ def update(instance, auto_commit=True):
     if instance is not None and sa_session is not None:
         if auto_commit:
             commit()
+
+    return instance
 
 
 def query(*etypes):

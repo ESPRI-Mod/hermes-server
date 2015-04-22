@@ -16,7 +16,20 @@ import arrow
 
 
 
-def _validate_int(val, var):
+def validate_bool(val, var):
+    """Validates a boolean.
+
+    """
+    if val is None:
+        raise ValueError('{0} is undefined'.format(var))
+
+    try:
+        bool(val)
+    except ValueError:
+        raise ValueError('{0} is invalid'.format(var))
+
+
+def validate_int(val, var):
     """Validates an integer.
 
     """
@@ -29,7 +42,7 @@ def _validate_int(val, var):
         raise ValueError('{0} is invalid'.format(var))
 
 
-def _validate_date(val, var):
+def validate_date(val, var):
     """Validates a date.
 
     """
@@ -42,7 +55,7 @@ def _validate_date(val, var):
         raise ValueError('{0} is invalid'.format(var))
 
 
-def _validate_uid(identifier, var):
+def validate_uid(identifier, var):
     """Validaes a universally unique identifier.
 
     """
@@ -51,15 +64,6 @@ def _validate_uid(identifier, var):
             uuid.UUID(identifier)
         except ValueError:
             raise ValueError("{0} must be UUID compatible.".format(var))
-
-
-def validate_simulation_job_uid(identifier):
-    """Validates a simulation job unique identifier.
-
-    :param str identifier: A simulation job unique identifier.
-
-    """
-    _validate_uid(identifier, "Job uid")
 
 
 def validate_simulation_configuration_card(card):
@@ -79,7 +83,7 @@ def validate_execution_start_date(date):
     :type date: str | datetime.datetime
 
     """
-    _validate_date(date, 'Execution start date')
+    validate_date(date, 'Execution start date')
 
 
 def validate_execution_end_date(date):
@@ -89,27 +93,7 @@ def validate_execution_end_date(date):
     :type date: str | datetime.datetime
 
     """
-    _validate_date(date, 'Execution end date')
-
-
-def validate_simulation_state_timestamp(date):
-    """Validate simulation state timestamp.
-
-    :param date: A simulation state timestamp.
-    :type date: str | datetime.datetime
-
-    """
-    _validate_date(date, 'State timestamp')
-
-
-def validate_simulation_state_info(info):
-    """Validate simulation state info.
-
-    :param str info: A simulation state information.
-
-    """
-    if info is None or len(info.strip()) == 0:
-        raise TypeError('Info is undefined')
+    validate_date(date, 'Execution end date')
 
 
 def validate_simulation_name(name):
@@ -129,7 +113,7 @@ def validate_simulation_output_start_date(date):
     :type date: str | datetime.datetime
 
     """
-    _validate_date(date, 'Output start date')
+    validate_date(date, 'Output start date')
 
 
 def validate_simulation_output_end_date(date):
@@ -139,7 +123,7 @@ def validate_simulation_output_end_date(date):
     :type date: str | datetime.datetime
 
     """
-    _validate_date(date, 'Output end date')
+    validate_date(date, 'Output end date')
 
 
 def validate_simulation_uid(identifier):
@@ -148,7 +132,7 @@ def validate_simulation_uid(identifier):
     :param str identifier: A simulation unique identifier.
 
     """
-    _validate_uid(identifier, "Simulation uid")
+    validate_uid(identifier, "Simulation uid")
 
 
 def validate_job_uid(identifier):
@@ -157,7 +141,7 @@ def validate_job_uid(identifier):
     :param str identifier: A job unique identifier.
 
     """
-    _validate_uid(identifier, "Job uid")
+    validate_uid(identifier, "Job uid")
 
 
 def validate_job_state_timestamp(date):
@@ -167,7 +151,7 @@ def validate_job_state_timestamp(date):
     :type date: str | datetime.datetime
 
     """
-    _validate_date(date, 'Job state timestamp')
+    validate_date(date, 'Job state timestamp')
 
 
 def validate_job_state_info(info):
@@ -187,4 +171,4 @@ def validate_expected_completion_delay(delay):
 
     """
     if delay:
-        _validate_int(delay, "Expected completion delay")
+        validate_int(delay, "Expected completion delay")

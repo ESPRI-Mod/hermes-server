@@ -11,6 +11,8 @@
 
 
 """
+from sqlalchemy.exc import IntegrityError
+
 import datetime
 
 from prodiguer.db.pgres import dao, types, session
@@ -27,7 +29,7 @@ def _log(msg, force=False):
         rt.log_db(msg)
 
 
-def _validate_create_simulation(
+def _validate_persist_simulation_01(
     activity,
     compute_node,
     compute_node_login,
@@ -39,8 +41,9 @@ def _validate_create_simulation(
     output_start_date,
     output_end_date,
     space,
-    uid):
-    """Validates create simulation inputs.
+    uid
+    ):
+    """Validates persist simulation inputs.
 
     """
     cv_validator.validate_activity(activity)
@@ -54,6 +57,15 @@ def _validate_create_simulation(
     db_validator.validate_simulation_name(name)
     db_validator.validate_simulation_output_start_date(output_start_date)
     db_validator.validate_simulation_output_end_date(output_end_date)
+    db_validator.validate_simulation_uid(uid)
+
+
+def _validate_persist_simulation_02(execution_end_date, is_error, uid):
+    """Validates persist simulation inputs.
+
+    """
+    db_validator.validate_bool(is_error, 'Is Error flag')
+    db_validator.validate_execution_start_date(execution_end_date)
     db_validator.validate_simulation_uid(uid)
 
 
@@ -151,7 +163,7 @@ def retrieve_job(uid):
     return dao.get_by_facet(types.Job, qfilter=qfilter)
 
 
-def create_simulation(
+def persist_simulation_01(
     activity,
     compute_node,
     compute_node_login,
@@ -163,8 +175,9 @@ def create_simulation(
     output_start_date,
     output_end_date,
     space,
-    uid):
-    """Creates a new simulation record in db.
+    uid
+    ):
+    """Persists simulation information to db.
 
     :param str activity: Name of activity, e.g. IPSL.
     :param str compute_node: Name of compute node, e.g. TGCC.
@@ -179,12 +192,12 @@ def create_simulation(
     :param str space: Name of space, e.g. PROD.
     :param str uid: Simulation unique identifier.
 
-    :returns: Newly created simulation.
+    :returns: Either a new or an updated simulation object.
     :rtype: types.Simulation
 
     """
     # Validate inputs.
-    _validate_create_simulation(
+    _validate_persist_simulation_01(
         activity,
         compute_node,
         compute_node_login,
@@ -196,33 +209,71 @@ def create_simulation(
         output_start_date,
         output_end_date,
         space,
-        uid)
+        uid
+        )
 
-    # Instantiate.
-    sim = types.Simulation()
-    sim.activity = unicode(activity)
-    sim.compute_node = unicode(compute_node)
-    sim.compute_node_login = unicode(compute_node_login)
-    sim.compute_node_machine = unicode(compute_node_machine)
-    sim.execution_start_date = execution_start_date
-    sim.experiment = unicode(experiment)
-    sim.model = unicode(model)
-    sim.name = unicode(name)
-    sim.output_start_date = output_start_date
-    sim.output_end_date = output_end_date
-    sim.space = unicode(space)
-    sim.uid = unicode(uid)
+    def _get_hydrated(instance):
+        """Returns an instance hydrated with input parameters.
 
-    # Set hash id.
-    sim.hashid = sim.get_hashid()
+        """
+        instance.activity = unicode(activity)
+        instance.compute_node = unicode(compute_node)
+        instance.compute_node_login = unicode(compute_node_login)
+        instance.compute_node_machine = unicode(compute_node_machine)
+        instance.execution_start_date = execution_start_date
+        instance.experiment = unicode(experiment)
+        instance.model = unicode(model)
+        instance.name = unicode(name)
+        instance.output_start_date = output_start_date
+        instance.output_end_date = output_end_date
+        instance.space = unicode(space)
+        if not instance.uid:
+            instance.uid = unicode(uid)
+        instance.hashid = instance.get_hashid()
+        return instance
 
-    # Push to db.
-    session.add(sim)
+    # Return either inserted or updated instance.
+    try:
+        return session.insert(_get_hydrated(types.Simulation()))
+    except IntegrityError:
+        session.rollback()
+        return session.update(_get_hydrated(retrieve_simulation(uid)))
+    finally:
+        _log("Persisted simulation info: {0}.".format(uid))
 
-    # Log.
-    _log("Created simulation: {0}.".format(uid))
 
-    return sim
+def persist_simulation_02(execution_end_date, is_error, uid):
+    """Persists simulation information to db.
+
+    :param datetime execution_end_date: Simulation end date.
+    :param bool is_error: Flag indicating whether the simulation terminated in error.
+    :param str uid: Simulation unique identifier.
+
+    :returns: Either a new or an updated simulation object.
+    :rtype: types.Simulation
+
+    """
+    # Validate inputs.
+    _validate_persist_simulation_02(execution_end_date, is_error, uid)
+
+    def _get_hydrated(instance):
+        """Returns an instance hydrated with input parameters.
+
+        """
+        instance.execution_end_date = execution_end_date
+        instance.is_error = is_error
+        if not instance.uid:
+            instance.uid = unicode(uid)
+        return instance
+
+    # Return either inserted or updated instance.
+    try:
+        return session.insert(_get_hydrated(types.Simulation()))
+    except IntegrityError:
+        session.rollback()
+        return session.update(_get_hydrated(retrieve_simulation(uid)))
+    finally:
+        _log("Persisted simulation info: {0}.".format(uid))
 
 
 def create_simulation_configuration(uid, card):

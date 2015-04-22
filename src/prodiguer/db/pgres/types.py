@@ -91,23 +91,20 @@ class Simulation(Entity):
     compute_node_login = Column(Unicode(127))
     compute_node_machine = Column(Unicode(127))
     experiment = Column(Unicode(127))
-    hashid = Column(Unicode(63), nullable=False)
-    is_dead = Column(Boolean, nullable=False, default=False)
-    is_error = Column(Boolean, nullable=False, default=False)
+    hashid = Column(Unicode(63))
+    is_dead = Column(Boolean, default=False)
+    is_error = Column(Boolean, default=False)
     model = Column(Unicode(127))
     space = Column(Unicode(127))
-    name = Column(Unicode(511), nullable=False)
+    name = Column(Unicode(511))
     ensemble_member = Column(Unicode(15))
-    execution_start_date = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    execution_start_date = Column(DateTime)
     execution_end_date = Column(DateTime)
     output_start_date = Column(DateTime)
     output_end_date = Column(DateTime)
     parent_simulation_name = Column(Unicode(511))
     parent_simulation_branch_date = Column(DateTime)
-    uid = Column(Unicode(63),
-                 nullable=False,
-                 unique=True,
-                 default=lambda: unicode(uuid.uuid4()))
+    uid = Column(Unicode(63), unique=True)
 
 
     def get_hashid(self):
