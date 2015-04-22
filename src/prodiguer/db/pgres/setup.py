@@ -9,7 +9,7 @@
 
 
 """
-import os
+import os, uuid
 
 from sqlalchemy.schema import CreateSchema, DropSchema
 
@@ -78,6 +78,7 @@ def _init_simulations():
             sim.parent_simulation_branch_date = simulation['parent_simulation_branch_date']
         except KeyError:
             pass
+        sim.uid = uuid.uuid4()
 
         # Set hash id.
         sim.hashid = sim.get_hashid()

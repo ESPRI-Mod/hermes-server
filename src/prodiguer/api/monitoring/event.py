@@ -44,10 +44,10 @@ def _get_simulation_event_data(data):
     # Unpack event data.
     simulation_uid = data['simulation_uid']
 
-    # Load simulation.
+    # Load simulation (if not found then do not broadcast).
     simulation = db.dao_monitoring.retrieve_simulation(simulation_uid)
     if not simulation:
-        raise ValueError("Unknown simulation: {}".format(simulation_uid))
+        return None
 
     # Load simulation jobs.
     jobs = db.dao_monitoring.retrieve_simulation_jobs(simulation_uid)
@@ -112,10 +112,6 @@ class EventRequestHandler(tornado.web.RequestHandler):
         # Signal asynch.
         self.finish()
 
-        # Escape if there are no connected clients.
-        # if not utils_ws.get_client_count(_WS_KEY):
-        #     return
-
         # Connect to db.
         db.session.start()
 
@@ -124,16 +120,20 @@ class EventRequestHandler(tornado.web.RequestHandler):
             event = _EventInfo(self.request.body)
             _log("{0} event received: {1}".format(event.type, event.data))
 
-            # Set data to be dispatched to web-socket clients.
+            # Only broadcast when there is data.
             ws_data = event.get_ws_data()
-            ws_data.update({
-                'event_type' : sc.to_camel_case(event.type),
-                'event_timestamp': datetime.datetime.now(),
-            })
+            if not ws_data:
+                _log("{0} event broadcasting aborted".format(event.type))
+            else:
+                # Append event info.
+                ws_data.update({
+                    'event_type' : sc.to_camel_case(event.type),
+                    'event_timestamp': datetime.datetime.now(),
+                })
 
-            # Broadcast event data to clients.
-            utils_ws.on_write(_WS_KEY, ws_data)
-            _log("{0} event published".format(event.type))
+                # Broadcast to clients.
+                utils_ws.on_write(_WS_KEY, ws_data)
+                _log("{0} event broadcast".format(event.type))
 
         # Close db session.
         finally:

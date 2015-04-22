@@ -104,7 +104,7 @@ class Simulation(Entity):
     output_end_date = Column(DateTime)
     parent_simulation_name = Column(Unicode(511))
     parent_simulation_branch_date = Column(DateTime)
-    uid = Column(Unicode(63), unique=True)
+    uid = Column(Unicode(63), nullable=False, unique=True)
 
 
     def get_hashid(self):
@@ -139,12 +139,12 @@ class Job(Entity):
     )
 
     # Attributes.
-    simulation_uid = Column(Unicode(63), nullable=False)
+    simulation_uid = Column(Unicode(63))
     job_uid = Column(Unicode(63), nullable=False, unique=True)
-    execution_start_date = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
-    expected_execution_end_date = Column(DateTime, nullable=False)
+    execution_start_date = Column(DateTime)
+    expected_execution_end_date = Column(DateTime)
     execution_end_date = Column(DateTime)
-    is_error = Column(Boolean, nullable=False, default=False)
+    is_error = Column(Boolean, default=False)
     was_late = Column(Boolean)
 
 

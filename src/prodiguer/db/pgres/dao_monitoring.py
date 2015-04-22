@@ -21,7 +21,7 @@ from prodiguer.db.pgres import validation as db_validator
 from prodiguer.utils import rt
 
 
-def _log(msg, force=False):
+def _log(msg, force=True):
     """Logging helper function.
 
     """
@@ -65,7 +65,7 @@ def _validate_persist_simulation_02(execution_end_date, is_error, uid):
 
     """
     db_validator.validate_bool(is_error, 'Is Error flag')
-    db_validator.validate_execution_start_date(execution_end_date)
+    db_validator.validate_execution_end_date(execution_end_date)
     db_validator.validate_simulation_uid(uid)
 
 
@@ -77,19 +77,34 @@ def _validate_create_simulation_configuration(uid, card):
     db_validator.validate_simulation_configuration_card(card)
 
 
-def _validate_create_job(
-    simulation_uid,
-    job_uid,
+def _validate_persist_job_01(
+    expected_completion_delay,
     execution_start_date,
-    expected_completion_delay
+    job_uid,
+    simulation_uid
     ):
-    """Validates create job inputs.
+    """Validates persist job inputs.
 
     """
+    db_validator.validate_expected_completion_delay(expected_completion_delay)
+    db_validator.validate_execution_start_date(execution_start_date)
     db_validator.validate_job_uid(job_uid)
     db_validator.validate_simulation_uid(simulation_uid)
-    db_validator.validate_execution_start_date(execution_start_date)
-    db_validator.validate_expected_completion_delay(expected_completion_delay)
+
+
+def _validate_persist_job_02(
+    execution_end_date,
+    is_error,
+    job_uid,
+    simulation_uid
+    ):
+    """Validates persist job inputs.
+
+    """
+    db_validator.validate_execution_end_date(execution_end_date)
+    db_validator.validate_bool(is_error, 'Is Error flag')
+    db_validator.validate_job_uid(job_uid)
+    db_validator.validate_simulation_uid(simulation_uid)
 
 
 def retrieve_active_simulations():
@@ -192,26 +207,10 @@ def persist_simulation_01(
     :param str space: Name of space, e.g. PROD.
     :param str uid: Simulation unique identifier.
 
-    :returns: Either a new or an updated simulation object.
+    :returns: Either a new or an updated simulation instance.
     :rtype: types.Simulation
 
     """
-    # Validate inputs.
-    _validate_persist_simulation_01(
-        activity,
-        compute_node,
-        compute_node_login,
-        compute_node_machine,
-        execution_start_date,
-        experiment,
-        model,
-        name,
-        output_start_date,
-        output_end_date,
-        space,
-        uid
-        )
-
     def _get_hydrated(instance):
         """Returns an instance hydrated with input parameters.
 
@@ -227,10 +226,25 @@ def persist_simulation_01(
         instance.output_start_date = output_start_date
         instance.output_end_date = output_end_date
         instance.space = unicode(space)
-        if not instance.uid:
-            instance.uid = unicode(uid)
+        instance.uid = unicode(uid)
         instance.hashid = instance.get_hashid()
         return instance
+
+    # Validate inputs.
+    _validate_persist_simulation_01(
+        activity,
+        compute_node,
+        compute_node_login,
+        compute_node_machine,
+        execution_start_date,
+        experiment,
+        model,
+        name,
+        output_start_date,
+        output_end_date,
+        space,
+        uid
+        )
 
     # Return either inserted or updated instance.
     try:
@@ -249,22 +263,21 @@ def persist_simulation_02(execution_end_date, is_error, uid):
     :param bool is_error: Flag indicating whether the simulation terminated in error.
     :param str uid: Simulation unique identifier.
 
-    :returns: Either a new or an updated simulation object.
+    :returns: Either a new or an updated simulation instance.
     :rtype: types.Simulation
 
     """
-    # Validate inputs.
-    _validate_persist_simulation_02(execution_end_date, is_error, uid)
-
     def _get_hydrated(instance):
         """Returns an instance hydrated with input parameters.
 
         """
         instance.execution_end_date = execution_end_date
         instance.is_error = is_error
-        if not instance.uid:
-            instance.uid = unicode(uid)
+        instance.uid = unicode(uid)
         return instance
+
+    # Validate inputs.
+    _validate_persist_simulation_02(execution_end_date, is_error, uid)
 
     # Return either inserted or updated instance.
     try:
@@ -300,45 +313,92 @@ def create_simulation_configuration(uid, card):
     return instance
 
 
-def create_job(
-    simulation_uid,
-    job_uid,
+def persist_job_01(
+    expected_completion_delay,
     execution_start_date,
-    expected_completion_delay
+    job_uid,
+    simulation_uid
     ):
-    """Creates a new job record in db.
+    """Persists job information to db.
 
-    :param str simulation_uid: Simulation UID.
-    :param str job_uid: Job UID.
-    :param datetime execution_start_date: Simulation start date.
     :param int expected_completion_delay: Delay before job completion is considered to be late.
+    :param datetime execution_start_date: Simulation start date.
+    :param str job_uid: Job UID.
+    :param str simulation_uid: Simulation UID.
+
+    :returns: Either a new or an updated job instance.
+    :rtype: types.Job
 
     """
+    def _get_hydrated(instance):
+        """Returns an instance hydrated with input parameters.
+
+        """
+        instance.execution_start_date = execution_start_date
+        instance.expected_execution_end_date = \
+            execution_start_date + \
+            datetime.timedelta(seconds=int(expected_completion_delay))
+        instance.job_uid = unicode(job_uid)
+        instance.simulation_uid = unicode(simulation_uid)
+
+        return instance
+
     # Validate inputs.
-    _validate_create_job(
-        simulation_uid,
-        job_uid,
+    _validate_persist_job_01(
+        expected_completion_delay,
         execution_start_date,
-        expected_completion_delay
+        job_uid,
+        simulation_uid
         )
 
-    # Instantiate instance.
-    instance = types.Job()
-    instance.job_uid = unicode(job_uid)
-    instance.simulation_uid = unicode(simulation_uid)
-    instance.execution_start_date = execution_start_date
-    instance.expected_execution_end_date = \
-        execution_start_date + datetime.timedelta(seconds=int(expected_completion_delay))
+    # Return either inserted or updated instance.
+    try:
+        return session.insert(_get_hydrated(types.Job()))
+    except IntegrityError:
+        session.rollback()
+        return session.update(_get_hydrated(retrieve_job(job_uid)))
+    finally:
+        _log("Persisted job info :: {0} | {1}".format(simulation_uid, job_uid))
 
-    # Push to db.
-    session.add(instance)
 
-    # Log.
-    msg = "Persisted job to db :: {0} | {1}"
-    msg = msg.format(simulation_uid, job_uid)
-    _log(msg)
+def persist_job_02(execution_end_date, is_error, job_uid, simulation_uid):
+    """Persists job information to db.
 
-    return instance
+    :param datetime execution_end_date: Job end date.
+    :param bool is_error: Flag indicating whether the job terminated in error.
+    :param str job_uid: Job unique identifier.
+    :param str simulation_uid: Simulation UID.
+
+    :returns: Either a new or an updated job instance.
+    :rtype: types.Job
+
+    """
+    def _get_hydrated(instance):
+        """Returns an instance hydrated with input parameters.
+
+        """
+        instance.execution_end_date = execution_end_date
+        instance.is_error = is_error
+        instance.job_uid = unicode(job_uid)
+        instance.simulation_uid = unicode(simulation_uid)
+        return instance
+
+    # Validate inputs.
+    _validate_persist_job_02(
+        execution_end_date,
+        is_error,
+        job_uid,
+        simulation_uid
+        )
+
+    # Return either inserted or updated instance.
+    try:
+        return session.insert(_get_hydrated(types.Job()))
+    except IntegrityError:
+        session.rollback()
+        return session.update(_get_hydrated(retrieve_job(job_uid)))
+    finally:
+        _log("Persisted job info :: {0} | {1}".format(simulation_uid, job_uid))
 
 
 def update_dead_simulation_runs(hashid, uid):
