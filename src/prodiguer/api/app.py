@@ -37,6 +37,7 @@ def _get_app_routes():
     """
     return (
         # Monitoring routes.
+        (r'/api/1/monitoring/fe/cv', monitoring.FrontEndControlledVocabularyRequestHandler),
         (r'/api/1/monitoring/fe/setup', monitoring.FrontEndSetupRequestHandler),
         (r'/api/1/monitoring/fe/ws', monitoring.FrontEndWebSocketHandler),
         (r'/api/1/monitoring/event', monitoring.EventRequestHandler),

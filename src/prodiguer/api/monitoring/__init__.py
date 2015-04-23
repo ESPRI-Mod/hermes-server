@@ -13,6 +13,8 @@
 """
 from prodiguer.api.monitoring.event \
 	import EventRequestHandler
+from prodiguer.api.monitoring.fe_cv \
+	import FrontEndControlledVocabularyRequestHandler
 from prodiguer.api.monitoring.fe_setup \
 	import FrontEndSetupRequestHandler
 from prodiguer.api.monitoring.fe_ws \
