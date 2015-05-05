@@ -20,9 +20,5 @@ from prodiguer import mq
 from prodiguer import utils
 from prodiguer import web
 from prodiguer.utils import config
-from prodiguer.utils import convert
-from prodiguer.utils import data_convertor
 from prodiguer.utils import mail
 from prodiguer.utils import rt
-from prodiguer.utils import string_convertor
-
