@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-.. module:: prodiguer.api.metric.fetch_line_count.py
+.. module:: prodiguer.web.metric.fetch_setup.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
-   :synopsis: Metric group line count request handler.
+   :synopsis: Metric group setup fetch request handler.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
@@ -12,8 +12,8 @@
 """
 import tornado
 
-from prodiguer.api import utils_handler
-from prodiguer.api.metric import utils
+from prodiguer.web import utils_handler
+from prodiguer.web.metric import utils
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.utils import rt
 
@@ -26,8 +26,8 @@ _CONTENT_TYPE_JSON = ["application/json", "application/json; charset=UTF-8"]
 _PARAM_GROUP = 'group'
 
 
-class FetchCountRequestHandler(tornado.web.RequestHandler):
-    """Simulation metric group fetch line count method request handler.
+class FetchSetupRequestHandler(tornado.web.RequestHandler):
+    """Simulation metric group fetch setup method request handler.
 
     """
     def set_default_headers(self):
@@ -53,7 +53,8 @@ class FetchCountRequestHandler(tornado.web.RequestHandler):
 
     def _fetch_data(self):
         """Fetches data from db."""
-        self.count = dao.fetch_count(self.group, self.query)
+        self.columns = dao.fetch_columns(self.group)
+        self.data = dao.fetch_setup(self.group, self.query)
 
 
     def _write_response(self, error=None):
@@ -61,7 +62,8 @@ class FetchCountRequestHandler(tornado.web.RequestHandler):
         if not error:
             self.output = {
                 'group': self.group,
-                'count': self.count
+                'columns': self.columns,
+                'data': self.data
             }
         utils_handler.write_response(self, error)
 
@@ -98,4 +100,3 @@ class FetchCountRequestHandler(tornado.web.RequestHandler):
 
     def post(self):
         self._process()
-

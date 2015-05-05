@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.api.monitoring.setup.py
+.. module:: prodiguer.web.monitoring.setup.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -13,20 +13,13 @@
 """
 import tornado.web
 
-from prodiguer.api import utils_handler
+from prodiguer.web import utils_handler
 from prodiguer.db import pgres as db
 
 
 
-def _get_data(func):
-    """Returns data for front-end.
-
-    """
-    return db.utils.get_collection(func())
-
-
-class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
-    """Simulation monitoring front end setup request handler.
+class FrontEndControlledVocabularyRequestHandler(tornado.web.RequestHandler):
+    """Simulation monitoring front end controlled vocabulary setup request handler.
 
     """
     def get(self, *args):
@@ -36,12 +29,10 @@ class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
         # Start db session.
         db.session.start()
 
-        # Load setup data from db.
+        # Load cv data from db.
         data = {
-            'job_history':
-                _get_data(db.dao_monitoring.retrieve_active_jobs),
-            'simulation_list':
-                _get_data(db.dao_monitoring.retrieve_active_simulations)
+            'cv_terms':
+                db.utils.get_list(db.types.ControlledVocabularyTerm)
             }
 
         # End db session.

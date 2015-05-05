@@ -84,5 +84,5 @@ def jsonify(data):
     """
     return json.dumps(_jsonify(data),
                       default=json_util.default,
-                      indent=4,
+                      indent=None,
                       sort_keys=True)

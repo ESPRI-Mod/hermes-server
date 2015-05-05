@@ -11,30 +11,18 @@
 .. moduleauthor:: IPSL (ES-DOC) <dev@esdocumentation.org>
 
 """
-__version__ = '0.2.0.0'
+__version__ = '0.3.0.0'
 
 
-from os.path import dirname, abspath, join
-
-from prodiguer import api, cv, db, mq, utils
-from prodiguer.utils import (
-	config,
-	convert,
-	data_convertor,
-	mail,
-	rt,
-	string_convertor
-	)
-
-
-# Module exports.
-__all__ = [
-	'api',
-	'config',
-	'convert',
-	'cv',
-	'db',
-	'mq',
-	'utils',
-]
+from prodiguer import cv
+from prodiguer import db
+from prodiguer import mq
+from prodiguer import utils
+from prodiguer import web
+from prodiguer.utils import config
+from prodiguer.utils import convert
+from prodiguer.utils import data_convertor
+from prodiguer.utils import mail
+from prodiguer.utils import rt
+from prodiguer.utils import string_convertor
 

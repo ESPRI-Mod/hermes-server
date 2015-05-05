@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.api.metric.add.py
+.. module:: prodiguer.web.metric.add.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -15,8 +15,8 @@ import tornado
 
 from collections import OrderedDict
 
-from prodiguer.api import utils_handler
-from prodiguer.api.metric import utils
+from prodiguer.web import utils_handler
+from prodiguer.web.metric import utils
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.utils import rt
 

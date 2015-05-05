@@ -14,7 +14,7 @@
 import nose 
 
 from . import utils as tu
-from prodiguer.api import utils_ws
+from prodiguer.web import utils_ws
 
 
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.api.monitoring.__init__.py
+.. module:: prodiguer.web.monitoring.__init__.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -11,11 +11,11 @@
 
 
 """
-from prodiguer.api.monitoring.event \
+from prodiguer.web.monitoring.event \
 	import EventRequestHandler
-from prodiguer.api.monitoring.fe_cv \
+from prodiguer.web.monitoring.fe_cv \
 	import FrontEndControlledVocabularyRequestHandler
-from prodiguer.api.monitoring.fe_setup \
+from prodiguer.web.monitoring.fe_setup \
 	import FrontEndSetupRequestHandler
-from prodiguer.api.monitoring.fe_ws \
+from prodiguer.web.monitoring.fe_ws \
 	import FrontEndWebSocketHandler

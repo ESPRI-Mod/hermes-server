@@ -12,7 +12,7 @@
 
 """
 from . import utils as tu
-from prodiguer.api import utils_handler
+from prodiguer.web import utils_handler
 
 
 

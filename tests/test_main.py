@@ -38,7 +38,7 @@ def test_main_import():
 
 	modules = [
 		prodiguer,
-		prodiguer.api,
+		prodiguer.web,
 		prodiguer.config,
 		prodiguer.cv,
 		prodiguer.db,

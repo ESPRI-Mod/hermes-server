@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.api.monitoring.ws.py
+.. module:: prodiguer.web.monitoring.ws.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -13,7 +13,7 @@
 """
 import tornado.websocket
 
-from prodiguer.api import utils_ws
+from prodiguer.web import utils_ws
 
 
 

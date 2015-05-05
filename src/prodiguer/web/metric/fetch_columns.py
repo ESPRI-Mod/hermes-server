@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-.. module:: prodiguer.api.metric.list.py
+.. module:: prodiguer.web.metric.fetch.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
-   :synopsis: Simulation metric list group request handler.
+   :synopsis: Simulation metric group fetch request handler.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
@@ -12,15 +12,19 @@
 """
 import tornado
 
-from prodiguer.api import utils_handler
-from prodiguer.api.metric import utils
+from prodiguer.web import utils_handler
+from prodiguer.web.metric import utils
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.utils import rt
 
 
 
-class FetchListRequestHandler(tornado.web.RequestHandler):
-    """Simulation list metric request handler.
+# Query parameter names.
+_PARAM_GROUP = 'group'
+
+
+class FetchColumnsRequestHandler(tornado.web.RequestHandler):
+    """Simulation metric group fetch columns method request handler.
 
     """
     def set_default_headers(self):
@@ -28,16 +32,27 @@ class FetchListRequestHandler(tornado.web.RequestHandler):
         utils.set_cors_white_list(self)
 
 
+    def _validate_request_params(self):
+        """Validates query params."""
+        utils.validate_group_name(self.get_argument(_PARAM_GROUP))
+
+
+    def _decode_request_params(self):
+        """Decodes request query parameters."""
+        self.group = self.get_argument(_PARAM_GROUP)
+
+
     def _fetch_data(self):
         """Fetches data from db."""
-        self.groups = dao.fetch_list()
+        self.columns = dao.fetch_columns(self.group, True)
 
 
     def _write_response(self, error=None):
         """Write response output."""
         if not error:
             self.output = {
-                'groups': self.groups
+                'group': self.group,
+                'columns': self.columns
             }
         utils_handler.write_response(self, error)
 
@@ -51,6 +66,8 @@ class FetchListRequestHandler(tornado.web.RequestHandler):
         # Define tasks.
         tasks = {
             "green": (
+                self._validate_request_params,
+                self._decode_request_params,
                 self._fetch_data,
                 self._write_response,
                 self._log,

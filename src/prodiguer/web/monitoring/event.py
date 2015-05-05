@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.api.monitoring.event.py
+.. module:: prodiguer.web.monitoring.event.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -15,7 +15,7 @@ import datetime, json
 
 import tornado.web
 
-from prodiguer.api import utils_ws
+from prodiguer.web import utils_ws
 from prodiguer.db import pgres as db
 from prodiguer.utils import (
     config,

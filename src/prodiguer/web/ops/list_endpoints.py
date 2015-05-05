@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.api.ops.heartbeat.py
+.. module:: prodiguer.web.ops.heartbeat.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -13,20 +13,35 @@
 """
 import tornado
 
-from prodiguer.api import utils_handler
+from prodiguer.web import utils_handler
 from prodiguer.utils import rt
 
 
 
-class HeartbeatRequestHandler(tornado.web.RequestHandler):
-    """Operations heartbeat request handler.
+class ListEndpointsRequestHandler(tornado.web.RequestHandler):
+    """Operations list endpoints request handler.
 
     """
     def prepare(self):
         """Called at the beginning of request handling."""
         self.output = {
-            "status": 0
-        }
+            'endpoints': [
+                r'/api/1/monitoring/fe/setup',
+                r'/api/1/monitoring/fe/ws',
+                r'/api/1/monitoring/event',
+                r'/api/1/metric/add',
+                r'/api/1/metric/delete',
+                r'/api/1/metric/fetch',
+                r'/api/1/metric/fetch_count',
+                r'/api/1/metric/fetch_columns',
+                r'/api/1/metric/fetch_list',
+                r'/api/1/metric/fetch_setup',
+                r'/api/1/metric/rename',
+                r'/api/1/metric/set_hashes',
+                r'/api/1/ops/heartbeat',
+                r'/api/1/ops/endpoints'
+                ]
+            }
 
 
     def _write(self, error=None):

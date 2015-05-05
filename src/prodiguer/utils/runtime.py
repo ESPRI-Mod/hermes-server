@@ -415,22 +415,6 @@ def assert_doc(name, value, msg=None):
     assert_attr(value, 'doc_info', msg="Document meta-information is missing")
 
 
-def is_iterable(target):
-    """Returns a flag indicating whether passed variable is iterable.
-
-    :param target: Varaible being tested whether it is iterable or not.
-    :type target: object or iterable
-
-    """
-    is_iterable = True
-    try:
-        iter(target)
-    except TypeError:
-        is_iterable = False
-
-    return is_iterable
-
-
 def assert_params(params, rules):
     """Performs a set of assertions over a parameter dictionary.
 

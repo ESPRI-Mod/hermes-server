@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.api.__init__.py
+.. module:: prodiguer.web.__init__.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -11,6 +11,6 @@
 
 
 """
-from prodiguer.api.app import run
-from prodiguer.api import utils_handler as handler_utils
-from prodiguer.api import utils_ws as ws_utils
+from prodiguer.web.app import run
+from prodiguer.web import utils_handler as handler_utils
+from prodiguer.web import utils_ws as ws_utils

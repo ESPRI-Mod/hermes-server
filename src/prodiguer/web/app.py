@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.api.app.py
+.. module:: prodiguer.web.app.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -16,7 +16,7 @@ from tornado.web import Application
 
 
 from prodiguer import cv
-from prodiguer.api import metric, monitoring, ops, utils_ws
+from prodiguer.web import metric, monitoring, ops, utils_ws
 from prodiguer.utils import config, rt
 
 
@@ -63,6 +63,7 @@ def _get_app_settings():
     """
     return {
         "cookie_secret": config.api.cookie_secret,
+        "compress_response": True,
         "static_path": _get_path_to_front_end()
     }
 
