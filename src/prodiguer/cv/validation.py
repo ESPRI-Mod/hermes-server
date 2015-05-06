@@ -11,13 +11,11 @@
 
 
 """
-from prodiguer.cv import (
-    constants,
-    cache,
-    exceptions,
-    formatter,
-    accessor as ta
-    )
+from prodiguer.cv import constants
+from prodiguer.cv import cache
+from prodiguer.cv import exceptions
+from prodiguer.cv import formatter
+from prodiguer.cv import accessor as ta
 
 
 

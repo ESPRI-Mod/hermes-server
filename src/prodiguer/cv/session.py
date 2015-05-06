@@ -13,7 +13,10 @@
 """
 import collections
 
-from prodiguer.cv import cache, constants, io, accessor as ta
+from prodiguer.cv import accessor as ta
+from prodiguer.cv import cache
+from prodiguer.cv import constants
+from prodiguer.cv import io
 from prodiguer.utils import logger
 
 

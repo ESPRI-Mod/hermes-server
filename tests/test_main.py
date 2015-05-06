@@ -12,7 +12,9 @@
 
 """
 import inspect
-from os.path import dirname, join, abspath, exists
+from os.path import abspath
+from os.path import dirname
+from os.path import join
 
 from . import utils as tu
 

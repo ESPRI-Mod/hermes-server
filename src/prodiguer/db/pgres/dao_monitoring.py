@@ -15,7 +15,9 @@ from sqlalchemy.exc import IntegrityError
 
 import datetime
 
-from prodiguer.db.pgres import dao, types, session
+from prodiguer.db.pgres import dao
+from prodiguer.db.pgres import session
+from prodiguer.db.pgres import types
 from prodiguer.cv import validation as cv_validator
 from prodiguer.db.pgres import validation as db_validator
 from prodiguer.utils import logger

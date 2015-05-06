@@ -12,7 +12,8 @@
 """
 import uuid
 
-import arrow, pika
+import arrow
+import pika
 from sqlalchemy.exc import IntegrityError
 
 from prodiguer.db import pgres as db

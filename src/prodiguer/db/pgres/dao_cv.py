@@ -12,7 +12,8 @@
 
 """
 from prodiguer.cv import validation as cv_validator
-from prodiguer.db.pgres import types, session
+from prodiguer.db.pgres import types
+from prodiguer.db.pgres import session
 
 
 

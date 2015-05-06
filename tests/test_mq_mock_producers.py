@@ -16,10 +16,8 @@ import inspect
 from prodiguer.mq import constants
 from prodiguer.mq.producers import cc_smon
 
-from . import (
-    utils as tu,
-    utils_mq
-    )
+from . import utils as tu
+from . import utils_mq
 
 
 

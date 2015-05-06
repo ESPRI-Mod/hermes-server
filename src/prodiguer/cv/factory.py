@@ -16,12 +16,10 @@ import uuid
 import arrow
 
 from prodiguer.cv import constants
-from prodiguer.cv.parser import (
-    parse_term_data,
-    parse_term_display_name,
-    parse_term_name,
-    parse_term_type
-    )
+from prodiguer.cv.parser import parse_term_data
+from prodiguer.cv.parser import parse_term_display_name
+from prodiguer.cv.parser import parse_term_name
+from prodiguer.cv.parser import parse_term_type
 
 
 

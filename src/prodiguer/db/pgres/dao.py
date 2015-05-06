@@ -11,7 +11,8 @@
 """
 import random
 
-from prodiguer.db.pgres import session, types
+from prodiguer.db.pgres import session
+from prodiguer.db.pgres import types
 
 
 

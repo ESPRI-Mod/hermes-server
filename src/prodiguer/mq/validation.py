@@ -10,11 +10,13 @@
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 """
-import datetime, uuid
+import datetime
+import uuid
 
 import pika
 
-from prodiguer.mq import constants, timestamp as Timestamp
+from prodiguer.mq import constants
+from prodiguer.mq import timestamp as Timestamp
 
 
 

@@ -16,8 +16,9 @@ import uuid
 
 from sqlalchemy import inspect
 
-from prodiguer.db.pgres import session, types
-from prodiguer.utils import convert, rt
+from prodiguer.db.pgres import session
+from prodiguer.db.pgres import types
+from prodiguer.utils import rt
 
 
 
@@ -116,7 +117,9 @@ def create(etype, force=False, commit=False):
 
 
 def _clean(i, etype):
-    """Clean set of dependent instances."""
+    """Clean set of dependent instances.
+
+    """
     for dependents in _dependents.values():
         if i in dependents:
             dependents.remove(i)
@@ -126,7 +129,9 @@ def _clean(i, etype):
 
 
 def _is_cleanable(i):
-    """Determines whether an instance can be deleted."""
+    """Determines whether an instance can be deleted.
+
+    """
     for dependents in _dependents.values():
         if i in dependents:
             return False

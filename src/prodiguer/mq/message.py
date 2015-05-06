@@ -10,10 +10,13 @@
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 """
-import base64, json
+import base64
+import json
 
-from prodiguer.mq import constants, validation
-from prodiguer.utils import convert, config
+from prodiguer.mq import constants
+from prodiguer.mq import validation
+from prodiguer.utils import config
+from prodiguer.utils import convert
 
 
 

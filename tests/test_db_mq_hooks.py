@@ -18,10 +18,8 @@ import nose
 
 from . import utils as tu
 from prodiguer import cv
-from prodiguer.db.types import (
-    Message,
-    Simulation
-    )
+from prodiguer.db.types import Message
+from prodiguer.db.types import Simulation
 
 
 # Test constants.

@@ -17,10 +17,8 @@ import nose
 import requests
 
 from prodiguer import api
-from . import (
-	utils as tu,
-	utils_api_metric as tu_api
-	)
+from . import utils as tu
+from . import utils_api_metric as tu_api
 
 
 

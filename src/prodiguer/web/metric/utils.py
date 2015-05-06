@@ -11,7 +11,8 @@
 
 
 """
-import json, re
+import json
+import re
 
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.utils import convert

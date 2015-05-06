@@ -9,16 +9,10 @@
 
 
 """
-import datetime
-
-from dateutil import parser as date_parser
-from sqlalchemy import (
-    Column,
-    ForeignKey,
-    inspect,
-    Integer,
-    MetaData
-    )
+from sqlalchemy import Column
+from sqlalchemy import inspect as sa_inspect
+from sqlalchemy import Integer
+from sqlalchemy import MetaData
 from sqlalchemy.ext.declarative import declarative_base
 
 from prodiguer.utils import convert
@@ -143,7 +137,7 @@ class Convertor(object):
         def _to_dict(e):
             """Converts entity instance to a dictionary."""
             # Use sqlalchemy column mappings to derive dictionary keys.
-            cols = inspect(e).mapper.columns
+            cols = sa_inspect(e).mapper.columns
 
             # Return a dictionary comprehension.
             as_dict = { c.name: getattr(e, c.name) for c in cols }

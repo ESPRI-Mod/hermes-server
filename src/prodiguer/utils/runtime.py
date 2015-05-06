@@ -11,7 +11,8 @@
 
 
 """
-import inspect, os
+import inspect
+import os
 
 from prodiguer.utils import logger
 

@@ -10,32 +10,15 @@
 
 
 """
-from prodiguer.db.pgres import (
-	dao,
-	dao_cv,
-	dao_monitoring,
-	dao_mq,
-	session,
-	setup,
-	types,
-	type_factory,
-	utils,
-	validation
-	)
+from prodiguer.db.pgres import dao
+from prodiguer.db.pgres import dao_cv
+from prodiguer.db.pgres import dao_monitoring
+from prodiguer.db.pgres import dao_mq
+from prodiguer.db.pgres import session
+from prodiguer.db.pgres import setup
+from prodiguer.db.pgres import types
+from prodiguer.db.pgres import type_factory
+from prodiguer.db.pgres import utils
+from prodiguer.db.pgres import validation
 from prodiguer.db.pgres.types import Entity
 from prodiguer.utils import config
-
-
-__all__ = [
-	"dao",
-	"dao_cv",
-	"dao_monitoring",
-	"dao_mq",
-	"Entity",
-	"session",
-	"setup",
-	"types",
-	"type_factory",
-	"utils",
-	"validation"
-]

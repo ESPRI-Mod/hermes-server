@@ -11,7 +11,8 @@
 
 
 """
-import json, os
+import json
+import os
 
 from prodiguer.cv import accessor as ta
 from prodiguer.utils import logger

@@ -10,21 +10,19 @@
 
 
 """
-from prodiguer.cv import (
-	cache,
-	exceptions,
-	factory,
-	io,
-	parser,
-	session,
-	accessor,
-	validation
-	)
-from accessor import (
-	get_display_name,
-	get_name,
-	get_synonyms,
-	get_type
-	)
-from factory import create
-from exceptions import TermNameError, TermTypeError, TermUserDataError
+from prodiguer.cv import accessor
+from prodiguer.cv import cache
+from prodiguer.cv import exceptions
+from prodiguer.cv import factory
+from prodiguer.cv import io
+from prodiguer.cv import parser
+from prodiguer.cv import session
+from prodiguer.cv import validation
+from prodiguer.cv.accessor import get_display_name
+from prodiguer.cv.accessor import get_name
+from prodiguer.cv.accessor import get_synonyms
+from prodiguer.cv.accessor import get_type
+from prodiguer.cv.factory import create
+from prodiguer.cv.exceptions import TermNameError
+from prodiguer.cv.exceptions import TermTypeError
+from prodiguer.cv.exceptions import TermUserDataError

@@ -11,7 +11,8 @@
 
 
 """
-from prodiguer.db.pgres import types, session
+from prodiguer.db.pgres import session
+from prodiguer.db.pgres import types
 
 
 

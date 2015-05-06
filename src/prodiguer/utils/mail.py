@@ -11,7 +11,9 @@
 
 
 """
-import email, imaplib, imapclient
+import email
+import imaplib
+import imapclient
 
 from prodiguer.utils.config import data as config
 

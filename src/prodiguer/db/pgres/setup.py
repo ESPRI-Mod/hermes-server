@@ -11,15 +11,13 @@
 """
 import os, uuid
 
-from sqlalchemy.schema import CreateSchema, DropSchema
+from sqlalchemy.schema import CreateSchema
+from sqlalchemy.schema import DropSchema
 
 from prodiguer import cv
-from prodiguer.db.pgres import (
-    session as db_session,
-    types as db_types
-    )
+from prodiguer.db.pgres import session as db_session
+from prodiguer.db.pgres import types as db_types
 from prodiguer.utils import convert
-from prodiguer.utils import rt
 from prodiguer.utils import logger
 
 

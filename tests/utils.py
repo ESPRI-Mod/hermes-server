@@ -20,10 +20,8 @@ import uuid
 from dateutil import parser as dateutil_parser
 
 from prodiguer.db import pgres as db
-from prodiguer.utils import (
-    convert,
-    rt
-    )
+from prodiguer.utils import convert
+from prodiguer.utils import convert
 
 
 

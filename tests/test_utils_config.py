@@ -11,7 +11,10 @@
 .. moduleauthor:: IPSL (ES-DOC) <dev@esdocumentation.org>
 
 """
-from os.path import abspath, dirname, exists, join
+from os.path import abspath
+from os.path import dirname
+from os.path import exists
+from os.path import join
 
 from . import utils as tu
 from prodiguer.utils import convert
