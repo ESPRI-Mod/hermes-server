@@ -13,8 +13,10 @@
 """
 import collections, random
 
-from prodiguer.utils import rt
-from prodiguer.cv import constants, io, accessor as ta
+from prodiguer.utils import logger
+from prodiguer.cv import constants
+from prodiguer.cv import io
+from prodiguer.cv import accessor as ta
 
 
 
@@ -65,7 +67,7 @@ def reload():
 
     """
     if _DATA:
-        rt.log_cv("RELOADING CV CACHE ...")
+        logger.log_cv("RELOADING CV CACHE ...")
         _DATA.clear()
     load()
 

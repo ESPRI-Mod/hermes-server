@@ -16,8 +16,13 @@ from tornado.web import Application
 
 
 from prodiguer import cv
-from prodiguer.web import metric, monitoring, ops, utils_ws
-from prodiguer.utils import config, rt
+from prodiguer.web import metric
+from prodiguer.web import monitoring
+from prodiguer.web import ops
+from prodiguer.web import utils_ws
+from prodiguer.utils import config
+from prodiguer.utils import logger
+from prodiguer.utils import rt
 
 
 
@@ -26,7 +31,7 @@ def _get_path_to_front_end():
 
     """
     dir_fe = rt.get_path_to_repo(['prodiguer-fe', 'src'])
-    rt.log_api("Front-end static files @ {0}".format(dir_fe))
+    logger.log_web("Front-end static files @ {0}".format(dir_fe))
 
     return dir_fe
 
@@ -73,7 +78,7 @@ def run():
 
     """
     # Setup app.
-    rt.log_api("Initializing")
+    logger.log_web("Initializing")
 
     # Initialise cv session.
     cv.session.init()
@@ -90,7 +95,7 @@ def run():
     utils_ws.keep_alive()
 
     # Start io loop.
-    rt.log_api("Ready")
+    logger.log_web("Ready")
     tornado.ioloop.IOLoop.instance().start()
 
 

@@ -14,6 +14,7 @@
 import json, os
 
 from prodiguer.cv import accessor as ta
+from prodiguer.utils import logger
 from prodiguer.utils import rt
 
 
@@ -49,13 +50,13 @@ def read(log=True):
             try:
                 return json.loads(cv_file.read())
             except ValueError:
-                rt.log_cv_warning("CV file load error: {0}".format(filepath))
+                logger.log_cv_warning("CV file load error: {0}".format(filepath))
                 return None
 
     # Set directory to CV archive.
     dir_archive = _get_path_to_archive()
     if log:
-        rt.log_cv("CV data files @ {0}".format(dir_archive))
+        logger.log_cv("CV data files @ {0}".format(dir_archive))
 
     # Set CV files to be loaded from archive.
     termset = []
@@ -90,5 +91,5 @@ def delete(term):
     """
     term_filepath = _get_path_to_term(term)
     os.remove(term_filepath)
-    rt.log_cv("CV file deleted: {0}".format(term_filepath))
+    logger.log_cv("CV file deleted: {0}".format(term_filepath))
 

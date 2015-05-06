@@ -18,7 +18,9 @@ from prodiguer.db.pgres import (
     session as db_session,
     types as db_types
     )
-from prodiguer.utils import convert, rt
+from prodiguer.utils import convert
+from prodiguer.utils import rt
+from prodiguer.utils import logger
 
 
 
@@ -26,7 +28,7 @@ def _init_cv_terms():
     """Initialises set of cv terms.
 
     """
-    rt.log_db("Seeding cv.tbl_cv_term")
+    logger.log_db("Seeding cv.tbl_cv_term")
 
     for term in cv.io.read():
         item = db_types.ControlledVocabularyTerm()
@@ -41,7 +43,7 @@ def _init_simulations():
     """Initialises set of simulations.
 
     """
-    rt.log_db("Seeding cnode.tbl_simulation")
+    logger.log_db("Seeding cnode.tbl_simulation")
 
     # Set simulations from simulation.json file.
     fpath = os.path.dirname(os.path.abspath(__file__))

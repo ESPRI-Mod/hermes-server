@@ -13,7 +13,8 @@
 import pika
 
 from prodiguer.mq import defaults
-from prodiguer.utils import config, rt
+from prodiguer.utils import config
+from prodiguer.utils import logger
 
 
 
@@ -72,9 +73,11 @@ class Producer(object):
 
 
     def _log(self, msg, force=False):
-        """Logging helper function."""
+        """Logging helper function.
+
+        """
         if self._verbose or force:
-            rt.log_mq(msg)
+            logger.log_mq(msg)
 
 
     def _connect(self):

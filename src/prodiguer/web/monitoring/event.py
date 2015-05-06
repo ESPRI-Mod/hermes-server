@@ -15,14 +15,10 @@ import datetime, json
 
 import tornado.web
 
-from prodiguer.web import utils_ws
 from prodiguer.db import pgres as db
-from prodiguer.utils import (
-    config,
-    rt,
-    string_convertor as sc,
-    data_convertor as dc
-    )
+from prodiguer.utils import logger
+from prodiguer.utils import string_convertor as sc
+from prodiguer.web import utils_ws
 
 
 
@@ -34,7 +30,7 @@ def _log(msg):
     """Helper: logging.
 
     """
-    rt.log_api("{0} :: {1}".format(_WS_KEY, msg))
+    logger.log_web("{0} :: {1}".format(_WS_KEY, msg))
 
 
 def _get_simulation_event_data(data):

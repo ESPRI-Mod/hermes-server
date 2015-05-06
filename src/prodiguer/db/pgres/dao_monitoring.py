@@ -18,7 +18,8 @@ import datetime
 from prodiguer.db.pgres import dao, types, session
 from prodiguer.cv import validation as cv_validator
 from prodiguer.db.pgres import validation as db_validator
-from prodiguer.utils import rt
+from prodiguer.utils import logger
+
 
 
 def _log(msg, force=True):
@@ -26,7 +27,7 @@ def _log(msg, force=True):
 
     """
     if force:
-        rt.log_db(msg)
+        logger.log_db(msg)
 
 
 def _validate_persist_simulation_01(

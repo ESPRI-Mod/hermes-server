@@ -14,7 +14,7 @@
 import collections
 
 from prodiguer.cv import cache, constants, io, accessor as ta
-from prodiguer.utils import rt
+from prodiguer.utils import logger
 
 
 
@@ -39,7 +39,7 @@ def init():
 
     """
     cache.load()
-    rt.log_cv("initialized CV session ...")
+    logger.log_cv("initialized CV session ...")
 
 
 def commit():
@@ -49,17 +49,17 @@ def commit():
     for term in _STATE["destructions"]:
         io.delete(term)
         cache.remove_term(term)
-        rt.log_cv("Destroyed term: {}".format(ta.get_repr(term)))
+        logger.log_cv("Destroyed term: {}".format(ta.get_repr(term)))
     for term in _STATE["insertions"]:
         io.write(term)
         cache.add_term(term)
-        rt.log_cv("Inserted term: {}".format(ta.get_repr(term)))
+        logger.log_cv("Inserted term: {}".format(ta.get_repr(term)))
     for term in _STATE["deletions"]:
         io.write(term)
         cache.remove_term(term)
-        rt.log_cv("Deleted term: {}".format(ta.get_repr(term)))
+        logger.log_cv("Deleted term: {}".format(ta.get_repr(term)))
 
-    rt.log_cv("Session updates committed to file system")
+    logger.log_cv("Session updates committed to file system")
 
     _STATE.clear()
 

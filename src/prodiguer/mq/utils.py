@@ -16,11 +16,14 @@ import arrow, pika
 from sqlalchemy.exc import IntegrityError
 
 from prodiguer.db import pgres as db
-from prodiguer.mq import defaults, message, validation
+from prodiguer.mq import defaults
+from prodiguer.mq import message
+from prodiguer.mq import validation
 from prodiguer.mq.consumer import Consumer
 from prodiguer.mq.producer import Producer
 from prodiguer.mq.timestamp import Timestamp
-from prodiguer.utils import rt
+from prodiguer.utils import logger
+
 
 
 def create_ampq_message_properties(
@@ -189,7 +192,7 @@ def consume(
             db.session.rollback()
         # Log persistence errors.
         except Exception as err:
-            rt.log_mq_error(err)
+            logger.log_mq_error(err)
         # Invoke message processing callback.
         else:
             callback(ctx)

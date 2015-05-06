@@ -15,7 +15,8 @@ import collections
 
 import tornado.websocket
 
-from prodiguer.utils import config, rt
+from prodiguer.utils import config
+from prodiguer.utils import logger
 from prodiguer.utils.data_convertor import jsonify
 
 
@@ -70,7 +71,7 @@ def on_connect(key, client):
     """
     if client not in _WS_CLIENTS[key]:
         _WS_CLIENTS[key].append(client)
-        rt.log_api("WS {0} :: connection opened :: clients = {1}.".format(key, len(_WS_CLIENTS[key])))
+        logger.log_web("WS {0} :: connection opened :: clients = {1}.".format(key, len(_WS_CLIENTS[key])))
 
 
 def on_disconnect(key, client):
@@ -85,7 +86,7 @@ def on_disconnect(key, client):
     """
     if client in _WS_CLIENTS[key]:
         _WS_CLIENTS[key].remove(client)
-        rt.log_api("WS {0} :: connection closed :: clients = {1}.".format(key, len(_WS_CLIENTS[key])))
+        logger.log_web("WS {0} :: connection closed :: clients = {1}.".format(key, len(_WS_CLIENTS[key])))
 
 
 def clear_cache(key=None):
@@ -111,7 +112,7 @@ def pong_WS_CLIENTS():
     for app in _WS_CLIENTS.keys():
         for client in _WS_CLIENTS[app]:
             if not logged:
-                rt.log_api("Ponging websocket clients.")
+                logger.log_web("Ponging websocket clients.")
                 logged = True
             try:
                 client.write_message("pong")
@@ -130,5 +131,5 @@ def keep_alive():
     # Do this every N seconds so as to keep client connections open.
     delay = config.api.websocketKeepAliveDelayInSeconds
     if delay:
-        rt.log_api("Websocket keep alive every {0} seconds.".format(delay))
+        logger.log_web("Websocket keep alive every {0} seconds.".format(delay))
         tornado.ioloop.IOLoop.instance().call_later(delay, _do)

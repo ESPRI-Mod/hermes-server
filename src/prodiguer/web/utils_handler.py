@@ -11,7 +11,8 @@
 
 
 """
-from prodiguer.utils import config, rt
+from prodiguer.utils import config
+from prodiguer.utils import logger
 from prodiguer.utils.data_convertor import jsonify
 
 
@@ -120,9 +121,9 @@ def log(api_type, handler, error=None):
     if error:
         msg = "{0} --> error --> {1} --> {2}"
         msg = msg.format(api_type, handler, error)
-        rt.log_api_error(msg)
+        logger.log_web_error(msg)
     else:
         msg = "{0} --> success --> {1}"
         msg = msg.format(api_type, handler)
-        rt.log_api(msg)
+        logger.log_web(msg)
 

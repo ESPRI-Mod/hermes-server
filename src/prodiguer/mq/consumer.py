@@ -14,9 +14,11 @@ import inspect
 
 import pika
 
-from prodiguer.utils import rt
-from prodiguer.mq import constants, defaults, message
+from prodiguer.mq import constants
+from prodiguer.mq import defaults
+from prodiguer.mq import message
 from prodiguer.utils import config
+from prodiguer.utils import logger
 
 
 
@@ -94,9 +96,11 @@ class Consumer(object):
 
 
     def _log(self, msg, force=False):
-        """Logging helper function."""
+        """Logging helper function.
+
+        """
         if self._verbose or force:
-            rt.log_mq(msg)
+            logger.log_mq(msg)
 
 
     def _connect(self):

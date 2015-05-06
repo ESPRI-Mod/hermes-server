@@ -160,7 +160,7 @@ def log_db_error(err, app=_DEFAULT_APP, institute=_DEFAULT_INSTITUTE):
     log(msg, module="DB", level=LOG_LEVEL_ERROR, app=app, institute=institute)
 
 
-def log_api(msg,
+def log_web(msg,
             level=LOG_LEVEL_INFO,
             app=_DEFAULT_APP,
             institute=_DEFAULT_INSTITUTE):
@@ -173,7 +173,7 @@ def log_api(msg,
     log(msg, module="API", level=level, app=app, institute=institute)
 
 
-def log_api_warning(
+def log_web_warning(
     msg,
     level=LOG_LEVEL_WARNING,
     app=_DEFAULT_APP,
@@ -187,7 +187,7 @@ def log_api_warning(
     log(msg, module="API", level=level, app=app, institute=institute)
 
 
-def log_api_error(err,
+def log_web_error(err,
                   app=_DEFAULT_APP,
                   institute=_DEFAULT_INSTITUTE):
     """Logs a runtime error.
