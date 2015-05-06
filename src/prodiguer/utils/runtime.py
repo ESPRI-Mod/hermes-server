@@ -290,7 +290,7 @@ def invoke(tasks, ctx=None, module="**"):
         # Execute red tasks.
         except Exception as err:
             try:
-                log_error(err, module)
+                logger.log_error(err, module)
                 for error_task in tasks["red"]:
                     _invoke(error_task, err)
             except:
@@ -343,7 +343,7 @@ def invoke_mq(agent_type, tasks, error_tasks=None, ctx=None):
         # ... error tasks.
         except Exception as err:
             err_msg = "{0} :: {1} :: {2} :: {3}.".format(agent_type, task, type(err), err)
-            log_error(err_msg, "MQ", format_err=False)
+            logger.log_mq_error(err_msg)
             try:
                 for error_task in _get(error_tasks):
                     print agent_type, "ERROR TASK", error_task
