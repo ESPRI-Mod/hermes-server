@@ -18,7 +18,7 @@ from sqlalchemy import inspect
 
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
-from prodiguer.utils import rt
+from prodiguer.db.pgres.type_utils import assert_type
 
 
 
@@ -61,7 +61,7 @@ def _set_scalar(i, c):
     if stype in _scalar_factories:
         setattr(i, c.name, _scalar_factories[stype]())
     else:
-        rt.throw("Unsupported scalar type :: {0}.".format(stype))
+        raise TypeError("Unsupported scalar type :: {0}.".format(stype))
 
 
 def _set_fk(etype, i, c, fk):
@@ -77,7 +77,7 @@ def _set_fk(etype, i, c, fk):
             _dependents[etype].append(fki)
         setattr(i, c.name, fki.id)
     else:
-        rt.throw("Unsupported foreign key instance :: {0}.".format(fk_etype))
+        raise ValueError("Unsupported foreign key instance :: {0}.".format(fk_etype))
 
 
 def create(etype, force=False, commit=False):
@@ -92,7 +92,7 @@ def create(etype, force=False, commit=False):
 
     """
     # Defensive programming.
-    types.assert_type(etype)
+    assert_type(etype)
 
     # Return cached if appropriate (prevents infinite recursion).
     if etype in _created:

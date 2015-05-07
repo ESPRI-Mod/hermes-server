@@ -13,6 +13,8 @@
 """
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
+from prodiguer.mq import validation as msg_validation
+from prodiguer.utils import decorators
 
 
 
@@ -35,7 +37,6 @@ def _validate_create_message(
     """Validates create message inputs.
 
     """
-    from prodiguer.mq import validation as msg_validation
 
     msg_validation.validate_app_id(app_id)
     msg_validation.validate_content(content)
@@ -54,6 +55,14 @@ def _validate_create_message(
     msg_validation.validate_user_id(user_id)
 
 
+def _validate_create_message_email(email_id):
+    """Validates create message inputs.
+
+    """
+    pass
+
+
+@decorators.validate(_validate_create_message)
 def create_message(
     uid,
     user_id,
@@ -91,59 +100,41 @@ def create_message(
     :rtype: types.Message
 
     """
-    # Validate inputs.
-    _validate_create_message(
-        uid,
-        user_id,
-        app_id,
-        producer_id,
-        type_id,
-        content,
-        content_encoding,
-        content_type,
-        correlation_id_1,
-        correlation_id_2,
-        correlation_id_3,
-        timestamp,
-        timestamp_precision,
-        timestamp_raw
-        )
-
-    # Instantiate instance.
-    msg = types.Message()
-    msg.app_id = unicode(app_id)
-    msg.content = content
-    msg.content_encoding = unicode(content_encoding)
-    msg.content_type = unicode(content_type)
+    instance = types.Message()
+    instance.app_id = unicode(app_id)
+    instance.content = content
+    instance.content_encoding = unicode(content_encoding)
+    instance.content_type = unicode(content_type)
     if correlation_id_1:
-        msg.correlation_id_1 = unicode(correlation_id_1)
+        instance.correlation_id_1 = unicode(correlation_id_1)
     if correlation_id_2:
-        msg.correlation_id_2 = unicode(correlation_id_2)
+        instance.correlation_id_2 = unicode(correlation_id_2)
     if correlation_id_3:
-        msg.correlation_id_3 = unicode(correlation_id_3)
-    msg.producer_id = unicode(producer_id)
+        instance.correlation_id_3 = unicode(correlation_id_3)
+    instance.producer_id = unicode(producer_id)
     if timestamp is not None:
-        msg.timestamp = timestamp
+        instance.timestamp = timestamp
     if timestamp_precision is not None:
-        msg.timestamp_precision = unicode(timestamp_precision)
+        instance.timestamp_precision = unicode(timestamp_precision)
     if timestamp_raw is not None:
-        msg.timestamp_raw = unicode(timestamp_raw)
-    msg.type_id = unicode(type_id)
-    msg.uid = unicode(uid)
-    msg.user_id = unicode(user_id)
+        instance.timestamp_raw = unicode(timestamp_raw)
+    instance.type_id = unicode(type_id)
+    instance.uid = unicode(uid)
+    instance.user_id = unicode(user_id)
 
     # Push to db.
-    session.add(msg)
+    session.add(instance)
 
-    return msg
+    return instance
 
 
-def create_message_email(uid):
+@decorators.validate(_validate_create_message_email)
+def create_message_email(email_id):
     """Creates a new message email record in db.
 
     """
     instance = types.MessageEmail()
-    instance.uid = uid
+    instance.uid = email_id
 
     # Push to db.
     session.add(instance)

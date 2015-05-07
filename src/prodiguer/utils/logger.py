@@ -85,7 +85,7 @@ def log_error(
 
     """
     msg = "!! {0} RUNTIME ERROR !! :: ".format(module)
-    if issubclass(BaseException, err):
+    if issubclass(BaseException, err.__class__):
         msg += "{} :: ".format(err.__class__)
     msg += "{}".format(err)
     log(msg, module, LOG_LEVEL_ERROR, app, institute)

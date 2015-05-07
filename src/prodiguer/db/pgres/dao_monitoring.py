@@ -20,6 +20,7 @@ from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
 from prodiguer.cv import validation as cv_validator
 from prodiguer.db.pgres import validation as db_validator
+from prodiguer.utils import decorators
 from prodiguer.utils import logger
 
 
@@ -30,6 +31,24 @@ def _log(msg, force=True):
     """
     if force:
         logger.log_db(msg)
+
+
+def _persist(hydrate, create, retrieve):
+    """Persists to db by either creating a new instance or
+       retrieving and updating an existing instance.
+
+    """
+    try:
+        instance = create()
+        hydrate(instance)
+        session.insert(instance)
+    except IntegrityError:
+        session.rollback()
+        instance = retrieve()
+        hydrate(instance)
+        session.update(instance)
+
+    return instance
 
 
 def _validate_persist_simulation_01(
@@ -72,7 +91,7 @@ def _validate_persist_simulation_02(execution_end_date, is_error, uid):
     db_validator.validate_simulation_uid(uid)
 
 
-def _validate_create_simulation_configuration(uid, card):
+def _validate_persist_simulation_configuration(uid, card):
     """Validates create simulation configuration inputs.
 
     """
@@ -117,11 +136,11 @@ def retrieve_active_simulations():
     :rtype: list
 
     """
-    qfilter = types.Simulation.is_dead == False
+    qry = session.query(types.Simulation)
+    qry = qry.filter(types.Simulation.name is not None)
+    qry = qry.filter(types.Simulation.is_dead == False)
 
-    return dao.get_by_facet(types.Simulation,
-                            qfilter=qfilter,
-                            get_iterable=True)
+    return dao.exec_query(types.Simulation, qry, True)
 
 
 def retrieve_active_jobs():
@@ -136,7 +155,7 @@ def retrieve_active_jobs():
                    types.Job.simulation_uid==types.Simulation.uid)
     qry = qry.filter(types.Simulation.is_dead == False)
 
-    return dao.sort(types.Job, qry.all())
+    return dao.exec_query(types.Job, qry, True)
 
 
 def retrieve_simulation(uid):
@@ -181,6 +200,7 @@ def retrieve_job(uid):
     return dao.get_by_facet(types.Job, qfilter=qfilter)
 
 
+@decorators.validate(_validate_persist_simulation_01)
 def persist_simulation_01(
     activity,
     compute_node,
@@ -214,8 +234,8 @@ def persist_simulation_01(
     :rtype: types.Simulation
 
     """
-    def _get_hydrated(instance):
-        """Returns an instance hydrated with input parameters.
+    def _assign(instance):
+        """Assigns instance values from input parameters.
 
         """
         instance.activity = unicode(activity)
@@ -231,34 +251,11 @@ def persist_simulation_01(
         instance.space = unicode(space)
         instance.uid = unicode(uid)
         instance.hashid = instance.get_hashid()
-        return instance
 
-    # Validate inputs.
-    _validate_persist_simulation_01(
-        activity,
-        compute_node,
-        compute_node_login,
-        compute_node_machine,
-        execution_start_date,
-        experiment,
-        model,
-        name,
-        output_start_date,
-        output_end_date,
-        space,
-        uid
-        )
-
-    # Return either inserted or updated instance.
-    try:
-        return session.insert(_get_hydrated(types.Simulation()))
-    except IntegrityError:
-        session.rollback()
-        return session.update(_get_hydrated(retrieve_simulation(uid)))
-    finally:
-        _log("Persisted simulation info: {0}.".format(uid))
+    return _persist(_assign, types.Simulation, lambda: retrieve_simulation(uid))
 
 
+@decorators.validate(_validate_persist_simulation_02)
 def persist_simulation_02(execution_end_date, is_error, uid):
     """Persists simulation information to db.
 
@@ -270,38 +267,25 @@ def persist_simulation_02(execution_end_date, is_error, uid):
     :rtype: types.Simulation
 
     """
-    def _get_hydrated(instance):
-        """Returns an instance hydrated with input parameters.
+    def _assign(instance):
+        """Assigns instance values from input parameters.
 
         """
         instance.execution_end_date = execution_end_date
         instance.is_error = is_error
         instance.uid = unicode(uid)
-        return instance
 
-    # Validate inputs.
-    _validate_persist_simulation_02(execution_end_date, is_error, uid)
-
-    # Return either inserted or updated instance.
-    try:
-        return session.insert(_get_hydrated(types.Simulation()))
-    except IntegrityError:
-        session.rollback()
-        return session.update(_get_hydrated(retrieve_simulation(uid)))
-    finally:
-        _log("Persisted simulation info: {0}.".format(uid))
+    return _persist(_assign, types.Simulation, lambda: retrieve_simulation(uid))
 
 
-def create_simulation_configuration(uid, card):
-    """Creates a new simulation configuration db record.
+@decorators.validate(_validate_persist_simulation_configuration)
+def persist_simulation_configuration(uid, card):
+    """Persists a new simulation configuration db record.
 
     :param str uid: Simulation UID.
     :param str card: Simulation configuration card.
 
     """
-    # Validate inputs.
-    _validate_create_simulation_configuration(uid, card)
-
     # Instantiate instance.
     instance = types.SimulationConfiguration()
     instance.simulation_uid = unicode(uid)
@@ -316,6 +300,7 @@ def create_simulation_configuration(uid, card):
     return instance
 
 
+@decorators.validate(_validate_persist_job_01)
 def persist_job_01(
     expected_completion_delay,
     execution_start_date,
@@ -333,8 +318,8 @@ def persist_job_01(
     :rtype: types.Job
 
     """
-    def _get_hydrated(instance):
-        """Returns an instance hydrated with input parameters.
+    def _assign(instance):
+        """Assigns instance values from input parameters.
 
         """
         instance.execution_start_date = execution_start_date
@@ -344,26 +329,10 @@ def persist_job_01(
         instance.job_uid = unicode(job_uid)
         instance.simulation_uid = unicode(simulation_uid)
 
-        return instance
-
-    # Validate inputs.
-    _validate_persist_job_01(
-        expected_completion_delay,
-        execution_start_date,
-        job_uid,
-        simulation_uid
-        )
-
-    # Return either inserted or updated instance.
-    try:
-        return session.insert(_get_hydrated(types.Job()))
-    except IntegrityError:
-        session.rollback()
-        return session.update(_get_hydrated(retrieve_job(job_uid)))
-    finally:
-        _log("Persisted job info :: {0} | {1}".format(simulation_uid, job_uid))
+    return _persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 
 
+@decorators.validate(_validate_persist_job_02)
 def persist_job_02(execution_end_date, is_error, job_uid, simulation_uid):
     """Persists job information to db.
 
@@ -376,32 +345,16 @@ def persist_job_02(execution_end_date, is_error, job_uid, simulation_uid):
     :rtype: types.Job
 
     """
-    def _get_hydrated(instance):
-        """Returns an instance hydrated with input parameters.
+    def _assign(instance):
+        """Assigns instance values from input parameters.
 
         """
         instance.execution_end_date = execution_end_date
         instance.is_error = is_error
         instance.job_uid = unicode(job_uid)
         instance.simulation_uid = unicode(simulation_uid)
-        return instance
 
-    # Validate inputs.
-    _validate_persist_job_02(
-        execution_end_date,
-        is_error,
-        job_uid,
-        simulation_uid
-        )
-
-    # Return either inserted or updated instance.
-    try:
-        return session.insert(_get_hydrated(types.Job()))
-    except IntegrityError:
-        session.rollback()
-        return session.update(_get_hydrated(retrieve_job(job_uid)))
-    finally:
-        _log("Persisted job info :: {0} | {1}".format(simulation_uid, job_uid))
+    return _persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 
 
 def update_dead_simulation_runs(hashid, uid):

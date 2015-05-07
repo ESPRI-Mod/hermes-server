@@ -57,15 +57,6 @@ def _get_simulation_event_data(data):
         }
 
 
-def _get_job_event_data(data):
-    """Helper: retuns common simulation event data.
-
-    """
-    return {
-        'job': db.dao_monitoring.retrieve_job(data['job_uid'])
-        }
-
-
 # Map of event type to event handlers.
 _EVENT_HANDLERS = {
     'simulation_start': _get_simulation_event_data,

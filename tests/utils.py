@@ -20,8 +20,7 @@ import uuid
 from dateutil import parser as dateutil_parser
 
 from prodiguer.db import pgres as db
-from prodiguer.utils import convert
-from prodiguer.utils import convert
+from prodiguer.db.pgres.type_utils import Convertor
 
 
 
@@ -336,13 +335,13 @@ def assert_db_type_conversion(type):
     x = db.type_factory.create(type)
 
     # Convert to string.
-    assert_obj(db.types.Convertor.to_string(x), str)
+    assert_obj(Convertor.to_string(x), str)
 
     # Convert to dictionary.
-    assert_obj(db.types.Convertor.to_dict(x), dict)
+    assert_obj(Convertor.to_dict(x), dict)
 
     # Convert to json.
-    assert db.types.Convertor.to_json(x) is not None
+    assert Convertor.to_json(x) is not None
 
     # Reset type factory.
     db.type_factory.reset()

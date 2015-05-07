@@ -17,6 +17,7 @@ from sqlalchemy.schema import DropSchema
 from prodiguer import cv
 from prodiguer.db.pgres import session as db_session
 from prodiguer.db.pgres import types as db_types
+from prodiguer.db.pgres.type_utils import metadata as db_metadata
 from prodiguer.utils import convert
 from prodiguer.utils import logger
 
@@ -99,7 +100,7 @@ def execute():
         db_session.sa_engine.execute(CreateSchema(schema))
 
     # Initialize tables.
-    db_types.metadata.create_all(db_session.sa_engine)
+    db_metadata.create_all(db_session.sa_engine)
 
     # Seed tables.
     _init_cv_terms()

@@ -12,7 +12,7 @@
 import random
 
 from prodiguer.db.pgres import session
-from prodiguer.db.pgres import types
+from prodiguer.db.pgres.type_utils import assert_type
 
 
 
@@ -29,7 +29,7 @@ def sort(etype, collection):
     :rtype: list
 
     """
-    types.assert_type(etype)
+    assert_type(etype)
 
     return [] if collection is None else etype.get_sorted(collection)
 
@@ -59,7 +59,7 @@ def get_by_facet(etype, qfilter=None, order_by=None, get_iterable=False):
     :rtype: Sub-class of types.Entity
 
     """
-    types.assert_type(etype)
+    assert_type(etype)
 
     qry = session.query(etype)
     if qfilter is not None:
@@ -67,6 +67,19 @@ def get_by_facet(etype, qfilter=None, order_by=None, get_iterable=False):
     if order_by is not None:
         qry = qry.order_by(order_by)
 
+    return exec_query(etype, qry, get_iterable)
+
+
+def exec_query(etype, qry, get_iterable=False):
+    """Executes a query and return result (sorted if is a collection).
+
+    :param class etype: A supported entity type.
+    :param expression qry: Query expressions.
+    :param bool get_iterable: Flag indicating whether to return an iterable or not.
+
+    :returns: Entity or entity collection.
+    :rtype: Sub-class of types.Entity
+    """
     return sort(etype, qry.all()) if get_iterable else qry.first()
 
 
@@ -142,7 +155,7 @@ def get_count(etype, qfilter=None):
     :rtype: int
 
     """
-    types.assert_type(etype)
+    assert_type(etype)
 
     q = session.query(etype)
     if qfilter is not None:
@@ -180,7 +193,7 @@ def delete_all(etype):
     :type etype: class
 
     """
-    types.assert_type(etype)
+    assert_type(etype)
 
     q = session.query(etype)
     q.delete()
@@ -199,7 +212,7 @@ def delete_by_facet(etype, expression):
     :type facet: object
 
     """
-    types.assert_type(etype)
+    assert_type(etype)
 
     q = session.query(etype)
     q = q.filter(expression)

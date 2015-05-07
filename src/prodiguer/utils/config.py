@@ -16,25 +16,19 @@ import os
 from prodiguer.utils.convert import json_file_to_namedtuple
 
 
-# Default prodiguer stack home directory.
-_DEFAULT_HOME = '/opt/prodiguer'
 
 # Set home directory either from environment variable or from default.
-try:
-	_HOME = os.environ['PRODIGUER_HOME']
-except KeyError:
-	_HOME = _DEFAULT_HOME
-
-# Configuration file name.
-_CONFIG_FNAME = "prodiguer.json"
+_HOME = os.getenv('PRODIGUER_HOME', '/opt/prodiguer')
 
 # Configuration file path.
-_CONFIG_FPATH = "{0}/ops/config/{1}".format(_HOME, _CONFIG_FNAME)
+_CONFIG_FPATH = os.path.join(_HOME, "ops")
+_CONFIG_FPATH = os.path.join(_CONFIG_FPATH, "config")
+_CONFIG_FPATH = os.path.join(_CONFIG_FPATH, "prodiguer.json")
 
 # Exception if not found.
 if not os.path.exists(_CONFIG_FPATH):
-	msg = "PRODIGUER configuration file does not exist :: {0}"
-	raise RuntimeError(msg.format(_CONFIG_FPATH))
+    msg = "PRODIGUER configuration file does not exist :: {}"
+    raise RuntimeError(msg.format(_CONFIG_FPATH))
 
 # Config data wrapper.
 data = json_file_to_namedtuple(_CONFIG_FPATH)

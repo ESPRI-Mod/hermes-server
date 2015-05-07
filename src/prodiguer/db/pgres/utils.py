@@ -14,7 +14,7 @@
 import datetime
 
 from prodiguer.db.pgres import dao
-from prodiguer.db.pgres import types
+from prodiguer.db.pgres.type_utils import Convertor
 
 
 
@@ -75,7 +75,7 @@ def get_item(instance):
 
     """
     # Convert to a dictionary.
-    obj = types.Convertor.to_dict(instance)
+    obj = Convertor.to_dict(instance)
 
     # Set name attribute if required.
     if 'name' not in obj:

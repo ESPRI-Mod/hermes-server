@@ -14,6 +14,7 @@
 from prodiguer.cv import validation as cv_validator
 from prodiguer.db.pgres import types
 from prodiguer.db.pgres import session
+from prodiguer.utils import decorators
 
 
 
@@ -30,6 +31,7 @@ def _validate_create_term(
     cv_validator.validate_term_display_name(term_display_name)
 
 
+@decorators.validate(_validate_create_term)
 def create_term(
     term_type,
     term_name,
@@ -45,23 +47,15 @@ def create_term(
     :rtype: types.ControlledVocabularyTerm
 
     """
-    # Validate inputs.
-    _validate_create_term(
-        term_type,
-        term_name,
-        term_display_name
-        )
-
-    # Instantiate instance.
-    term = types.ControlledVocabularyTerm()
-    term.typeof = term_type
-    term.name = term_name
-    term.display_name = term_display_name
+    instance = types.ControlledVocabularyTerm()
+    instance.typeof = term_type
+    instance.name = term_name
+    instance.display_name = term_display_name
 
     # Push to db.
-    session.add(term)
+    session.add(instance)
 
-    return term
+    return instance
 
 
 def retrieve_term(term_type, term_name):
