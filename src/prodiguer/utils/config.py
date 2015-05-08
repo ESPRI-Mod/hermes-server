@@ -32,3 +32,4 @@ if not os.path.exists(_CONFIG_FPATH):
 
 # Config data wrapper.
 data = json_file_to_namedtuple(_CONFIG_FPATH)
+

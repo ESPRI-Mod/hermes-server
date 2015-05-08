@@ -20,6 +20,7 @@ import sqlalchemy as sa
 from bson import json_util
 
 from prodiguer.utils.string_convertor import to_camel_case
+from prodiguer.utils import config
 
 
 
@@ -87,5 +88,5 @@ def jsonify(data):
     """
     return json.dumps(_jsonify(data),
                       default=json_util.default,
-                      indent=None,
+                      indent=4 if config.data.deploymentMode == 'dev' else None,
                       sort_keys=True)

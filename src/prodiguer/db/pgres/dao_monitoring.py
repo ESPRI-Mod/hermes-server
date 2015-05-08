@@ -137,7 +137,7 @@ def retrieve_active_simulations():
 
     """
     qry = session.query(types.Simulation)
-    qry = qry.filter(types.Simulation.name is not None)
+    qry = qry.filter(types.Simulation.name != None)
     qry = qry.filter(types.Simulation.is_dead == False)
 
     return dao.exec_query(types.Simulation, qry, True)
