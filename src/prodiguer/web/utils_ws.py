@@ -96,24 +96,17 @@ def clear_cache(key=None):
     :param type: str
 
     """
-    global _WS_CLIENTS
-
-    if key is None:
-        _WS_CLIENTS = {}
-    elif key in _WS_CLIENTS:
+    keys = _WS_CLIENTS.keys() if key is None else { key }
+    for key in keys:
         del _WS_CLIENTS[key]
 
 
-def pong_WS_CLIENTS():
+def pong_clients():
     """Pongs clients.
 
     """
-    logged = False
     for app in _WS_CLIENTS.keys():
         for client in _WS_CLIENTS[app]:
-            if not logged:
-                logger.log_web("Ponging websocket clients.")
-                logged = True
             try:
                 client.write_message("pong")
             except tornado.websocket.WebSocketClosedError:
@@ -125,7 +118,8 @@ def keep_alive():
 
     """
     def _do():
-        pong_WS_CLIENTS()
+        """Performs unit of work."""
+        pong_clients()
         keep_alive()
 
     # Do this every N seconds so as to keep client connections open.
