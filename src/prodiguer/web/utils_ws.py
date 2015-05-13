@@ -125,5 +125,4 @@ def keep_alive():
     # Do this every N seconds so as to keep client connections open.
     delay = config.api.websocketKeepAliveDelayInSeconds
     if delay:
-        logger.log_web("Websocket keep alive every {0} seconds.".format(delay))
         tornado.ioloop.IOLoop.instance().call_later(delay, _do)

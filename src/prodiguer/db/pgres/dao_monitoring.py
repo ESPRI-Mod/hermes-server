@@ -21,16 +21,7 @@ from prodiguer.db.pgres import types
 from prodiguer.cv import validation as cv_validator
 from prodiguer.db.pgres import validation as db_validator
 from prodiguer.utils import decorators
-from prodiguer.utils import logger
 
-
-
-def _log(msg, force=True):
-    """Logging helper function.
-
-    """
-    if force:
-        logger.log_db(msg)
 
 
 def _persist(hydrate, create, retrieve):
@@ -138,9 +129,25 @@ def retrieve_active_simulations():
     """
     qry = session.query(types.Simulation)
     qry = qry.filter(types.Simulation.name != None)
-    qry = qry.filter(types.Simulation.is_dead == False)
+    qry = qry.filter(types.Simulation.is_obsolete == False)
 
     return dao.exec_query(types.Simulation, qry, True)
+
+
+def retrieve_active_simulation(hashid):
+    """Retrieves an active simulation from db.
+
+    :param str hashid: Simulation hash identifier.
+
+    :returns: An active simulation instance.
+    :rtype: types.Simulation
+
+    """
+    qry = session.query(types.Simulation)
+    qry = qry.filter(types.Simulation.hashid == hashid)
+    qry = qry.filter(types.Simulation.is_obsolete == False)
+
+    return dao.exec_query(types.Simulation, qry)
 
 
 def retrieve_active_jobs():
@@ -153,7 +160,7 @@ def retrieve_active_jobs():
     qry = session.query(types.Job)
     qry = qry.join(types.Simulation,
                    types.Job.simulation_uid==types.Simulation.uid)
-    qry = qry.filter(types.Simulation.is_dead == False)
+    qry = qry.filter(types.Simulation.is_obsolete == False)
 
     return dao.exec_query(types.Job, qry, True)
 
@@ -294,9 +301,6 @@ def persist_simulation_configuration(uid, card):
     # Push to db.
     session.add(instance)
 
-    # Log.
-    _log("Created simulation configuration: {0}.".format(uid))
-
     return instance
 
 
@@ -328,6 +332,7 @@ def persist_job_01(
             datetime.timedelta(seconds=int(expected_completion_delay))
         instance.job_uid = unicode(job_uid)
         instance.simulation_uid = unicode(simulation_uid)
+        instance.set_was_late_flag()
 
     return _persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 
@@ -353,27 +358,29 @@ def persist_job_02(execution_end_date, is_error, job_uid, simulation_uid):
         instance.is_error = is_error
         instance.job_uid = unicode(job_uid)
         instance.simulation_uid = unicode(simulation_uid)
+        instance.set_was_late_flag()
 
     return _persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 
 
-def update_dead_simulation_runs(hashid, uid):
-    """Updates so-called simulations dead runs (i.e. simulations that were rerun).
+def update_active_simulation(hashid):
+    """Updates the active simulation within a group.
 
-    :param str uid: Simulation UID of new simulation.
-    :param str hashid: Simulation hash identifier.
+    :param str hashid: A simulation hash identifier used to group a batch of simulations.
 
     """
-    # Get dead simulations.
+    # Set simulation group.
     qry = session.query(types.Simulation)
     qry = qry.filter(types.Simulation.hashid == hashid)
-    qry = qry.filter(types.Simulation.uid != uid)
-    qry = qry.filter(types.Simulation.is_dead == False)
+    group = sorted(qry.all(), key=lambda s: s.execution_start_date)
 
-    # Update is_dead flag.
-    for simulation in qry.all():
-        simulation.is_dead = True
-        _log("Updating dead simulation :: {}".format(simulation.uid))
+    # Update try identifier & obsolete flag.
+    for index, simulation in enumerate(group, 1):
+        simulation.try_id = index
+        simulation.is_obsolete = (index != len(group))
+
+    # Return active.
+    return group[-1]
 
 
 def delete_simulation(uid):

@@ -13,10 +13,11 @@ import datetime
 import hashlib
 import uuid
 
+from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import DateTime
-from sqlalchemy import BigInteger
+from sqlalchemy import Integer
 from sqlalchemy import Text
 from sqlalchemy import Unicode
 from sqlalchemy import UniqueConstraint
@@ -68,8 +69,8 @@ class Simulation(Entity):
     compute_node_machine = Column(Unicode(127))
     experiment = Column(Unicode(127))
     hashid = Column(Unicode(63))
-    is_dead = Column(Boolean, default=False)
     is_error = Column(Boolean, default=False)
+    is_obsolete = Column(Boolean, default=False)
     model = Column(Unicode(127))
     space = Column(Unicode(127))
     name = Column(Unicode(511))
@@ -80,15 +81,21 @@ class Simulation(Entity):
     output_end_date = Column(DateTime)
     parent_simulation_name = Column(Unicode(511))
     parent_simulation_branch_date = Column(DateTime)
+    try_id = Column(Integer, nullable=False, default=1)
     uid = Column(Unicode(63), nullable=False, unique=True)
 
+    @property
+    def is_restart(self):
+        """Returns flag indicating whether this is a restarted simulation or not.
+
+        """
+        return self.try_id > 1
 
     def get_hashid(self):
         """Returns the computed hash id for a simulation.
 
         """
-        hashid = ""
-        for field in [
+        hashid = "".join([
             self.activity,
             self.compute_node,
             self.compute_node_login,
@@ -96,10 +103,8 @@ class Simulation(Entity):
             self.experiment,
             self.model,
             self.space,
-
             self.name
-            ]:
-            hashid += field
+            ])
 
         return unicode(hashlib.md5(hashid).hexdigest())
 
@@ -122,6 +127,17 @@ class Job(Entity):
     execution_end_date = Column(DateTime)
     is_error = Column(Boolean, default=False)
     was_late = Column(Boolean)
+
+    def set_was_late_flag(self):
+        """Sets value of was_late flag based upon execution status.
+
+        """
+        if self.was_late is not None or
+           self.expected_execution_end_date is None or
+           self.execution_end_date is None:
+            return
+
+        self.was_late = self.execution_end_date > self.expected_execution_end_date
 
 
 class SimulationConfiguration(Entity):

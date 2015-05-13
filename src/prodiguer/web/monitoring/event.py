@@ -35,7 +35,7 @@ def _log(msg):
 
 
 def _get_simulation_event_data(data):
-    """Helper: retuns common simulation event data.
+    """Helper: retuns simulation event data.
 
     """
     # Unpack event data.
@@ -43,7 +43,7 @@ def _get_simulation_event_data(data):
 
     # Load simulation (if not found then do not broadcast).
     simulation = db.dao_monitoring.retrieve_simulation(simulation_uid)
-    if not simulation:
+    if simulation is None:
         return None
 
     # Load simulation jobs.
@@ -52,8 +52,26 @@ def _get_simulation_event_data(data):
     # Return event data.
     return {
         'cv_terms': data.get('cv_terms', []),
-        'simulation': simulation,
-        'job_history': jobs
+        'job_history': jobs,
+        'simulation': simulation
+        }
+
+
+def _get_job_event_data(data):
+    """Helper: retuns job event data.
+
+    """
+    # Unpack event data.
+    job_uid = data['job_uid']
+
+    # Load job (if not found then do not broadcast).
+    job = db.dao_monitoring.retrieve_job(job_uid)
+    if job is None:
+        return None
+
+    # Return event data.
+    return {
+        'job': job
         }
 
 
@@ -62,9 +80,9 @@ _EVENT_HANDLERS = {
     'simulation_start': _get_simulation_event_data,
     'simulation_complete': _get_simulation_event_data,
     'simulation_error': _get_simulation_event_data,
-    'job_start': _get_simulation_event_data,
-    'job_complete': _get_simulation_event_data,
-    'job_error': _get_simulation_event_data
+    'job_start': _get_job_event_data,
+    'job_complete': _get_job_event_data,
+    'job_error': _get_job_event_data
 }
 
 
