@@ -132,8 +132,8 @@ class Job(Entity):
         """Sets value of was_late flag based upon execution status.
 
         """
-        if self.was_late is not None or
-           self.expected_execution_end_date is None or
+        if self.was_late is not None or \
+           self.expected_execution_end_date is None or \
            self.execution_end_date is None:
             return
 
