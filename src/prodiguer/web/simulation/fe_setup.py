@@ -45,7 +45,7 @@ def _get_configuration(uid):
     """
     configuration = db.dao_monitoring.retrieve_simulation_configuration(uid)
 
-    return base64.b64decode(configuration.card)
+    return base64.b64decode(configuration.card) if configuration else ''
 
 
 class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
