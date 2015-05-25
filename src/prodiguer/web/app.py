@@ -19,6 +19,7 @@ from prodiguer import cv
 from prodiguer.web import metric
 from prodiguer.web import monitoring
 from prodiguer.web import ops
+from prodiguer.web import simulation
 from prodiguer.web import utils_ws
 from prodiguer.utils import config
 from prodiguer.utils import logger
@@ -41,6 +42,9 @@ def _get_app_routes():
 
     """
     return (
+        # Simulation routes.
+        (r'/api/1/simulation/fe/cv', simulation.FrontEndControlledVocabularyRequestHandler),
+        (r'/api/1/simulation/fe/setup', simulation.FrontEndSetupRequestHandler),
         # Monitoring routes.
         (r'/api/1/monitoring/fe/cv', monitoring.FrontEndControlledVocabularyRequestHandler),
         (r'/api/1/monitoring/fe/setup', monitoring.FrontEndSetupRequestHandler),

@@ -179,6 +179,20 @@ def retrieve_simulation(uid):
     return dao.get_by_facet(types.Simulation, qfilter=qfilter)
 
 
+def retrieve_simulation_configuration(uid):
+    """Retrieves simulation configuration details from db.
+
+    :param str uid: UID of simulation.
+
+    :returns: Simulation configuration details.
+    :rtype: types.monitoring.SimulationConfiguration
+
+    """
+    qfilter = types.SimulationConfiguration.simulation_uid == unicode(uid)
+
+    return dao.get_by_facet(types.SimulationConfiguration, qfilter=qfilter)
+
+
 def retrieve_simulation_jobs(uid):
     """Retrieves job details from db.
 
