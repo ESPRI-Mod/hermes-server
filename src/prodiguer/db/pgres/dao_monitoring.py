@@ -204,7 +204,8 @@ def retrieve_simulation_jobs(uid):
     """
     qfilter = types.Job.simulation_uid == unicode(uid)
 
-    return dao.get_by_facet(types.Job, qfilter=qfilter, get_iterable=True)
+    return dao.get_by_facet(types.Job, qfilter=qfilter, get_iterable=True,
+                            order_by=types.Job.execution_start_date.asc())
 
 
 def retrieve_job(uid):
