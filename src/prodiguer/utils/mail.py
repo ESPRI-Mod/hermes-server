@@ -163,12 +163,15 @@ def get_email(email_uid, client=None):
     # Unpack email.
     mail = data[email_uid][_RFC822]
     mail = email.message_from_string(mail)
-    if mail.is_multipart():
-        mail, attachment = mail.get_payload()
-    else:
-        attachment = None
 
-    return mail, attachment
+    # Unpack attachments.
+    attachments = []
+    if mail.is_multipart():
+        payload = mail.get_payload()
+        mail = payload[0]
+        attachments = payload[1:]
+
+    return mail, attachments
 
 
 def delete_email(email_uid, client=None):
