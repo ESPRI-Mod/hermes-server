@@ -43,17 +43,25 @@ def _persist(hydrate, create, retrieve):
 
 
 def _validate_persist_simulation_01(
+    accounting_project,
     activity,
+    activity_raw,
     compute_node,
+    compute_node_raw,
     compute_node_login,
+    compute_node_login_raw,
     compute_node_machine,
+    compute_node_machine_raw,
     execution_start_date,
     experiment,
+    experiment_raw,
     model,
+    model_raw,
     name,
     output_start_date,
     output_end_date,
     space,
+    space_raw,
     uid
     ):
     """Validates persist simulation inputs.
@@ -66,7 +74,15 @@ def _validate_persist_simulation_01(
     cv_validator.validate_experiment(experiment)
     cv_validator.validate_model(model)
     cv_validator.validate_simulation_space(space)
+    db_validator.validate_accounting_project(accounting_project)
     db_validator.validate_execution_start_date(execution_start_date)
+    db_validator.validate_raw_activity(activity_raw)
+    db_validator.validate_raw_compute_node(compute_node_raw)
+    db_validator.validate_raw_compute_node_login(compute_node_login_raw)
+    db_validator.validate_raw_compute_node_machine(compute_node_machine_raw)
+    db_validator.validate_raw_experiment(experiment_raw)
+    db_validator.validate_raw_model(model_raw)
+    db_validator.validate_raw_simulation_space(space_raw)
     db_validator.validate_simulation_name(name)
     db_validator.validate_simulation_output_start_date(output_start_date)
     db_validator.validate_simulation_output_end_date(output_end_date)
@@ -91,16 +107,20 @@ def _validate_persist_simulation_configuration(uid, card):
 
 
 def _validate_persist_job_01(
+    accounting_project,
     expected_completion_delay,
     execution_start_date,
+    job_type,
     job_uid,
     simulation_uid
     ):
     """Validates persist job inputs.
 
     """
+    db_validator.validate_accounting_project(accounting_project)
     db_validator.validate_expected_completion_delay(expected_completion_delay)
     db_validator.validate_execution_start_date(execution_start_date)
+    cv_validator.validate_job_type(job_type)
     db_validator.validate_job_uid(job_uid)
     db_validator.validate_simulation_uid(simulation_uid)
 
@@ -224,32 +244,48 @@ def retrieve_job(uid):
 
 @decorators.validate(_validate_persist_simulation_01)
 def persist_simulation_01(
+    accounting_project,
     activity,
+    activity_raw,
     compute_node,
+    compute_node_raw,
     compute_node_login,
+    compute_node_login_raw,
     compute_node_machine,
+    compute_node_machine_raw,
     execution_start_date,
     experiment,
+    experiment_raw,
     model,
+    model_raw,
     name,
     output_start_date,
     output_end_date,
     space,
+    space_raw,
     uid
     ):
     """Persists simulation information to db.
 
+    :param str accounting_project: Name of associated accounting project.
     :param str activity: Name of activity, e.g. IPSL.
+    :param str activity_raw: Name of activity before CV reformatting.
     :param str compute_node: Name of compute node, e.g. TGCC.
+    :param str compute_node_raw: Name of compute node before CV reformatting.
     :param str compute_node_login: Name of compute node login, e.g. dcugnet.
+    :param str compute_node_login_raw: Name of compute node login before CV reformatting.
     :param str compute_node_machine: Name of compute machine, e.g. SX9.
+    :param str compute_node_machine_raw: Name of compute node machine before CV reformatting.
     :param datetime execution_start_date: Simulation start date.
     :param str experiment: Name of experiment, e.g. piControl.
+    :param str experiment_raw: Name of experiment before CV reformatting.
     :param str model: Name of model, e.g. IPSLCM5A.
+    :param str model_raw: Name of model before CV reformatting.
     :param str name: Name of simulation, e.g. v3.aqua4K.
     :param datetime output_start_date: Output start date.
     :param datetime output_end_date: Output start date.
     :param str space: Name of space, e.g. PROD.
+    :param str space_raw: Name of space before CV reformatting.
     :param str uid: Simulation unique identifier.
 
     :returns: Either a new or an updated simulation instance.
@@ -260,17 +296,25 @@ def persist_simulation_01(
         """Assigns instance values from input parameters.
 
         """
+        instance.accounting_project = unicode(accounting_project)
         instance.activity = unicode(activity)
+        instance.activity_raw = unicode(activity_raw)
         instance.compute_node = unicode(compute_node)
+        instance.compute_node_raw = unicode(compute_node_raw)
         instance.compute_node_login = unicode(compute_node_login)
+        instance.compute_node_login_raw = unicode(compute_node_login_raw)
         instance.compute_node_machine = unicode(compute_node_machine)
+        instance.compute_node_machine_raw = unicode(compute_node_machine_raw)
         instance.execution_start_date = execution_start_date
         instance.experiment = unicode(experiment)
+        instance.experiment_raw = unicode(experiment_raw)
         instance.model = unicode(model)
+        instance.model_raw = unicode(model_raw)
         instance.name = unicode(name)
         instance.output_start_date = output_start_date
         instance.output_end_date = output_end_date
         instance.space = unicode(space)
+        instance.space_raw = unicode(space_raw)
         instance.uid = unicode(uid)
         instance.hashid = instance.get_hashid()
 
@@ -321,15 +365,19 @@ def persist_simulation_configuration(uid, card):
 
 @decorators.validate(_validate_persist_job_01)
 def persist_job_01(
+    accounting_project,
     expected_completion_delay,
     execution_start_date,
+    job_type,
     job_uid,
     simulation_uid
     ):
     """Persists job information to db.
 
+    :param str accounting_project: Name of associated accounting project.
     :param int expected_completion_delay: Delay before job completion is considered to be late.
     :param datetime execution_start_date: Simulation start date.
+    :param str job_type: Job type.
     :param str job_uid: Job UID.
     :param str simulation_uid: Simulation UID.
 
@@ -341,13 +389,17 @@ def persist_job_01(
         """Assigns instance values from input parameters.
 
         """
+        if accounting_project:
+            instance.accounting_project = unicode(accounting_project)
         instance.execution_start_date = execution_start_date
-        instance.expected_execution_end_date = \
-            execution_start_date + \
-            datetime.timedelta(seconds=int(expected_completion_delay))
+        instance.job_type = unicode(job_type)
         instance.job_uid = unicode(job_uid)
         instance.simulation_uid = unicode(simulation_uid)
-        instance.set_was_late_flag()
+        if expected_completion_delay:
+            instance.expected_execution_end_date = \
+                execution_start_date + \
+                datetime.timedelta(seconds=int(expected_completion_delay))
+            instance.set_was_late_flag()
 
     return _persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 
@@ -409,3 +461,48 @@ def delete_simulation(uid):
         dao.delete_by_facet(etype, etype.simulation_uid == uid)
     dao.delete_by_facet(types.Message, types.Message.correlation_id_1 == uid)
     dao.delete_by_facet(types.Simulation, types.Simulation.uid == uid)
+
+
+# @decorators.validate(_validate_persist_job_01)
+def persist_environment_metric(
+    action_name,
+    action_timestamp,
+    dir_from,
+    dir_to,
+    duration_ms,
+    job_uid,
+    simulation_uid,
+    size_mb,
+    throughput_mb_s
+    ):
+    """Persists environment metric information to db.
+
+    :param str action_name: Name of libIGCM action.
+    :param str dir_from: Directory from which data was copied.
+    :param str dir_to: Directory to which data was copied.
+    :param integer duration_ms: Duration in milliseconds of action.
+    :param str job_uid: Job UID.
+    :param str simulation_uid: Simulation UID.
+    :param float size_mb: Size in megabytes of moved file(s).
+    :param datetime timestamp: Time when action took place.
+    :param float throughput_mb_s: Rate at which copy took place.
+
+    :returns: A new environment metrics instance.
+    :rtype: types.EnvironmentMetric
+
+    """
+    instance = types.EnvironmentMetric()
+    instance.action_name = unicode(action_name)
+    instance.action_timestamp = action_timestamp
+    instance.dir_from = unicode(dir_from)
+    instance.dir_to = unicode(dir_to)
+    instance.duration_ms = duration_ms
+    instance.job_uid = unicode(job_uid)
+    instance.simulation_uid = unicode(simulation_uid)
+    instance.size_mb = size_mb
+    instance.throughput_mb_s = throughput_mb_s
+
+    # Push to db.
+    session.add(instance)
+
+    return instance

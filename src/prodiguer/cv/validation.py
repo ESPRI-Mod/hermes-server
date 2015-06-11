@@ -136,6 +136,15 @@ def validate_experiment(term_name):
     validate_term_name(constants.TERM_TYPE_EXPERIMENT, term_name)
 
 
+def validate_job_type(job_type):
+    """Validate job type.
+
+    :param str job_type: A job type.
+
+    """
+    validate_term_name(constants.TERM_TYPE_JOB_TYPE, term_name)
+
+
 def validate_message_application(term_name):
     """Validate MQ platform message application.
 

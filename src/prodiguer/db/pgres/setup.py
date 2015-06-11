@@ -23,11 +23,11 @@ from prodiguer.utils import logger
 
 
 
-def _init_cv_terms():
+def init_cv_terms():
     """Initialises set of cv terms.
 
     """
-    logger.log_db("Seeding cv.tbl_cv_term")
+    logger.log_db("Inserting cv.tbl_cv_term records")
 
     for term in cv.io.read():
         item = db_types.ControlledVocabularyTerm()
@@ -42,7 +42,7 @@ def _init_simulations():
     """Initialises set of simulations.
 
     """
-    logger.log_db("Seeding cnode.tbl_simulation")
+    logger.log_db("Inserting cnode.tbl_simulation records")
 
     # Set simulations from simulation.json file.
     fpath = os.path.dirname(os.path.abspath(__file__))
@@ -103,5 +103,5 @@ def execute():
     db_metadata.create_all(db_session.sa_engine)
 
     # Seed tables.
-    _init_cv_terms()
+    init_cv_terms()
     _init_simulations()

@@ -66,6 +66,15 @@ def validate_uid(identifier, var):
             raise ValueError("{0} must be UUID compatible.".format(var))
 
 
+def validate_accounting_project(project):
+    """Validates an accounting project.
+
+    :param str project: An accounting project.
+
+    """
+    pass
+
+
 def validate_simulation_configuration_card(card):
     """Validate simulation configuration.
 
@@ -133,6 +142,70 @@ def validate_simulation_uid(identifier):
 
     """
     validate_uid(identifier, "Simulation uid")
+
+
+def validate_raw_activity(name):
+    """Validates a raw activity name.
+
+    :param str name: A raw activity name.
+
+    """
+    pass
+
+
+def validate_raw_compute_node(name):
+    """Validates a raw compute node name.
+
+    :param str name: A raw compute node name.
+
+    """
+    pass
+
+
+
+def validate_raw_compute_node_login(name):
+    """Validates a raw compute node login name.
+
+    :param str name: A raw compute node login name.
+
+    """
+    pass
+
+
+def validate_raw_compute_node_machine(name):
+    """Validates a raw compute node machine name.
+
+    :param str name: A raw compute node machine name.
+
+    """
+    pass
+
+
+def validate_raw_experiment(name):
+    """Validates a raw experiment name.
+
+    :param str name: A raw experiment name.
+
+    """
+    pass
+
+
+def validate_raw_model(name):
+    """Validates a raw model name.
+
+    :param str name: A raw model name.
+
+    """
+    pass
+
+
+def validate_raw_simulation_space(name):
+    """Validates a raw simulation space name.
+
+    :param str name: A raw simulation space name.
+
+    """
+    pass
 
 
 def validate_job_uid(identifier):

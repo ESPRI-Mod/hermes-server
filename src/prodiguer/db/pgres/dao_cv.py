@@ -12,9 +12,12 @@
 
 """
 from prodiguer.cv import validation as cv_validator
-from prodiguer.db.pgres import types
+from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import session
+from prodiguer.db.pgres import types
+from prodiguer.db.pgres.setup import init_cv_terms
 from prodiguer.utils import decorators
+from prodiguer.utils import logger
 
 
 
@@ -73,3 +76,9 @@ def retrieve_term(term_type, term_name):
     qry = qry.filter(types.ControlledVocabularyTerm.name == unicode(term_name))
 
     return qry.first()
+
+
+def reset_terms():
+    logger.log_db("Deleting existing cv.tbl_cv_term records")
+    dao.delete_all(types.ControlledVocabularyTerm)
+    init_cv_terms()

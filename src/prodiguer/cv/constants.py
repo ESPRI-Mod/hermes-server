@@ -33,6 +33,7 @@ TERM_TYPE_COMPUTE_NODE_LOGIN = u"compute_node_login"
 TERM_TYPE_COMPUTE_NODE_MACHINE = u"compute_node_machine"
 TERM_TYPE_EXPERIMENT = u"experiment"
 TERM_TYPE_EXPERIMENT_GROUP = u"experiment_group"
+TERM_TYPE_JOB_TYPE = u"job_type"
 TERM_TYPE_MESSAGE_APPLICATION = u"message_application"
 TERM_TYPE_MESSAGE_PRODUCER = u"message_producer"
 TERM_TYPE_MESSAGE_TYPE = u"message_type"
@@ -51,6 +52,7 @@ TERM_TYPESET = [
     TERM_TYPE_COMPUTE_NODE_MACHINE,
     TERM_TYPE_EXPERIMENT,
     TERM_TYPE_EXPERIMENT_GROUP,
+    TERM_TYPE_JOB_TYPE,
     TERM_TYPE_MESSAGE_TYPE,
     TERM_TYPE_MESSAGE_APPLICATION,
     TERM_TYPE_MESSAGE_PRODUCER,
@@ -66,42 +68,7 @@ CASE_SENSITIVE_TERM_TYPESET = [
     TERM_TYPE_EXPERIMENT
 ]
 
-# Constants pertaining to simulation space.
-SIMULATION_SPACE_DEVT = 'devt'
-SIMULATION_SPACE_FAIL = 'fail'
-SIMULATION_SPACE_PROD = 'prod'
-SIMULATION_SPACE_TEST = 'test'
-
-# Set of supported simulation spaces.
-SIMULATION_SPACE_SET = [
-    SIMULATION_SPACE_DEVT,
-    SIMULATION_SPACE_FAIL,
-    SIMULATION_SPACE_PROD,
-    SIMULATION_SPACE_TEST
-]
-
-# Constants pertaining to simulation states.
-SIMULATION_STATE_QUEUED = u"queued"
-SIMULATION_STATE_RUNNING = u"running"
-SIMULATION_STATE_COMPLETE = u"complete"
-SIMULATION_STATE_ERROR = u"error"
-
-# Set of supported simulation states.
-SIMULATION_STATE_SET = [
-    SIMULATION_STATE_QUEUED,
-    SIMULATION_STATE_RUNNING,
-    SIMULATION_STATE_COMPLETE,
-    SIMULATION_STATE_ERROR
-]
-
-# Constants pertaining to job states.
-JOB_STATE_RUNNING = u"running"
-JOB_STATE_COMPLETE = u"complete"
-JOB_STATE_ERROR = u"error"
-
-# Set of supported job states.
-JOB_STATE_SET = [
-    JOB_STATE_RUNNING,
-    JOB_STATE_COMPLETE,
-    JOB_STATE_ERROR
-]
+# Constants pertaining to job types.
+JOB_TYPE_COMPUTING = u"computing"
+JOB_TYPE_POST_PROCESSING = u"post-processing"
+JOB_TYPE_POST_PROCESSING_FROM_CHECKER = u"post-processing-from-checker"

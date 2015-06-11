@@ -17,6 +17,8 @@ from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import DateTime
+from sqlalchemy import Enum
+from sqlalchemy import Float
 from sqlalchemy import Integer
 from sqlalchemy import Text
 from sqlalchemy import Unicode
@@ -63,16 +65,24 @@ class Simulation(Entity):
     )
 
     # Attributes.
+    accounting_project = Column(Unicode(511))
     activity = Column(Unicode(127))
+    activity_raw = Column(Unicode(127))
     compute_node = Column(Unicode(127))
+    compute_node_raw = Column(Unicode(127))
     compute_node_login = Column(Unicode(127))
+    compute_node_login_raw = Column(Unicode(127))
     compute_node_machine = Column(Unicode(127))
+    compute_node_machine_raw = Column(Unicode(127))
     experiment = Column(Unicode(127))
+    experiment_raw = Column(Unicode(127))
     hashid = Column(Unicode(63))
     is_error = Column(Boolean, default=False)
     is_obsolete = Column(Boolean, default=False)
     model = Column(Unicode(127))
+    model_raw = Column(Unicode(127))
     space = Column(Unicode(127))
+    space_raw = Column(Unicode(127))
     name = Column(Unicode(511))
     ensemble_member = Column(Unicode(15))
     execution_start_date = Column(DateTime)
@@ -122,11 +132,14 @@ class Job(Entity):
     # Attributes.
     simulation_uid = Column(Unicode(63))
     job_uid = Column(Unicode(63), nullable=False, unique=True)
+    accounting_project = Column(Unicode(511))
     execution_start_date = Column(DateTime)
     expected_execution_end_date = Column(DateTime)
     execution_end_date = Column(DateTime)
     is_error = Column(Boolean, default=False)
+    typeof = Column(Unicode(63))
     was_late = Column(Boolean)
+
 
     def set_was_late_flag(self):
         """Sets value of was_late flag based upon execution status.
@@ -157,6 +170,28 @@ class SimulationConfiguration(Entity):
     card_mime_type = Column(Unicode(63),
                             nullable=True,
                             default=u"application/base64")
+
+
+class EnvironmentMetric(Entity):
+    """Simulation environment metrics of OS performance.
+
+    """
+    # SQLAlchemy directives.
+    __tablename__ = 'tbl_environment_metric'
+    __table_args__ = (
+        {'schema':_SCHEMA_MONITORING}
+    )
+
+    # Attributes.
+    simulation_uid = Column(Unicode(63), nullable=False)
+    job_uid = Column(Unicode(63), nullable=False)
+    action_name = Column(Unicode(511), nullable=False)
+    action_timestamp = Column(DateTime, nullable=False)
+    dir_to = Column(Unicode(4096), nullable=False)
+    dir_from = Column(Unicode(4096), nullable=False)
+    duration_ms = Column(Integer, nullable=False)
+    size_mb = Column(Float, nullable=False)
+    throughput_mb_s = Column(Float, nullable=False)
 
 
 class Message(Entity):
@@ -208,6 +243,7 @@ class MessageEmail(Entity):
 # Set of supported model types.
 TYPES = type_utils.supported_types = [
     ControlledVocabularyTerm,
+    EnvironmentMetric,
     Job,
     Message,
     MessageEmail,
