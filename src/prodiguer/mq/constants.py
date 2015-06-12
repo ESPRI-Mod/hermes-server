@@ -52,20 +52,22 @@ EXCHANGES = set([
 
 # Message queues.
 QUEUE_EXT_SMTP = "q-ext-smtp"
+QUEUE_IN_METRICS_ENV = "q-in-metrics-env"
+QUEUE_IN_METRICS_SIM = "q-in-metrics-sim"
 QUEUE_IN_MONITORING = "q-in-monitoring"
 QUEUE_IN_MONITORING_0000 = "q-in-monitoring-0000"
 QUEUE_IN_MONITORING_0100 = "q-in-monitoring-0100"
 QUEUE_IN_MONITORING_1000 = "q-in-monitoring-1000"
 QUEUE_IN_MONITORING_1100 = "q-in-monitoring-1100"
 QUEUE_IN_MONITORING_2000 = "q-in-monitoring-2000"
-QUEUE_IN_MONITORING_2100 = "q-in-monitoring-2000"
+QUEUE_IN_MONITORING_2100 = "q-in-monitoring-2100"
+QUEUE_IN_MONITORING_2900 = "q-in-monitoring-2900"
 QUEUE_IN_MONITORING_3000 = "q-in-monitoring-3000"
 QUEUE_IN_MONITORING_3100 = "q-in-monitoring-3100"
+QUEUE_IN_MONITORING_3900 = "q-in-monitoring-3900"
 QUEUE_IN_MONITORING_4000 = "q-in-monitoring-4000"
 QUEUE_IN_MONITORING_4100 = "q-in-monitoring-4100"
 QUEUE_IN_MONITORING_4900 = "q-in-monitoring-4900"
-QUEUE_IN_MONITORING_7000 = "q-in-monitoring-7000"
-QUEUE_IN_MONITORING_7100 = "q-in-monitoring-7100"
 QUEUE_IN_MONITORING_8888 = "q-in-monitoring-8888"
 QUEUE_IN_MONITORING_9999 = "q-in-monitoring-9999"
 QUEUE_INTERNAL_API = "q-internal-api"
@@ -76,6 +78,8 @@ QUEUE_INTERNAL_SMS = "q-internal-sms"
 # All queues.
 QUEUES = set([
 	QUEUE_EXT_SMTP,
+	QUEUE_IN_METRICS_ENV,
+	QUEUE_IN_METRICS_SIM,
 	QUEUE_IN_MONITORING,
 	QUEUE_IN_MONITORING_0000,
 	QUEUE_IN_MONITORING_0100,
@@ -83,13 +87,13 @@ QUEUES = set([
 	QUEUE_IN_MONITORING_1100,
 	QUEUE_IN_MONITORING_2000,
 	QUEUE_IN_MONITORING_2100,
+	QUEUE_IN_MONITORING_2900,
 	QUEUE_IN_MONITORING_3000,
 	QUEUE_IN_MONITORING_3100,
+	QUEUE_IN_MONITORING_3900,
 	QUEUE_IN_MONITORING_4000,
 	QUEUE_IN_MONITORING_4100,
 	QUEUE_IN_MONITORING_4900,
-	QUEUE_IN_MONITORING_7000,
-	QUEUE_IN_MONITORING_7100,
 	QUEUE_IN_MONITORING_8888,
 	QUEUE_IN_MONITORING_9999,
 	QUEUE_INTERNAL_API,
@@ -120,13 +124,13 @@ USERS = set([
 
 # Message application identifiers.
 APP_MONITORING = "monitoring"
-APP_SYSTEM_METRICS = "sys-metrics"
-APP_SIMULATION_METRICS = "sim-metrics"
+APP_ENVIRONMENT_METRICS = "environment-metrics"
+APP_SIMULATION_METRICS = "simulation-metrics"
 
 # All apps.
 APPS = set([
 	APP_MONITORING,
-	APP_SYSTEM_METRICS,
+	APP_ENVIRONMENT_METRICS,
 	APP_SIMULATION_METRICS
 	])
 
@@ -136,6 +140,9 @@ TYPE_GENERAL_API = "-2000"
 TYPE_GENERAL_CV = "-4000"
 TYPE_GENERAL_SMTP = "-1000"
 TYPE_GENERAL_SMS = "-3000"
+# ... metrics.
+TYPE_METRICS_7000 = "7000"
+TYPE_METRICS_7100 = "7100"
 # ... simulation monitoring.
 TYPE_SMON_0000 = "0000"		# Simulation initialiation
 TYPE_SMON_0100 = "0100"		# Simulation ends
@@ -143,14 +150,14 @@ TYPE_SMON_1000 = "1000"		# Compute job begins
 TYPE_SMON_1100 = "1100"		# Compute job ends
 TYPE_SMON_2000 = "2000"		# Post-processing job begins
 TYPE_SMON_2100 = "2100"		# Post-processing job ends
+TYPE_SMON_2900 = "2900"		# Post-processing job fails
 TYPE_SMON_3000 = "3000"		# Post-processing job from checker begins
 TYPE_SMON_3100 = "3100"		# Post-processing job from checker ends
+TYPE_SMON_3900 = "3900"		# Post-processing job from checker fails
 TYPE_SMON_4000 = "4000"		# Push stack
 TYPE_SMON_4100 = "4100"		# Pop stack
 TYPE_SMON_4900 = "4900"		# Pop stack failure
 TYPE_SMON_9000 = "9000"		# Pop stack failure - TODO deprecate
-TYPE_SMON_7000 = "7000"
-TYPE_SMON_7100 = "7100"
 TYPE_SMON_8888 = "8888"		# Cleanup
 TYPE_SMON_9999 = "9999"		# Simulation stopped due to error
 
@@ -160,6 +167,8 @@ TYPES = set([
 	TYPE_GENERAL_CV,
 	TYPE_GENERAL_SMS,
 	TYPE_GENERAL_SMTP,
+	TYPE_METRICS_7000,
+	TYPE_METRICS_7100,
 	TYPE_SMON_0000,
 	TYPE_SMON_0100,
 	TYPE_SMON_1000,
@@ -172,10 +181,8 @@ TYPES = set([
 	TYPE_SMON_4100,
 	TYPE_SMON_4900,
 	TYPE_SMON_9000,
-	TYPE_SMON_7000,
-	TYPE_SMON_7100,
 	TYPE_SMON_8888,
-	TYPE_SMON_9999,
+	TYPE_SMON_9999
 	])
 
 # Timestamp precision types.
