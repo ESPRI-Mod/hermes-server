@@ -71,7 +71,7 @@ def _get_app_settings():
 
     """
     return {
-        "cookie_secret": config.api.cookie_secret,
+        "cookie_secret": config.web.cookie_secret,
         "compress_response": True,
         "static_path": _get_path_to_front_end()
     }
@@ -93,7 +93,7 @@ def run():
                       **_get_app_settings())
 
     # Listen.
-    app.listen(config.api.port)
+    app.listen(int(config.web.host.split(":")[1]))
 
     # Set web-socket keep alive.
     utils_ws.keep_alive()

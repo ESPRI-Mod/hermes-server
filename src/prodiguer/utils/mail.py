@@ -20,7 +20,7 @@ from prodiguer.utils.config import data as config
 
 
 # IMAP config.
-_CONFIG = config.mail.imap
+_CONFIG = config.mq.mail.imap
 
 # Email format identifier.
 _RFC822 = u'RFC822'

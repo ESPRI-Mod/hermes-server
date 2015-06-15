@@ -43,8 +43,8 @@ def set_cors_white_list(handler):
 
     """
     handler.set_header(_HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*")
-    # handler.set_header(_HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
-    #                    ",".join(config.api.metric.cors_white_list))
+    # TODO set white list handler.set_header(_HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
+    #                    ",".join(config.web.metric.cors_white_list))
 
 
 def validate_group_name(group, validate_db_collection=True):

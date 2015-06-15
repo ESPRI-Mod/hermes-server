@@ -110,7 +110,7 @@ def _validate_persist_job_01(
     accounting_project,
     expected_completion_delay,
     execution_start_date,
-    job_type,
+    typeof,
     job_uid,
     simulation_uid
     ):
@@ -120,7 +120,7 @@ def _validate_persist_job_01(
     db_validator.validate_accounting_project(accounting_project)
     db_validator.validate_expected_completion_delay(expected_completion_delay)
     db_validator.validate_execution_start_date(execution_start_date)
-    cv_validator.validate_job_type(job_type)
+    cv_validator.validate_job_type(typeof)
     db_validator.validate_job_uid(job_uid)
     db_validator.validate_simulation_uid(simulation_uid)
 
@@ -368,7 +368,7 @@ def persist_job_01(
     accounting_project,
     expected_completion_delay,
     execution_start_date,
-    job_type,
+    typeof,
     job_uid,
     simulation_uid
     ):
@@ -377,7 +377,7 @@ def persist_job_01(
     :param str accounting_project: Name of associated accounting project.
     :param int expected_completion_delay: Delay before job completion is considered to be late.
     :param datetime execution_start_date: Simulation start date.
-    :param str job_type: Job type.
+    :param str typeof: Job type.
     :param str job_uid: Job UID.
     :param str simulation_uid: Simulation UID.
 
@@ -392,7 +392,7 @@ def persist_job_01(
         if accounting_project:
             instance.accounting_project = unicode(accounting_project)
         instance.execution_start_date = execution_start_date
-        instance.job_type = unicode(job_type)
+        instance.typeof = unicode(typeof)
         instance.job_uid = unicode(job_uid)
         instance.simulation_uid = unicode(simulation_uid)
         if expected_completion_delay:
