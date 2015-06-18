@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.web.metric.utils.py
+.. module:: prodiguer.web.sim_metrics.utils.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -44,7 +44,7 @@ def set_cors_white_list(handler):
     """
     handler.set_header(_HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*")
     # TODO set white list handler.set_header(_HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
-    #                    ",".join(config.web.metric.cors_white_list))
+    #                    ",".join(config.web.sim_metrics.cors_white_list))
 
 
 def validate_group_name(group, validate_db_collection=True):

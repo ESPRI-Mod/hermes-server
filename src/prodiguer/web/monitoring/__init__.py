@@ -11,11 +11,8 @@
 
 
 """
-from prodiguer.web.monitoring.event \
-	import EventRequestHandler
-from prodiguer.web.monitoring.fe_cv \
-	import FrontEndControlledVocabularyRequestHandler
-from prodiguer.web.monitoring.fe_setup \
-	import FrontEndSetupRequestHandler
-from prodiguer.web.monitoring.fe_ws \
-	import FrontEndWebSocketHandler
+from prodiguer.web.monitoring.event import EventRequestHandler
+from prodiguer.web.monitoring.fe_cv import FrontEndControlledVocabularyRequestHandler
+from prodiguer.web.monitoring.fe_setup_all import FrontEndSetupAllRequestHandler
+from prodiguer.web.monitoring.fe_setup_one import FrontEndSetupOneRequestHandler
+from prodiguer.web.monitoring.fe_ws_all import FrontEndWebSocketAllHandler

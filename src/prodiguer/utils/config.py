@@ -12,6 +12,7 @@
 
 """
 import os
+import urllib
 
 from prodiguer.utils.convert import json_to_namedtuple
 
@@ -32,13 +33,32 @@ _ENV_VARS = {
 	"PRODIGUER_WEB_HOST": "localhost:8888"
 }
 
+# Set of environment variables to be url encoded.
+_ENV_VARS_URL_ENCODE = {
+	"PRODIGUER_DB_MONGO_USER_PASSWORD",
+	"PRODIGUER_DB_PGRES_USER_PASSWORD",
+	"PRODIGUER_MQ_RABBIT_LIBIGCM_USER_PASSWORD",
+	"PRODIGUER_MQ_RABBIT_USER_PASSWORD"
+}
+
+
+def _get_env_var_value(var_name, var_default):
+	"""Returns the formatted value of an environment variable.
+
+	"""
+	value = os.getenv(var_name, var_default)
+	if var_name in _ENV_VARS_URL_ENCODE:
+		value = urllib.quote_plus(value)
+
+	return value
+
 
 def _init_env_vars():
 	"""Initialises set of environment variables.
 
 	"""
 	for var_name, var_default in _ENV_VARS.items():
-		_ENV_VARS[var_name] = os.getenv(var_name, var_default)
+		_ENV_VARS[var_name] = _get_env_var_value(var_name, var_default)
 
 
 def _get_config_file_content():

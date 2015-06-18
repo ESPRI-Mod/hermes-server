@@ -48,7 +48,7 @@ def _get_configuration(uid):
     return base64.b64decode(configuration.card) if configuration else ''
 
 
-class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
+class FrontEndSetupOneRequestHandler(tornado.web.RequestHandler):
     """Simulation monitor front end setup request handler.
 
     """

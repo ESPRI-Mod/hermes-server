@@ -16,10 +16,9 @@ from tornado.web import Application
 
 
 from prodiguer import cv
-from prodiguer.web import metric
 from prodiguer.web import monitoring
 from prodiguer.web import ops
-from prodiguer.web import simulation
+from prodiguer.web import sim_metrics
 from prodiguer.web import utils_ws
 from prodiguer.utils import config
 from prodiguer.utils import logger
@@ -43,21 +42,21 @@ def _get_app_routes():
     """
     return (
         # Monitoring routes.
-        (r'/api/1/monitoring/fe/setup/one', simulation.FrontEndSetupRequestHandler),
         (r'/api/1/monitoring/fe/cv', monitoring.FrontEndControlledVocabularyRequestHandler),
-        (r'/api/1/monitoring/fe/setup/all', monitoring.FrontEndSetupRequestHandler),
-        (r'/api/1/monitoring/fe/ws/all', monitoring.FrontEndWebSocketHandler),
+        (r'/api/1/monitoring/fe/setup/all', monitoring.FrontEndSetupAllRequestHandler),
+        (r'/api/1/monitoring/fe/setup/one', monitoring.FrontEndSetupOneRequestHandler),
+        (r'/api/1/monitoring/fe/ws/all', monitoring.FrontEndWebSocketAllHandler),
         (r'/api/1/monitoring/event', monitoring.EventRequestHandler),
         # Metric routes.
-        (r'/api/1/metric/add', metric.AddRequestHandler),
-        (r'/api/1/metric/delete', metric.DeleteRequestHandler),
-        (r'/api/1/metric/fetch', metric.FetchRequestHandler),
-        (r'/api/1/metric/fetch_count', metric.FetchCountRequestHandler),
-        (r'/api/1/metric/fetch_columns', metric.FetchColumnsRequestHandler),
-        (r'/api/1/metric/fetch_list', metric.FetchListRequestHandler),
-        (r'/api/1/metric/fetch_setup', metric.FetchSetupRequestHandler),
-        (r'/api/1/metric/rename', metric.RenameRequestHandler),
-        (r'/api/1/metric/set_hashes', metric.SetHashesRequestHandler),
+        (r'/api/1/metric/add', sim_metrics.AddRequestHandler),
+        (r'/api/1/metric/delete', sim_metrics.DeleteRequestHandler),
+        (r'/api/1/metric/fetch', sim_metrics.FetchRequestHandler),
+        (r'/api/1/metric/fetch_count', sim_metrics.FetchCountRequestHandler),
+        (r'/api/1/metric/fetch_columns', sim_metrics.FetchColumnsRequestHandler),
+        (r'/api/1/metric/fetch_list', sim_metrics.FetchListRequestHandler),
+        (r'/api/1/metric/fetch_setup', sim_metrics.FetchSetupRequestHandler),
+        (r'/api/1/metric/rename', sim_metrics.RenameRequestHandler),
+        (r'/api/1/metric/set_hashes', sim_metrics.SetHashesRequestHandler),
         # Operational routes.
         (r'/api/1/ops/heartbeat', ops.HeartbeatRequestHandler),
         (r'/api/1/ops/list_endpoints', ops.ListEndpointsRequestHandler),

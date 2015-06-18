@@ -25,8 +25,8 @@ def _get_data(func):
     return db.utils.get_collection(func())
 
 
-class FrontEndSetupRequestHandler(tornado.web.RequestHandler):
-    """Simulation monitoring front end setup request handler.
+class FrontEndSetupAllRequestHandler(tornado.web.RequestHandler):
+    """Simulation monitoring all simulations front end setup request handler.
 
     """
     def get(self, *args):

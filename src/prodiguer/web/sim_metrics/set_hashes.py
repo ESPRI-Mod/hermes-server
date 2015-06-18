@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.web.metric.rename.py
+.. module:: prodiguer.web.sim_metrics.rename.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -14,7 +14,7 @@
 import tornado
 
 from prodiguer.web import utils_handler
-from prodiguer.web.metric import utils
+from prodiguer.web.sim_metrics import utils
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.utils import rt
 
@@ -22,11 +22,10 @@ from prodiguer.utils import rt
 
 # Query parameter names.
 _PARAM_GROUP = 'group'
-_PARAM_NEW_NAME = 'new_name'
 
 
-class RenameRequestHandler(tornado.web.RequestHandler):
-    """Simulation metric group rename method request handler.
+class SetHashesRequestHandler(tornado.web.RequestHandler):
+    """Simulation metric group set hashes method request handler.
 
     """
     def _validate_request(self):
@@ -34,8 +33,6 @@ class RenameRequestHandler(tornado.web.RequestHandler):
 
         """
         utils.validate_group_name(self.get_argument(_PARAM_GROUP))
-        utils.validate_group_name(self.get_argument(_PARAM_NEW_NAME),
-        						  validate_db_collection=False)
 
 
     def _decode_request(self):
@@ -43,14 +40,13 @@ class RenameRequestHandler(tornado.web.RequestHandler):
 
         """
         self.group = self.get_argument(_PARAM_GROUP)
-        self.new_name = self.get_argument(_PARAM_NEW_NAME)
 
 
-    def _rename_metric_group(self):
-        """Renames metrics group within db.
+    def _set_hashes(self):
+        """Sets the hash identifiers for all metrics within the group.
 
         """
-        dao.rename(self.group, self.new_name)
+        dao.set_hashes(self.group)
 
 
     def _write_response(self, error=None):
@@ -76,7 +72,7 @@ class RenameRequestHandler(tornado.web.RequestHandler):
             "green": (
                 self._validate_request,
                 self._decode_request,
-                self._rename_metric_group,
+                self._set_hashes,
                 self._write_response,
                 self._log,
                 ),

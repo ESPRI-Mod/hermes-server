@@ -21,8 +21,8 @@ from prodiguer.web import utils_ws
 _WS_KEY = 'monitoring'
 
 
-class FrontEndWebSocketHandler(tornado.websocket.WebSocketHandler):
-    """Simulation monitoring front end web socket handler.
+class FrontEndWebSocketAllHandler(tornado.websocket.WebSocketHandler):
+    """Simulation monitoring front end web socket handler (all simulations).
 
     """
     def open(self):
