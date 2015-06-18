@@ -22,7 +22,6 @@ def get_client():
     :rtype: pymongo.MongoClient
 
     """
-    print config.db.mongodb.main
     return pymongo.MongoClient(config.db.mongodb.main)
 
 

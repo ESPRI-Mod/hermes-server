@@ -51,7 +51,15 @@ def log_response(handler, error=None):
     :param Exception error: Runtime error.
 
     """
-    pass
+    api_type = str(handler).split(".")[2]
+    if error:
+        msg = "{0} --> error --> {1} --> {2}"
+        msg = msg.format(api_type, handler, error)
+        logger.log_web_error(msg)
+    else:
+        msg = "{0} --> success --> {1}"
+        msg = msg.format(api_type, handler)
+        logger.log_web(msg)
 
 
 def write_response(handler, error=None):
@@ -117,23 +125,6 @@ def write_csv_response(handler, error=None):
     handler.write(data)
 
 
-def log(api_type, handler, error=None):
-    """Logging utilty function.
-
-    :param str action: Action being invoked.
-    :param Exception error: Runtime error.
-
-    """
-    if error:
-        msg = "{0} --> error --> {1} --> {2}"
-        msg = msg.format(api_type, handler, error)
-        logger.log_web_error(msg)
-    else:
-        msg = "{0} --> success --> {1}"
-        msg = msg.format(api_type, handler)
-        logger.log_web(msg)
-
-
 def is_vanilla_request(handler):
     """Returns a flag indicating whether the request has no associated body, query or files.
 
@@ -172,7 +163,6 @@ def invoke(handler, validation_tasks, processing_tasks, error_tasks=[]):
         # Execute error tasks.
         except Exception as err:
             try:
-                logger.log_error(err, str(handler).split(".")[2])
                 for task in _get_tasks(error_tasks):
                     task(err)
             except:
