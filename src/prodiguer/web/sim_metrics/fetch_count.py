@@ -12,10 +12,10 @@
 """
 import tornado
 
-from prodiguer.web import utils_handler
-from prodiguer.web.sim_metrics import utils
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.utils import rt
+from prodiguer.web import utils_handler
+from prodiguer.web.sim_metrics import utils
 
 
 
@@ -31,19 +31,25 @@ class FetchCountRequestHandler(tornado.web.RequestHandler):
 
     """
     def set_default_headers(self):
-        """Set default HTTP response headers."""
+        """Set default HTTP response headers.
+
+        """
         utils.set_cors_white_list(self)
 
 
     def _validate_request(self):
-        """Validates request."""
+        """Validate HTTP GET request.
+
+        """
         if self.request.body:
             utils.validate_http_content_type(self, _CONTENT_TYPE_JSON)
         utils.validate_group_name(self.get_argument(_PARAM_GROUP))
 
 
     def _decode_request(self):
-        """Decodes request."""
+        """Decodes request.
+
+        """
         self.group = self.get_argument(_PARAM_GROUP)
         if self.request.body:
             self.query = utils.decode_json_payload(self, False)
@@ -51,51 +57,27 @@ class FetchCountRequestHandler(tornado.web.RequestHandler):
             self.query = None
 
 
-    def _fetch_data(self):
-        """Fetches data from db."""
-        self.count = dao.fetch_count(self.group, self.query)
+    def _set_output(self):
+        """Sets response to be returned to client.
 
-
-    def _write_response(self, error=None):
-        """Write response output."""
-        if not error:
-            self.output = {
-                'group': self.group,
-                'count': self.count
-            }
-        utils_handler.write_response(self, error)
-
-
-    def _log(self, error=None):
-        """Logs request processing completion."""
-        utils_handler.log("metric", self, error)
-
-
-    def _process(self):
-        """Process one of the support HTTP actions."""
-        # Define tasks.
-        tasks = {
-            "green": (
-                self._validate_request,
-                self._decode_request,
-                self._fetch_data,
-                self._write_response,
-                self._log,
-                ),
-            "red": (
-                self._write_response,
-                self._log,
-                )
+        """
+        self.output = {
+            'group': self.group,
+            'count': dao.fetch_count(self.group, self.query)
         }
-
-        # Invoke tasks.
-        rt.invoke(tasks)
 
 
     def get(self):
-        self._process()
+        """HTTP GET handler.
 
+        """
+        validation_tasks = [
+            self._validate_request
+        ]
 
-    def post(self):
-        self._process()
+        processing_tasks = [
+            self._decode_request,
+            self._set_output,
+        ]
 
+        utils_handler.invoke(self, validation_tasks, processing_tasks)

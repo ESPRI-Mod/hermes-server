@@ -16,6 +16,7 @@ from tornado.web import Application
 
 
 from prodiguer import cv
+from prodiguer.web import aggregations
 from prodiguer.web import monitoring
 from prodiguer.web import ops
 from prodiguer.web import sim_metrics
@@ -41,6 +42,8 @@ def _get_app_routes():
 
     """
     return (
+        # Aggregation routes.
+        # (r'/api/1/aggregations/find', aggregations.FindRequestHandler),
         # Monitoring routes.
         (r'/api/1/monitoring/fe/cv', monitoring.FrontEndControlledVocabularyRequestHandler),
         (r'/api/1/monitoring/fe/setup/all', monitoring.FrontEndSetupAllRequestHandler),
@@ -74,6 +77,13 @@ def _get_app_settings():
     }
 
 
+def _get_app_debug_mode():
+    """Returns app debug mode.
+
+    """
+    return config.deploymentMode=='dev'
+
+
 def run():
     """Runs the prodiguer web api.
 
@@ -86,7 +96,7 @@ def run():
 
     # Instantiate.
     app = Application(_get_app_routes(),
-                      debug=not config.deploymentMode=='prod',
+                      debug=_get_app_debug_mode(),
                       **_get_app_settings())
 
     # Listen.

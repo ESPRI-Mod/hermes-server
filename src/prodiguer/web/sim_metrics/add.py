@@ -15,10 +15,10 @@ import tornado
 
 from collections import OrderedDict
 
-from prodiguer.web import utils_handler
-from prodiguer.web.sim_metrics import utils
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.utils import rt
+from prodiguer.web import utils_handler
+from prodiguer.web.sim_metrics import utils
 
 
 
@@ -59,7 +59,9 @@ class AddRequestHandler(tornado.web.RequestHandler):
 
 
     def _validate_request_payload(self):
-        """Validates request payload."""
+        """Validates request payload.
+
+        """
         # Decode payload.
         payload = utils.decode_json_payload(self)
 
@@ -83,7 +85,9 @@ class AddRequestHandler(tornado.web.RequestHandler):
 
 
     def _insert_metrics(self):
-        """Inserts metrics to the db."""
+        """Inserts metrics to the db.
+
+        """
         def _format(metric):
             """Formats a metric for insertion into db."""
             return [(c, metric[i]) for i, c in enumerate(self.payload.columns)]
@@ -96,38 +100,30 @@ class AddRequestHandler(tornado.web.RequestHandler):
             dao.add(self.payload.group, _format_metrics(), self.duplicate_action)
 
 
-    def _write_response(self, error=None):
-        """Write response output."""
-        if not error:
-            self.output = {
-                'group': self.payload.group,
-                'added_count': len(self.added),
-                'duplicate_count': len(self.duplicates)
-            }
-        utils_handler.write_response(self, error)
+    def _set_output(self):
+        """Sets response to be returned to client.
 
-
-    def _log(self, error=None):
-        """Logs request processing completion."""
-        utils_handler.log("metric", self, error)
+        """
+        self.output = {
+            'group': self.payload.group,
+            'added_count': len(self.added),
+            'duplicate_count': len(self.duplicates)
+        }
 
 
     def post(self):
-        # Define tasks.
-        tasks = {
-            "green": (
-                self._validate_request_headers,
-                self._validate_request_params,
-                self._validate_request_payload,
-                self._insert_metrics,
-                self._write_response,
-                self._log,
-                ),
-            "red": (
-                self._write_response,
-                self._log,
-                )
-        }
+        """HTTP POST handler.
 
-        # Invoke tasks.
-        rt.invoke(tasks)
+        """
+        validation_tasks = [
+            self._validate_request_headers,
+            self._validate_request_params,
+            self._validate_request_payload
+        ]
+
+        processing_tasks = [
+            self._insert_metrics,
+            self._set_output
+        ]
+
+        utils_handler.invoke(self, validation_tasks, processing_tasks)

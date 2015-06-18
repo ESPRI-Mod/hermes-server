@@ -11,6 +11,7 @@
 
 
 """
+import tornado.httputil
 import tornado.web
 
 from prodiguer.web import utils_handler
@@ -22,21 +23,37 @@ class FrontEndControlledVocabularyRequestHandler(tornado.web.RequestHandler):
     """Simulation monitoring front end controlled vocabulary setup request handler.
 
     """
+    def _validate_request(self):
+        """Validate HTTP GET request.
+
+        """
+        # Invalid if request has associated query, body or files.
+        if not utils_handler.is_vanilla_request(self):
+            raise tornado.httputil.HTTPInputError()
+
+
+    def _set_output(self):
+        """Sets response to be returned to client.
+
+        """
+        db.session.start()
+        self.output = {
+            'cv_terms':
+                db.utils.get_list(db.types.ControlledVocabularyTerm)
+        }
+        db.session.end()
+
+
     def get(self, *args):
         """HTTP GET handler.
 
         """
-        # Start db session.
-        db.session.start()
+        validation_tasks = [
+            self._validate_request
+        ]
 
-        # Load cv data from db.
-        data = {
-            'cv_terms':
-                db.utils.get_list(db.types.ControlledVocabularyTerm)
-            }
+        processing_tasks = [
+            self._set_output
+        ]
 
-        # End db session.
-        db.session.end()
-
-        # Write response.
-        utils_handler.write_json_response(self, data)
+        utils_handler.invoke(self, validation_tasks, processing_tasks)

@@ -13,10 +13,10 @@
 """
 import tornado
 
-from prodiguer.web import utils_handler
-from prodiguer.web.sim_metrics import utils
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.utils import rt
+from prodiguer.web import utils_handler
+from prodiguer.web.sim_metrics import utils
 
 
 
@@ -29,7 +29,7 @@ class SetHashesRequestHandler(tornado.web.RequestHandler):
 
     """
     def _validate_request(self):
-        """Validates request.
+        """Validate HTTP POST request.
 
         """
         utils.validate_group_name(self.get_argument(_PARAM_GROUP))
@@ -49,38 +49,18 @@ class SetHashesRequestHandler(tornado.web.RequestHandler):
         dao.set_hashes(self.group)
 
 
-    def _write_response(self, error=None):
-        """Write response output.
-
-        """
-        utils_handler.write_response(self, error)
-
-
-    def _log(self, error=None):
-        """Logs request processing completion.
-
-        """
-        utils_handler.log("metric", self, error)
-
-
     def post(self):
-    	"""HTTP POST handler.
+        """HTTP POST handler.
 
-    	"""
-        # Define tasks.
-        tasks = {
-            "green": (
-                self._validate_request,
-                self._decode_request,
-                self._set_hashes,
-                self._write_response,
-                self._log,
-                ),
-            "red": (
-                self._write_response,
-                self._log,
-                )
-        }
+        """
+        validation_tasks = [
+            self._validate_request
+        ]
 
-        # Invoke tasks.
-        rt.invoke(tasks)
+        processing_tasks = [
+            self._decode_request,
+            self._set_hashes
+        ]
+
+        utils_handler.invoke(self, validation_tasks, processing_tasks)
+

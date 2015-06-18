@@ -12,10 +12,10 @@
 """
 import tornado
 
-from prodiguer.web import utils_handler
-from prodiguer.web.sim_metrics import utils
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.utils import rt
+from prodiguer.web import utils_handler
+from prodiguer.web.sim_metrics import utils
 
 
 
@@ -24,42 +24,40 @@ class FetchListRequestHandler(tornado.web.RequestHandler):
 
     """
     def set_default_headers(self):
-        """Set default HTTP response headers."""
+        """Set default HTTP response headers.
+
+        """
         utils.set_cors_white_list(self)
 
 
-    def _fetch_data(self):
-        """Fetches data from db."""
-        self.groups = dao.fetch_list()
+    def _validate_request(self):
+        """Validate HTTP GET request.
+
+        """
+        # Invalid if request has associated query, body or files.
+        if not utils_handler.is_vanilla_request(self):
+            raise tornado.httputil.HTTPInputError()
 
 
-    def _write_response(self, error=None):
-        """Write response output."""
-        if not error:
-            self.output = {
-                'groups': self.groups
-            }
-        utils_handler.write_response(self, error)
+    def _set_output(self):
+        """Sets response to be returned to client.
 
-
-    def _log(self, error=None):
-        """Logs request processing completion."""
-        utils_handler.log("metric", self, error)
+        """
+        self.output = {
+            'groups': dao.fetch_list()
+        }
 
 
     def get(self):
-        # Define tasks.
-        tasks = {
-            "green": (
-                self._fetch_data,
-                self._write_response,
-                self._log,
-                ),
-            "red": (
-                self._write_response,
-                self._log,
-                )
-        }
+        """HTTP GET handler.
 
-        # Invoke tasks.
-        rt.invoke(tasks)
+        """
+        validation_tasks = [
+            self._validate_request
+        ]
+
+        processing_tasks = [
+            self._set_output
+        ]
+
+        utils_handler.invoke(self, validation_tasks, processing_tasks)

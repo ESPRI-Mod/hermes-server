@@ -90,11 +90,11 @@ class _EventInfo(object):
     """Encpasulates incoming event information.
 
     """
-    def __init__(self, request_body):
+    def __init__(self, handler):
         """Object initializer.
 
         """
-        self.data = json.loads(request_body)
+        self.data = json.loads(handler.request.body)
         self.type = self.data['event_type']
         self.handler = _EVENT_HANDLERS[self.type]
 
@@ -110,11 +110,21 @@ class EventRequestHandler(tornado.web.RequestHandler):
     """Simulation monitoring event request handler.
 
     """
+    def _validate_post_request(self):
+        """Validate HTTP POST request.
+
+        """
+        pass
+
+
     @tornado.web.asynchronous
     def post(self):
         """HTTP POST handler.
 
         """
+        # Validate request.
+        self._validate_post_request()
+
         # Signal asynch.
         self.finish()
 
@@ -123,7 +133,7 @@ class EventRequestHandler(tornado.web.RequestHandler):
 
         try:
             # Decode event information.
-            event = _EventInfo(self.request.body)
+            event = _EventInfo(self)
             _log("{0} event received: {1}".format(event.type, event.data))
 
             # Only broadcast when there is data.

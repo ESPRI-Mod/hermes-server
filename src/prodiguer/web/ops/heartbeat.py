@@ -22,35 +22,35 @@ class HeartbeatRequestHandler(tornado.web.RequestHandler):
     """Operations heartbeat request handler.
 
     """
-    def prepare(self):
-        """Called at the beginning of request handling."""
+    def _validate_request(self):
+        """Validate HTTP GET request.
+
+        """
+        # Invalid if request has associated query, body or files.
+        if not utils_handler.is_vanilla_request(self):
+            raise tornado.httputil.HTTPInputError()
+
+
+    def _set_output(self):
+        """Sets response to be returned to client.
+
+        """
         self.output = {
+            "message": "all good",
             "status": 0
         }
 
 
-    def _write(self, error=None):
-        """Write response output."""
-        utils_handler.write_response(self, error)
-
-
-    def _log(self, error=None):
-        """Logs execution."""
-        utils_handler.log("ops", self, error)
-
-
     def get(self):
-        # Define tasks.
-        tasks = {
-            "green": (
-                self._write,
-                self._log,
-                ),
-            "red": (
-                self._write,
-                self._log,
-                )
-        }
+        """HTTP GET handler.
 
-        # Invoke tasks.
-        rt.invoke(tasks)
+        """
+        validation_tasks = [
+            self._validate_request
+        ]
+
+        processing_tasks = [
+            self._set_output
+        ]
+
+        utils_handler.invoke(self, validation_tasks, processing_tasks)

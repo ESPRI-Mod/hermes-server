@@ -12,10 +12,10 @@
 """
 import tornado
 
-from prodiguer.web import utils_handler
-from prodiguer.web.sim_metrics import utils
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.utils import rt
+from prodiguer.web import utils_handler
+from prodiguer.web.sim_metrics import utils
 
 
 
@@ -28,55 +28,47 @@ class FetchColumnsRequestHandler(tornado.web.RequestHandler):
 
     """
     def set_default_headers(self):
-        """Set default HTTP response headers."""
+        """Set default HTTP response headers.
+
+        """
         utils.set_cors_white_list(self)
 
 
-    def _validate_request_params(self):
-        """Validates query params."""
+    def _validate_request(self):
+        """Validate HTTP GET request.
+
+        """
         utils.validate_group_name(self.get_argument(_PARAM_GROUP))
 
 
-    def _decode_request_params(self):
-        """Decodes request query parameters."""
+    def _decode_request(self):
+        """Decodes request.
+
+        """
         self.group = self.get_argument(_PARAM_GROUP)
 
 
-    def _fetch_data(self):
-        """Fetches data from db."""
-        self.columns = dao.fetch_columns(self.group, True)
+    def _set_output(self):
+        """Sets response to be returned to client.
 
-
-    def _write_response(self, error=None):
-        """Write response output."""
-        if not error:
-            self.output = {
-                'group': self.group,
-                'columns': self.columns
-            }
-        utils_handler.write_response(self, error)
-
-
-    def _log(self, error=None):
-        """Logs request processing completion."""
-        utils_handler.log("metric", self, error)
+        """
+        self.output = {
+            'group': self.group,
+            'columns': dao.fetch_columns(self.group, True)
+        }
 
 
     def get(self):
-        # Define tasks.
-        tasks = {
-            "green": (
-                self._validate_request_params,
-                self._decode_request_params,
-                self._fetch_data,
-                self._write_response,
-                self._log,
-                ),
-            "red": (
-                self._write_response,
-                self._log,
-                )
-        }
+        """HTTP GET handler.
 
-        # Invoke tasks.
-        rt.invoke(tasks)
+        """
+        validation_tasks = [
+            self._validate_request
+        ]
+
+        processing_tasks = [
+            self._decode_request,
+            self._set_output,
+        ]
+
+        utils_handler.invoke(self, validation_tasks, processing_tasks)

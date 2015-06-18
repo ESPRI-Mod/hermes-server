@@ -12,10 +12,10 @@
 """
 import tornado
 
-from prodiguer.web import utils_handler
-from prodiguer.web.sim_metrics import utils
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.utils import rt
+from prodiguer.web import utils_handler
+from prodiguer.web.sim_metrics import utils
 
 
 
@@ -38,7 +38,7 @@ class FetchRequestHandler(tornado.web.RequestHandler):
 
 
     def _validate_request(self):
-        """Validates request.
+        """Validate HTTP GET request.
 
         """
         if self.request.body:
@@ -86,54 +86,19 @@ class FetchRequestHandler(tornado.web.RequestHandler):
         }
 
 
-    def _write_response(self, error=None):
-        """Write response output.
-
-        """
-        utils_handler.write_response(self, error)
-
-
-    def _log(self, error=None):
-        """Logs request processing completion.
-
-        """
-        utils_handler.log("metric", self, error)
-
-
-    def _process(self):
-        """Process one of the support HTTP actions.
-
-        """
-        # Define tasks.
-        tasks = {
-            "green": (
-                self._validate_request,
-                self._decode_request,
-                self._fetch_data,
-                self._format_data,
-                self._set_output,
-                self._write_response,
-                self._log,
-                ),
-            "red": (
-                self._write_response,
-                self._log,
-                )
-        }
-
-        # Invoke tasks.
-        rt.invoke(tasks)
-
-
     def get(self):
         """HTTP GET handler.
 
         """
-        self._process()
+        validation_tasks = [
+            self._validate_request
+        ]
 
+        processing_tasks = [
+            self._decode_request,
+            self._fetch_data,
+            self._format_data,
+            self._set_output,
+        ]
 
-    def post(self):
-        """HTTP POST handler.
-
-        """
-        self._process()
+        utils_handler.invoke(self, validation_tasks, processing_tasks)
