@@ -42,13 +42,11 @@ def _get_app_routes():
 
     """
     return (
-        # Simulation routes.
-        (r'/api/1/simulation/fe/cv', simulation.FrontEndControlledVocabularyRequestHandler),
-        (r'/api/1/simulation/fe/setup', simulation.FrontEndSetupRequestHandler),
         # Monitoring routes.
+        (r'/api/1/monitoring/fe/setup/one', simulation.FrontEndSetupRequestHandler),
         (r'/api/1/monitoring/fe/cv', monitoring.FrontEndControlledVocabularyRequestHandler),
-        (r'/api/1/monitoring/fe/setup', monitoring.FrontEndSetupRequestHandler),
-        (r'/api/1/monitoring/fe/ws', monitoring.FrontEndWebSocketHandler),
+        (r'/api/1/monitoring/fe/setup/all', monitoring.FrontEndSetupRequestHandler),
+        (r'/api/1/monitoring/fe/ws/all', monitoring.FrontEndWebSocketHandler),
         (r'/api/1/monitoring/event', monitoring.EventRequestHandler),
         # Metric routes.
         (r'/api/1/metric/add', metric.AddRequestHandler),

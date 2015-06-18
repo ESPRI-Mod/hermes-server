@@ -11,5 +11,4 @@
 
 
 """
-from prodiguer.web.monitoring.fe_cv import FrontEndControlledVocabularyRequestHandler
 from prodiguer.web.simulation.fe_setup import FrontEndSetupRequestHandler
