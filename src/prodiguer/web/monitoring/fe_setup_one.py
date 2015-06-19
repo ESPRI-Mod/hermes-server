@@ -67,8 +67,8 @@ class FrontEndSetupOneRequestHandler(tornado.web.RequestHandler):
         #     raise ValueError("Invalid request")
         # print self.request.query_arguments, type(self.request.query_arguments)
         # print self.request.query_arguments['uid'], type(self.request.query_arguments['uid'])
-        print dir(self)
-        print self.get_argument('uid')
+        # print dir(self)
+        # print self.get_argument('uid')
         # print dir(self.request)
 
         # Invalid if files attached.
