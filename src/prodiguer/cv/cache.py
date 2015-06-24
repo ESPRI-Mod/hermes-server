@@ -11,7 +11,8 @@
 
 
 """
-import collections, random
+import collections
+import random
 
 from prodiguer.utils import logger
 from prodiguer.cv import constants

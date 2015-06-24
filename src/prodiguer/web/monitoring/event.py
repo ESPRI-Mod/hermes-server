@@ -114,6 +114,7 @@ class EventRequestHandler(tornado.web.RequestHandler):
         """Validate HTTP POST request.
 
         """
+        # TODO
         pass
 
 

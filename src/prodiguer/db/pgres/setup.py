@@ -9,7 +9,8 @@
 
 
 """
-import os, uuid
+import os
+import uuid
 
 from sqlalchemy.schema import CreateSchema
 from sqlalchemy.schema import DropSchema

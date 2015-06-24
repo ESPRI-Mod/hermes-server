@@ -14,9 +14,9 @@
 import json
 import datetime
 import random
-import requests
 import uuid
 
+import requests
 from dateutil import parser as dateutil_parser
 
 from prodiguer.db import pgres as db

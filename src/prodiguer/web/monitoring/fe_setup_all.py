@@ -30,39 +30,35 @@ class FrontEndSetupAllRequestHandler(tornado.web.RequestHandler):
     """Simulation monitoring all simulations front end setup request handler.
 
     """
-    def _validate_request(self):
-        """Validate HTTP GET request.
-
-        """
-        # Invalid if request has associated query, body or files.
-        if not utils_handler.is_vanilla_request(self):
-            raise tornado.httputil.HTTPInputError()
-
-
-    def _set_output(self):
-        """Sets response to be returned to client.
-
-        """
-        db.session.start()
-        self.output = {
-            'job_history':
-                _get_data(db.dao_monitoring.retrieve_active_jobs),
-            'simulation_list':
-                _get_data(db.dao_monitoring.retrieve_active_simulations)
-        }
-        db.session.end()
-
-
     def get(self, *args):
         """HTTP GET handler.
 
         """
+        def _validate_request():
+            """Request validator.
+
+            """
+            utils_handler.validate_request(self)
+
+
+        def _set_output():
+            """Sets response to be returned to client.
+
+            """
+            db.session.start()
+            self.output = {
+                'job_history':
+                    _get_data(db.dao_monitoring.retrieve_active_jobs),
+                'simulation_list':
+                    _get_data(db.dao_monitoring.retrieve_active_simulations)
+            }
+            db.session.end()
+
+
         validation_tasks = [
-            self._validate_request
+            _validate_request
         ]
-
         processing_tasks = [
-            self._set_output
+            _set_output
         ]
-
         utils_handler.invoke(self, validation_tasks, processing_tasks)

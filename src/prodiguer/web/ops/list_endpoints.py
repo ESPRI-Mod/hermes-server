@@ -22,15 +22,6 @@ class ListEndpointsRequestHandler(tornado.web.RequestHandler):
     """Operations list endpoints request handler.
 
     """
-    def _validate_request(self):
-        """Validate HTTP GET request.
-
-        """
-        # Invalid if request has associated query, body or files.
-        if not utils_handler.is_vanilla_request(self):
-            raise tornado.httputil.HTTPInputError()
-
-
     def _set_output(self):
         """Sets response to be returned to client.
 
@@ -62,7 +53,7 @@ class ListEndpointsRequestHandler(tornado.web.RequestHandler):
 
         """
         validation_tasks = [
-            self._validate_request
+            utils_handler.validate_vanilla_request
         ]
 
         processing_tasks = [

@@ -12,8 +12,11 @@
 
 """
 import base64
+import uuid
 
 import tornado.web
+import voluptuous
+from voluptuous import All, Invalid, Schema, Required
 
 from prodiguer.utils import rt
 from prodiguer.web import utils_handler
@@ -26,6 +29,44 @@ _CONTENT_TYPE_JSON = ["application/json", "application/json; charset=UTF-8"]
 
 # Query parameter names.
 _PARAM_UID = 'uid'
+
+
+
+def _validate_get_request_query_arguments(handler):
+    """Validates GET endpoint HTTP query arguments.
+
+    """
+    def Sequence(expected_type, expected_length=1):
+        """Validates a sequence of query parameter values.
+
+        """
+        def f(val):
+            """Inner function.
+
+            """
+            # Validate sequence length.
+            if len(val) != expected_length:
+                raise ValueError("Invalid request")
+
+            # Validate sequence type.
+            for item in val:
+                try:
+                    expected_type(item)
+                except ValueError:
+                    raise ValueError("Invalid request")
+
+            return val
+
+        return f
+
+
+    # Set query argument validation schema.
+    schema = Schema({
+        Required(_PARAM_UID): All(list, Sequence(uuid.UUID))
+    })
+
+    # Apply query argument validation.
+    schema(handler.request.query_arguments)
 
 
 def _get_data(data):
@@ -53,65 +94,46 @@ class FrontEndSetupOneRequestHandler(tornado.web.RequestHandler):
     """Simulation monitor front end setup request handler.
 
     """
-    # @utils_handler.validation_task("GET")
-    def _validate_request(self):
-        """Validate HTTP GET request.
-
-        """
-        # Invalid if body is defined.
-        if self.request.body:
-            raise ValueError("Invalid request")
-
-        # Invalid if query is defined.
-        # if self.request.query:
-        #     raise ValueError("Invalid request")
-        # print self.request.query_arguments, type(self.request.query_arguments)
-        # print self.request.query_arguments['uid'], type(self.request.query_arguments['uid'])
-        # print dir(self)
-        # print self.get_argument('uid')
-        # print dir(self.request)
-
-        # Invalid if files attached.
-        if self.request.files:
-            raise ValueError("Invalid request")
-
-
-    # @utils_handler.processing_task("GET", priority=1)
-    def _decode_request(self):
-        """Decodes request.
-
-        """
-        self.uid = self.get_argument(_PARAM_UID)
-
-
-    # @utils_handler.processing_task("GET", priority=2)
-    def _set_output(self):
-        """Sets response to be returned to client.
-
-        """
-        db.session.start()
-        self.output = {
-            'job_history':
-                _get_data(db.dao_monitoring.retrieve_simulation_jobs(self.uid)),
-            'simulation':
-                _get_data(db.dao_monitoring.retrieve_simulation(self.uid)),
-            'config_card':
-                _get_simulation_configuration(self.uid)
-        }
-        db.session.end()
-
-
     def get(self, *args):
         """HTTP GET handler.
 
         """
+        def _validate_request():
+            """Request validator.
+
+            """
+            utils_handler.validate_request(self,
+                query_validator=_validate_get_request_query_arguments)
+
+
+        def _decode_request():
+            """Decodes request.
+
+            """
+            self.uid = self.get_argument(_PARAM_UID)
+
+
+        def _set_output():
+            """Sets response to be returned to client.
+
+            """
+            db.session.start()
+            self.output = {
+                'job_history':
+                    _get_data(db.dao_monitoring.retrieve_simulation_jobs(self.uid)),
+                'simulation':
+                    _get_data(db.dao_monitoring.retrieve_simulation(self.uid)),
+                'config_card':
+                    _get_simulation_configuration(self.uid)
+            }
+            db.session.end()
+
+
         validation_tasks = [
-            self._validate_request
+            _validate_request
         ]
-
         processing_tasks = [
-            self._decode_request,
-            self._set_output
+            _decode_request,
+            _set_output
         ]
-
         utils_handler.invoke(self, validation_tasks, processing_tasks)

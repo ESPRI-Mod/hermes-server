@@ -11,6 +11,8 @@
 
 
 """
+import tornado.httputil
+
 from prodiguer.utils import config
 from prodiguer.utils import logger
 from prodiguer.utils.data_convertor import jsonify
@@ -134,10 +136,64 @@ def is_vanilla_request(handler):
             bool(handler.request.files)) == False
 
 
+def validate_vanilla_request(handler):
+    """Simple HTTP request validator for endpoints that do not expect any parameters.
+
+    :param tornado.web.RequestHandler handler: Endpoint handler.
+
+    """
+    # Invalid request if it has query, body or files.
+    if (bool(handler.request.body) or
+        bool(handler.request.query) or
+        bool(handler.request.files)):
+        raise tornado.httputil.HTTPInputError()
+
+
+def validate_request(
+    handler,
+    body_validator=None,
+    files_validator=None,
+    query_validator=None
+    ):
+    """Validates an incoming HTTP request.
+
+    :param tornado.web.RequestHandler handler: Endpoint handler.
+    :param function body_validator: Validator to apply over request body.
+    :param function body_validator: Validator to apply over request body.
+    :param function files_validator: Validator to apply over request files.
+    :param function query_validator: Validator to apply over request query.
+
+    """
+    def _validate(validator, target):
+        """Applies a validator otherwise verifies target is undefined.
+
+        """
+        if validator is not None:
+            validator(handler)
+        elif bool(target):
+            raise tornado.httputil.HTTPInputError()
+
+    _validate(body_validator, handler.request.body)
+    _validate(files_validator, handler.request.files)
+    _validate(query_validator, handler.request.query)
+
+
 def invoke(handler, validation_tasks, processing_tasks, error_tasks=[]):
     """Invokes handler tasks.
 
     """
+    def _invoke_task(task):
+        """Invokes an individual task.
+
+        """
+        try:
+            task()
+        except TypeError as err:
+            if err.message.find("takes exactly 1 argument (0 given)") > -1:
+                task(handler)
+            else:
+                raise err
+
     def _get_tasks(taskset, extend=True):
         """Returns formatted & extended taskset.
 
@@ -154,12 +210,12 @@ def invoke(handler, validation_tasks, processing_tasks, error_tasks=[]):
 
     # Execute validation tasks - N.B. exceptions are bubbled up.
     for task in _get_tasks(validation_tasks, False):
-        task()
+        _invoke_task(task)
 
     # Execute processing tasks.
     for task in _get_tasks(processing_tasks):
         try:
-            task()
+            _invoke_task(task)
         # Execute error tasks.
         except Exception as err:
             try:
