@@ -41,7 +41,8 @@ def _fetch(action, query):
     query = query or {}
 
     # Return data.
-    return action(query, as_class=OrderedDict)
+    return action(query)
+    # return action(query, as_class=OrderedDict)
 
 
 def add(group_id, metrics, duplicate_action):
