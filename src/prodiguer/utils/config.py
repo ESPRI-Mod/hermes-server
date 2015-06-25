@@ -46,9 +46,10 @@ def _get_env_var_value(var_name, var_default):
 
 	"""
 	value = os.getenv(var_name, var_default)
-	if var_name in _ENV_VARS_URL_ENCODE:
-		value = urllib.quote_plus(value)
-
+	if value is None:
+		return ""
+	elif var_name in _ENV_VARS_URL_ENCODE:
+		return urllib.quote_plus(value)
 	return value
 
 
