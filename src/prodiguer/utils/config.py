@@ -30,7 +30,8 @@ _ENV_VARS = {
 	"PRODIGUER_MQ_RABBIT_USER_PASSWORD": None,
 	"PRODIGUER_MQ_SMTP_PASSWORD": None,
 	"PRODIGUER_WEB_API_COOKIE_SECRET": None,
-	"PRODIGUER_WEB_HOST": "localhost:8888"
+	"PRODIGUER_WEB_HOST": "localhost:8888",
+	"PRODIGUER_WEB_URL": "https://prodiguer-test-web.ipsl.fr"
 }
 
 # Set of environment variables to be url encoded.

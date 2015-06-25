@@ -20,7 +20,7 @@ from prodiguer.utils.data_convertor import jsonify
 
 
 # Base address to API endpoints.
-_BASE_ADDRESS = 'http{0}://{1}/api/1'
+_BASE_ADDRESS = '{0}/api/1{1}'
 
 # Http response codes.
 HTTP_RESPONSE_BAD_REQUEST = 400
@@ -29,21 +29,13 @@ HTTP_RESPONSE_BAD_REQUEST = 400
 def get_endpoint(ep):
     """Returns the endpoint prefixed with base adress.
 
-    :param ep: Endpoint suffix.
-    :type ep: str
+    :param str ep: Endpoint suffix.
 
     :returns: The endpoint prefixed with base adress.
     :rtype: str
 
     """
-    ssl = config.web.ssl
-    host = config.web.host.strip()
-    if ssl:
-        base_address =  _BASE_ADDRESS.format("s", host)
-    else:
-        base_address =  _BASE_ADDRESS.format("", host)
-
-    return base_address + ep
+    return _BASE_ADDRESS.format(config.web.url, ep)
 
 
 def log_response(handler, error=None):
