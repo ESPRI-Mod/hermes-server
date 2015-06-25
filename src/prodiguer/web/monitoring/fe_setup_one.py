@@ -15,7 +15,6 @@ import base64
 import uuid
 
 import tornado.web
-import voluptuous
 from voluptuous import All, Invalid, Schema, Required
 
 from prodiguer.utils import rt

@@ -11,6 +11,7 @@
 
 """
 import tornado
+from voluptuous import All, Invalid, Schema, Required
 
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.utils import rt
@@ -24,6 +25,56 @@ _CONTENT_TYPE_JSON = ["application/json", "application/json; charset=UTF-8"]
 
 # Query parameter names.
 _PARAM_GROUP = 'group'
+
+
+def _validate_get_request_query_arguments(handler):
+    """Validates GET endpoint HTTP query arguments.
+
+    """
+    def GroupID():
+        """Validates incoming group-id query parameter.
+
+        """
+        def f(val):
+            """Inner function.
+
+            """
+            utils.validate_group_name(val[0])
+
+        return f
+
+
+    def Sequence(expected_type, expected_length=1):
+        """Validates a sequence of query parameter values.
+
+        """
+        def f(val):
+            """Inner function.
+
+            """
+            # Validate sequence length.
+            if len(val) != expected_length:
+                raise ValueError("Invalid request")
+
+            # Validate sequence type.
+            for item in val:
+                try:
+                    expected_type(item)
+                except ValueError:
+                    raise ValueError("Invalid request")
+
+            return val
+
+        return f
+
+
+    # Set query argument validation schema.
+    schema = Schema({
+        Required(_PARAM_GROUP): All(list, Sequence(str), GroupID())
+    })
+
+    # Apply query argument validation.
+    schema(handler.request.query_arguments)
 
 
 class FetchRequestHandler(tornado.web.RequestHandler):
@@ -90,8 +141,15 @@ class FetchRequestHandler(tornado.web.RequestHandler):
         """HTTP GET handler.
 
         """
+        def _validate_request():
+            """Request validator.
+
+            """
+            utils_handler.validate_request(self,
+                query_validator=_validate_get_request_query_arguments)
+
         validation_tasks = [
-            self._validate_request
+            _validate_request
         ]
 
         processing_tasks = [
