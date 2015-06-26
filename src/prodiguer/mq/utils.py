@@ -14,7 +14,7 @@ import uuid
 
 import arrow
 import pika
-from sqlalchemy.exc import IntegrityError
+import sqlalchemy
 
 from prodiguer.db import pgres as db
 from prodiguer.mq import defaults
@@ -188,17 +188,22 @@ def consume(
         # Persist message.
         try:
             ctx.msg = persist(ctx.properties, ctx.content_raw)
+
         # Skip duplicate messages.
-        except IntegrityError:
+        except sqlalchemy.exc.IntegrityError:
+            msg = "Duplicate message skipped: {}".format(ctx.properties.message_id)
+            logger.log_mq_warning(msg)
             db.session.rollback()
+
         # Log persistence errors.
         except Exception as err:
             logger.log_mq_error(err)
+
         # Invoke message processing callback.
         else:
             callback(ctx)
 
-    # Instantiate producer.
+    # Instantiate consumer.
     consumer = Consumer(exchange,
                         queue,
                         msg_handler,
@@ -207,7 +212,7 @@ def consume(
                         context_type=context_type,
                         verbose=verbose)
 
-    # Run.
+    # Run consumer.
     try:
         consumer.run()
     except KeyboardInterrupt:
@@ -228,10 +233,8 @@ def _get_timestamps(properties):
     raw = properties.headers["timestamp"]
 
     # Set parsed.
-    if precision == 'ns':
-        parsed = Timestamp.from_ns(raw).as_ms.datetime
-    else:
-        parsed = Timestamp.from_ms(raw).as_ms.datetime
+    parser = Timestamp.from_ns if precision == 'ns' else Timestamp.from_ms
+    parsed = parser(raw).as_ms.datetime
 
     return precision, raw, parsed
 

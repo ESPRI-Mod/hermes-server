@@ -79,6 +79,9 @@ def retrieve_term(term_type, term_name):
 
 
 def reset_terms():
+    """Rebuilds contents of cv table.
+
+    """
     logger.log_db("Deleting existing cv.tbl_cv_term records")
     dao.delete_all(types.ControlledVocabularyTerm)
     init_cv_terms()

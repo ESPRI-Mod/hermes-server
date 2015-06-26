@@ -162,6 +162,18 @@ def log_mq_error(err, app=_DEFAULT_APP, institute=_DEFAULT_INSTITUTE):
     log_error(err, "MQ", app, institute)
 
 
+def log_mq_warning(msg, app=_DEFAULT_APP, institute=_DEFAULT_INSTITUTE):
+    """Logs a message queue warning related event.
+
+    :param str msg: Message for writing to log.
+    :param str level: Message level (e.g. INFO).
+    :param str app: Application emitting log message (e.g. libIGCM).
+    :param str institute: Institute emitting log message (e.g. libIGCM).
+
+    """
+    log_mq(msg, level=LOG_LEVEL_WARNING, app=app, institute=institute)
+
+
 def log_db(
     msg,
     level=LOG_LEVEL_INFO,

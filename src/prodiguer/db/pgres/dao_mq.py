@@ -11,6 +11,7 @@
 
 
 """
+from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
 from prodiguer.mq import validation as msg_validation
@@ -140,3 +141,19 @@ def create_message_email(email_id):
     session.add(instance)
 
     return instance
+
+
+def reset_emails():
+    """Deletes message email records in db.
+
+    """
+    dao.delete_all(types.MessageEmail)
+
+
+def is_duplicate(uid):
+    """Returns true if a message with the same uid already exists in the db.
+
+    """
+    qfilter = types.Message.uid == unicode(uid)
+
+    return dao.get_by_facet(types.Message, qfilter=qfilter) is not None
