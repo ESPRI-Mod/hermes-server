@@ -27,8 +27,8 @@ _ENV_VARS = {
 	"PRODIGUER_MQ_IMAP_PASSWORD": None,
 	"PRODIGUER_MQ_RABBIT_HOST": "localhost:5671",
 	"PRODIGUER_MQ_RABBIT_LIBIGCM_USER_PASSWORD": None,
-	"PRODIGUER_MQ_RABBIT_SSL_CLIENT_CERT": "/opt/prodiguer/ops/certs/rabbitmq/client-cert.pem",
-	"PRODIGUER_MQ_RABBIT_SSL_CLIENT_KEY": "/opt/prodiguer/ops/certs/rabbitmq/client-key.pem",
+	"PRODIGUER_MQ_RABBIT_SSL_CLIENT_CERT": None,
+	"PRODIGUER_MQ_RABBIT_SSL_CLIENT_KEY": None,
 	"PRODIGUER_MQ_RABBIT_USER_PASSWORD": None,
 	"PRODIGUER_MQ_SMTP_PASSWORD": None,
 	"PRODIGUER_WEB_API_COOKIE_SECRET": None,
@@ -49,10 +49,31 @@ def _get_env_var_value(var_name, var_default):
 	"""
 	value = os.getenv(var_name, var_default)
 	if value is None:
-		return ""
+		return unicode()
 	elif var_name in _ENV_VARS_URL_ENCODE:
 		return urllib.quote_plus(value)
 	return value
+
+
+def _set_mq_ssl_options():
+	"""Sets MQ server connection ssl options.
+
+	"""
+	# Initialise.
+	_ENV_VARS['PRODIGUER_MQ_RABBIT_SSL_OPTIONS'] = unicode()
+
+	# Exit if cert/key undefined.
+	if not _ENV_VARS['PRODIGUER_MQ_RABBIT_SSL_CLIENT_CERT'] or \
+	   not _ENV_VARS['PRODIGUER_MQ_RABBIT_SSL_CLIENT_KEY']:
+	   return
+
+	# Set options.
+	_ENV_VARS['PRODIGUER_MQ_RABBIT_SSL_OPTIONS'] = urllib.urlencode({
+		'ssl_options': {
+			'certfile': _ENV_VARS['PRODIGUER_MQ_RABBIT_SSL_CLIENT_CERT'],
+			'keyfile': _ENV_VARS['PRODIGUER_MQ_RABBIT_SSL_CLIENT_KEY']
+			}
+		})
 
 
 def _init_env_vars():
@@ -64,13 +85,7 @@ def _init_env_vars():
 		_ENV_VARS[var_name] = _get_env_var_value(var_name, var_default)
 
 	# Set mq connection ssl options.
-	mq_ssl_options = {
-		'ssl_options': {
-			'certfile': _ENV_VARS['PRODIGUER_MQ_RABBIT_SSL_CLIENT_CERT'],
-			'keyfile': _ENV_VARS['PRODIGUER_MQ_RABBIT_SSL_CLIENT_KEY']
-			}
-		}
-	_ENV_VARS['PRODIGUER_MQ_RABBIT_SSL_OPTIONS'] = urllib.urlencode(mq_ssl_options)
+	_set_mq_ssl_options()
 
 
 def _get_config_file_content():
