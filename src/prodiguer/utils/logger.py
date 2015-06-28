@@ -65,8 +65,8 @@ def log(
     :param str institute: Institute emitting log message (e.g. libIGCM).
 
     """
-    # TODO use structlog.
-    print _get_formatted_message(msg, module, level, app, institute)
+    # TODO use structlog or other such library
+    print(_get_formatted_message(msg, module, level, app, institute))
 
 
 def log_error(
