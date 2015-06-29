@@ -13,9 +13,9 @@
 import tornado
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.utils import rt
 from prodiguer.web import utils_handler
 from prodiguer.web.sim_metrics import utils
+from prodiguer.web.sim_metrics import utils_validation as validator
 
 
 
@@ -34,41 +34,34 @@ class FetchColumnsRequestHandler(tornado.web.RequestHandler):
         utils.set_cors_white_list(self)
 
 
-    def _validate_request(self):
-        """Validate HTTP GET request.
-
-        """
-        utils.validate_group_name(self.get_argument(_PARAM_GROUP))
-
-
-    def _decode_request(self):
-        """Decodes request.
-
-        """
-        self.group = self.get_argument(_PARAM_GROUP)
-
-
-    def _set_output(self):
-        """Sets response to be returned to client.
-
-        """
-        self.output = {
-            'group': self.group,
-            'columns': dao.fetch_columns(self.group, True)
-        }
-
-
     def get(self):
         """HTTP GET handler.
 
         """
-        validation_tasks = [
-            self._validate_request
-        ]
+        def _validate_request():
+            """Request validator.
 
-        processing_tasks = [
-            self._decode_request,
-            self._set_output,
-        ]
+            """
+            utils_handler.validate_request(self,
+                query_validator=validator.validate_fetch_columns_query_arguments)
 
-        utils_handler.invoke(self, validation_tasks, processing_tasks)
+        def _decode_request():
+            """Decodes request.
+
+            """
+            self.group = self.get_argument(_PARAM_GROUP)
+
+        def _set_output():
+            """Sets response to be returned to client.
+
+            """
+            self.output = {
+                'group': self.group,
+                'columns': dao.fetch_columns(self.group)
+            }
+
+        # Invoke tasks.
+        utils_handler.invoke(self, _validate_request, [
+            _decode_request,
+            _set_output,
+        ])

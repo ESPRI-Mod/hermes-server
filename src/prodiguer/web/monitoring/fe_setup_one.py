@@ -127,7 +127,7 @@ class FrontEndSetupOneRequestHandler(tornado.web.RequestHandler):
             }
             db.session.end()
 
-
+        # Set tasks.
         validation_tasks = [
             _validate_request
         ]
@@ -135,4 +135,6 @@ class FrontEndSetupOneRequestHandler(tornado.web.RequestHandler):
             _decode_request,
             _set_output
         ]
+
+        # Invoke tasks.
         utils_handler.invoke(self, validation_tasks, processing_tasks)

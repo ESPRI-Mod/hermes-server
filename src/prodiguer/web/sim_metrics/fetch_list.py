@@ -13,7 +13,6 @@
 import tornado
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.utils import rt
 from prodiguer.web import utils_handler
 from prodiguer.web.sim_metrics import utils
 
@@ -30,25 +29,23 @@ class FetchListRequestHandler(tornado.web.RequestHandler):
         utils.set_cors_white_list(self)
 
 
-    def _set_output(self):
-        """Sets response to be returned to client.
-
-        """
-        self.output = {
-            'groups': dao.fetch_list()
-        }
-
-
     def get(self):
         """HTTP GET handler.
 
         """
-        validation_tasks = [
-            utils_handler.validate_vanilla_request
-        ]
+        def _validate_request():
+            """Request validator.
 
-        processing_tasks = [
-            self._set_output
-        ]
+            """
+            utils_handler.validate_vanilla_request(self)
 
-        utils_handler.invoke(self, validation_tasks, processing_tasks)
+        def _set_output():
+            """Sets response to be returned to client.
+
+            """
+            self.output = {
+                'groups': dao.fetch_list()
+            }
+
+        # Invoke tasks.
+        utils_handler.invoke(self, _validate_request, _set_output)

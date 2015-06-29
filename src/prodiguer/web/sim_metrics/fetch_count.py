@@ -13,9 +13,9 @@
 import tornado
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.utils import rt
 from prodiguer.web import utils_handler
 from prodiguer.web.sim_metrics import utils
+from prodiguer.web.sim_metrics import utils_validation as validator
 
 
 
@@ -37,47 +37,38 @@ class FetchCountRequestHandler(tornado.web.RequestHandler):
         utils.set_cors_white_list(self)
 
 
-    def _validate_request(self):
-        """Validate HTTP GET request.
-
-        """
-        if self.request.body:
-            utils.validate_http_content_type(self, _CONTENT_TYPE_JSON)
-        utils.validate_group_name(self.get_argument(_PARAM_GROUP))
-
-
-    def _decode_request(self):
-        """Decodes request.
-
-        """
-        self.group = self.get_argument(_PARAM_GROUP)
-        if self.request.body:
-            self.query = utils.decode_json_payload(self, False)
-        else:
-            self.query = None
-
-
-    def _set_output(self):
-        """Sets response to be returned to client.
-
-        """
-        self.output = {
-            'group': self.group,
-            'count': dao.fetch_count(self.group, self.query)
-        }
-
-
     def get(self):
         """HTTP GET handler.
 
         """
-        validation_tasks = [
-            self._validate_request
-        ]
+        def _validate_request():
+            """Request validator.
 
-        processing_tasks = [
-            self._decode_request,
-            self._set_output,
-        ]
+            """
+            if self.request.body:
+                utils.validate_http_content_type(self, _CONTENT_TYPE_JSON)
+            utils_handler.validate_request(self,
+                query_validator=validator.validate_fetch_count_query_arguments)
 
-        utils_handler.invoke(self, validation_tasks, processing_tasks)
+        def _decode_request(self):
+            """Decodes request.
+
+            """
+            self.group = self.get_argument(_PARAM_GROUP)
+            self.query = None if not self.request.body else \
+                         utils.decode_json_payload(self, False)
+
+        def _set_output(self):
+            """Sets response to be returned to client.
+
+            """
+            self.output = {
+                'group': self.group,
+                'count': dao.fetch_count(self.group, self.query)
+            }
+
+        # Invoke tasks.
+        utils_handler.invoke(self, _validate_request, [
+            _decode_request,
+            _set_output,
+        ])

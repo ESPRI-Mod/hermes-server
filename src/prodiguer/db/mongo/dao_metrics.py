@@ -26,6 +26,7 @@ _DB_NAME = "metrics"
 _MONGO_OBJECT_ID = "_id"
 
 
+
 def _format_group_id(group_id):
     """Returns a formatted group id.
 
@@ -33,20 +34,20 @@ def _format_group_id(group_id):
     return None if not group_id else group_id.strip().lower()
 
 
-def _fetch(action, query):
+def _fetch(action, query=None):
     """Fetches data form db.
 
     """
-    # Parse params.
-    query = query or {}
-
-    # Return data.
-    return action(query)
-    # return action(query, as_class=OrderedDict)
+    return action(query or {})
 
 
 def _get_collection(group_id):
-    pass
+    """Returns a MongoDB collection pointer.
+
+    """
+    group_id = _format_group_id(group_id)
+
+    return utils.get_db_collection(_DB_NAME, group_id, OrderedDict)
 
 
 def add(group_id, metrics, duplicate_action):
@@ -61,8 +62,7 @@ def add(group_id, metrics, duplicate_action):
 
     """
     # Set target db collection.
-    group_id = _format_group_id(group_id)
-    collection = utils.get_db_collection(_DB_NAME, group_id)
+    collection = _get_collection(group_id)
 
     # Insert metrics.
     duplicates = []
@@ -89,8 +89,7 @@ def delete(group_id, query=None):
     :param dict query: Query filter to be applied.
 
     """
-    group_id = _format_group_id(group_id)
-    collection = utils.get_db_collection(_DB_NAME, group_id)
+    collection = _get_collection(group_id)
     if query:
         collection.remove(query)
     else:
@@ -101,14 +100,13 @@ def delete_sets(group_id, set_ids):
     """Deletes sets of metrics.
 
     :param str group_id: ID of a metric group.
-    :param list set_ids: ID's of individual sets within a metric group.
+    :param list set_ids: Setf of metric identifiers.
 
     :returns: Original and updated line counts.
     :rtype: tuple
 
     """
-    group_id = _format_group_id(group_id)
-    collection = utils.get_db_collection(_DB_NAME, group_id)
+    collection = _get_collection(group_id)
 
     count = collection.count()
     for set_id in set_ids:
@@ -141,14 +139,13 @@ def fetch(group_id, query=None):
     :rtype: dict
 
     """
-    group_id = _format_group_id(group_id)
-    collection = utils.get_db_collection(_DB_NAME, group_id)
+    collection = _get_collection(group_id)
     cursor = _fetch(collection.find, query)
 
     return list(cursor)
 
 
-def fetch_columns(group_id, include_id_column=False):
+def fetch_columns(group_id):
     """Returns set of column names associated with a group of metrics.
 
     :param str group_id: ID of a metric group.
@@ -158,18 +155,13 @@ def fetch_columns(group_id, include_id_column=False):
 
     """
     # Get columns from first record.
-    group_id = _format_group_id(group_id)
-    collection = utils.get_db_collection(_DB_NAME, group_id)
-    cursor = _fetch(collection.find_one, None)
+    collection = _get_collection(group_id)
+    cursor = _fetch(collection.find_one)
     columns = cursor.keys() if cursor else []
 
     # Split columns into user defined and control.
     user_columns = [k for k in columns if not k.startswith('_')]
     ctl_columns = [k for k in columns if k.startswith('_')]
-
-    # Exclude _id column when instructed.
-    if not include_id_column:
-        ctl_columns.remove(_MONGO_OBJECT_ID)
 
     return sorted(user_columns) + sorted(ctl_columns)
 
@@ -184,8 +176,7 @@ def fetch_count(group_id, query=None):
     :rtype: int
 
     """
-    group_id = _format_group_id(group_id)
-    collection = utils.get_db_collection(_DB_NAME, group_id)
+    collection = _get_collection(group_id)
     cursor = _fetch(collection.find, query)
 
     return cursor.count()
@@ -221,11 +212,9 @@ def fetch_setup(group_id, query=None):
     :rtype: dict
 
     """
-    group_id = _format_group_id(group_id)
-    query = query or {}
-    collection = utils.get_db_collection(_DB_NAME, group_id)
-    cursor = _fetch(collection.find, query)
     fields = fetch_columns(group_id)
+    collection = _get_collection(group_id)
+    cursor = _fetch(collection.find, query)
 
     return [sorted(cursor.distinct(f)) for f in fields if f != _MONGO_OBJECT_ID]
 
@@ -237,9 +226,8 @@ def rename(group_id, new_group_id):
     :param str new_group_id: New ID of the metric group.
 
     """
-    group_id = _format_group_id(group_id)
     new_group_id = _format_group_id(new_group_id)
-    collection = utils.get_db_collection(_DB_NAME, group_id)
+    collection = _get_collection(group_id)
     collection.rename(new_group_id)
 
 
