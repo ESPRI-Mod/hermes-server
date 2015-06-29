@@ -191,7 +191,8 @@ def consume(
 
         # Skip duplicate messages.
         except sqlalchemy.exc.IntegrityError:
-            msg = "Duplicate message skipped: {}".format(ctx.properties.message_id)
+            msg = "Duplicate message skipped: TYPE={1};  UID={0}"
+            msg = msg.format(ctx.properties.message_id, ctx.properties.type)
             logger.log_mq_warning(msg)
             db.session.rollback()
 
