@@ -49,6 +49,12 @@ def commit():
     """Commits CV session changes.
 
     """
+    # Escape when there is nothing to commit.
+    if not _STATE["destructions"] and \
+       not _STATE["insertions"] and \
+       not _STATE["deletions"]:
+        return
+
     for term in _STATE["destructions"]:
         io.delete(term)
         cache.remove_term(term)

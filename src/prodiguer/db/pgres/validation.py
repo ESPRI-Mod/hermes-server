@@ -15,18 +15,24 @@ import uuid
 import arrow
 
 
+def _raise_value_error(val, var, var_type):
+    """Raises a generic value error.
+
+    """
+    raise ValueError('{0} [{1}] is an invalid {2}'.format(var, val, var_type))
+
 
 def validate_bool(val, var):
     """Validates a boolean.
 
     """
     if val is None:
-        raise ValueError('{0} is undefined'.format(var))
+        raise ValueError('{0} is undefined bool'.format(var))
 
     try:
         bool(val)
     except ValueError:
-        raise ValueError('{0} is invalid'.format(var))
+        _raise_value_error(val, var, bool)
 
 
 def validate_int(val, var):
@@ -39,7 +45,7 @@ def validate_int(val, var):
     try:
         int(val)
     except ValueError:
-        raise ValueError('{0} is invalid'.format(var))
+        _raise_value_error(val, var, int)
 
 
 def validate_date(val, var):
@@ -47,23 +53,23 @@ def validate_date(val, var):
 
     """
     if val is None:
-        raise ValueError('{0} is undefined'.format(var))
+        raise ValueError('{0} is undefined date'.format(var))
 
     try:
         arrow.get(val)
     except arrow.parser.ParserError:
-        raise ValueError('{0} is invalid'.format(var))
+        _raise_value_error(val, var, 'date')
 
 
-def validate_uid(identifier, var):
+def validate_uid(val, var):
     """Validaes a universally unique identifier.
 
     """
-    if not isinstance(identifier, uuid.UUID):
+    if not isinstance(val, uuid.UUID):
         try:
-            uuid.UUID(identifier)
+            uuid.UUID(val)
         except ValueError:
-            raise ValueError("{0} must be UUID compatible.".format(var))
+            _raise_value_error(val, var, uuid.UUID)
 
 
 def validate_accounting_project(project):
