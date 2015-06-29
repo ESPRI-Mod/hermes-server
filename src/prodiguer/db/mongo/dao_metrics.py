@@ -45,6 +45,10 @@ def _fetch(action, query):
     # return action(query, as_class=OrderedDict)
 
 
+def _get_collection(group_id):
+    pass
+
+
 def add(group_id, metrics, duplicate_action):
     """Persists a set of metrics to the database.
 
