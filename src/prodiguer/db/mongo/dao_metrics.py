@@ -145,10 +145,11 @@ def fetch(group_id, query=None):
     return list(cursor)
 
 
-def fetch_columns(group_id):
+def fetch_columns(group_id, exclude_id_column=False):
     """Returns set of column names associated with a group of metrics.
 
     :param str group_id: ID of a metric group.
+    :param bool exclude_id_column: Flag indicating whether the ID column should be excluded or not.
 
     :returns: Set of column names associated with a group of metrics.
     :rtype: list
@@ -162,6 +163,10 @@ def fetch_columns(group_id):
     # Split columns into user defined and control.
     user_columns = [k for k in columns if not k.startswith('_')]
     ctl_columns = [k for k in columns if k.startswith('_')]
+
+    # Exclude id column.
+    if exclude_id_column and _MONGO_OBJECT_ID in ctl_columns:
+        ctl_columns.remove(_MONGO_OBJECT_ID)
 
     return sorted(user_columns) + sorted(ctl_columns)
 
@@ -212,7 +217,7 @@ def fetch_setup(group_id, query=None):
     :rtype: dict
 
     """
-    fields = fetch_columns(group_id)
+    fields = fetch_columns(group_id, False)
     collection = _get_collection(group_id)
     cursor = _fetch(collection.find, query)
 

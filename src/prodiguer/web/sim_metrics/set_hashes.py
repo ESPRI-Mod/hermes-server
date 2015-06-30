@@ -14,9 +14,8 @@
 import tornado
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.utils import rt
 from prodiguer.web import utils_handler
-from prodiguer.web.sim_metrics import utils
+from prodiguer.web.sim_metrics import _utils as utils
 
 
 
@@ -28,39 +27,15 @@ class SetHashesRequestHandler(tornado.web.RequestHandler):
     """Simulation metric group set hashes method request handler.
 
     """
-    def _validate_request(self):
-        """Validate HTTP POST request.
-
-        """
-        utils.validate_group_name(self.get_argument(_PARAM_GROUP))
-
-
-    def _decode_request(self):
-        """Decodes request.
-
-        """
-        self.group = self.get_argument(_PARAM_GROUP)
-
-
-    def _set_hashes(self):
-        """Sets the hash identifiers for all metrics within the group.
-
-        """
-        dao.set_hashes(self.group)
-
-
     def post(self):
         """HTTP POST handler.
 
         """
-        validation_tasks = [
-            self._validate_request
-        ]
+        def _do_work(self):
+            """Sets the hash identifiers for all metrics within the group.
 
-        processing_tasks = [
-            self._decode_request,
-            self._set_hashes
-        ]
+            """
+            dao.set_hashes(self.get_argument(_PARAM_GROUP))
 
-        utils_handler.invoke(self, validation_tasks, processing_tasks)
-
+        # Invoke tasks.
+        utils_handler.invoke(self, validator.validate_set_hashes, _do_work)

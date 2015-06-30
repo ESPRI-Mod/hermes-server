@@ -16,7 +16,7 @@ import tornado
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.utils import rt
 from prodiguer.web import utils_handler
-from prodiguer.web.sim_metrics import utils
+from prodiguer.web.sim_metrics import _utils as utils
 
 
 
@@ -29,41 +29,33 @@ class RenameRequestHandler(tornado.web.RequestHandler):
     """Simulation metric group rename method request handler.
 
     """
-    def _validate_request(self):
-        """Validate HTTP POST request.
-
-        """
-        utils.validate_group_name(self.get_argument(_PARAM_GROUP))
-        utils.validate_group_name(self.get_argument(_PARAM_NEW_NAME),
-        						  validate_db_collection=False)
-
-
-    def _decode_request(self):
-        """Decodes request.
-
-        """
-        self.group = self.get_argument(_PARAM_GROUP)
-        self.new_name = self.get_argument(_PARAM_NEW_NAME)
-
-
-    def _rename_metric_group(self):
-        """Renames metrics group within db.
-
-        """
-        dao.rename(self.group, self.new_name)
-
-
     def post(self):
     	"""HTTP POST handler.
 
     	"""
-        validation_tasks = [
-            self._validate_request
-        ]
+        def _validate_request():
+            """Validate HTTP POST request.
 
-        processing_tasks = [
-            self._decode_request,
-            self._rename_metric_group,
-        ]
+            """
+            utils.validate_group_name(self.get_argument(_PARAM_GROUP))
+            utils.validate_group_name(self.get_argument(_PARAM_NEW_NAME),
+                                      validate_db_collection=False)
 
-        utils_handler.invoke(self, validation_tasks, processing_tasks)
+        def _decode_request():
+            """Decodes request.
+
+            """
+            self.group = self.get_argument(_PARAM_GROUP)
+            self.new_name = self.get_argument(_PARAM_NEW_NAME)
+
+        def _rename_metric_group():
+            """Renames metrics group within db.
+
+            """
+            dao.rename(self.group, self.new_name)
+
+        # Invoke tasks.
+        utils_handler.invoke(self, _validate_request, [
+            _decode_request,
+            _rename_metric_group,
+        ])

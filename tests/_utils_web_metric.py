@@ -14,40 +14,33 @@
 import json
 import random
 
-from . import utils as tu
+from . import _utils as tu
 from prodiguer.utils import convert
 
 
 
-# Metrics base endpoint.
-_EP_BASE = r"http://localhost:8888/api/1/metric"
+# Web service endpoints.
+_EP_BASE = r"http://localhost:8888/api/1/metric/{}"
+EP_ADD = _EP_BASE.format("add")
+EP_FETCH = _EP_BASE.format("fetch?group={0}")
+EP_FETCH_COLUMNS = _EP_BASE.format("fetch_columns?group={0}")
+EP_FETCH_LIST = _EP_BASE.format("fetch_list")
 
-# Add metrics endpoint.
-EP_ADD = _EP_BASE + r"/add"
 
-# List groups endpoint.
-EP_LIST_GROUP = _EP_BASE + r"/list_group"
-
-# Fetch endpoints.
-EP_FETCH = _EP_BASE + r"/fetch?group={0}"
-EP_FETCH_HEADERS = EP_FETCH + r"&headersonly=true"
-EP_FETCH_CSV = EP_FETCH + r"&format=csv"
-
-# Delete metric lines endpoint.
 EP_DELETE_LINES = _EP_BASE + r"/delete"
-
-# Delete metric group endpoint.
 EP_DELETE_GROUP = _EP_BASE + r"/delete_group?group={0}"
 
 
 
 def get_valid_metrics():
-	"""Returns a set of valid metrics."""
+	"""Returns a set of valid metrics.
+
+	"""
 	return {
-		u'group': tu.get_string(12),
 		u'columns': [
 			u'a', u'b', u'c', u'd', u'e', u'f'
 		],
+		u'group': tu.get_string(12),
 		u'metrics': [
 			[1, 2, 3, 4, 5, 6],
 			[1, 2, 3, 4, 5, 6],
@@ -55,7 +48,7 @@ def get_valid_metrics():
 			[1, 2, 3, 4, 5, 6],
 			[1, 2, 3, 4, 5, 6],
 			[1, 2, 3, 4, 5, 6],
-		],		
+		]
 	}
 
 
@@ -153,11 +146,11 @@ def assert_response_fetch(r, metric=None, expected_status=0, format='json'):
 							   expected_content_type=tu.HTTP_CONTENT_TYPE_CSV)
 
 
-def assert_response_fetch_headers(r, m, expected_status=0):
+def assert_response_fetch_columns(r, m, expected_status=0):
 	metric = m.copy()
 	if expected_status == 0:
 		del metric['metrics']
-		metric['columns'].append('metric_id')
+		metric['columns'].append('_id')
 	tu.assert_api_response(r, expected_status, expected_data=metric)
 
 

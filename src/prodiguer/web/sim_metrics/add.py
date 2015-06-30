@@ -16,9 +16,8 @@ import tornado
 from collections import OrderedDict
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.utils import rt
 from prodiguer.web import utils_handler
-from prodiguer.web.sim_metrics import utils
+from prodiguer.web.sim_metrics import _utils as utils
 
 
 
@@ -52,10 +51,10 @@ class AddRequestHandler(tornado.web.RequestHandler):
         """Validates request query parameters.
 
         """
-        utils.validate_duplicate_action(self.get_argument(_PARAM_DUPLICATE_ACTION))
+        utils.validate_duplicate_action(self.get_argument(_PARAM_DUPLICATE_ACTION, 'skip'))
 
         # Validation passed therefore decode query params.
-        self.duplicate_action = self.get_argument(_PARAM_DUPLICATE_ACTION)
+        self.duplicate_action = self.get_argument(_PARAM_DUPLICATE_ACTION, 'skip')
 
 
     def _validate_request_payload(self):
@@ -121,9 +120,8 @@ class AddRequestHandler(tornado.web.RequestHandler):
             self._validate_request_payload
         ]
 
-        processing_tasks = [
+        # Invoke tasks.
+        utils_handler.invoke(self, validation_tasks, [
             self._insert_metrics,
             self._set_output
-        ]
-
-        utils_handler.invoke(self, validation_tasks, processing_tasks)
+        ])

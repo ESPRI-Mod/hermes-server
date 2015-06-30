@@ -381,58 +381,36 @@ def invoke_api(verb, url, payload=None):
 
 
 def assert_api_response(r,
-                        expected_status,
+                        expected_status=0,
                         expected_data=None,
-                        expected_content_type=HTTP_CONTENT_TYPE_JSON,
-                        expected_content_encoding=HTTP_CONTENT_ENCODING_UTF8,
                         response_data_parser=None):
-    """Asserts an api response."""
+    """Asserts an api response.
+
+    """
     assert_obj(r)
 
-    # ... assert http response code
+    # Assert http response code
     assert_integer(r.status_code, 200)
 
-    # ... assert http response encoding
+    # Assert http response encoding
     assert_string(r.encoding, HTTP_CONTENT_ENCODING_UTF8, ignore_case=True)
 
-    def assert_json():
-        # ... assert http header
-        assert_string(r.headers.get('content-type'), HTTP_CONTENT_TYPE_JSON,
-                      startswith=True, ignore_case=True)
+    # Assert http header
+    assert_string(r.headers.get('content-type'), HTTP_CONTENT_TYPE_JSON,
+                  startswith=True, ignore_case=True)
 
-        # ... assert status
-        response_data = r.json()
-        assert_integer(response_data['status'], expected_status)
+    # Assert status
+    response_data = r.json()
+    assert_integer(response_data['status'], expected_status)
 
-        # ... assert data
-        if expected_status == 0 and expected_data:
-            del response_data['status']
-            if response_data_parser:
-                response_data_parser(response_data)
-            assert response_data == expected_data
+    # Assert data
+    if expected_status == 0 and expected_data:
+        del response_data['status']
+        if response_data_parser:
+            response_data_parser(response_data)
+        assert response_data == expected_data
 
-        return response_data
-
-
-    def assert_csv():
-        # ... assert http header
-        assert_string(r.headers.get('content-type'), HTTP_CONTENT_TYPE_CSV,
-                      startswith=True, ignore_case=True)
-
-        return r.text
-
-
-    # Assert json content.
-    if expected_content_type == HTTP_CONTENT_TYPE_JSON:
-        return assert_json()
-
-    # Assert csv content.
-    elif expected_content_type == HTTP_CONTENT_TYPE_CSV:
-        # NOTE - errors are returned in json format
-        if r.headers.get('content-type').lower() == HTTP_CONTENT_TYPE_JSON:
-            return assert_json()
-        else:
-            return assert_csv()
+    return response_data
 
 
 def is_api_up():

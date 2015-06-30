@@ -58,6 +58,7 @@ def validate_group_name(group, validate_db_collection=True):
 
     if re.compile(_GROUP_NAME_REGEX).search(group):
         throw()
+    print "SSS", len(group)
     if len(group) < _GROUP_NAME_MIN_LENGTH or \
        len(group) > _GROUP_NAME_MAX_LENGTH:
         throw()

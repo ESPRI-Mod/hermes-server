@@ -15,8 +15,8 @@ import voluptuous
 
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.web import utils_handler
-from prodiguer.web.sim_metrics import utils
-from prodiguer.web.sim_metrics import utils_validation as validator
+from prodiguer.web.sim_metrics import _utils as utils
+from prodiguer.web.sim_metrics import _validator as validator
 
 
 
@@ -25,7 +25,6 @@ _CONTENT_TYPE_JSON = ["application/json", "application/json; charset=UTF-8"]
 
 # Query parameter names.
 _PARAM_GROUP = 'group'
-
 
 
 class FetchRequestHandler(tornado.web.RequestHandler):
@@ -43,13 +42,6 @@ class FetchRequestHandler(tornado.web.RequestHandler):
         """HTTP GET handler.
 
         """
-        def _validate_request():
-            """Request validator.
-
-            """
-            utils_handler.validate_request(self,
-                query_validator=validator.validate_fetch_query_arguments)
-
         def _decode_request():
             """Decodes request.
 
@@ -84,7 +76,7 @@ class FetchRequestHandler(tornado.web.RequestHandler):
             }
 
         # Invoke tasks.
-        utils_handler.invoke(self, _validate_request, [
+        utils_handler.invoke(self, validator.validate_fetch, [
             _decode_request,
             _fetch_data,
             _format_data,
