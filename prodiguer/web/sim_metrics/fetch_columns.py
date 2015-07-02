@@ -23,7 +23,7 @@ from prodiguer.web.sim_metrics import _validator as validator
 _PARAM_GROUP = 'group'
 
 
-class FetchColumnsRequestHandler(tornado.web.RequestHandler):
+class FetchColumnsRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
     """Simulation metric group fetch columns method request handler.
 
     """
@@ -54,7 +54,7 @@ class FetchColumnsRequestHandler(tornado.web.RequestHandler):
             }
 
         # Invoke tasks.
-        utils_handler.invoke(self, validator.validate_fetch_columns, [
+        self.invoke(validator.validate_fetch_columns, [
             _decode_request,
-            _set_output,
+            _set_output
         ])

@@ -61,8 +61,7 @@ def _get_app_routes():
         (r'/api/1/metric/rename', sim_metrics.RenameRequestHandler),
         (r'/api/1/metric/set_hashes', sim_metrics.SetHashesRequestHandler),
         # Operational routes.
-        (r'/api/1/ops/heartbeat', ops.HeartbeatRequestHandler),
-        (r'/api/1/ops/list_endpoints', ops.ListEndpointsRequestHandler),
+        (r'/api/1/ops/heartbeat', ops.HeartbeatRequestHandler)
     )
 
 

@@ -36,7 +36,7 @@ _PARAM_DUPLICATE_ACTION = 'duplicate_action'
 
 
 
-class AddRequestHandler(tornado.web.RequestHandler):
+class AddRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
     """Simulation metric group add method request handler.
 
     """
@@ -83,45 +83,48 @@ class AddRequestHandler(tornado.web.RequestHandler):
         self.payload = payload
 
 
-    def _insert_metrics(self):
-        """Inserts metrics to the db.
-
-        """
-        def _format(metric):
-            """Formats a metric for insertion into db."""
-            return [(c, metric[i]) for i, c in enumerate(self.payload.columns)]
-
-        def _format_metrics():
-            """Returns list of formatted metrics."""
-            return [OrderedDict(_format(m)) for m in self.payload.metrics]
-
-        self.added, self.duplicates = \
-            dao.add(self.payload.group, _format_metrics(), self.duplicate_action)
-
-
-    def _set_output(self):
-        """Sets response to be returned to client.
-
-        """
-        self.output = {
-            'group': self.payload.group,
-            'added_count': len(self.added),
-            'duplicate_count': len(self.duplicates)
-        }
-
-
     def post(self):
         """HTTP POST handler.
 
         """
-        validation_tasks = [
-            self._validate_request_headers,
-            self._validate_request_params,
-            self._validate_request_payload
-        ]
+        def _validate_request():
+            """Validates endpoint request.
+
+            """
+            self._validate_request_headers()
+            self._validate_request_params()
+            self._validate_request_payload()
+
+
+        def _insert_metrics():
+            """Inserts metrics to the db.
+
+            """
+            def _format(metric):
+                """Formats a metric for insertion into db."""
+                return [(c, metric[i]) for i, c in enumerate(self.payload.columns)]
+
+            def _format_metrics():
+                """Returns list of formatted metrics."""
+                return [OrderedDict(_format(m)) for m in self.payload.metrics]
+
+            self.added, self.duplicates = \
+                dao.add(self.payload.group, _format_metrics(), self.duplicate_action)
+
+
+        def _set_output():
+                """Sets response to be returned to client.
+
+                """
+                self.output = {
+                    'group': self.payload.group,
+                    'added_count': len(self.added),
+                    'duplicate_count': len(self.duplicates)
+                }
 
         # Invoke tasks.
-        utils_handler.invoke(self, validation_tasks, [
-            self._insert_metrics,
-            self._set_output
+        self.invoke(_validate_request, [
+            _insert_metrics,
+            _set_output
         ])
+

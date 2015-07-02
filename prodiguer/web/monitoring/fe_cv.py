@@ -19,32 +19,24 @@ from prodiguer.db import pgres as db
 
 
 
-class FrontEndControlledVocabularyRequestHandler(tornado.web.RequestHandler):
+class FrontEndControlledVocabularyRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
     """Simulation monitoring front end controlled vocabulary setup request handler.
 
     """
-    def _set_output(self):
-        """Sets response to be returned to client.
-
-        """
-        db.session.start()
-        self.output = {
-            'cv_terms':
-                db.utils.get_list(db.types.ControlledVocabularyTerm)
-        }
-        db.session.end()
-
-
     def get(self, *args):
         """HTTP GET handler.
 
         """
-        validation_tasks = [
-            utils_handler.validate_vanilla_request
-        ]
+        def _set_output():
+            """Sets response to be returned to client.
 
-        processing_tasks = [
-            self._set_output
-        ]
+            """
+            db.session.start()
+            self.output = {
+                'cv_terms':
+                    db.utils.get_list(db.types.ControlledVocabularyTerm)
+            }
+            db.session.end()
 
-        utils_handler.invoke(self, validation_tasks, processing_tasks)
+        # Invoke tasks.
+        self.invoke(utils_handler.validate_vanilla_request, _set_output)

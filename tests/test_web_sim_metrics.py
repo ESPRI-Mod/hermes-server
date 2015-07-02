@@ -230,17 +230,17 @@ def _test_positive():
 
 	# Fetch (expecting HTTP 400=Bad Request).
 	r = tu.invoke_api(requests.get, _EP_FETCH.format(new_name))
-	tu.assert_integer(r.status_code, 500)
+	tu.assert_integer(r.status_code, 400)
 
 
 def _test_negative():
 	"""testing sim-metrics web service: negative
 
 	"""
-	for func in _yield_invalid_metrics():
-		m = func()
+	for m in (f() for f in _yield_invalid_metrics()):
+		# Add (expecting HTTP 400=Bad Request).
 		r = tu.invoke_api(requests.post, _EP_ADD, m)
-		tu.assert_integer(r.status_code, 500)
+		tu.assert_integer(r.status_code, 400)
 
 
 @nose.tools.with_setup(setup=_on_test_setup, teardown=_on_test_teardown)

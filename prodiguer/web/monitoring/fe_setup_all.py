@@ -19,14 +19,7 @@ from prodiguer.db import pgres as db
 
 
 
-def _get_data(func):
-    """Returns data for front-end.
-
-    """
-    return db.utils.get_collection(func())
-
-
-class FrontEndSetupAllRequestHandler(tornado.web.RequestHandler):
+class FrontEndSetupAllRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
     """Simulation monitoring all simulations front end setup request handler.
 
     """
@@ -39,6 +32,13 @@ class FrontEndSetupAllRequestHandler(tornado.web.RequestHandler):
 
             """
             utils_handler.validate_request(self)
+
+
+        def _get_data(func):
+            """Returns data for front-end.
+
+            """
+            return db.utils.get_collection(func())
 
 
         def _set_output():
@@ -54,11 +54,5 @@ class FrontEndSetupAllRequestHandler(tornado.web.RequestHandler):
             }
             db.session.end()
 
-
-        validation_tasks = [
-            _validate_request
-        ]
-        processing_tasks = [
-            _set_output
-        ]
-        utils_handler.invoke(self, validation_tasks, processing_tasks)
+        # Invoke tasks.
+        self.invoke(_validate_request, _set_output)

@@ -68,28 +68,7 @@ def _validate_get_request_query_arguments(handler):
     schema(handler.request.query_arguments)
 
 
-def _get_data(data):
-    """Returns data for front-end.
-
-    """
-    try:
-        iter(data)
-    except TypeError:
-        return db.utils.get_item(data)
-    else:
-        return db.utils.get_collection(data)
-
-
-def _get_simulation_configuration(uid):
-    """Returns simulation configuration card.
-
-    """
-    configuration = db.dao_monitoring.retrieve_simulation_configuration(uid)
-
-    return base64.b64decode(configuration.card) if configuration else ''
-
-
-class FrontEndSetupOneRequestHandler(tornado.web.RequestHandler):
+class FrontEndSetupOneRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
     """Simulation monitor front end setup request handler.
 
     """
@@ -97,6 +76,27 @@ class FrontEndSetupOneRequestHandler(tornado.web.RequestHandler):
         """HTTP GET handler.
 
         """
+        def _get_data(data):
+            """Returns data for front-end.
+
+            """
+            try:
+                iter(data)
+            except TypeError:
+                return db.utils.get_item(data)
+            else:
+                return db.utils.get_collection(data)
+
+
+        def _get_simulation_configuration(uid):
+            """Returns simulation configuration card.
+
+            """
+            configuration = db.dao_monitoring.retrieve_simulation_configuration(uid)
+
+            return base64.b64decode(configuration.card) if configuration else ''
+
+
         def _validate_request():
             """Request validator.
 
@@ -127,14 +127,8 @@ class FrontEndSetupOneRequestHandler(tornado.web.RequestHandler):
             }
             db.session.end()
 
-        # Set tasks.
-        validation_tasks = [
-            _validate_request
-        ]
-        processing_tasks = [
+        # Invoke tasks.
+        self.invoke(_validate_request, [
             _decode_request,
             _set_output
-        ]
-
-        # Invoke tasks.
-        utils_handler.invoke(self, validation_tasks, processing_tasks)
+        ])

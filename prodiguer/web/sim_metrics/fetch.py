@@ -27,7 +27,7 @@ _CONTENT_TYPE_JSON = ["application/json", "application/json; charset=UTF-8"]
 _PARAM_GROUP = 'group'
 
 
-class FetchRequestHandler(tornado.web.RequestHandler):
+class FetchRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
     """Simulation metric group fetch method request handler.
 
     """
@@ -76,7 +76,7 @@ class FetchRequestHandler(tornado.web.RequestHandler):
             }
 
         # Invoke tasks.
-        utils_handler.invoke(self, validator.validate_fetch, [
+        self.invoke(validator.validate_fetch, [
             _decode_request,
             _fetch_data,
             _format_data,

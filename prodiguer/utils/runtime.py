@@ -22,7 +22,7 @@ def get_path_to_repos():
 
     """
     dir_repos = os.path.dirname(__file__)
-    for _ in range(4):
+    for _ in range(3):
         dir_repos = os.path.dirname(dir_repos)
 
     return dir_repos

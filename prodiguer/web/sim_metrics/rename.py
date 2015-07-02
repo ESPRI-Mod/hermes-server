@@ -25,7 +25,7 @@ _PARAM_GROUP = 'group'
 _PARAM_NEW_NAME = 'new_name'
 
 
-class RenameRequestHandler(tornado.web.RequestHandler):
+class RenameRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
     """Simulation metric group rename method request handler.
 
     """
@@ -55,7 +55,7 @@ class RenameRequestHandler(tornado.web.RequestHandler):
             dao.rename(self.group, self.new_name)
 
         # Invoke tasks.
-        utils_handler.invoke(self, _validate_request, [
+        self.invoke(_validate_request, [
             _decode_request,
             _rename_metric_group,
         ])

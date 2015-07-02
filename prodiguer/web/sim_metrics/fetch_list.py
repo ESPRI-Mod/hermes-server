@@ -18,7 +18,7 @@ from prodiguer.web.sim_metrics import utils
 
 
 
-class FetchListRequestHandler(tornado.web.RequestHandler):
+class FetchListRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
     """Simulation list metric request handler.
 
     """
@@ -33,12 +33,6 @@ class FetchListRequestHandler(tornado.web.RequestHandler):
         """HTTP GET handler.
 
         """
-        def _validate_request():
-            """Request validator.
-
-            """
-            utils_handler.validate_vanilla_request(self)
-
         def _set_output():
             """Sets response to be returned to client.
 
@@ -48,4 +42,4 @@ class FetchListRequestHandler(tornado.web.RequestHandler):
             }
 
         # Invoke tasks.
-        utils_handler.invoke(self, _validate_request, _set_output)
+        self.invoke(utils_handler.validate_vanilla_request, _set_output)

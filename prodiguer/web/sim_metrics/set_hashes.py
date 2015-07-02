@@ -23,7 +23,7 @@ from prodiguer.web.sim_metrics import _utils as utils
 _PARAM_GROUP = 'group'
 
 
-class SetHashesRequestHandler(tornado.web.RequestHandler):
+class SetHashesRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
     """Simulation metric group set hashes method request handler.
 
     """
@@ -38,4 +38,4 @@ class SetHashesRequestHandler(tornado.web.RequestHandler):
             dao.set_hashes(self.get_argument(_PARAM_GROUP))
 
         # Invoke tasks.
-        utils_handler.invoke(self, validator.validate_set_hashes, _do_work)
+        self.invoke(validator.validate_set_hashes, _do_work)

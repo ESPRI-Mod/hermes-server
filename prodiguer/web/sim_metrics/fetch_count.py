@@ -26,7 +26,7 @@ _CONTENT_TYPE_JSON = ["application/json", "application/json; charset=UTF-8"]
 _PARAM_GROUP = 'group'
 
 
-class FetchCountRequestHandler(tornado.web.RequestHandler):
+class FetchCountRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
     """Simulation metric group fetch line count method request handler.
 
     """
@@ -41,16 +41,7 @@ class FetchCountRequestHandler(tornado.web.RequestHandler):
         """HTTP GET handler.
 
         """
-        def _validate_request():
-            """Request validator.
-
-            """
-            if self.request.body:
-                utils.validate_http_content_type(self, _CONTENT_TYPE_JSON)
-            utils_handler.validate_request(self,
-                query_validator=validator.validate_fetch_count_query_arguments)
-
-        def _decode_request(self):
+        def _decode_request():
             """Decodes request.
 
             """
@@ -58,7 +49,7 @@ class FetchCountRequestHandler(tornado.web.RequestHandler):
             self.query = None if not self.request.body else \
                          utils.decode_json_payload(self, False)
 
-        def _set_output(self):
+        def _set_output():
             """Sets response to be returned to client.
 
             """
@@ -68,7 +59,7 @@ class FetchCountRequestHandler(tornado.web.RequestHandler):
             }
 
         # Invoke tasks.
-        utils_handler.invoke(self, validator.validate_fetch_count, [
+        self.invoke(validator.validate_fetch_count, [
             _decode_request,
-            _set_output,
+            _set_output
         ])

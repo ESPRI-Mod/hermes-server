@@ -24,7 +24,7 @@ from prodiguer.web.sim_metrics import _validator as validator
 _PARAM_GROUP = 'group'
 
 
-class DeleteRequestHandler(tornado.web.RequestHandler):
+class DeleteRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
     """Simulation metric group delete method request handler.
 
     """
@@ -42,4 +42,4 @@ class DeleteRequestHandler(tornado.web.RequestHandler):
             dao.delete(self.get_argument(_PARAM_GROUP), query)
 
         # Invoke tasks.
-        utils_handler.invoke(self, validator.validate_delete, _do_work)
+        self.invoke(validator.validate_delete, _do_work)
