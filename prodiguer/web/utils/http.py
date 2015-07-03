@@ -11,10 +11,11 @@
 
 
 """
-import inspect
+import json
 
 import tornado
 
+from prodiguer.utils import convert
 from prodiguer.utils import logger
 from prodiguer.utils.data_convertor import jsonify
 
@@ -35,6 +36,23 @@ class ProdiguerHTTPRequestHandler(tornado.web.RequestHandler):
 
         """
         return self.application.settings.get('debug', False)
+
+
+    def decode_json_body(self, as_namedtuple=True):
+        """Decodes request body JSON string.
+
+        :param tornado.web.RequestHandler handler: A web request handler.
+
+        :returns: Decoded json data.
+        :rtype: namedtuple | None
+
+        """
+        if not self.request.body:
+            return None
+
+        body = json.loads(self.request.body)
+
+        return convert.dict_to_namedtuple(body) if as_namedtuple else body
 
 
     def invoke(

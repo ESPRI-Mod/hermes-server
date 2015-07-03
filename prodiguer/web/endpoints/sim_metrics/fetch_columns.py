@@ -13,8 +13,7 @@
 import tornado
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web.endpoints.sim_metrics import _utils as utils
-from prodiguer.web.endpoints.sim_metrics import _validator as validator
+from prodiguer.web.endpoints.sim_metrics import request_validator
 from prodiguer.web.utils import ProdiguerHTTPRequestHandler
 
 
@@ -31,7 +30,7 @@ class FetchColumnsRequestHandler(ProdiguerHTTPRequestHandler):
         """Set default HTTP response headers.
 
         """
-        utils.set_cors_white_list(self)
+        self.set_header("Access-Control-Allow-Origin", "*")
 
 
     def get(self):
@@ -54,7 +53,7 @@ class FetchColumnsRequestHandler(ProdiguerHTTPRequestHandler):
             }
 
         # Invoke tasks.
-        self.invoke(validator.validate_fetch_columns, [
+        self.invoke(request_validator.validate_fetch_columns, [
             _decode_request,
             _set_output
         ])

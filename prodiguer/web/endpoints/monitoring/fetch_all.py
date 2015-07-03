@@ -11,8 +11,8 @@
 
 
 """
+from prodiguer.web.endpoints.monitoring import request_validator
 from prodiguer.web.utils import ProdiguerHTTPRequestHandler
-from prodiguer.web.endpoints.monitoring import _validator as validator
 from prodiguer.db import pgres as db
 
 
@@ -46,4 +46,4 @@ class FetchAllRequestHandler(ProdiguerHTTPRequestHandler):
             db.session.end()
 
         # Invoke tasks.
-        self.invoke(validator.validate_fetch_all, _set_output)
+        self.invoke(request_validator.validate_fetch_all, _set_output)

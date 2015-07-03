@@ -16,20 +16,10 @@ import tornado
 from collections import OrderedDict
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web.endpoints.sim_metrics import _utils as utils
+from prodiguer.web.endpoints.sim_metrics import request_validator
 from prodiguer.web.utils import ProdiguerHTTPRequestHandler
 
 
-
-# Supported content types.
-_CONTENT_TYPE_JSON = ["application/json", "application/json; charset=UTF-8"]
-
-# Set of expected payload fields and their type.
-_PAYLOAD_FIELDS = set([
-    ('group', unicode),
-    ('columns', list),
-    ('metrics', list),
-    ])
 
 # Query parameter names.
 _PARAM_DUPLICATE_ACTION = 'duplicate_action'
@@ -40,60 +30,16 @@ class AddRequestHandler(ProdiguerHTTPRequestHandler):
     """Simulation metric group add method request handler.
 
     """
-    def _validate_request_headers(self):
-        """Validates request headers.
-
-        """
-        utils.validate_http_content_type(self, _CONTENT_TYPE_JSON)
-
-
-    def _validate_request_params(self):
-        """Validates request query parameters.
-
-        """
-        utils.validate_duplicate_action(self.get_argument(_PARAM_DUPLICATE_ACTION, 'skip'))
-
-        # Validation passed therefore decode query params.
-        self.duplicate_action = self.get_argument(_PARAM_DUPLICATE_ACTION, 'skip')
-
-
-    def _validate_request_payload(self):
-        """Validates request payload.
-
-        """
-        # Decode payload.
-        payload = utils.decode_json_payload(self)
-
-        # Validate payload.
-        utils.validate_payload(payload, _PAYLOAD_FIELDS)
-
-        # Validate group name.
-        utils.validate_group_name(payload.group, False)
-
-        # Validate metrics count > 0.
-        if len(payload.metrics) == 0:
-            raise ValueError("No metrics to add")
-
-        # Validate that length of each metric is same as length of group columns.
-        for metric in payload.metrics:
-            if len(metric) != len(payload.columns):
-                raise ValueError("Invalid metric: number of values does not match number of columns")
-
-        # Validation passed therefore cache decoded payload.
-        self.payload = payload
-
-
     def post(self):
         """HTTP POST handler.
 
         """
-        def _validate_request():
-            """Validates endpoint request.
+        def _decode_request():
+            """Decodes request.
 
             """
-            self._validate_request_headers()
-            self._validate_request_params()
-            self._validate_request_payload()
+            self.duplicate_action = self.get_argument(_PARAM_DUPLICATE_ACTION, 'skip')
+            self.payload = self.decode_json_body()
 
 
         def _insert_metrics():
@@ -123,7 +69,8 @@ class AddRequestHandler(ProdiguerHTTPRequestHandler):
                 }
 
         # Invoke tasks.
-        self.invoke(_validate_request, [
+        self.invoke(request_validator.validate_add, [
+            _decode_request,
             _insert_metrics,
             _set_output
         ])

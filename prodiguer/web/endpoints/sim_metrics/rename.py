@@ -14,7 +14,7 @@
 import tornado
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web.endpoints.sim_metrics import _utils as utils
+from prodiguer.web.endpoints.sim_metrics import request_validator
 from prodiguer.web.utils import ProdiguerHTTPRequestHandler
 
 
@@ -32,14 +32,6 @@ class RenameRequestHandler(ProdiguerHTTPRequestHandler):
     	"""HTTP POST handler.
 
     	"""
-        def _validate_request():
-            """Validate HTTP POST request.
-
-            """
-            utils.validate_group_name(self.get_argument(_PARAM_GROUP))
-            utils.validate_group_name(self.get_argument(_PARAM_NEW_NAME),
-                                      validate_db_collection=False)
-
         def _decode_request():
             """Decodes request.
 
@@ -54,7 +46,7 @@ class RenameRequestHandler(ProdiguerHTTPRequestHandler):
             dao.rename(self.group, self.new_name)
 
         # Invoke tasks.
-        self.invoke(_validate_request, [
+        self.invoke(request_validator.validate_rename, [
             _decode_request,
             _rename_metric_group,
         ])

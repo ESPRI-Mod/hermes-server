@@ -17,8 +17,8 @@ from voluptuous import All, Required, Schema
 
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
-from prodiguer.web.utils.validation import Sequence
-from prodiguer.web.utils.validation import validate_request
+from prodiguer.web.utils.request_validation import Sequence
+from prodiguer.web.utils.request_validation import validate
 
 
 
@@ -43,18 +43,26 @@ def _SimulationUID():
     return f
 
 
+def validate_event(handler):
+    """Validates event endpoint HTTP request.
+
+    """
+    # TODO
+    pass
+
+
 def validate_fetch_cv(handler):
     """Validates fetch_cv endpoint HTTP request.
 
     """
-    validate_request(handler)
+    validate(handler)
 
 
 def validate_fetch_all(handler):
     """Validates fetch_all endpoint HTTP request.
 
     """
-    validate_request(handler)
+    validate(handler)
 
 
 def validate_fetch_one(handler):
@@ -70,11 +78,11 @@ def validate_fetch_one(handler):
         })
         schema(handler.request.query_arguments)
 
-    validate_request(handler, query_validator=_query_validator)
+    validate(handler, query_validator=_query_validator)
 
 
 def validate_websocket(handler):
     """Validates websocket endpoint HTTP request.
 
     """
-    validate_request(handler)
+    validate(handler)

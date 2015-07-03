@@ -12,4 +12,4 @@
 
 """
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
-from prodiguer.web.utils.validation import validate_request
+from prodiguer.web.utils.request_validation import validate

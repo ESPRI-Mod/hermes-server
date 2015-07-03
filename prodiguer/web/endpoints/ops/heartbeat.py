@@ -14,7 +14,7 @@
 import tornado
 
 from prodiguer.web.utils import ProdiguerHTTPRequestHandler
-from prodiguer.web.utils import validate_request
+from prodiguer.web.endpoints.monitoring import request_validator
 
 
 
@@ -36,4 +36,4 @@ class HeartbeatRequestHandler(ProdiguerHTTPRequestHandler):
             }
 
         # Invoke tasks.
-        self.invoke(validate_request, _set_output)
+        self.invoke(request_validator.validate, _set_output)

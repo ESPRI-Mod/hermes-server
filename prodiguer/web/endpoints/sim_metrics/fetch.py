@@ -14,8 +14,7 @@ import tornado
 import voluptuous
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web.endpoints.sim_metrics import _utils as utils
-from prodiguer.web.endpoints.sim_metrics import _validator as validator
+from prodiguer.web.endpoints.sim_metrics import request_validator
 from prodiguer.web.utils import ProdiguerHTTPRequestHandler
 
 
@@ -35,7 +34,7 @@ class FetchRequestHandler(ProdiguerHTTPRequestHandler):
         """Set default HTTP response headers.
 
         """
-        utils.set_cors_white_list(self)
+        self.set_header("Access-Control-Allow-Origin", "*")
 
 
     def get(self):
@@ -47,8 +46,7 @@ class FetchRequestHandler(ProdiguerHTTPRequestHandler):
 
             """
             self.group = self.get_argument(_PARAM_GROUP)
-            self.query = None if not self.request.body else \
-                         utils.decode_json_payload(self, False)
+            self.query = self.decode_json_body(False)
 
         def _fetch_data():
             """Fetches data from db.
@@ -76,7 +74,7 @@ class FetchRequestHandler(ProdiguerHTTPRequestHandler):
             }
 
         # Invoke tasks.
-        self.invoke(validator.validate_fetch, [
+        self.invoke(request_validator.validate_fetch, [
             _decode_request,
             _fetch_data,
             _format_data,

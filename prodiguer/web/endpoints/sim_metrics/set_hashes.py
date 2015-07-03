@@ -14,7 +14,7 @@
 import tornado
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web.endpoints.sim_metrics import _utils as utils
+from prodiguer.web.endpoints.sim_metrics import request_validator
 from prodiguer.web.utils import ProdiguerHTTPRequestHandler
 
 
@@ -38,4 +38,4 @@ class SetHashesRequestHandler(ProdiguerHTTPRequestHandler):
             dao.set_hashes(self.get_argument(_PARAM_GROUP))
 
         # Invoke tasks.
-        self.invoke(validator.validate_set_hashes, _do_work)
+        self.invoke(request_validator.validate_set_hashes, _do_work)

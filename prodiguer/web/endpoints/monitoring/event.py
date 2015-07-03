@@ -19,7 +19,9 @@ import tornado.web
 from prodiguer.db import pgres as db
 from prodiguer.utils import logger
 from prodiguer.utils import string_convertor as sc
+from prodiguer.web.endpoints.monitoring import request_validator
 from prodiguer.web.utils import websockets
+
 
 
 
@@ -110,22 +112,11 @@ class EventRequestHandler(tornado.web.RequestHandler):
     """Simulation monitoring web socket event request handler.
 
     """
-    def _validate_post_request(self):
-        """Validate HTTP POST request.
-
-        """
-        # TODO
-        pass
-
-
     @tornado.web.asynchronous
     def post(self):
         """HTTP POST handler.
 
         """
-        # Validate request.
-        self._validate_post_request()
-
         # Signal asynch.
         self.finish()
 

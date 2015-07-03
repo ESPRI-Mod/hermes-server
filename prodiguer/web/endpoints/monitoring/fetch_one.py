@@ -12,59 +12,16 @@
 
 """
 import base64
-import uuid
-
-from voluptuous import All, Invalid, Schema, Required
 
 from prodiguer.db import pgres as db
-from prodiguer.web.endpoints.monitoring import _validator as validator
+from prodiguer.web.endpoints.monitoring import request_validator
 from prodiguer.web.utils import ProdiguerHTTPRequestHandler
 
 
 
-# Supported content types.
-_CONTENT_TYPE_JSON = ["application/json", "application/json; charset=UTF-8"]
-
 # Query parameter names.
 _PARAM_UID = 'uid'
 
-
-
-def _validate_get_request_query_arguments(handler):
-    """Validates GET endpoint HTTP query arguments.
-
-    """
-    def Sequence(expected_type, expected_length=1):
-        """Validates a sequence of query parameter values.
-
-        """
-        def f(val):
-            """Inner function.
-
-            """
-            # Validate sequence length.
-            if len(val) != expected_length:
-                raise ValueError("Invalid request")
-
-            # Validate sequence type.
-            for item in val:
-                try:
-                    expected_type(item)
-                except ValueError:
-                    raise ValueError("Invalid request")
-
-            return val
-
-        return f
-
-
-    # Set query argument validation schema.
-    schema = Schema({
-        Required(_PARAM_UID): All(list, Sequence(uuid.UUID))
-    })
-
-    # Apply query argument validation.
-    schema(handler.request.query_arguments)
 
 
 class FetchOneRequestHandler(ProdiguerHTTPRequestHandler):
@@ -120,7 +77,7 @@ class FetchOneRequestHandler(ProdiguerHTTPRequestHandler):
             db.session.end()
 
         # Invoke tasks.
-        self.invoke(validator.validate_fetch_one, [
+        self.invoke(request_validator.validate_fetch_one, [
             _decode_request,
             _set_output
         ])

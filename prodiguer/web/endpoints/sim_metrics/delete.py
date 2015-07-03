@@ -14,8 +14,7 @@
 import tornado
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web.endpoints.sim_metrics import _utils as utils
-from prodiguer.web.endpoints.sim_metrics import _validator as validator
+from prodiguer.web.endpoints.sim_metrics import request_validator
 from prodiguer.web.utils import ProdiguerHTTPRequestHandler
 
 
@@ -32,14 +31,13 @@ class DeleteRequestHandler(ProdiguerHTTPRequestHandler):
         """HTTP POST handler.
 
         """
-        def _do_work(self):
+        def _do_work():
             """Deletes metrics from db.
 
             """
-            query = None if not self.request.body else \
-                    utils.decode_json_payload(self, False)
+            query = self.decode_json_body(False)
 
             dao.delete(self.get_argument(_PARAM_GROUP), query)
 
         # Invoke tasks.
-        self.invoke(validator.validate_delete, _do_work)
+        self.invoke(request_validator.validate_delete, _do_work)
