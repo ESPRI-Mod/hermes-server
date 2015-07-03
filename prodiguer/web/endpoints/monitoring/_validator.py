@@ -11,12 +11,19 @@
 
 
 """
-import voluptuous
+import uuid
+
+from voluptuous import All, Required, Schema
+
+from prodiguer.db import pgres as db
+from prodiguer.db.pgres import dao_monitoring as dao
+from prodiguer.web.utils.validation import Sequence
+from prodiguer.web.utils.validation import validate_request
 
 
 
 # Query parameter names.
-_PARAM_SIMULATION_UID = 'uid'
+_PARAM_UID = 'uid'
 
 
 def _SimulationUID():
@@ -27,7 +34,11 @@ def _SimulationUID():
         """Inner function.
 
         """
-        _validate_group_name(val[0])
+        db.session.start()
+        uid = unicode(val[0])
+        if not dao.exists(uid):
+            raise ValueError("Simulation {0} not found".format(uid))
+        db.session.end()
 
     return f
 
@@ -36,25 +47,34 @@ def validate_fetch_cv(handler):
     """Validates fetch_cv endpoint HTTP request.
 
     """
-    print 'validate cv'
+    validate_request(handler)
 
 
 def validate_fetch_all(handler):
     """Validates fetch_all endpoint HTTP request.
 
     """
-    print 'validate setup - all'
+    validate_request(handler)
 
 
 def validate_fetch_one(handler):
     """Validates fetch_one endpoint HTTP request.
 
     """
-    print 'validate setup - one'
+    def _query_validator(handler):
+        """Validates HTTP request query arguments.
+
+        """
+        schema = Schema({
+            Required(_PARAM_UID): All(list, Sequence(uuid.UUID), _SimulationUID())
+        })
+        schema(handler.request.query_arguments)
+
+    validate_request(handler, query_validator=_query_validator)
 
 
 def validate_websocket(handler):
     """Validates websocket endpoint HTTP request.
 
     """
-    pass
+    validate_request(handler)

@@ -199,6 +199,20 @@ def retrieve_simulation(uid):
     return dao.get_by_facet(types.Simulation, qfilter=qfilter)
 
 
+def exists(uid):
+    """Returns a flag indicating whether simulation already exists.
+
+    :param str uid: UID of simulation.
+
+    :returns: True if simulation exists false otherwise.
+    :rtype: bool
+
+    """
+    qfilter = types.Simulation.uid == unicode(uid)
+
+    return dao.get_count(types.Simulation, qfilter=qfilter) == 1
+
+
 def retrieve_simulation_configuration(uid):
     """Retrieves simulation configuration details from db.
 

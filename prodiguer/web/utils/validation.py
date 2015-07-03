@@ -39,28 +39,6 @@ def Sequence(expected_type, expected_length=1):
     return f
 
 
-def is_vanilla_request(handler):
-    """Returns a flag indicating whether the request has no associated body, query or files.
-
-    """
-    return (bool(handler.request.body) or
-            bool(handler.request.query) or
-            bool(handler.request.files)) == False
-
-
-def validate_vanilla_request(handler):
-    """Simple HTTP request validator for endpoints that do not expect any parameters.
-
-    :param tornado.web.RequestHandler handler: Endpoint handler.
-
-    """
-    # Invalid request if it has query, body or files.
-    if (bool(handler.request.body) or
-        bool(handler.request.query) or
-        bool(handler.request.files)):
-        raise tornado.httputil.HTTPInputError()
-
-
 def validate_request(
     handler,
     body_validator=None,
@@ -84,10 +62,9 @@ def validate_request(
         if validator is not None:
             validator(handler)
         elif bool(target):
-            raise tornado.httputil.HTTPInputError()
+            raise tornado.httputil.HTTPInputError("Bad request")
 
     _validate(body_validator, handler.request.body)
     _validate(cookies_validator, handler.request.cookies)
     _validate(files_validator, handler.request.files)
     _validate(query_validator, handler.request.query)
-
