@@ -20,7 +20,7 @@ from prodiguer.utils import convert
 
 
 # Web service endpoints.
-_EP_BASE = r"http://localhost:8888/api/1/metric/{}"
+_EP_BASE = r"http://localhost:8888/api/1/simulation/metrics/{}"
 EP_ADD = _EP_BASE.format("add")
 EP_FETCH = _EP_BASE.format("fetch?group={0}")
 EP_FETCH_COLUMNS = _EP_BASE.format("fetch_columns?group={0}")

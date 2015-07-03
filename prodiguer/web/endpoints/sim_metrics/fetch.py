@@ -1,21 +1,22 @@
 # -*- coding: utf-8 -*-
 """
-.. module:: prodiguer.web.sim_metrics.fetch_line_count.py
+.. module:: prodiguer.web.endpoints.sim_metrics.fetch.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
-   :synopsis: Metric group line count request handler.
+   :synopsis: Simulation metric group fetch request handler.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
 import tornado
+import voluptuous
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web import utils_handler
-from prodiguer.web.sim_metrics import _utils as utils
-from prodiguer.web.sim_metrics import _validator as validator
+from prodiguer.web.endpoints.sim_metrics import _utils as utils
+from prodiguer.web.endpoints.sim_metrics import _validator as validator
+from prodiguer.web.utils import ProdiguerHTTPRequestHandler
 
 
 
@@ -26,8 +27,8 @@ _CONTENT_TYPE_JSON = ["application/json", "application/json; charset=UTF-8"]
 _PARAM_GROUP = 'group'
 
 
-class FetchCountRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
-    """Simulation metric group fetch line count method request handler.
+class FetchRequestHandler(ProdiguerHTTPRequestHandler):
+    """Simulation metric group fetch method request handler.
 
     """
     def set_default_headers(self):
@@ -49,17 +50,35 @@ class FetchCountRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
             self.query = None if not self.request.body else \
                          utils.decode_json_payload(self, False)
 
+        def _fetch_data():
+            """Fetches data from db.
+
+            """
+            self.columns = dao.fetch_columns(self.group)
+            self.metrics = dao.fetch(self.group, self.query)
+
+        def _format_data():
+            """Formats data.
+
+            """
+            # Move _id column to the end of each metric set.
+            self.metrics = [m[1:] + [m[0]] for m in
+                            [m.values() for m in self.metrics]]
+
         def _set_output():
             """Sets response to be returned to client.
 
             """
             self.output = {
                 'group': self.group,
-                'count': dao.fetch_count(self.group, self.query)
+                'columns': self.columns,
+                'metrics': self.metrics
             }
 
         # Invoke tasks.
-        self.invoke(validator.validate_fetch_count, [
+        self.invoke(validator.validate_fetch, [
             _decode_request,
-            _set_output
+            _fetch_data,
+            _format_data,
+            _set_output,
         ])

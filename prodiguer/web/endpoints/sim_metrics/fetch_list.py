@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-.. module:: prodiguer.web.sim_metrics.list.py
+.. module:: prodiguer.web.endpoints.sim_metrics.list.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -13,12 +13,13 @@
 import tornado
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web import utils_handler
-from prodiguer.web.sim_metrics import utils
+from prodiguer.web.endpoints.sim_metrics import utils
+from prodiguer.web.endpoints.sim_metrics import _validator as validator
+from prodiguer.web.utils import ProdiguerHTTPRequestHandler
 
 
 
-class FetchListRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
+class FetchListRequestHandler(ProdiguerHTTPRequestHandler):
     """Simulation list metric request handler.
 
     """
@@ -42,4 +43,4 @@ class FetchListRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
             }
 
         # Invoke tasks.
-        self.invoke(utils_handler.validate_vanilla_request, _set_output)
+        self.invoke(validator.validate_fetch_list, _set_output)

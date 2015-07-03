@@ -11,4 +11,4 @@
 
 
 """
-from prodiguer.web.aggregations.find import FindRequestHandler
+from prodiguer.web.endpoints.aggregations.find import FindRequestHandler

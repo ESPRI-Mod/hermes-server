@@ -17,7 +17,7 @@ import tornado.websocket
 
 from prodiguer.utils import config
 from prodiguer.utils import logger
-from prodiguer.utils.data_convertor import jsonify
+from prodiguer.utils import data_convertor
 
 
 
@@ -51,7 +51,7 @@ def on_write(key, data):
     :param data: dict
 
     """
-    data = jsonify(data)
+    data = data_convertor.jsonify(data)
     for client in _WS_CLIENTS[key]:
         try:
             client.write_message(data)

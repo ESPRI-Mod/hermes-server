@@ -23,7 +23,7 @@ from . import _utils_web_metric as tu_web
 
 
 # Web service endpoints.
-_EP_BASE = r"http://localhost:8888/api/1/metric/{}"
+_EP_BASE = r"http://localhost:8888/api/1/simulation/metrics/{}"
 _EP_ADD = _EP_BASE.format("add")
 _EP_DELETE = _EP_BASE.format("delete?group={0}")
 _EP_FETCH = _EP_BASE.format("fetch?group={0}")

@@ -16,15 +16,19 @@ from tornado.web import Application
 
 
 from prodiguer import cv
-from prodiguer.web import aggregations
-from prodiguer.web import monitoring
-from prodiguer.web import ops
-from prodiguer.web import sim_metrics
-from prodiguer.web import utils_ws
+from prodiguer.web.endpoints import aggregations
+from prodiguer.web.endpoints import monitoring
+from prodiguer.web.endpoints import ops
+from prodiguer.web.endpoints import sim_metrics
+from prodiguer.web.utils import websockets
 from prodiguer.utils import config
 from prodiguer.utils import logger
 from prodiguer.utils import rt
 
+
+
+# Base address to API endpoints.
+_BASE_ADDRESS = '{0}/api/1{1}'
 
 
 def _get_path_to_front_end():
@@ -45,23 +49,38 @@ def _get_app_routes():
         # Aggregation routes.
         # (r'/api/1/aggregations/find', aggregations.FindRequestHandler),
         # Monitoring routes.
-        (r'/api/1/monitoring/fe/cv', monitoring.FrontEndControlledVocabularyRequestHandler),
-        (r'/api/1/monitoring/fe/setup/all', monitoring.FrontEndSetupAllRequestHandler),
-        (r'/api/1/monitoring/fe/setup/one', monitoring.FrontEndSetupOneRequestHandler),
-        (r'/api/1/monitoring/fe/ws/all', monitoring.FrontEndWebSocketAllHandler),
-        (r'/api/1/monitoring/event', monitoring.EventRequestHandler),
+        (r'/api/1/simulation/monitoring/fetch_cv',
+            monitoring.FetchControlledVocabularyRequestHandler),
+        (r'/api/1/simulation/monitoring/fetch_all',
+            monitoring.FetchAllRequestHandler),
+        (r'/api/1/simulation/monitoring/fetch_one',
+            monitoring.FetchOneRequestHandler),
+        (r'/api/1/simulation/monitoring/ws/all',
+            monitoring.FrontEndWebSocketAllHandler),
+        (r'/api/1/simulation/monitoring/event',
+            monitoring.EventRequestHandler),
         # Metric routes.
-        (r'/api/1/metric/add', sim_metrics.AddRequestHandler),
-        (r'/api/1/metric/delete', sim_metrics.DeleteRequestHandler),
-        (r'/api/1/metric/fetch', sim_metrics.FetchRequestHandler),
-        (r'/api/1/metric/fetch_count', sim_metrics.FetchCountRequestHandler),
-        (r'/api/1/metric/fetch_columns', sim_metrics.FetchColumnsRequestHandler),
-        (r'/api/1/metric/fetch_list', sim_metrics.FetchListRequestHandler),
-        (r'/api/1/metric/fetch_setup', sim_metrics.FetchSetupRequestHandler),
-        (r'/api/1/metric/rename', sim_metrics.RenameRequestHandler),
-        (r'/api/1/metric/set_hashes', sim_metrics.SetHashesRequestHandler),
+        (r'/api/1/simulation/metrics/add',
+            sim_metrics.AddRequestHandler),
+        (r'/api/1/simulation/metrics/delete',
+            sim_metrics.DeleteRequestHandler),
+        (r'/api/1/simulation/metrics/fetch',
+            sim_metrics.FetchRequestHandler),
+        (r'/api/1/simulation/metrics/fetch_count',
+            sim_metrics.FetchCountRequestHandler),
+        (r'/api/1/simulation/metrics/fetch_columns',
+            sim_metrics.FetchColumnsRequestHandler),
+        (r'/api/1/simulation/metrics/fetch_list',
+            sim_metrics.FetchListRequestHandler),
+        (r'/api/1/simulation/metrics/fetch_setup',
+            sim_metrics.FetchSetupRequestHandler),
+        (r'/api/1/simulation/metrics/rename',
+            sim_metrics.RenameRequestHandler),
+        (r'/api/1/simulation/metrics/set_hashes',
+            sim_metrics.SetHashesRequestHandler),
         # Operational routes.
-        (r'/api/1/ops/heartbeat', ops.HeartbeatRequestHandler)
+        (r'/api/1/ops/heartbeat',
+            ops.HeartbeatRequestHandler)
     )
 
 
@@ -83,6 +102,18 @@ def _get_app_debug_mode():
     return config.deploymentMode=='dev'
 
 
+def get_endpoint(ep):
+    """Returns the endpoint prefixed with base address.
+
+    :param str ep: Endpoint suffix.
+
+    :returns: The endpoint prefixed with base address.
+    :rtype: str
+
+    """
+    return _BASE_ADDRESS.format(config.web.url, ep)
+
+
 def run():
     """Runs the prodiguer web api.
 
@@ -102,7 +133,7 @@ def run():
     app.listen(int(config.web.host.split(":")[1]))
 
     # Set web-socket keep alive.
-    utils_ws.keep_alive()
+    websockets.keep_alive()
 
     # Start io loop.
     logger.log_web("Ready")

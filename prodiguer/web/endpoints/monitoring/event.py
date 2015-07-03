@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.web.monitoring.event.py
+.. module:: prodiguer.web.endpoints.monitoring.event.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -19,7 +19,7 @@ import tornado.web
 from prodiguer.db import pgres as db
 from prodiguer.utils import logger
 from prodiguer.utils import string_convertor as sc
-from prodiguer.web import utils_ws
+from prodiguer.web.utils import websockets
 
 
 
@@ -107,7 +107,7 @@ class _EventInfo(object):
 
 
 class EventRequestHandler(tornado.web.RequestHandler):
-    """Simulation monitoring event request handler.
+    """Simulation monitoring web socket event request handler.
 
     """
     def _validate_post_request(self):
@@ -149,7 +149,7 @@ class EventRequestHandler(tornado.web.RequestHandler):
                 })
 
                 # Broadcast to clients.
-                utils_ws.on_write(_WS_KEY, ws_data)
+                websockets.on_write(_WS_KEY, ws_data)
                 _log("{0} event broadcast".format(event.type))
 
         # Close db session.

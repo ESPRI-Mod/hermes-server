@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.web.sim_metrics.delete.py
+.. module:: prodiguer.web.endpoints.sim_metrics.delete.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -14,9 +14,9 @@
 import tornado
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web import utils_handler
-from prodiguer.web.sim_metrics import _utils as utils
-from prodiguer.web.sim_metrics import _validator as validator
+from prodiguer.web.endpoints.sim_metrics import _utils as utils
+from prodiguer.web.endpoints.sim_metrics import _validator as validator
+from prodiguer.web.utils import ProdiguerHTTPRequestHandler
 
 
 
@@ -24,7 +24,7 @@ from prodiguer.web.sim_metrics import _validator as validator
 _PARAM_GROUP = 'group'
 
 
-class DeleteRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
+class DeleteRequestHandler(ProdiguerHTTPRequestHandler):
     """Simulation metric group delete method request handler.
 
     """

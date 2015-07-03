@@ -11,6 +11,6 @@
 
 
 """
+from prodiguer.web.app import get_endpoint
 from prodiguer.web.app import run
-from prodiguer.web import utils_handler as handler_utils
-from prodiguer.web import utils_ws as ws_utils
+

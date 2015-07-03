@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.web.sim_metrics.add.py
+.. module:: prodiguer.web.endpoints.sim_metrics.add.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -16,8 +16,8 @@ import tornado
 from collections import OrderedDict
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web import utils_handler
-from prodiguer.web.sim_metrics import _utils as utils
+from prodiguer.web.endpoints.sim_metrics import _utils as utils
+from prodiguer.web.utils import ProdiguerHTTPRequestHandler
 
 
 
@@ -36,7 +36,7 @@ _PARAM_DUPLICATE_ACTION = 'duplicate_action'
 
 
 
-class AddRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
+class AddRequestHandler(ProdiguerHTTPRequestHandler):
     """Simulation metric group add method request handler.
 
     """

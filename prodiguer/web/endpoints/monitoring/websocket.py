@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.web.monitoring.ws.py
+.. module:: prodiguer.web.endpoints.monitoring.websocket.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -13,7 +13,7 @@
 """
 import tornado.websocket
 
-from prodiguer.web import utils_ws
+from prodiguer.web.utils import websockets
 
 
 
@@ -29,11 +29,11 @@ class FrontEndWebSocketAllHandler(tornado.websocket.WebSocketHandler):
         """WS on open event handler.
 
         """
-        utils_ws.on_connect(_WS_KEY, self)
+        websockets.on_connect(_WS_KEY, self)
 
 
     def on_close(self):
         """WS on close event handler.
 
         """
-        utils_ws.on_disconnect(_WS_KEY, self)
+        websockets.on_disconnect(_WS_KEY, self)

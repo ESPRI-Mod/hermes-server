@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.web.monitoring.setup.py
+.. module:: prodiguer.web.endpoints.monitoring.setup.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -11,15 +11,13 @@
 
 
 """
-import tornado.httputil
-import tornado.web
-
-from prodiguer.web import utils_handler
 from prodiguer.db import pgres as db
+from prodiguer.web.utils import ProdiguerHTTPRequestHandler
+from prodiguer.web.endpoints.monitoring import _validator as validator
 
 
 
-class FrontEndControlledVocabularyRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
+class FetchControlledVocabularyRequestHandler(ProdiguerHTTPRequestHandler):
     """Simulation monitoring front end controlled vocabulary setup request handler.
 
     """
@@ -39,4 +37,4 @@ class FrontEndControlledVocabularyRequestHandler(utils_handler.ProdiguerWebServi
             db.session.end()
 
         # Invoke tasks.
-        self.invoke(utils_handler.validate_vanilla_request, _set_output)
+        self.invoke(validator.validate_fetch_cv, _set_output)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.web.monitoring.setup.py
+.. module:: prodiguer.web.endpoints.monitoring.fetch_all.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -11,15 +11,13 @@
 
 
 """
-import tornado.web
-
-from prodiguer.utils import rt
-from prodiguer.web import utils_handler
+from prodiguer.web.utils import ProdiguerHTTPRequestHandler
+from prodiguer.web.endpoints.monitoring import _validator as validator
 from prodiguer.db import pgres as db
 
 
 
-class FrontEndSetupAllRequestHandler(utils_handler.ProdiguerWebServiceRequestHandler):
+class FetchAllRequestHandler(ProdiguerHTTPRequestHandler):
     """Simulation monitoring all simulations front end setup request handler.
 
     """
@@ -27,13 +25,6 @@ class FrontEndSetupAllRequestHandler(utils_handler.ProdiguerWebServiceRequestHan
         """HTTP GET handler.
 
         """
-        def _validate_request():
-            """Request validator.
-
-            """
-            utils_handler.validate_request(self)
-
-
         def _get_data(func):
             """Returns data for front-end.
 
@@ -55,4 +46,4 @@ class FrontEndSetupAllRequestHandler(utils_handler.ProdiguerWebServiceRequestHan
             db.session.end()
 
         # Invoke tasks.
-        self.invoke(_validate_request, _set_output)
+        self.invoke(validator.validate_fetch_all, _set_output)
