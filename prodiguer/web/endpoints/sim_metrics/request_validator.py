@@ -35,7 +35,7 @@ _PARAM_METRICS = 'metrics'
 _PARAM_NEW_NAME = 'new_name'
 
 # Set of allowed duplicate actions.
-_DUPLICATE_ACTIONS = {'skip', 'force'}
+_DUPLICATE_ACTIONS = {u'skip', u'force'}
 
 
 def _GroupName(assert_exists):
@@ -70,9 +70,8 @@ def _DuplicateAction():
         """Inner function.
 
         """
-        action = val[0]
-        if action not in _DUPLICATE_ACTIONS:
-            raise ValueError("Invalid duplicate action: {}".format(action))
+        if val not in _DUPLICATE_ACTIONS:
+            raise ValueError("Invalid duplicate action: {}".format(val))
 
     return f
 
@@ -116,6 +115,8 @@ def validate_add(handler):
 
         """
         body = handler.decode_json_body(False)
+
+        print "AAAAAAA",'status' in body
 
         rv.validate_data(body, {
             Required(_PARAM_GROUP): All(unicode, _GroupName(False)),

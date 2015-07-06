@@ -14,7 +14,7 @@
 import tornado
 
 from prodiguer.web.utils import ProdiguerHTTPRequestHandler
-from prodiguer.web.endpoints.monitoring import request_validator
+from prodiguer.web.utils import request_validation as rv
 
 
 
@@ -31,9 +31,9 @@ class HeartbeatRequestHandler(ProdiguerHTTPRequestHandler):
 
             """
             self.output = {
-                "message": "all good",
+                "message": "Prodiguer web service is running",
                 "status": 0
             }
 
         # Invoke tasks.
-        self.invoke(request_validator.validate, _set_output)
+        self.invoke(rv.validate, _set_output)

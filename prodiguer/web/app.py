@@ -48,7 +48,7 @@ def _get_app_routes():
     return (
         # Aggregation routes.
         # (r'/api/1/aggregations/find', aggregations.FindRequestHandler),
-        # Monitoring routes.
+        # Simulation monitoring routes.
         (r'/api/1/simulation/monitoring/fetch_cv',
             monitoring.FetchControlledVocabularyRequestHandler),
         (r'/api/1/simulation/monitoring/fetch_all',
@@ -59,7 +59,7 @@ def _get_app_routes():
             monitoring.FrontEndWebSocketAllHandler),
         (r'/api/1/simulation/monitoring/event',
             monitoring.EventRequestHandler),
-        # Metric routes.
+        # Simulation metric routes.
         (r'/api/1/simulation/metrics/add',
             sim_metrics.AddRequestHandler),
         (r'/api/1/simulation/metrics/delete',
@@ -78,7 +78,9 @@ def _get_app_routes():
             sim_metrics.RenameRequestHandler),
         (r'/api/1/simulation/metrics/set_hashes',
             sim_metrics.SetHashesRequestHandler),
-        # Operational routes.
+        # Operations routes.
+        (r'/api',
+            ops.HeartbeatRequestHandler),
         (r'/api/1/ops/heartbeat',
             ops.HeartbeatRequestHandler)
     )
