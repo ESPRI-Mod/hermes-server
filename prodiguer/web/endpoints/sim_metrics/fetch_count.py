@@ -29,13 +29,6 @@ class FetchCountRequestHandler(ProdiguerHTTPRequestHandler):
     """Simulation metric group fetch line count method request handler.
 
     """
-    def set_default_headers(self):
-        """Set default HTTP response headers.
-
-        """
-        self.set_header("Access-Control-Allow-Origin", "*")
-
-
     def get(self):
         """HTTP GET handler.
 
@@ -56,8 +49,15 @@ class FetchCountRequestHandler(ProdiguerHTTPRequestHandler):
                 'count': dao.fetch_count(self.group, self.query)
             }
 
+        def _set_headers():
+            """Sets response headers to be returned to client.
+
+            """
+            self.set_header("Access-Control-Allow-Origin", "*")
+
         # Invoke tasks.
         self.invoke(request_validator.validate_fetch_count, [
             _decode_request,
-            _set_output
+            _set_output,
+            _set_headers
         ])

@@ -18,7 +18,6 @@ import requests
 
 import prodiguer
 from . import _utils as tu
-from . import _utils_web_metric as tu_web
 
 
 
@@ -92,6 +91,7 @@ def _yield_invalid_metrics():
 
 		return data
 
+
 	def _get_invalid_metrics_02():
 		"""Returns a set of metrics with an invalid group name."""
 		data = _get_metrics()
@@ -101,6 +101,7 @@ def _yield_invalid_metrics():
 
 		return data
 
+
 	def _get_invalid_metrics_03():
 		"""Returns a set of metrics with an invalid group name."""
 		data = _get_metrics()
@@ -109,6 +110,7 @@ def _yield_invalid_metrics():
 			data['group'] += u"A"
 
 		return data
+
 
 	def _get_invalid_metrics_04():
 		"""Returns a set of metrics with a column mismatch."""
@@ -120,6 +122,7 @@ def _yield_invalid_metrics():
 
 		return data
 
+
 	def _get_invalid_metrics_05():
 		"""Returns a set of metrics with an invalid column name."""
 		data = _get_metrics()
@@ -127,6 +130,7 @@ def _yield_invalid_metrics():
 
 		return data
 
+	# Yield factory functions.
 	yield _get_invalid_metrics_01
 	yield _get_invalid_metrics_02
 	yield _get_invalid_metrics_03
@@ -228,7 +232,7 @@ def _test_positive():
 	r = tu.invoke_api(requests.get, _EP_FETCH_LIST)
 	_assert_fetch_list(r, old_list=m_list, diff=0)
 
-	# Fetch (expecting HTTP 400=Bad Request).
+	# Fetch.
 	r = tu.invoke_api(requests.get, _EP_FETCH.format(new_name))
 	tu.assert_integer(r.status_code, 400)
 
@@ -238,7 +242,6 @@ def _test_negative():
 
 	"""
 	for m in (f() for f in _yield_invalid_metrics()):
-		# Add (expecting HTTP 400=Bad Request).
 		r = tu.invoke_api(requests.post, _EP_ADD, m)
 		tu.assert_integer(r.status_code, 400)
 

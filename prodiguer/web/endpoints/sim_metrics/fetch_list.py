@@ -22,13 +22,6 @@ class FetchListRequestHandler(ProdiguerHTTPRequestHandler):
     """Simulation list metric request handler.
 
     """
-    def set_default_headers(self):
-        """Set default HTTP response headers.
-
-        """
-        self.set_header("Access-Control-Allow-Origin", "*")
-
-
     def get(self):
         """HTTP GET handler.
 
@@ -41,5 +34,14 @@ class FetchListRequestHandler(ProdiguerHTTPRequestHandler):
                 'groups': dao.fetch_list()
             }
 
+        def _set_headers():
+            """Sets response headers to be returned to client.
+
+            """
+            self.set_header("Access-Control-Allow-Origin", "*")
+
         # Invoke tasks.
-        self.invoke(request_validator.validate_fetch_list, _set_output)
+        self.invoke(request_validator.validate_fetch_list, [
+            _set_output,
+            _set_headers
+            ])

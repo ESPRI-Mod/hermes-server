@@ -30,13 +30,6 @@ class FetchRequestHandler(ProdiguerHTTPRequestHandler):
     """Simulation metric group fetch method request handler.
 
     """
-    def set_default_headers(self):
-        """Set default HTTP response headers.
-
-        """
-        self.set_header("Access-Control-Allow-Origin", "*")
-
-
     def get(self):
         """HTTP GET handler.
 
@@ -73,10 +66,17 @@ class FetchRequestHandler(ProdiguerHTTPRequestHandler):
                 'metrics': self.metrics
             }
 
+        def _set_headers():
+            """Sets response headers to be returned to client.
+
+            """
+            self.set_header("Access-Control-Allow-Origin", "*")
+
         # Invoke tasks.
         self.invoke(request_validator.validate_fetch, [
             _decode_request,
             _fetch_data,
             _format_data,
             _set_output,
+            _set_headers
         ])

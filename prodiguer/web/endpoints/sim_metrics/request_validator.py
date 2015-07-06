@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.web.endpoints.sim_metrics._validator.py
+.. module:: prodiguer.web.endpoints.sim_metrics.request_validator.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -16,9 +16,7 @@ import re
 from voluptuous import All, Required, Schema
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web.utils.request_validation import Sequence
-from prodiguer.web.utils.request_validation import validate
-from prodiguer.web.endpoints.sim_metrics import utils
+from prodiguer.web.utils import request_validation as rv
 
 
 
@@ -30,39 +28,36 @@ _GROUP_NAME_MIN_LENGTH = 4
 _GROUP_NAME_MAX_LENGTH = 256
 
 # Query parameter names.
-_PARAM_GROUP = 'group'
+_PARAM_COLUMNS = 'columns'
 _PARAM_DUPLICATE_ACTION = 'duplicate_action'
+_PARAM_GROUP = 'group'
+_PARAM_METRICS = 'metrics'
 _PARAM_NEW_NAME = 'new_name'
 
-# Set of expected add request body fields and their type.
-_ADD_FIELDS = set([
-    ('group', unicode),
-    ('columns', list),
-    ('metrics', list),
-    ])
+# Set of allowed duplicate actions.
+_DUPLICATE_ACTIONS = {'skip', 'force'}
 
 
-def _validate_group(group, assert_exists=False):
-    """Validates a simulation metric group name.
-
-    """
-    if re.compile(_GROUP_NAME_REGEX).search(group) or \
-       ( len(group) < _GROUP_NAME_MIN_LENGTH or
-         len(group) > _GROUP_NAME_MAX_LENGTH ) :
-        raise ValueError("Invalid metric group name: {0}".format(group))
-    if assert_exists and not dao.exists(group):
-        raise ValueError("{0} db collection not found".format(group))
-
-
-def _GroupID(assert_exists=False):
-    """Validates incoming group query parameter.
+def _GroupName(assert_exists):
+    """Validates group name.
 
     """
     def f(val):
         """Inner function.
 
         """
-        _validate_group(val[0], assert_exists)
+        # Validate reg-ex.
+        if re.compile(_GROUP_NAME_REGEX).search(val):
+            raise ValueError("Metric group name contains invalid characters: {0}".format(val))
+
+        # Validate length.
+        if len(val) < _GROUP_NAME_MIN_LENGTH or \
+           len(val) > _GROUP_NAME_MAX_LENGTH:
+            raise ValueError("Metric group name length is out of bounds: {0}".format(val))
+
+        # Validate exists in db.
+        if assert_exists and not dao.exists(val):
+            raise ValueError("{0} db collection not found".format(val))
 
     return f
 
@@ -76,8 +71,29 @@ def _DuplicateAction():
 
         """
         action = val[0]
-        if action not in ['skip', 'force']:
+        if action not in _DUPLICATE_ACTIONS:
             raise ValueError("Invalid duplicate action: {}".format(action))
+
+    return f
+
+
+def _Metrics(body):
+    """Validates a set of metrics.
+
+    """
+    def f(val):
+        """Inner function.
+
+        """
+        # Validate metrics count > 0.
+        if len(val) == 0:
+            raise ValueError("No metrics to add")
+
+        # Validate that length of each metric is same as length of group columns.
+        for metric in val:
+            if len(metric) != len(body['columns']):
+                raise ValueError("Number of values does not match number of columns")
+
 
     return f
 
@@ -90,40 +106,25 @@ def validate_add(handler):
         """Validates HTTP request query arguments.
 
         """
-        schema = Schema({
-            _PARAM_DUPLICATE_ACTION: All(list, Sequence(str), _DuplicateAction())
-        })
-        schema(handler.request.query_arguments)
+        rv.validate_data(handler.request.query_arguments, {
+            _PARAM_DUPLICATE_ACTION: All(rv.Sequence(unicode), _DuplicateAction())
+            })
 
 
     def _validate_body():
-        """Validates request body.
+        """Validates HTTP request body.
 
         """
-        # Validate body.
-        body = handler.decode_json_body()
-        for fname, ftype in _ADD_FIELDS:
-            if fname not in body._fields:
-                raise KeyError("Undefined field: {0}".format(fname))
-            if not isinstance(getattr(body, fname), ftype):
-                raise ValueError("Invalid field type: {0}".format(fname))
+        body = handler.decode_json_body(False)
 
-        # Validate group name.
-        _validate_group(body.group, False)
+        rv.validate_data(body, {
+            Required(_PARAM_GROUP): All(unicode, _GroupName(False)),
+            Required(_PARAM_COLUMNS): All(rv.Sequence(unicode, 0)),
+            Required(_PARAM_METRICS): All(rv.Sequence(list, 0), _Metrics(body))
+            })
 
-        # Validate metrics count > 0.
-        if len(body.metrics) == 0:
-            raise ValueError("No metrics to add")
 
-        # Validate that length of each metric is same as length of group columns.
-        for metric in body.metrics:
-            if len(metric) != len(body.columns):
-                raise ValueError("Invalid metric: number of values does not match number of columns")
-
-    validate(
-        handler,
-        body_validator=_validate_body,
-        query_validator=_validate_query)
+    rv.validate(handler, body_validator=_validate_body, query_validator=_validate_query)
 
 
 def validate_delete(handler):
@@ -134,12 +135,11 @@ def validate_delete(handler):
         """Validates HTTP request query arguments.
 
         """
-        schema = Schema({
-            Required(_PARAM_GROUP): All(list, Sequence(str), _GroupID(True))
+        rv.validate_data(handler.request.query_arguments, {
+            Required(_PARAM_GROUP): All(rv.Sequence(unicode), _GroupName(True))
         })
-        schema(handler.request.query_arguments)
 
-    validate(handler, query_validator=_validate_query)
+    rv.validate(handler, query_validator=_validate_query)
 
 
 def validate_fetch(handler):
@@ -150,12 +150,11 @@ def validate_fetch(handler):
         """Validates HTTP request query arguments.
 
         """
-        schema = Schema({
-            Required(_PARAM_GROUP): All(list, Sequence(str), _GroupID(True))
+        rv.validate_data(handler.request.query_arguments, {
+            Required(_PARAM_GROUP): All(rv.Sequence(unicode), _GroupName(True))
         })
-        schema(handler.request.query_arguments)
 
-    validate(handler, query_validator=_validate_query)
+    rv.validate(handler, query_validator=_validate_query)
 
 
 def validate_fetch_columns(handler):
@@ -166,12 +165,11 @@ def validate_fetch_columns(handler):
         """Validates HTTP request query arguments.
 
         """
-        schema = Schema({
-            Required(_PARAM_GROUP): All(list, Sequence(str), _GroupID(True))
+        rv.validate_data(handler.request.query_arguments, {
+            Required(_PARAM_GROUP): All(rv.Sequence(unicode), _GroupName(True))
         })
-        schema(handler.request.query_arguments)
 
-    validate(handler, query_validator=_validate_query)
+    rv.validate(handler, query_validator=_validate_query)
 
 
 def validate_fetch_count(handler):
@@ -182,19 +180,18 @@ def validate_fetch_count(handler):
         """Validates HTTP request query arguments.
 
         """
-        schema = Schema({
-            Required(_PARAM_GROUP): All(list, Sequence(str), _GroupID(True))
+        rv.validate_data(handler.request.query_arguments, {
+            Required(_PARAM_GROUP): All(rv.Sequence(unicode), _GroupName(True))
         })
-        schema(handler.request.query_arguments)
 
-    validate(handler, query_validator=_validate_query)
+    rv.validate(handler, query_validator=_validate_query)
 
 
 def validate_fetch_list(handler):
     """Validates fetch_list endpoint HTTP request.
 
     """
-    validate(handler)
+    rv.validate(handler)
 
 
 def validate_fetch_setup(handler):
@@ -205,12 +202,11 @@ def validate_fetch_setup(handler):
         """Validates HTTP request query arguments.
 
         """
-        schema = Schema({
-            Required(_PARAM_GROUP): All(list, Sequence(str), _GroupID(True))
+        rv.validate_data(handler.request.query_arguments, {
+            Required(_PARAM_GROUP): All(rv.Sequence(unicode), _GroupName(True))
         })
-        schema(handler.request.query_arguments)
 
-    validate(handler, query_validator=_validate_query)
+    rv.validate(handler, query_validator=_validate_query)
 
 
 def validate_rename(handler):
@@ -221,13 +217,12 @@ def validate_rename(handler):
         """Validates HTTP request query arguments.
 
         """
-        schema = Schema({
-            Required(_PARAM_GROUP): All(list, Sequence(str), _GroupID(True)),
-            Required(_PARAM_NEW_NAME): All(list, Sequence(str), _GroupID()),
+        rv.validate_data(handler.request.query_arguments, {
+            Required(_PARAM_GROUP): All(rv.Sequence(unicode), _GroupName(True)),
+            Required(_PARAM_NEW_NAME): All(rv.Sequence(unicode), _GroupName(False))
         })
-        schema(handler.request.query_arguments)
 
-    validate(handler, query_validator=_validate_query)
+    rv.validate(handler, query_validator=_validate_query)
 
 
 def validate_set_hashes(handler):
@@ -238,9 +233,8 @@ def validate_set_hashes(handler):
         """Validates HTTP request query arguments.
 
         """
-        schema = Schema({
-            Required(_PARAM_GROUP): All(list, Sequence(str), _GroupID(True))
+        rv.validate_data(handler.request.query_arguments, {
+            Required(_PARAM_GROUP): All(rv.Sequence(unicode), _GroupName(True))
         })
-        schema(handler.request.query_arguments)
 
-    validate(handler, query_validator=_validate_query)
+    rv.validate(handler, query_validator=_validate_query)

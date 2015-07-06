@@ -68,11 +68,11 @@ class ProdiguerHTTPRequestHandler(tornado.web.RequestHandler):
             """Writes HTTP response data.
 
             """
-            # Set HTTP header.
-            self.set_header("Content-Type", "application/json; charset=utf-8")
-
             # Write JSON response.
             self.write(jsonify(data))
+
+            # Set HTTP header.
+            self.set_header("Content-Type", "application/json; charset=utf-8")
 
 
         def _write_error(http_status_code, err):
@@ -88,6 +88,7 @@ class ProdiguerHTTPRequestHandler(tornado.web.RequestHandler):
             """Writes request validation error.
 
             """
+            self.clear()
             _write_error(_HTTP_RESPONSE_BAD_REQUEST, err)
 
 
@@ -108,6 +109,7 @@ class ProdiguerHTTPRequestHandler(tornado.web.RequestHandler):
             """Writes processing failure to response stream.
 
             """
+            self.clear()
             _write_error(_HTTP_RESPONSE_SERVER_ERROR, err)
 
 

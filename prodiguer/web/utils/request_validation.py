@@ -13,30 +13,56 @@
 """
 import tornado.httputil
 
+from voluptuous import Schema
+
 
 
 # HTTP header - Content-Type.
 _HTTP_HEADER_CONTENT_TYPE = "Content-Type"
 
 
-def Sequence(expected_type, expected_length=1):
+def validate_data(data, schema_config):
+    """Validates input data by applying a schema.
+
+    :param dict data: Input data to be validated.
+    :param dict schema_config: Schema to apply.
+
+    """
+    Schema(schema_config)(data)
+
+
+def Sequence(expected_type, expected_length=1, expected_sequence_type=list):
     """Validates a sequence of query parameter values.
+
+    :param class expected_type: Expected type of each item within incoming sequence.
+    :param class expected_length: Expected length of incoming sequence.
+    :param class expected_sequence_type: Expected type of incoming sequence.
 
     """
     def f(val):
         """Inner function.
 
         """
-        # Validate sequence length.
-        if len(val) != expected_length:
-            raise ValueError("Invalid request")
-
         # Validate sequence type.
+        if not isinstance(val, expected_sequence_type):
+            raise ValueError("Invalid sequence type")
+
+        # Validate sequence length.
+        if expected_length and len(val) != expected_length:
+            raise ValueError("Invalid sequence length")
+
+        # Validate item type.
         for item in val:
+            # if not isinstance(item, expected_type):
+            #     raise ValueError("Invalid sequence item type")
             try:
                 expected_type(item)
             except ValueError:
-                raise ValueError("Invalid request")
+                raise ValueError("Invalid sequence item type")
+
+        # When this is a single item sequence then pluck and convert.
+        if expected_length == 1:
+            val = expected_type(val[0])
 
         return val
 
