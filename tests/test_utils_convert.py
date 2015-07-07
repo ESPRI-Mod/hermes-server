@@ -22,7 +22,7 @@ from prodiguer.utils import convert
 
 
 # Path to test json file.
-_JSON_FILEPATH = "{0}/{1}".format(dirname(abspath(__file__)), "/test_files/testObject.json")
+_JSON_FILEPATH = "{0}/{1}".format(dirname(abspath(__file__)), "/testObject.json")
 
 
 

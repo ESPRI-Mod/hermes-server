@@ -21,7 +21,7 @@ from . import utils as tu
 
 
 # Config filename.
-_CONFIG_FILENAME = 'test_files/config.json'
+_CONFIG_FILENAME = 'testConfig.json'
 
 # Config filepath.
 _CONFIG_FILEPATH = join(dirname(abspath(__file__)), _CONFIG_FILENAME)

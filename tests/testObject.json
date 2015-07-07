@@ -1,0 +1,44 @@
+{
+	"test_bool": true,
+	"test_datetime": "2014-01-01 00:00:00",
+	"test_dict": {
+		"a": "test",
+		"b": [
+			{
+				"x": true,
+				"y": {
+					"z": 1
+				}
+			},
+			{
+				"x": true
+			}
+		],
+		"c": {
+			"x": true
+		}
+	},
+	"test_float": 1.23,
+	"test_id": 123,
+	"test_int": 123,
+	"test_list": [
+		1,
+		2,
+		3
+	],
+	"test_list_dict": [
+		{
+			"s": "ABC"
+		},
+		{
+			"s": "ABC"
+		},
+		{
+			"s": "ABC"
+		}
+	],
+	"test_none": null,
+	"test_unicode": "abc",
+	"test_uid": "29d79d5e-5765-4d63-8059-0ad1b92628cc",
+	"test_uuid": "29d79d5e-5765-4d63-8059-0ad1b92628cc"
+}
