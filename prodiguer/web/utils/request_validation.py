@@ -100,7 +100,7 @@ def validate(
             raise tornado.httputil.HTTPInputError("Bad request")
 
     _validate(query_validator, handler.request.query)
-    _validate(cookies_validator, handler.request.cookies)
+    # _validate(cookies_validator, handler.request.cookies)
     _validate(body_validator, handler.request.body)
     _validate(files_validator, handler.request.files)
 
