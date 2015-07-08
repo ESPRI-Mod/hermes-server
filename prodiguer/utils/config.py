@@ -19,18 +19,27 @@ from prodiguer.utils.convert import json_to_namedtuple
 
 # Environment variables to be injected into config.
 _ENV_VARS = {
+	# ... general variables
+	"PRODIGUER_HOME": "/opt/prodiguer",
+	"PRODIGUER_DEPLOYMENT_MODE": "test",
+	"PRODIGUER_CLIENT_WEB_URL": "https://prodiguer-test-web.ipsl.fr",
+
+	# ... db server variables
 	"PRODIGUER_DB_MONGO_HOST": "localhost:27017",
 	"PRODIGUER_DB_MONGO_USER_PASSWORD": None,
 	"PRODIGUER_DB_PGRES_HOST": "localhost:5432",
 	"PRODIGUER_DB_PGRES_USER_PASSWORD": None,
-	"PRODIGUER_HOME": "/opt/prodiguer",
-	"PRODIGUER_MQ_IMAP_PASSWORD": None,
+
+	# ... mq server variables
 	"PRODIGUER_MQ_RABBIT_HOST": "localhost:5671",
 	"PRODIGUER_MQ_RABBIT_LIBIGCM_USER_PASSWORD": None,
+	"PRODIGUER_MQ_RABBIT_USER_PASSWORD": None,
 	"PRODIGUER_MQ_RABBIT_SSL_CLIENT_CERT": None,
 	"PRODIGUER_MQ_RABBIT_SSL_CLIENT_KEY": None,
-	"PRODIGUER_MQ_RABBIT_USER_PASSWORD": None,
+	"PRODIGUER_MQ_IMAP_PASSWORD": None,
 	"PRODIGUER_MQ_SMTP_PASSWORD": None,
+
+	# ... web server variables
 	"PRODIGUER_WEB_API_COOKIE_SECRET": None,
 	"PRODIGUER_WEB_HOST": "localhost:8888",
 	"PRODIGUER_WEB_URL": "https://prodiguer-test-web.ipsl.fr"
