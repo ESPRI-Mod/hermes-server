@@ -59,7 +59,7 @@ QUEUE_IN_MONITORING_POST_PROCESSING = "q-in-monitoring-post-processing"
 QUEUE_INTERNAL_API = "q-internal-api"
 QUEUE_INTERNAL_CV = "q-internal-cv"
 
-# Test message queues.
+# Debug message queues.
 QUEUE_IN_MONITORING_0000 = "q-in-monitoring-0000"
 QUEUE_IN_MONITORING_0100 = "q-in-monitoring-0100"
 QUEUE_IN_MONITORING_1000 = "q-in-monitoring-1000"
@@ -77,6 +77,9 @@ QUEUE_IN_MONITORING_7000 = "q-in-monitoring-7000"
 QUEUE_IN_MONITORING_7100 = "q-in-monitoring-7100"
 QUEUE_IN_MONITORING_8888 = "q-in-monitoring-8888"
 QUEUE_IN_MONITORING_9999 = "q-in-monitoring-9999"
+QUEUE_DEBUG_INTERNAL_API = 'q-debug-internal-api'
+QUEUE_DEBUG_INTERNAL_CV = 'q-debug-internal-cv'
+QUEUE_DEBUG_EXT_SMTP = 'q-debug-ext-smtp'
 
 # All queues.
 QUEUES = set([
@@ -104,6 +107,9 @@ QUEUES = set([
 	QUEUE_IN_MONITORING_7100,
 	QUEUE_IN_MONITORING_8888,
 	QUEUE_IN_MONITORING_9999,
+	QUEUE_DEBUG_INTERNAL_API,
+	QUEUE_DEBUG_INTERNAL_CV,
+	QUEUE_DEBUG_EXT_SMTP
 	])
 
 # Message producers.
