@@ -11,8 +11,8 @@
 
 
 """
-from prodiguer.cv import validation as cv_validator
 from prodiguer.db.pgres import dao
+from prodiguer.db.pgres import dao_cv_validator as validator
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
 from prodiguer.db.pgres.setup import init_cv_terms
@@ -21,20 +21,7 @@ from prodiguer.utils import logger
 
 
 
-def _validate_create_term(
-    term_type,
-    term_name,
-    term_display_name,
-    ):
-    """Validates create term inputs.
-
-    """
-    cv_validator.validate_term_type(term_type)
-    cv_validator.validate_term_name(term_type, term_name)
-    cv_validator.validate_term_display_name(term_display_name)
-
-
-@decorators.validate(_validate_create_term)
+@decorators.validate(validator.validate_create_term)
 def create_term(
     term_type,
     term_name,
@@ -61,6 +48,7 @@ def create_term(
     return instance
 
 
+@decorators.validate(validator.validate_retrieve_term)
 def retrieve_term(term_type, term_name):
     """Returns a CV term from db.
 
@@ -78,6 +66,7 @@ def retrieve_term(term_type, term_name):
     return qry.first()
 
 
+@decorators.validate(validator.validate_reset_terms)
 def reset_terms():
     """Rebuilds contents of cv table.
 

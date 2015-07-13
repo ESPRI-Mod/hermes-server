@@ -35,10 +35,9 @@ def _validate_create_message(
     timestamp_precision,
     timestamp_raw
     ):
-    """Validates create message inputs.
+    """Function input validator: create_message.
 
     """
-
     msg_validation.validate_app_id(app_id)
     msg_validation.validate_content(content)
     msg_validation.validate_content_encoding(content_encoding)
@@ -57,7 +56,21 @@ def _validate_create_message(
 
 
 def _validate_create_message_email(email_id):
-    """Validates create message inputs.
+    """Function input validator: create_message_email.
+
+    """
+    pass
+
+
+def _validate_is_duplicate(uid):
+    """Function input validator: is_duplicate.
+
+    """
+    pass
+
+
+def _validate_reset_emails():
+    """Function input validator: reset_emails.
 
     """
     pass
@@ -143,6 +156,7 @@ def create_message_email(email_id):
     return instance
 
 
+@decorators.validate(_validate_reset_emails)
 def reset_emails():
     """Deletes message email records in db.
 
@@ -150,6 +164,7 @@ def reset_emails():
     dao.delete_all(types.MessageEmail)
 
 
+@decorators.validate(_validate_is_duplicate)
 def is_duplicate(uid):
     """Returns true if a message with the same uid already exists in the db.
 

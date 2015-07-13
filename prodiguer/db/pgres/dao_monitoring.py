@@ -16,10 +16,9 @@ from sqlalchemy.exc import IntegrityError
 import datetime
 
 from prodiguer.db.pgres import dao
+from prodiguer.db.pgres import dao_monitoring_validator as validator
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
-from prodiguer.cv import validation as cv_validator
-from prodiguer.db.pgres import validation as db_validator
 from prodiguer.utils import decorators
 
 
@@ -42,177 +41,7 @@ def _persist(hydrate, create, retrieve):
     return instance
 
 
-def _validate_persist_simulation_01(
-    accounting_project,
-    activity,
-    activity_raw,
-    compute_node,
-    compute_node_raw,
-    compute_node_login,
-    compute_node_login_raw,
-    compute_node_machine,
-    compute_node_machine_raw,
-    execution_start_date,
-    experiment,
-    experiment_raw,
-    model,
-    model_raw,
-    name,
-    output_start_date,
-    output_end_date,
-    space,
-    space_raw,
-    uid
-    ):
-    """Validates persist simulation inputs.
-
-    """
-    cv_validator.validate_activity(activity)
-    cv_validator.validate_compute_node(compute_node)
-    cv_validator.validate_compute_node_login(compute_node_login)
-    cv_validator.validate_compute_node_machine(compute_node_machine)
-    cv_validator.validate_experiment(experiment)
-    cv_validator.validate_model(model)
-    cv_validator.validate_simulation_space(space)
-    db_validator.validate_accounting_project(accounting_project)
-    db_validator.validate_execution_start_date(execution_start_date)
-    db_validator.validate_raw_activity(activity_raw)
-    db_validator.validate_raw_compute_node(compute_node_raw)
-    db_validator.validate_raw_compute_node_login(compute_node_login_raw)
-    db_validator.validate_raw_compute_node_machine(compute_node_machine_raw)
-    db_validator.validate_raw_experiment(experiment_raw)
-    db_validator.validate_raw_model(model_raw)
-    db_validator.validate_raw_simulation_space(space_raw)
-    db_validator.validate_simulation_name(name)
-    db_validator.validate_simulation_output_start_date(output_start_date)
-    db_validator.validate_simulation_output_end_date(output_end_date)
-    db_validator.validate_simulation_uid(uid)
-
-
-def _validate_persist_simulation_02(execution_end_date, is_error, uid):
-    """Validates persist simulation inputs.
-
-    """
-    db_validator.validate_bool(is_error, 'Is Error flag')
-    db_validator.validate_execution_end_date(execution_end_date)
-    db_validator.validate_simulation_uid(uid)
-
-
-def _validate_persist_simulation_configuration(uid, card):
-    """Validates create simulation configuration inputs.
-
-    """
-    db_validator.validate_simulation_uid(uid)
-    db_validator.validate_simulation_configuration_card(card)
-
-
-def _validate_persist_job_01(
-    accounting_project,
-    expected_completion_delay,
-    execution_start_date,
-    typeof,
-    job_uid,
-    simulation_uid
-    ):
-    """Validates persist job inputs.
-
-    """
-    db_validator.validate_accounting_project(accounting_project)
-    db_validator.validate_expected_completion_delay(expected_completion_delay)
-    db_validator.validate_execution_start_date(execution_start_date)
-    cv_validator.validate_job_type(typeof)
-    db_validator.validate_job_uid(job_uid)
-    db_validator.validate_simulation_uid(simulation_uid)
-
-
-def _validate_persist_job_02(
-    execution_end_date,
-    is_error,
-    job_uid,
-    simulation_uid
-    ):
-    """Validates persist job inputs.
-
-    """
-    db_validator.validate_execution_end_date(execution_end_date)
-    db_validator.validate_bool(is_error, 'Is Error flag')
-    db_validator.validate_job_uid(job_uid)
-    db_validator.validate_simulation_uid(simulation_uid)
-
-
-def _validate_retrieve_simulation(uid):
-    """Validates retrieve simulation inputs.
-
-    """
-    db_validator.validate_simulation_uid(uid)
-
-
-def _validate_delete_simulation(uid):
-    """Validates delete_simulation inputs.
-
-    """
-    db_validator.validate_simulation_uid(uid)
-
-
-def _validate_retrieve_simulation_configuration(uid):
-    """Validates retrieve simulation configuration inputs.
-
-    """
-    db_validator.validate_simulation_uid(uid)
-
-
-def _validate_retrieve_simulation_jobs(uid):
-    """Validates retrieve simulation jobs inputs.
-
-    """
-    db_validator.validate_simulation_uid(uid)
-
-
-def _validate_exists(uid):
-    """Validates exists inputs.
-
-    """
-    db_validator.validate_simulation_uid(uid)
-
-
-def _validate_retrieve_job(uid):
-    """Validates retrieve job inputs.
-
-    """
-    db_validator.validate_job_uid(uid)
-
-
-def _validate_retrieve_active_simulations(start_date=None):
-    """Validates retrieve_active_simulations inputs.
-
-    """
-    if start_date is not None:
-        db_validator.validate_execution_start_date(start_date)
-
-
-def _validate_retrieve_active_simulation(hashid):
-    """Validates retrieve_active_simulation inputs.
-
-    """
-    db_validator.validate_simulation_hashid(hashid)
-
-
-def _validate_update_active_simulation(hashid):
-    """Validates update_active_simulation inputs.
-
-    """
-    db_validator.validate_simulation_hashid(hashid)
-
-
-def _validate_retrieve_active_jobs(start_date=None):
-    """Validates retrieve_active_jobs inputs.
-
-    """
-    if start_date is not None:
-        db_validator.validate_execution_start_date(start_date)
-
-
-@decorators.validate(_validate_retrieve_active_simulations)
+@decorators.validate(validator.validate_retrieve_active_simulations)
 def retrieve_active_simulations(start_date=None):
     """Retrieves active simulation details from db.
 
@@ -232,7 +61,7 @@ def retrieve_active_simulations(start_date=None):
     return dao.exec_query(types.Simulation, qry, True)
 
 
-@decorators.validate(_validate_retrieve_active_simulation)
+@decorators.validate(validator.validate_retrieve_active_simulation)
 def retrieve_active_simulation(hashid):
     """Retrieves an active simulation from db.
 
@@ -249,7 +78,7 @@ def retrieve_active_simulation(hashid):
     return dao.exec_query(types.Simulation, qry)
 
 
-@decorators.validate(_validate_retrieve_active_jobs)
+@decorators.validate(validator.validate_retrieve_active_jobs)
 def retrieve_active_jobs(start_date=None):
     """Retrieves active job details from db.
 
@@ -269,7 +98,7 @@ def retrieve_active_jobs(start_date=None):
     return dao.exec_query(types.Job, qry, True)
 
 
-@decorators.validate(_validate_retrieve_simulation)
+@decorators.validate(validator.validate_retrieve_simulation)
 def retrieve_simulation(uid):
     """Retrieves simulation details from db.
 
@@ -284,7 +113,7 @@ def retrieve_simulation(uid):
     return dao.get_by_facet(types.Simulation, qfilter=qfilter)
 
 
-@decorators.validate(_validate_exists)
+@decorators.validate(validator.validate_exists)
 def exists(uid):
     """Returns a flag indicating whether simulation already exists.
 
@@ -299,7 +128,7 @@ def exists(uid):
     return dao.get_count(types.Simulation, qfilter=qfilter) == 1
 
 
-@decorators.validate(_validate_retrieve_simulation_configuration)
+@decorators.validate(validator.validate_retrieve_simulation_configuration)
 def retrieve_simulation_configuration(uid):
     """Retrieves simulation configuration details from db.
 
@@ -314,7 +143,7 @@ def retrieve_simulation_configuration(uid):
     return dao.get_by_facet(types.SimulationConfiguration, qfilter=qfilter)
 
 
-@decorators.validate(_validate_retrieve_simulation_jobs)
+@decorators.validate(validator.validate_retrieve_simulation_jobs)
 def retrieve_simulation_jobs(uid):
     """Retrieves job details from db.
 
@@ -330,7 +159,7 @@ def retrieve_simulation_jobs(uid):
                             order_by=types.Job.execution_start_date.asc())
 
 
-@decorators.validate(_validate_retrieve_job)
+@decorators.validate(validator.validate_retrieve_job)
 def retrieve_job(uid):
     """Retrieves job details from db.
 
@@ -345,7 +174,7 @@ def retrieve_job(uid):
     return dao.get_by_facet(types.Job, qfilter=qfilter)
 
 
-@decorators.validate(_validate_persist_simulation_01)
+@decorators.validate(validator.validate_persist_simulation_01)
 def persist_simulation_01(
     accounting_project,
     activity,
@@ -424,7 +253,7 @@ def persist_simulation_01(
     return _persist(_assign, types.Simulation, lambda: retrieve_simulation(uid))
 
 
-@decorators.validate(_validate_persist_simulation_02)
+@decorators.validate(validator.validate_persist_simulation_02)
 def persist_simulation_02(execution_end_date, is_error, uid):
     """Persists simulation information to db.
 
@@ -447,7 +276,7 @@ def persist_simulation_02(execution_end_date, is_error, uid):
     return _persist(_assign, types.Simulation, lambda: retrieve_simulation(uid))
 
 
-@decorators.validate(_validate_persist_simulation_configuration)
+@decorators.validate(validator.validate_persist_simulation_configuration)
 def persist_simulation_configuration(uid, card):
     """Persists a new simulation configuration db record.
 
@@ -466,7 +295,7 @@ def persist_simulation_configuration(uid, card):
     return instance
 
 
-@decorators.validate(_validate_persist_job_01)
+@decorators.validate(validator.validate_persist_job_01)
 def persist_job_01(
     accounting_project,
     expected_completion_delay,
@@ -507,7 +336,7 @@ def persist_job_01(
     return _persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 
 
-@decorators.validate(_validate_persist_job_02)
+@decorators.validate(validator.validate_persist_job_02)
 def persist_job_02(execution_end_date, is_error, job_uid, simulation_uid):
     """Persists job information to db.
 
@@ -533,7 +362,7 @@ def persist_job_02(execution_end_date, is_error, job_uid, simulation_uid):
     return _persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 
 
-@decorators.validate(_validate_update_active_simulation)
+@decorators.validate(validator.validate_update_active_simulation)
 def update_active_simulation(hashid):
     """Updates the active simulation within a group.
 
@@ -554,7 +383,7 @@ def update_active_simulation(hashid):
     return group[-1]
 
 
-@decorators.validate(_validate_delete_simulation)
+@decorators.validate(validator.validate_delete_simulation)
 def delete_simulation(uid):
     """Deletes a simulation from database.
 
@@ -568,7 +397,7 @@ def delete_simulation(uid):
     dao.delete_by_facet(types.Simulation, types.Simulation.uid == uid)
 
 
-# @decorators.validate(_validate_persist_job_01)
+@decorators.validate(validator.validate_persist_environment_metric)
 def persist_environment_metric(
     action_name,
     action_timestamp,
