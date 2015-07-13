@@ -140,8 +140,83 @@ def _validate_persist_job_02(
     db_validator.validate_simulation_uid(simulation_uid)
 
 
-def retrieve_active_simulations():
+def _validate_retrieve_simulation(uid):
+    """Validates retrieve simulation inputs.
+
+    """
+    db_validator.validate_simulation_uid(uid)
+
+
+def _validate_delete_simulation(uid):
+    """Validates delete_simulation inputs.
+
+    """
+    db_validator.validate_simulation_uid(uid)
+
+
+def _validate_retrieve_simulation_configuration(uid):
+    """Validates retrieve simulation configuration inputs.
+
+    """
+    db_validator.validate_simulation_uid(uid)
+
+
+def _validate_retrieve_simulation_jobs(uid):
+    """Validates retrieve simulation jobs inputs.
+
+    """
+    db_validator.validate_simulation_uid(uid)
+
+
+def _validate_exists(uid):
+    """Validates exists inputs.
+
+    """
+    db_validator.validate_simulation_uid(uid)
+
+
+def _validate_retrieve_job(uid):
+    """Validates retrieve job inputs.
+
+    """
+    db_validator.validate_job_uid(uid)
+
+
+def _validate_retrieve_active_simulations(start_date=None):
+    """Validates retrieve_active_simulations inputs.
+
+    """
+    if start_date is not None:
+        db_validator.validate_execution_start_date(start_date)
+
+
+def _validate_retrieve_active_simulation(hashid):
+    """Validates retrieve_active_simulation inputs.
+
+    """
+    db_validator.validate_simulation_hashid(hashid)
+
+
+def _validate_update_active_simulation(hashid):
+    """Validates update_active_simulation inputs.
+
+    """
+    db_validator.validate_simulation_hashid(hashid)
+
+
+def _validate_retrieve_active_jobs(start_date=None):
+    """Validates retrieve_active_jobs inputs.
+
+    """
+    if start_date is not None:
+        db_validator.validate_execution_start_date(start_date)
+
+
+@decorators.validate(_validate_retrieve_active_simulations)
+def retrieve_active_simulations(start_date=None):
     """Retrieves active simulation details from db.
+
+    :param datetime.datetime start_date: Simulation execution start date.
 
     :returns: Simulation details.
     :rtype: list
@@ -150,10 +225,14 @@ def retrieve_active_simulations():
     qry = session.query(types.Simulation)
     qry = qry.filter(types.Simulation.name != None)
     qry = qry.filter(types.Simulation.is_obsolete == False)
+    print start_date
+    if start_date is not None:
+        qry = qry.filter(types.Simulation.execution_start_date >= start_date)
 
     return dao.exec_query(types.Simulation, qry, True)
 
 
+@decorators.validate(_validate_retrieve_active_simulation)
 def retrieve_active_simulation(hashid):
     """Retrieves an active simulation from db.
 
@@ -170,8 +249,11 @@ def retrieve_active_simulation(hashid):
     return dao.exec_query(types.Simulation, qry)
 
 
-def retrieve_active_jobs():
+@decorators.validate(_validate_retrieve_active_jobs)
+def retrieve_active_jobs(start_date=None):
     """Retrieves active job details from db.
+
+    :param datetime.datetime start_date: Job execution start date.
 
     :returns: Job details.
     :rtype: list
@@ -181,10 +263,13 @@ def retrieve_active_jobs():
     qry = qry.join(types.Simulation,
                    types.Job.simulation_uid==types.Simulation.uid)
     qry = qry.filter(types.Simulation.is_obsolete == False)
+    if start_date is not None:
+        qry = qry.filter(types.Job.execution_start_date >= start_date)
 
     return dao.exec_query(types.Job, qry, True)
 
 
+@decorators.validate(_validate_retrieve_simulation)
 def retrieve_simulation(uid):
     """Retrieves simulation details from db.
 
@@ -199,6 +284,7 @@ def retrieve_simulation(uid):
     return dao.get_by_facet(types.Simulation, qfilter=qfilter)
 
 
+@decorators.validate(_validate_exists)
 def exists(uid):
     """Returns a flag indicating whether simulation already exists.
 
@@ -213,6 +299,7 @@ def exists(uid):
     return dao.get_count(types.Simulation, qfilter=qfilter) == 1
 
 
+@decorators.validate(_validate_retrieve_simulation_configuration)
 def retrieve_simulation_configuration(uid):
     """Retrieves simulation configuration details from db.
 
@@ -227,6 +314,7 @@ def retrieve_simulation_configuration(uid):
     return dao.get_by_facet(types.SimulationConfiguration, qfilter=qfilter)
 
 
+@decorators.validate(_validate_retrieve_simulation_jobs)
 def retrieve_simulation_jobs(uid):
     """Retrieves job details from db.
 
@@ -242,6 +330,7 @@ def retrieve_simulation_jobs(uid):
                             order_by=types.Job.execution_start_date.asc())
 
 
+@decorators.validate(_validate_retrieve_job)
 def retrieve_job(uid):
     """Retrieves job details from db.
 
@@ -444,6 +533,7 @@ def persist_job_02(execution_end_date, is_error, job_uid, simulation_uid):
     return _persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 
 
+@decorators.validate(_validate_update_active_simulation)
 def update_active_simulation(hashid):
     """Updates the active simulation within a group.
 
@@ -464,6 +554,7 @@ def update_active_simulation(hashid):
     return group[-1]
 
 
+@decorators.validate(_validate_delete_simulation)
 def delete_simulation(uid):
     """Deletes a simulation from database.
 

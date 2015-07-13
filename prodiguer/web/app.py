@@ -55,6 +55,8 @@ def _get_app_routes():
             monitoring.FetchAllRequestHandler),
         (r'/api/1/simulation/monitoring/fetch_one',
             monitoring.FetchOneRequestHandler),
+        (r'/api/1/simulation/monitoring/fetch_timeslice',
+            monitoring.FetchTimeSliceRequestHandler),
         (r'/api/1/simulation/monitoring/ws/all',
             monitoring.FrontEndWebSocketAllHandler),
         (r'/api/1/simulation/monitoring/event',

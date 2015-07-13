@@ -150,6 +150,15 @@ def validate_simulation_uid(identifier):
     validate_uid(identifier, "Simulation uid")
 
 
+def validate_simulation_hashid(identifier):
+    """Validates a simulation hash id.
+
+    :param str identifier: A simulation hash identifier.
+
+    """
+    pass
+
+
 def validate_raw_activity(name):
     """Validates a raw activity name.
 
