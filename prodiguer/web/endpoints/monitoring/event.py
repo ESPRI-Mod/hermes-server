@@ -36,12 +36,12 @@ def _log(msg):
     logger.log_web("{0} :: {1}".format(_WS_KEY, msg))
 
 
-def _get_simulation_event_data(data):
-    """Helper: retuns simulation event data.
+def _get_simulation_event_data(request_data):
+    """Event data factory: returns simulation event data.
 
     """
     # Unpack event data.
-    simulation_uid = data['simulation_uid']
+    simulation_uid = request_data['simulation_uid']
 
     # Load simulation (if not found then do not broadcast).
     simulation = db.dao_monitoring.retrieve_simulation(simulation_uid)
@@ -53,18 +53,18 @@ def _get_simulation_event_data(data):
 
     # Return event data.
     return {
-        'cv_terms': data.get('cv_terms', []),
+        'cv_terms': request_data.get('cv_terms', []),
         'job_history': jobs,
         'simulation': simulation
         }
 
 
-def _get_job_event_data(data):
-    """Helper: retuns job event data.
+def _get_job_event_data(request_data):
+    """Event data factory: returns job event data.
 
     """
     # Unpack event data.
-    job_uid = data['job_uid']
+    job_uid = request_data['job_uid']
 
     # Load job (if not found then do not broadcast).
     job = db.dao_monitoring.retrieve_job(job_uid)
@@ -77,8 +77,8 @@ def _get_job_event_data(data):
         }
 
 
-# Map of event type to event handlers.
-_EVENT_HANDLERS = {
+# Map of event type to data factory.
+_EVENT_DATA_FACTORIES = {
     'simulation_start': _get_simulation_event_data,
     'simulation_complete': _get_simulation_event_data,
     'simulation_error': _get_simulation_event_data,
@@ -88,7 +88,7 @@ _EVENT_HANDLERS = {
 }
 
 
-class _EventInfo(object):
+class _EventManager(object):
     """Encpasulates incoming event information.
 
     """
@@ -96,16 +96,16 @@ class _EventInfo(object):
         """Object initializer.
 
         """
-        self.data = json.loads(handler.request.body)
+        self.request_data = json.loads(handler.request.body)
         self.type = self.data['event_type']
-        self.handler = _EVENT_HANDLERS[self.type]
+        self.data_factory = _EVENT_DATA_FACTORIES[self.type]
 
 
-    def get_ws_data(self):
+    def get_websocket_data(self):
         """Returns data to be dispatched to web-socket clients.
 
         """
-        return self.handler(self.data)
+        return self.data_factory(self.request_data)
 
 
 class EventRequestHandler(tornado.web.RequestHandler):
@@ -124,24 +124,23 @@ class EventRequestHandler(tornado.web.RequestHandler):
         db.session.start()
 
         try:
-            # Decode event information.
-            event = _EventInfo(self)
+            # Instantiate event manager.
+            event = _EventManager(self)
             _log("{0} event received: {1}".format(event.type, event.data))
 
             # Only broadcast when there is data.
-            ws_data = event.get_ws_data()
-            if not ws_data:
+            data = event.get_websocket_data()
+            if not data:
                 _log("{0} event broadcasting aborted".format(event.type))
             else:
                 # Append event info.
-                ws_data.update({
+                data.update({
                     'event_type' : sc.to_camel_case(event.type),
                     'event_timestamp': datetime.datetime.now(),
                 })
 
                 # Broadcast to clients.
-                websockets.on_write(_WS_KEY, ws_data)
-                _log("{0} event broadcast".format(event.type))
+                websockets.on_write(_WS_KEY, data)
 
         # Close db session.
         finally:
