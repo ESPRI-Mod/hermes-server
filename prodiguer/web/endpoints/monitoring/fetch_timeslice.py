@@ -45,9 +45,7 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
 
             """
             timeslice = self.get_argument(_PARAM_TIMESLICE)
-            if timeslice == '1W':
-                self.start_date = arrow.now() - datetime.timedelta(days=7)
-            elif timeslice == '2W':
+            if timeslice == '2W':
                 self.start_date = arrow.now() - datetime.timedelta(days=14)
             elif timeslice == '1M':
                 self.start_date = arrow.now() - datetime.timedelta(days=31)
