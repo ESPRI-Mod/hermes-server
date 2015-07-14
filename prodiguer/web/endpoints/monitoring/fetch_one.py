@@ -14,8 +14,8 @@
 import base64
 
 from prodiguer.db import pgres as db
-from prodiguer.web.endpoints.monitoring import request_validator
-from prodiguer.web.utils import ProdiguerHTTPRequestHandler
+from prodiguer.web.request_validation import validator_monitoring as rv
+from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
 
 
@@ -77,7 +77,7 @@ class FetchOneRequestHandler(ProdiguerHTTPRequestHandler):
             db.session.end()
 
         # Invoke tasks.
-        self.invoke(request_validator.validate_fetch_one, [
+        self.invoke(rv.validate_fetch_one, [
             _decode_request,
             _set_output
         ])

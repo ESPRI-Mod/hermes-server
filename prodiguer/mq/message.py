@@ -14,7 +14,7 @@ import base64
 import json
 
 from prodiguer.mq import constants
-from prodiguer.mq import validation
+from prodiguer.mq import validator
 from prodiguer.utils import config
 from prodiguer.utils import convert
 
@@ -31,7 +31,7 @@ class Message(object):
         :param bool decode: Flag indicating whether message payload is to be decoded.
 
         """
-        validation.validate_ampq_basic_properties(props)
+        validator.validate_ampq_basic_properties(props)
 
         self.content = content
         self.content_raw = content

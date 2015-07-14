@@ -13,7 +13,7 @@
 """
 import json
 
-from prodiguer.web.utils import ProdiguerHTTPRequestHandler
+from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
 
 

@@ -14,8 +14,8 @@
 import tornado
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web.endpoints.sim_metrics import request_validator
-from prodiguer.web.utils import ProdiguerHTTPRequestHandler
+from prodiguer.web.request_validation import validator_sim_metrics as rv
+from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
 
 
@@ -46,7 +46,7 @@ class RenameRequestHandler(ProdiguerHTTPRequestHandler):
             dao.rename(self.group, self.new_name)
 
         # Invoke tasks.
-        self.invoke(request_validator.validate_rename, [
+        self.invoke(rv.validate_rename, [
             _decode_request,
             _rename_metric_group,
         ])

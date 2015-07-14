@@ -15,7 +15,7 @@ from prodiguer.cv import accessor as ta
 from prodiguer.cv import cache
 from prodiguer.cv import constants
 from prodiguer.cv import formatter
-from prodiguer.cv import validation
+from prodiguer.cv import validator
 
 
 
@@ -28,7 +28,7 @@ def parse_term_type(term_type):
     :rtype: str
 
     """
-    validation.validate_term_type(term_type)
+    validator.validate_term_type(term_type)
 
     return formatter.format_term_type(term_type)
 
@@ -44,9 +44,9 @@ def parse_term_name(term_type, term_name, must_exist=True):
     :rtype: str
 
     """
-    validation.validate_term_type(term_type)
+    validator.validate_term_type(term_type)
     if must_exist:
-        validation.validate_term_name(term_type, term_name)
+        validator.validate_term_name(term_type, term_name)
 
     term_name = formatter.format_term_name(term_name)
     for term in cache.get_termset(term_type):
@@ -85,6 +85,6 @@ def parse_term_data(term_data):
     :rtype: dict
 
     """
-    validation.validate_term_data(term_data)
+    validator.validate_term_data(term_data)
 
     return formatter.format_term_data(term_data)

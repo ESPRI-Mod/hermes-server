@@ -17,7 +17,7 @@ from prodiguer.cv import factory
 from prodiguer.cv import io
 from prodiguer.cv import parser
 from prodiguer.cv import session
-from prodiguer.cv import validation
+from prodiguer.cv import validator
 from prodiguer.cv.accessor import get_display_name
 from prodiguer.cv.accessor import get_name
 from prodiguer.cv.accessor import get_synonyms

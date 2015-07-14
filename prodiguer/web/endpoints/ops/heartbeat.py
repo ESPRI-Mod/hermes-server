@@ -13,8 +13,8 @@
 """
 import tornado
 
-from prodiguer.web.utils import ProdiguerHTTPRequestHandler
-from prodiguer.web.utils import request_validation as rv
+from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
+from prodiguer.web.request_validation import validator as rv
 
 
 

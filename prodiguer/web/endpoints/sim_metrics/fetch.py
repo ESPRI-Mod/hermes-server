@@ -14,8 +14,8 @@ import tornado
 import voluptuous
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web.endpoints.sim_metrics import request_validator
-from prodiguer.web.utils import ProdiguerHTTPRequestHandler
+from prodiguer.web.request_validation import validator_sim_metrics as rv
+from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
 
 
@@ -73,7 +73,7 @@ class FetchRequestHandler(ProdiguerHTTPRequestHandler):
             self.set_header("Access-Control-Allow-Origin", "*")
 
         # Invoke tasks.
-        self.invoke(request_validator.validate_fetch, [
+        self.invoke(rv.validate_fetch, [
             _decode_request,
             _fetch_data,
             _format_data,

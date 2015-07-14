@@ -5,7 +5,7 @@
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
-   :synopsis: Simulation metric API request validators.
+   :synopsis: Validates simulation monitoring endpoint requests.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
@@ -17,7 +17,7 @@ from voluptuous import All, Required, Schema
 
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
-from prodiguer.web.utils import request_validation as rv
+from prodiguer.web.request_validation import validator as rv
 
 
 

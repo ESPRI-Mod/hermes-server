@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.dao_cv_validator.py
+.. module:: prodiguer.db.dao_cv.validator.py
    :copyright: Copyright "Apr 26, 2013", IPSL
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: CV data access validation operations.
+   :synopsis: CV data access operations validator.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
-from prodiguer.cv import validation as cv_validator
+from prodiguer import cv
 
 
 
@@ -23,14 +23,14 @@ def validate_create_term(
     """Function input validator: create_term.
 
     """
-    cv_validator.validate_term_type(term_type)
-    cv_validator.validate_term_name(term_type, term_name)
-    cv_validator.validate_term_display_name(term_display_name)
+    cv.validator.validate_term_type(term_type)
+    cv.validator.validate_term_name(term_type, term_name)
+    cv.validator.validate_term_display_name(term_display_name)
 
 
 def validate_retrieve_term(term_type, term_name):
     """Function input validator: retrieve_term.
 
     """
-    cv_validator.validate_term_type(term_type)
-    cv_validator.validate_term_name(term_type, term_name)
+    cv.validator.validate_term_type(term_type)
+    cv.validator.validate_term_name(term_type, term_name)

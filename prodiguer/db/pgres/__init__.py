@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """
 .. module:: prodiguer.db.pgres.__init__.py
    :copyright: @2015 IPSL (http://ipsl.fr)

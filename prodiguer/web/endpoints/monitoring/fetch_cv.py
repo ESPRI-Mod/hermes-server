@@ -12,8 +12,8 @@
 
 """
 from prodiguer.db import pgres as db
-from prodiguer.web.endpoints.monitoring import request_validator
-from prodiguer.web.utils import ProdiguerHTTPRequestHandler
+from prodiguer.web.request_validation import validator_monitoring as rv
+from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
 
 
@@ -37,4 +37,4 @@ class FetchControlledVocabularyRequestHandler(ProdiguerHTTPRequestHandler):
             db.session.end()
 
         # Invoke tasks.
-        self.invoke(request_validator.validate_fetch_cv, _set_output)
+        self.invoke(rv.validate_fetch_cv, _set_output)

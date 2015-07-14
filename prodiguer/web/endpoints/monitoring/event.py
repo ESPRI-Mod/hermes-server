@@ -19,7 +19,7 @@ import tornado.web
 from prodiguer.db import pgres as db
 from prodiguer.utils import logger
 from prodiguer.utils import string_convertor as sc
-from prodiguer.web.endpoints.monitoring import request_validator
+from prodiguer.web.request_validation import validator_monitoring as rv
 from prodiguer.web.utils import websockets
 
 

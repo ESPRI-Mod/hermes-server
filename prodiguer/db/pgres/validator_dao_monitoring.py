@@ -5,15 +5,15 @@
    :copyright: Copyright "Apr 26, 2013", IPSL
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: Monitoring data access validation operations.
+   :synopsis: Monitoring related data access operations validator.
 
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
-from prodiguer.cv import validation as cv_validator
-from prodiguer.db.pgres import validator as db_validator
+from prodiguer import cv
+from prodiguer.db.pgres import validator as validator
 
 
 
@@ -21,14 +21,14 @@ def validate_delete_simulation(uid):
     """Function input validator: delete_simulation.
 
     """
-    db_validator.validate_simulation_uid(uid)
+    validator.validate_simulation_uid(uid)
 
 
 def validate_exists(uid):
     """Function input validator: exists.
 
     """
-    db_validator.validate_simulation_uid(uid)
+    validator.validate_simulation_uid(uid)
 
 
 def validate_persist_job_01(
@@ -42,12 +42,12 @@ def validate_persist_job_01(
     """Function input validator: persist_job_01.
 
     """
-    db_validator.validate_accounting_project(accounting_project)
-    db_validator.validate_expected_completion_delay(expected_completion_delay)
-    db_validator.validate_execution_start_date(execution_start_date)
-    cv_validator.validate_job_type(typeof)
-    db_validator.validate_job_uid(job_uid)
-    db_validator.validate_simulation_uid(simulation_uid)
+    validator.validate_accounting_project(accounting_project)
+    validator.validate_expected_completion_delay(expected_completion_delay)
+    validator.validate_execution_start_date(execution_start_date)
+    cv.validator.validate_job_type(typeof)
+    validator.validate_job_uid(job_uid)
+    validator.validate_simulation_uid(simulation_uid)
 
 
 def validate_persist_job_02(
@@ -59,10 +59,10 @@ def validate_persist_job_02(
     """Function input validator: persist_job_02.
 
     """
-    db_validator.validate_execution_end_date(execution_end_date)
-    db_validator.validate_bool(is_error, 'Is Error flag')
-    db_validator.validate_job_uid(job_uid)
-    db_validator.validate_simulation_uid(simulation_uid)
+    validator.validate_execution_end_date(execution_end_date)
+    validator.validate_bool(is_error, 'Is Error flag')
+    validator.validate_job_uid(job_uid)
+    validator.validate_simulation_uid(simulation_uid)
 
 
 def validate_persist_metric(
@@ -98,8 +98,8 @@ def validate_persist_metric(
     def _validate_throughput_mb_s():
         pass
 
-    db_validator.validate_job_uid(job_uid)
-    db_validator.validate_simulation_uid(simulation_uid)
+    validator.validate_job_uid(job_uid)
+    validator.validate_simulation_uid(simulation_uid)
 
     _validate_action_name()
     _validate_action_timestamp()
@@ -135,50 +135,50 @@ def validate_persist_simulation_01(
     """Function input validator: persist_simulation_01.
 
     """
-    cv_validator.validate_activity(activity)
-    cv_validator.validate_compute_node(compute_node)
-    cv_validator.validate_compute_node_login(compute_node_login)
-    cv_validator.validate_compute_node_machine(compute_node_machine)
-    cv_validator.validate_experiment(experiment)
-    cv_validator.validate_model(model)
-    cv_validator.validate_simulation_space(space)
-    db_validator.validate_accounting_project(accounting_project)
-    db_validator.validate_execution_start_date(execution_start_date)
-    db_validator.validate_raw_activity(activity_raw)
-    db_validator.validate_raw_compute_node(compute_node_raw)
-    db_validator.validate_raw_compute_node_login(compute_node_login_raw)
-    db_validator.validate_raw_compute_node_machine(compute_node_machine_raw)
-    db_validator.validate_raw_experiment(experiment_raw)
-    db_validator.validate_raw_model(model_raw)
-    db_validator.validate_raw_simulation_space(space_raw)
-    db_validator.validate_simulation_name(name)
-    db_validator.validate_simulation_output_start_date(output_start_date)
-    db_validator.validate_simulation_output_end_date(output_end_date)
-    db_validator.validate_simulation_uid(uid)
+    cv.validator.validate_activity(activity)
+    cv.validator.validate_compute_node(compute_node)
+    cv.validator.validate_compute_node_login(compute_node_login)
+    cv.validator.validate_compute_node_machine(compute_node_machine)
+    cv.validator.validate_experiment(experiment)
+    cv.validator.validate_model(model)
+    cv.validator.validate_simulation_space(space)
+    validator.validate_accounting_project(accounting_project)
+    validator.validate_execution_start_date(execution_start_date)
+    validator.validate_raw_activity(activity_raw)
+    validator.validate_raw_compute_node(compute_node_raw)
+    validator.validate_raw_compute_node_login(compute_node_login_raw)
+    validator.validate_raw_compute_node_machine(compute_node_machine_raw)
+    validator.validate_raw_experiment(experiment_raw)
+    validator.validate_raw_model(model_raw)
+    validator.validate_raw_simulation_space(space_raw)
+    validator.validate_simulation_name(name)
+    validator.validate_simulation_output_start_date(output_start_date)
+    validator.validate_simulation_output_end_date(output_end_date)
+    validator.validate_simulation_uid(uid)
 
 
 def validate_persist_simulation_02(execution_end_date, is_error, uid):
     """Function input validator: persist_simulation_02.
 
     """
-    db_validator.validate_bool(is_error, 'Is Error flag')
-    db_validator.validate_execution_end_date(execution_end_date)
-    db_validator.validate_simulation_uid(uid)
+    validator.validate_bool(is_error, 'Is Error flag')
+    validator.validate_execution_end_date(execution_end_date)
+    validator.validate_simulation_uid(uid)
 
 
 def validate_persist_simulation_configuration(uid, card):
     """Function input validator: persist_simulation_configuration.
 
     """
-    db_validator.validate_simulation_uid(uid)
-    db_validator.validate_simulation_configuration_card(card)
+    validator.validate_simulation_uid(uid)
+    validator.validate_simulation_configuration_card(card)
 
 
 def validate_retrieve_active_simulation(hashid):
     """Function input validator: retrieve_active_simulation.
 
     """
-    db_validator.validate_simulation_hashid(hashid)
+    validator.validate_simulation_hashid(hashid)
 
 
 def validate_retrieve_active_simulations(start_date=None):
@@ -186,7 +186,7 @@ def validate_retrieve_active_simulations(start_date=None):
 
     """
     if start_date is not None:
-        db_validator.validate_execution_start_date(start_date)
+        validator.validate_execution_start_date(start_date)
 
 
 def validate_retrieve_active_jobs(start_date=None):
@@ -194,39 +194,39 @@ def validate_retrieve_active_jobs(start_date=None):
 
     """
     if start_date is not None:
-        db_validator.validate_execution_start_date(start_date)
+        validator.validate_execution_start_date(start_date)
 
 
 def validate_retrieve_job(uid):
     """Function input validator: retrieve_job.
 
     """
-    db_validator.validate_job_uid(uid)
+    validator.validate_job_uid(uid)
 
 
 def validate_retrieve_simulation(uid):
     """Function input validator: retrieve_simulation.
 
     """
-    db_validator.validate_simulation_uid(uid)
+    validator.validate_simulation_uid(uid)
 
 
 def validate_retrieve_simulation_configuration(uid):
     """Function input validator: retrieve_simulation_configuration.
 
     """
-    db_validator.validate_simulation_uid(uid)
+    validator.validate_simulation_uid(uid)
 
 
 def validate_retrieve_simulation_jobs(uid):
     """Function input validator: retrieve_simulation_jobs.
 
     """
-    db_validator.validate_simulation_uid(uid)
+    validator.validate_simulation_uid(uid)
 
 
 def validate_update_active_simulation(hashid):
     """Function input validator: update_active_simulation.
 
     """
-    db_validator.validate_simulation_hashid(hashid)
+    validator.validate_simulation_hashid(hashid)

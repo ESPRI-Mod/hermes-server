@@ -146,7 +146,7 @@ def _parse_cv_terms(ctx):
     for term_type in ctx.cv_term_fields:
         term_name = getattr(ctx, term_type)
         try:
-            cv.validation.validate_term_name(term_type, term_name)
+            cv.validator.validate_term_name(term_type, term_name)
 
         # New terms.
         except cv.TermNameError:

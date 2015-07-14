@@ -19,7 +19,7 @@ import sqlalchemy
 from prodiguer.db import pgres as db
 from prodiguer.mq import defaults
 from prodiguer.mq import message
-from prodiguer.mq import validation
+from prodiguer.mq import validator
 from prodiguer.mq.consumer import Consumer
 from prodiguer.mq.producer import Producer
 from prodiguer.mq.timestamp import Timestamp
@@ -72,20 +72,20 @@ def create_ampq_message_properties(
         message_id = unicode(uuid.uuid4())
 
     # Validate inputs.
-    validation.validate_app_id(app_id)
-    validation.validate_cluster_id(cluster_id)
-    validation.validate_content_encoding(content_encoding)
-    validation.validate_content_type(content_type)
+    validator.validate_app_id(app_id)
+    validator.validate_cluster_id(cluster_id)
+    validator.validate_content_encoding(content_encoding)
+    validator.validate_content_type(content_type)
     if correlation_id:
-        validation.validate_correlation_id(correlation_id)
-    validation.validate_delivery_mode(delivery_mode)
-    validation.validate_expiration(expiration)
-    validation.validate_message_id(message_id)
-    validation.validate_priority(priority)
-    validation.validate_producer_id(producer_id)
-    validation.validate_reply_to(reply_to)
-    validation.validate_type(message_type)
-    validation.validate_user_id(user_id)
+        validator.validate_correlation_id(correlation_id)
+    validator.validate_delivery_mode(delivery_mode)
+    validator.validate_expiration(expiration)
+    validator.validate_message_id(message_id)
+    validator.validate_priority(priority)
+    validator.validate_producer_id(producer_id)
+    validator.validate_reply_to(reply_to)
+    validator.validate_type(message_type)
+    validator.validate_user_id(user_id)
 
     # Set timestamps.
     # ... if provided then use.
