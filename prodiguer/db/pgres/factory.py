@@ -18,7 +18,7 @@ from sqlalchemy import inspect
 
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
-from prodiguer.db.pgres.type_utils import assert_type
+from prodiguer.db.pgres import validator
 
 
 
@@ -27,7 +27,7 @@ _created = collections.OrderedDict()
 
 
 # Set of dependencies.
-_dependents = { t: [] for t in types.TYPES }
+_dependents = { t: [] for t in types.SUPPORTED }
 
 
 # Set of scalar type factories.
@@ -45,7 +45,7 @@ _scalar_factories = {
 
 def _get_etype(schema, tbl):
     """Gets first type with matching schema/table name."""
-    for etype in types.TYPES:
+    for etype in types.SUPPORTED:
         orm_mapping = inspect(etype).tables[0]
         if orm_mapping.schema == schema and orm_mapping.name == tbl:
             return etype
@@ -88,11 +88,10 @@ def create(etype, force=False, commit=False):
     :param bool commit: Flag indicating whether the instance will be committed.
 
     :returns: A type instance.
-    :rtype: A instance of a sub-class of types.Entity.
+    :rtype: A instance of a sub-class of db.Entity.
 
     """
-    # Defensive programming.
-    assert_type(etype)
+    validator.validate_entity_type(etype)
 
     # Return cached if appropriate (prevents infinite recursion).
     if etype in _created:

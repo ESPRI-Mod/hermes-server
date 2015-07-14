@@ -12,7 +12,7 @@
 import random
 
 from prodiguer.db.pgres import session
-from prodiguer.db.pgres.type_utils import assert_type
+from prodiguer.db.pgres import validator
 
 
 
@@ -29,7 +29,7 @@ def sort(etype, collection):
     :rtype: list
 
     """
-    assert_type(etype)
+    validator.validate_entity_type(etype)
 
     return [] if collection is None else etype.get_sorted(collection)
 
@@ -56,10 +56,10 @@ def get_by_facet(etype, qfilter=None, order_by=None, get_iterable=False):
     :param bool get_iterable: Flag indicating whether to return an iterable or not.
 
     :returns: Entity or entity collection.
-    :rtype: Sub-class of types.Entity
+    :rtype: Sub-class of db.Entity
 
     """
-    assert_type(etype)
+    validator.validate_entity_type(etype)
 
     qry = session.query(etype)
     if qfilter is not None:
@@ -78,7 +78,7 @@ def exec_query(etype, qry, get_iterable=False):
     :param bool get_iterable: Flag indicating whether to return an iterable or not.
 
     :returns: Entity or entity collection.
-    :rtype: Sub-class of types.Entity
+    :rtype: Sub-class of db.Entity
     """
     return sort(etype, qry.all()) if get_iterable else qry.first()
 
@@ -90,7 +90,7 @@ def get_random(etype):
     :type etype: class
 
     :returns: A random item from the cache.
-    :rtype: Sub-class of types.Entity
+    :rtype: Sub-class of db.Entity
 
     """
     all = get_all(etype)
@@ -123,7 +123,7 @@ def get_by_id(etype, id):
     :type id: int
 
     :returns: Entity with matching id.
-    :rtype: Sub-class of types.Entity
+    :rtype: Sub-class of db.Entity
 
     """
     return get_by_facet(etype, qfilter=etype.id==id)
@@ -139,7 +139,7 @@ def get_by_name(etype, name):
     :type name: str
 
     :returns: Entity with matching name.
-    :rtype: Sub-class of types.Entity
+    :rtype: Sub-class of db.Entity
 
     """
     return get_by_facet(etype, qfilter=etype.name==name)
@@ -155,7 +155,7 @@ def get_count(etype, qfilter=None):
     :rtype: int
 
     """
-    assert_type(etype)
+    validator.validate_entity_type(etype)
 
     q = session.query(etype)
     if qfilter is not None:
@@ -168,7 +168,7 @@ def insert(entity):
     """Adds a newly created model to the session.
 
     :param item: A supported entity instance.
-    :type item: Sub-class of types.Entity
+    :type item: Sub-class of db.Entity
 
     """
     session.add(entity)
@@ -180,7 +180,7 @@ def delete(entity):
     """Marks entity instance for deletion.
 
     :param item: A supported entity instance.
-    :type item: Sub-class of types.Entity
+    :type item: Sub-class of db.Entity
 
     """
     session.delete(entity)
@@ -193,7 +193,7 @@ def delete_all(etype):
     :type etype: class
 
     """
-    assert_type(etype)
+    validator.validate_entity_type(etype)
 
     q = session.query(etype)
     q.delete()
@@ -212,7 +212,7 @@ def delete_by_facet(etype, expression):
     :type facet: object
 
     """
-    assert_type(etype)
+    validator.validate_entity_type(etype)
 
     q = session.query(etype)
     q = q.filter(expression)

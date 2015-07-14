@@ -14,69 +14,12 @@
 from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
-from prodiguer.mq import validation as msg_validation
+from prodiguer.db.pgres import validator_dao_mq as validator
 from prodiguer.utils import decorators
 
 
 
-def _validate_create_message(
-    uid,
-    user_id,
-    app_id,
-    producer_id,
-    type_id,
-    content,
-    content_encoding,
-    content_type,
-    correlation_id_1,
-    correlation_id_2,
-    correlation_id_3,
-    timestamp,
-    timestamp_precision,
-    timestamp_raw
-    ):
-    """Function input validator: create_message.
-
-    """
-    msg_validation.validate_app_id(app_id)
-    msg_validation.validate_content(content)
-    msg_validation.validate_content_encoding(content_encoding)
-    msg_validation.validate_content_type(content_type)
-    if correlation_id_1:
-        msg_validation.validate_correlation_id(correlation_id_1)
-    if correlation_id_2:
-        msg_validation.validate_correlation_id(correlation_id_2)
-    if correlation_id_3:
-        msg_validation.validate_correlation_id(correlation_id_3)
-    msg_validation.validate_message_id(uid)
-    msg_validation.validate_producer_id(producer_id)
-    msg_validation.validate_timestamp_info(timestamp, timestamp_precision, timestamp_raw)
-    msg_validation.validate_type(type_id)
-    msg_validation.validate_user_id(user_id)
-
-
-def _validate_create_message_email(email_id):
-    """Function input validator: create_message_email.
-
-    """
-    pass
-
-
-def _validate_is_duplicate(uid):
-    """Function input validator: is_duplicate.
-
-    """
-    pass
-
-
-def _validate_reset_emails():
-    """Function input validator: reset_emails.
-
-    """
-    pass
-
-
-@decorators.validate(_validate_create_message)
+@decorators.validate(validator.validate_create_message)
 def create_message(
     uid,
     user_id,
@@ -142,7 +85,7 @@ def create_message(
     return instance
 
 
-@decorators.validate(_validate_create_message_email)
+@decorators.validate(validator.validate_create_message_email)
 def create_message_email(email_id):
     """Creates a new message email record in db.
 
@@ -156,15 +99,7 @@ def create_message_email(email_id):
     return instance
 
 
-@decorators.validate(_validate_reset_emails)
-def reset_emails():
-    """Deletes message email records in db.
-
-    """
-    dao.delete_all(types.MessageEmail)
-
-
-@decorators.validate(_validate_is_duplicate)
+@decorators.validate(validator.validate_is_duplicate)
 def is_duplicate(uid):
     """Returns true if a message with the same uid already exists in the db.
 

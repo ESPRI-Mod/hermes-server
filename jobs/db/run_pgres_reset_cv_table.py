@@ -28,8 +28,11 @@ def _main():
     # Start session.
     db.session.start(config.db.pgres.main)
 
-    # Resets terms stored in db.
-    db.dao_cv.reset_terms()
+    # Delete existing terms.
+    db.dao.delete_all(db.types.ControlledVocabularyTerm)
+
+    # Reinitialise terms from cv files.
+    db.setup.init_cv_terms()
 
     # End session.
     db.session.end()

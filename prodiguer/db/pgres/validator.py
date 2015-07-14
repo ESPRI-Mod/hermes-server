@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.validation.py
+.. module:: prodiguer.db.validator.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -14,12 +14,25 @@ import uuid
 
 import arrow
 
+from prodiguer.db.pgres import types
+
+
 
 def _raise_value_error(val, var, var_type):
     """Raises a generic value error.
 
     """
     raise ValueError('{0} [{1}] is an invalid {2}'.format(var, val, var_type))
+
+
+def validate_entity_type(etype):
+    """Validates a type to ensure that it is a recognized entity.
+
+    :param class etype: A supported entity type.
+
+    """
+    if etype not in types.SUPPORTED:
+        raise TypeError('DB entity type is unknown :: {0}'.format(etype))
 
 
 def validate_bool(val, var):

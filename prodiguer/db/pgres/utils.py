@@ -14,14 +14,14 @@
 import datetime
 
 from prodiguer.db.pgres import dao
-from prodiguer.db.pgres.type_utils import Convertor
+from prodiguer.db.pgres import convertor
 
 
 
 def get_sorted_list(entity_type, key='name'):
     """Returns a sorted list of db entities formatted for front-end.
 
-    :param db.types.Entity entity: Entity instance.
+    :param db.Entity entity: Entity instance.
     :param expression key: Collection sort key.
 
     :returns: A sorted list of entites in dictionary format ready to be returned to front-end.
@@ -35,7 +35,7 @@ def get_sorted_list(entity_type, key='name'):
 def get_list(entity_type):
     """Returns a list of db entities formatted for front-end.
 
-    :param db.types.Entity entity: Entity instance.
+    :param db.Entity entity: Entity instance.
 
     :returns: A list of entites in dictionary format ready to be returned to front-end.
     :rtype: list
@@ -47,7 +47,7 @@ def get_list(entity_type):
 def get_collection(entity_collection):
     """Returns a list of db entities formatted for front-end.
 
-    :param db.types.Entity entity: Entity instance.
+    :param db.Entity entity: Entity instance.
 
     :returns: A list of entites in dictionary format ready to be returned to front-end.
     :rtype: list
@@ -68,16 +68,16 @@ def format_date_fields(obj):
 def get_item(instance):
     """Returns a db entity formatted for front-end.
 
-    :param db.types.Entity entity: Entity instance.
+    :param db.Entity entity: Entity instance.
 
     :returns: Entity information in dictionary format ready to be returned to front-end.
     :rtype: dict
 
     """
     # Convert to a dictionary.
-    obj = Convertor.to_dict(instance)
+    obj = convertor.to_dict(instance)
 
-    # Set name attribute if required.
+    # Set name attribute (if required).
     if 'name' not in obj:
         try:
             obj['name'] = instance.name
@@ -85,6 +85,7 @@ def get_item(instance):
             pass
 
     # Remove row meta-info.
+    del obj["id"]
     del obj["row_create_date"]
     del obj["row_update_date"]
 

@@ -16,9 +16,9 @@ from sqlalchemy.exc import IntegrityError
 import datetime
 
 from prodiguer.db.pgres import dao
-from prodiguer.db.pgres import dao_monitoring_validator as validator
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
+from prodiguer.db.pgres import validator_dao_monitoring as validator
 from prodiguer.utils import decorators
 
 
@@ -172,6 +172,51 @@ def retrieve_job(uid):
     qfilter = types.Job.job_uid == unicode(uid)
 
     return dao.get_by_facet(types.Job, qfilter=qfilter)
+
+
+@decorators.validate(validator.validate_persist_metric)
+def persist_metric(
+    action_name,
+    action_timestamp,
+    dir_from,
+    dir_to,
+    duration_ms,
+    job_uid,
+    simulation_uid,
+    size_mb,
+    throughput_mb_s
+    ):
+    """Persists environment metric information to db.
+
+    :param str action_name: Name of libIGCM action.
+    :param str dir_from: Directory from which data was copied.
+    :param str dir_to: Directory to which data was copied.
+    :param integer duration_ms: Duration in milliseconds of action.
+    :param str job_uid: Job UID.
+    :param str simulation_uid: Simulation UID.
+    :param float size_mb: Size in megabytes of moved file(s).
+    :param datetime timestamp: Time when action took place.
+    :param float throughput_mb_s: Rate at which copy took place.
+
+    :returns: A new environment metrics instance.
+    :rtype: types.EnvironmentMetric
+
+    """
+    instance = types.EnvironmentMetric()
+    instance.action_name = unicode(action_name)
+    instance.action_timestamp = action_timestamp
+    instance.dir_from = unicode(dir_from)
+    instance.dir_to = unicode(dir_to)
+    instance.duration_ms = duration_ms
+    instance.job_uid = unicode(job_uid)
+    instance.simulation_uid = unicode(simulation_uid)
+    instance.size_mb = size_mb
+    instance.throughput_mb_s = throughput_mb_s
+
+    # Push to db.
+    session.add(instance)
+
+    return instance
 
 
 @decorators.validate(validator.validate_persist_simulation_01)
@@ -396,47 +441,3 @@ def delete_simulation(uid):
     dao.delete_by_facet(types.Message, types.Message.correlation_id_1 == uid)
     dao.delete_by_facet(types.Simulation, types.Simulation.uid == uid)
 
-
-@decorators.validate(validator.validate_persist_environment_metric)
-def persist_environment_metric(
-    action_name,
-    action_timestamp,
-    dir_from,
-    dir_to,
-    duration_ms,
-    job_uid,
-    simulation_uid,
-    size_mb,
-    throughput_mb_s
-    ):
-    """Persists environment metric information to db.
-
-    :param str action_name: Name of libIGCM action.
-    :param str dir_from: Directory from which data was copied.
-    :param str dir_to: Directory to which data was copied.
-    :param integer duration_ms: Duration in milliseconds of action.
-    :param str job_uid: Job UID.
-    :param str simulation_uid: Simulation UID.
-    :param float size_mb: Size in megabytes of moved file(s).
-    :param datetime timestamp: Time when action took place.
-    :param float throughput_mb_s: Rate at which copy took place.
-
-    :returns: A new environment metrics instance.
-    :rtype: types.EnvironmentMetric
-
-    """
-    instance = types.EnvironmentMetric()
-    instance.action_name = unicode(action_name)
-    instance.action_timestamp = action_timestamp
-    instance.dir_from = unicode(dir_from)
-    instance.dir_to = unicode(dir_to)
-    instance.duration_ms = duration_ms
-    instance.job_uid = unicode(job_uid)
-    instance.simulation_uid = unicode(simulation_uid)
-    instance.size_mb = size_mb
-    instance.throughput_mb_s = throughput_mb_s
-
-    # Push to db.
-    session.add(instance)
-
-    return instance

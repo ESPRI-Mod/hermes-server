@@ -100,6 +100,18 @@ def validate_message_id(identifier):
         raise ValueError("Message identifier must be UUID compatible.")
 
 
+def validate_email_id(identifier):
+    """Validates ann email identifier.
+
+    :param int identifier: An email identifier.
+
+    """
+    try:
+        int(identifier)
+    except ValueError:
+        raise ValueError("Emial identifier must be an integer: {}".format(identifier))
+
+
 def validate_priority(priority):
     """Validates a messaging producer identifier.
 

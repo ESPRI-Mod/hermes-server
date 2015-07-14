@@ -24,7 +24,7 @@ def get_tasks():
     """
     return (
       _unpack_message_content,
-      _persist_metrics
+      _persist_metric
       )
 
 
@@ -63,11 +63,11 @@ def _unpack_message_content(ctx):
     ctx.throughput_mb_s = ctx.content['throughput_Mo_s']
 
 
-def _persist_metrics(ctx):
-    """Persists metrics info to db.
+def _persist_metric(ctx):
+    """Persists metric info to db.
 
     """
-    db.dao_monitoring.persist_environment_metric(
+    db.dao_monitoring.persist_metric(
         ctx.action_name,
         ctx.msg.timestamp,
         ctx.dir_from,

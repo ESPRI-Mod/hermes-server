@@ -13,7 +13,7 @@
 
 """
 from prodiguer.cv import validation as cv_validator
-from prodiguer.db.pgres import validation as db_validator
+from prodiguer.db.pgres import validator as db_validator
 
 
 
@@ -29,23 +29,6 @@ def validate_exists(uid):
 
     """
     db_validator.validate_simulation_uid(uid)
-
-
-def validate_persist_environment_metric(
-    action_name,
-    action_timestamp,
-    dir_from,
-    dir_to,
-    duration_ms,
-    job_uid,
-    simulation_uid,
-    size_mb,
-    throughput_mb_s
-    ):
-    """Function input validator: persist_environment_metric.
-
-    """
-    pass
 
 
 def validate_persist_job_01(
@@ -80,6 +63,51 @@ def validate_persist_job_02(
     db_validator.validate_bool(is_error, 'Is Error flag')
     db_validator.validate_job_uid(job_uid)
     db_validator.validate_simulation_uid(simulation_uid)
+
+
+def validate_persist_metric(
+    action_name,
+    action_timestamp,
+    dir_from,
+    dir_to,
+    duration_ms,
+    job_uid,
+    simulation_uid,
+    size_mb,
+    throughput_mb_s
+    ):
+    """Function input validator: persist_metric.
+
+    """
+
+    def _validate_action_name():
+        pass
+
+    def _validate_action_timestamp():
+        pass
+
+    def _validate_dir(dir_):
+        pass
+
+    def _validate_duration_ms():
+        pass
+
+    def _validate_size_mb():
+        pass
+
+    def _validate_throughput_mb_s():
+        pass
+
+    db_validator.validate_job_uid(job_uid)
+    db_validator.validate_simulation_uid(simulation_uid)
+
+    _validate_action_name()
+    _validate_action_timestamp()
+    _validate_dir(dir_from)
+    _validate_dir(dir_to)
+    _validate_duration_ms()
+    _validate_size_mb()
+    _validate_throughput_mb_s()
 
 
 def validate_persist_simulation_01(

@@ -14,11 +14,9 @@ from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import dao_cv
 from prodiguer.db.pgres import dao_monitoring
 from prodiguer.db.pgres import dao_mq
+from prodiguer.db.pgres import factory
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import setup
 from prodiguer.db.pgres import types
-from prodiguer.db.pgres import type_factory
 from prodiguer.db.pgres import utils
-from prodiguer.db.pgres import validation
-from prodiguer.db.pgres.types import Entity
-from prodiguer.utils import config
+from prodiguer.db.pgres.entity import Entity

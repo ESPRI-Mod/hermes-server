@@ -33,28 +33,28 @@ def test_db_types_import_model_types():
 	from prodiguer import db
 
 	assert len(db.pgres.types.SCHEMAS) == 4
-	assert len(db.pgres.types.TYPES) == 27
+	assert len(db.pgres.types.SUPPORTED) == 27
 
 
 def test_db_types_creation():
-	from prodiguer.db.pgres.types import TYPES
+	from prodiguer.db.pgres.types import SUPPORTED
 
-	for type in TYPES:
+	for type in SUPPORTED:
 		tu.assert_db_type_creation.description = "tests.test_db_types.test_creation :: {0}".format(type.__name__)
 		yield tu.assert_db_type_creation, type
 
 
 def test_db_types_conversion():
-	from prodiguer.db.pgres.types import TYPES
+	from prodiguer.db.pgres.types import SUPPORTED
 
-	for type in TYPES:
+	for type in SUPPORTED:
 		tu.assert_db_type_conversion.description = "tests.test_db_types.test_conversion :: {0}".format(type.__name__)
 		yield tu.assert_db_type_conversion, type
 
 
 def test_db_types_persistence():
-	from prodiguer.db.pgres.types import TYPES
+	from prodiguer.db.pgres.types import SUPPORTED
 
-	for type in TYPES:
+	for type in SUPPORTED:
 		tu.assert_db_type_persistence.description = "tests.test_db_types.test_persistence :: {0}".format(type.__name__)
 		yield tu.assert_db_type_persistence, type

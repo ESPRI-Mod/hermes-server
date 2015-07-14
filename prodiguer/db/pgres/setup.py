@@ -17,8 +17,10 @@ from sqlalchemy.schema import DropSchema
 
 from prodiguer import cv
 from prodiguer.db.pgres import session as db_session
-from prodiguer.db.pgres import types as db_types
-from prodiguer.db.pgres.type_utils import metadata as db_metadata
+from prodiguer.db.pgres.meta import METADATA
+from prodiguer.db.pgres.types import ControlledVocabularyTerm
+from prodiguer.db.pgres.types import Simulation
+from prodiguer.db.pgres.types import SCHEMAS
 from prodiguer.utils import convert
 from prodiguer.utils import logger
 
@@ -31,7 +33,7 @@ def init_cv_terms():
     logger.log_db("Inserting cv.tbl_cv_term records")
 
     for term in cv.io.read():
-        item = db_types.ControlledVocabularyTerm()
+        item = ControlledVocabularyTerm()
         item.typeof = cv.get_type(term)
         item.name = cv.get_name(term)
         item.display_name = cv.get_display_name(term)
@@ -58,7 +60,7 @@ def _init_simulations():
             simulation['associations'][key] = simulation['associations'][key].lower()
 
         # ... hydrate new simulation;
-        sim = db_types.Simulation()
+        sim = Simulation()
         sim.activity = simulation['associations']['activity']
         sim.compute_node = simulation['associations']['compute_node']
         sim.compute_node_login = simulation['associations']['compute_node_login']
@@ -97,11 +99,11 @@ def execute():
 
     # Initialize schemas.
     db_session.sa_engine.execute(DropSchema('public'))
-    for schema in db_types.SCHEMAS:
+    for schema in SCHEMAS:
         db_session.sa_engine.execute(CreateSchema(schema))
 
     # Initialize tables.
-    db_metadata.create_all(db_session.sa_engine)
+    METADATA.create_all(db_session.sa_engine)
 
     # Seed tables.
     init_cv_terms()

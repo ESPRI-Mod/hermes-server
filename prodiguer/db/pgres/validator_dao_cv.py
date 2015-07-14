@@ -32,12 +32,5 @@ def validate_retrieve_term(term_type, term_name):
     """Function input validator: retrieve_term.
 
     """
-    pass
-
-
-def validate_reset_terms():
-    """Function input validator: reset_terms.
-
-    """
-    pass
-
+    cv_validator.validate_term_type(term_type)
+    cv_validator.validate_term_name(term_type, term_name)

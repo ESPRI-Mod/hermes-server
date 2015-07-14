@@ -20,7 +20,7 @@ import requests
 from dateutil import parser as dateutil_parser
 
 from prodiguer.db import pgres as db
-from prodiguer.db.pgres.type_utils import Convertor
+from prodiguer.db.pgres import convertor
 
 
 
@@ -312,19 +312,19 @@ def assert_db_type_creation(type):
     # Create instance directly.
     x = type()
     assert_obj(x, type)
-    assert_obj(x, db.types.Entity)
+    assert_obj(x, db.Entity)
 
     # Create instance via type factory.
-    y = db.type_factory.create(type)
+    y = db.factory.create(type)
     assert_obj(y, type)
 
-    assert_obj(y, db.types.Entity)
+    assert_obj(y, db.Entity)
 
     # Reset type factory.
-    db.type_factory.reset()
+    db.factory.reset()
 
 
-def assert_db_type_conversion(type):
+def assert_db_convertor(type):
     """Performs set of entity conversion tests.
 
     :param type: Type of entity being tested.
@@ -332,19 +332,19 @@ def assert_db_type_conversion(type):
 
     """
     # Create instance via factory.
-    x = db.type_factory.create(type)
+    x = db.factory.create(type)
 
     # Convert to string.
-    assert_obj(Convertor.to_string(x), str)
+    assert_obj(convertor.to_string(x), str)
 
     # Convert to dictionary.
-    assert_obj(Convertor.to_dict(x), dict)
+    assert_obj(convertor.to_dict(x), dict)
 
     # Convert to json.
-    assert Convertor.to_json(x) is not None
+    assert convertor.to_json(x) is not None
 
     # Reset type factory.
-    db.type_factory.reset()
+    db.factory.reset()
 
 
 def assert_db_type_persistence(type):
@@ -358,14 +358,14 @@ def assert_db_type_persistence(type):
     count = db.dao.get_count(type)
 
     # Create instance via factory.
-    db.type_factory.create(type)
+    db.factory.create(type)
 
     # Reassert counts.
     new_count = db.dao.get_count(type)
     assert_integer(new_count, count + 1)
 
     # Delete & reassert count.
-    db.type_factory.reset()
+    db.factory.reset()
     new_count = db.dao.get_count(type)
     assert_integer(new_count, count)
 

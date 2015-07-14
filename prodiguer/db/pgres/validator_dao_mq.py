@@ -55,19 +55,12 @@ def validate_create_message_email(email_id):
     """Function input validator: create_message_email.
 
     """
-    pass
+    msg_validation.validate_email_id(uid)
 
 
 def validate_is_duplicate(uid):
     """Function input validator: is_duplicate.
 
     """
-    pass
-
-
-def validate_reset_emails():
-    """Function input validator: reset_emails.
-
-    """
-    pass
+    msg_validation.validate_message_id(uid)
 

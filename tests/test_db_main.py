@@ -23,7 +23,7 @@ def test_db_import_package():
         db.dao,
         db.session,
         db.setup,
-        db.type_factory,
+        db.factory,
     ]
     for module in modules:
         assert inspect.ismodule(module)        
