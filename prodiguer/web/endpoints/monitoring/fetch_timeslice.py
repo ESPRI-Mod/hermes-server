@@ -33,11 +33,13 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
         """HTTP GET handler.
 
         """
-        def _get_data(func):
+        def _get_data(factory):
             """Returns data for front-end.
 
             """
-            return db.utils.get_collection(func(self.start_date.datetime))
+            start_date = self.start_date.datetime if self.start_date else None
+
+            return db.utils.get_collection(factory(start_date))
 
 
         def _decode_request():
@@ -52,11 +54,13 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
             elif timeslice == '2M':
                 self.start_date = arrow.now() - datetime.timedelta(days=61)
             elif timeslice == '3M':
-                self.start_date = arrow.now() - datetime.timedelta(days=91)
+                self.start_date = arrow.now() - datetime.timedelta(days=92)
             elif timeslice == '6M':
                 self.start_date = arrow.now() - datetime.timedelta(days=183)
             elif timeslice == '12M':
                 self.start_date = arrow.now() - datetime.timedelta(days=365)
+            elif timeslice == 'ALL':
+                self.start_date = None
 
 
         def _set_output():

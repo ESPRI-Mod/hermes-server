@@ -54,7 +54,6 @@ def retrieve_active_simulations(start_date=None):
     qry = session.query(types.Simulation)
     qry = qry.filter(types.Simulation.name != None)
     qry = qry.filter(types.Simulation.is_obsolete == False)
-    print start_date
     if start_date is not None:
         qry = qry.filter(types.Simulation.execution_start_date >= start_date)
 

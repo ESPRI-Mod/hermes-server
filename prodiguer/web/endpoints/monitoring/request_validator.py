@@ -50,7 +50,7 @@ def _MonitoringTimeslice():
         """Inner function.
 
         """
-        if val not in ['2W', '1M', '2M', '3M', '6M', '12M']:
+        if val not in ['2W', '1M', '2M', '3M', '6M', '12M', 'ALL']:
             raise ValueError("Unsupported monitoring timeslice")
 
     return f
