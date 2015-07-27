@@ -3,7 +3,7 @@
 """
 .. module:: prodiguer.db.types.py
    :platform: Unix
-   :synopsis: Prodiguer message queue db schema types.
+   :synopsis: Prodiguer message queue database tables.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 

@@ -3,7 +3,7 @@
 """
 .. module:: prodiguer.db.types_cv.py
    :platform: Unix
-   :synopsis: Prodiguer controlled vocabulary db schema types.
+   :synopsis: Prodiguer controlled vocabulary database tables.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 

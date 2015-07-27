@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.types_cv.py
+.. module:: prodiguer.db.types_conso.py
    :platform: Unix
-   :synopsis: Prodiguer controlled vocabulary db schema types.
+   :synopsis: Resource consumption database tables.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
@@ -51,6 +51,8 @@ class Consumption(Entity):
     __table_args__ = (
         {'schema':SCHEMA}
     )
+
+    #TODO
 
 
 class ConsumptionByLogin(Entity):

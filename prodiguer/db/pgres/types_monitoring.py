@@ -3,7 +3,7 @@
 """
 .. module:: prodiguer.db.types.py
    :platform: Unix
-   :synopsis: Prodiguer monitoring db schema types.
+   :synopsis: Prodiguer monitoring database tables.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
