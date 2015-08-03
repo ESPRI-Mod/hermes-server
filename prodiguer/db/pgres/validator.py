@@ -85,6 +85,35 @@ def validate_uid(val, var):
             _raise_value_error(val, var, uuid.UUID)
 
 
+def validate_unicode(val, var):
+    """Validates a unicode.
+
+    """
+    if val is None:
+        raise ValueError('{0} is undefined unicode'.format(var))
+
+    try:
+        val = unicode(val)
+    except ValueError:
+        _raise_value_error(val, var, unicode)
+
+    if not len(val):
+        raise ValueError('{0} is empty unicode'.format(var))
+
+
+def validate_iterable(val, var):
+    """Validates an iterable.
+
+    """
+    if val is None:
+        raise ValueError('{0} is undefined iterable'.format(var))
+
+    try:
+        iter(val)
+    except TypeError:
+        _raise_value_error(val, var, iter)
+
+
 def validate_accounting_project(project):
     """Validates an accounting project.
 

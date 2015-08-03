@@ -13,32 +13,90 @@ import random
 
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import validator
+from prodiguer.db.pgres import validator_dao as my_validator
+from prodiguer.utils import decorators
 
 
 
-def sort(etype, collection):
-    """Sorts collection via type sort key.
 
-    :param etype: A supported entity type.
-    :type etype: class
+@decorators.validate(my_validator.validate_delete)
+def delete(entity):
+    """Marks entity instance for deletion.
 
-    :param collection: Collection of entities.
-    :type collection: list
+    :param db.Entity item: A supported entity instance.
 
-    :returns: Sorted collection.
-    :rtype: list
+    """
+    session.delete(entity)
+
+
+@decorators.validate(my_validator.validate_delete_all)
+def delete_all(etype):
+    """Deletes all entities of passed type.
+
+    :param class etype: A supported entity type.
+
+    """
+    delete_by_facet(etype)
+
+
+@decorators.validate(my_validator.validate_delete_by_facet)
+def delete_by_facet(etype, filter_expression=None):
+    """Delete entity instance by id.
+
+    :param class etype: A supported entity type.
+    :param expression filter_expression: Facet filter expression.
 
     """
     validator.validate_entity_type(etype)
 
-    return [] if collection is None else etype.get_sorted(collection)
+    qry = session.query(etype)
+    if filter_expression:
+        qry = qry.filter(filter_expression)
+    qry.delete()
 
 
+@decorators.validate(my_validator.validate_delete_by_id)
+def delete_by_id(etype, entity_id):
+    """Delete entity instance by id.
+
+    :param class etype: A supported entity type.
+    :param int entity_id: id of entity.
+
+    """
+    delete_by_facet(etype, etype.id==entity_id)
+
+
+@decorators.validate(my_validator.validate_delete_by_name)
+def delete_by_name(etype, entity_name):
+    """Deletes an entity instance by it's name.
+
+    :param class etype: A supported entity type.
+    :param unicode entity_name: Name of entity.
+
+    """
+    delete_by_facet(etype, etype.name==entity_name)
+
+
+@decorators.validate(my_validator.validate_exec_query)
+def exec_query(etype, qry, get_iterable=False):
+    """Executes a query and return result (sorted if is a collection).
+
+    :param class etype: A supported entity type.
+    :param expression qry: A SqlAlchemy query expression.
+    :param bool get_iterable: Flag indicating whether to return an iterable or not.
+
+    :returns: Entity or entity collection.
+    :rtype: Sub-class of db.Entity
+
+    """
+    return sort(etype, qry.all()) if get_iterable else qry.first()
+
+
+@decorators.validate(my_validator.validate_get_all)
 def get_all(etype):
     """Gets all instances of the entity.
 
-    :param etype: A supported entity type.
-    :type etype: class
+    :param class etype: A supported entity type.
 
     :returns: Entity collection.
     :rtype: list
@@ -47,6 +105,7 @@ def get_all(etype):
     return get_by_facet(etype, order_by=etype.id, get_iterable=True)
 
 
+@decorators.validate(my_validator.validate_get_by_facet)
 def get_by_facet(etype, qfilter=None, order_by=None, get_iterable=False):
     """Gets entity instance by facet.
 
@@ -59,8 +118,6 @@ def get_by_facet(etype, qfilter=None, order_by=None, get_iterable=False):
     :rtype: Sub-class of db.Entity
 
     """
-    validator.validate_entity_type(etype)
-
     qry = session.query(etype)
     if qfilter is not None:
         qry = qry.filter(qfilter)
@@ -70,86 +127,40 @@ def get_by_facet(etype, qfilter=None, order_by=None, get_iterable=False):
     return exec_query(etype, qry, get_iterable)
 
 
-def exec_query(etype, qry, get_iterable=False):
-    """Executes a query and return result (sorted if is a collection).
-
-    :param class etype: A supported entity type.
-    :param expression qry: Query expressions.
-    :param bool get_iterable: Flag indicating whether to return an iterable or not.
-
-    :returns: Entity or entity collection.
-    :rtype: Sub-class of db.Entity
-    """
-    return sort(etype, qry.all()) if get_iterable else qry.first()
-
-
-def get_random(etype):
-    """Returns a random instance.
-
-    :param etype: Type of instance to be returned.
-    :type etype: class
-
-    :returns: A random item from the cache.
-    :rtype: Sub-class of db.Entity
-
-    """
-    all = get_all(etype)
-
-    return None if not len(all) else all[random.randint(0, len(all) - 1)]
-
-
-def get_random_sample(etype):
-    """Returns a random instance sample.
-
-    :param etype: Type of instances to be returned.
-    :type etype: class
-
-    :returns: A random sample from the db.
-    :rtype: list
-
-    """
-    all = get_all(etype)
-
-    return [] if not len(all) else random.sample(all, random.randint(1, len(all)))
-
-
-def get_by_id(etype, id):
+@decorators.validate(my_validator.validate_get_by_id)
+def get_by_id(etype, entity_id):
     """Gets entity instance by id.
 
-    :param etype: A supported entity type.
-    :type etype: class
-
-    :param id: id of entity.
-    :type id: int
+    :param class etype: A supported entity type.
+    :param int entity_id: An entity identifier.
 
     :returns: Entity with matching id.
     :rtype: Sub-class of db.Entity
 
     """
-    return get_by_facet(etype, qfilter=etype.id==id)
+    return get_by_facet(etype, qfilter=etype.id==entity_id)
 
 
-def get_by_name(etype, name):
+@decorators.validate(my_validator.validate_get_by_name)
+def get_by_name(etype, entity_name):
     """Gets an entity instance by it's name.
 
-    :param etype: A supported entity type.
-    :type etype: class
-
-    :param name: Name of entity.
-    :type name: str
+    :param class etype: A supported entity type.
+    :param unicode entity_name: Name of entity.
 
     :returns: Entity with matching name.
     :rtype: Sub-class of db.Entity
 
     """
-    return get_by_facet(etype, qfilter=etype.name==name)
+    return get_by_facet(etype, qfilter=etype.name==entity_name)
 
 
+@decorators.validate(my_validator.validate_get_count)
 def get_count(etype, qfilter=None):
     """Gets count of entity instances.
 
-    :param etype: A supported entity type.
-    :type etype: class
+    :param class etype: A supported entity type.
+    :param expression qfilter: Query filter expression.
 
     :returns: Entity collection count.
     :rtype: int
@@ -157,18 +168,50 @@ def get_count(etype, qfilter=None):
     """
     validator.validate_entity_type(etype)
 
-    q = session.query(etype)
+    qry = session.query(etype)
     if qfilter is not None:
-        q = q.filter(qfilter)
+        qry = qry.filter(qfilter)
 
-    return q.count()
+    return qry.count()
 
 
+@decorators.validate(my_validator.validate_exec_query)
+def get_random(etype):
+    """Returns a random instance.
+
+    :param class etype: Type of instance to be returned.
+
+    :returns: A random item from the cache.
+    :rtype: Sub-class of db.Entity
+
+    """
+    collection = get_all(etype)
+    if len(collection):
+        return collection[random.randint(0, len(collection) - 1)]
+
+
+@decorators.validate(my_validator.validate_get_random_sample)
+def get_random_sample(etype):
+    """Returns a random instance sample.
+
+    :param class etype: Type of instances to be returned.
+
+    :returns: A random sample from the db.
+    :rtype: list
+
+    """
+    collection = get_all(etype)
+    if len(collection):
+        return random.sample(collection, random.randint(1, len(collection)))
+
+    return []
+
+
+@decorators.validate(my_validator.validate_insert)
 def insert(entity):
     """Adds a newly created model to the session.
 
-    :param item: A supported entity instance.
-    :type item: Sub-class of db.Entity
+    :param db.Entity item: A supported entity instance.
 
     """
     session.add(entity)
@@ -176,70 +219,15 @@ def insert(entity):
     return entity
 
 
-def delete(entity):
-    """Marks entity instance for deletion.
+@decorators.validate(my_validator.validate_sort)
+def sort(etype, collection):
+    """Sorts collection via type sort key.
 
-    :param item: A supported entity instance.
-    :type item: Sub-class of db.Entity
+    :param class etype: A supported entity type.
+    :param iterable collection: Collection of entities.
 
-    """
-    session.delete(entity)
-
-
-def delete_all(etype):
-    """Deletes all entities of passed type.
-
-    :param etype: A supported entity type.
-    :type etype: class
+    :returns: Sorted collection.
+    :rtype: list
 
     """
-    validator.validate_entity_type(etype)
-
-    q = session.query(etype)
-    q.delete()
-
-
-def delete_by_facet(etype, expression):
-    """Delete entity instance by id.
-
-    :param etype: A supported entity type.
-    :type etype: class
-
-    :param facet: Entity facet.
-    :type facet: expression
-
-    :param facet: Entity facet value.
-    :type facet: object
-
-    """
-    validator.validate_entity_type(etype)
-
-    q = session.query(etype)
-    q = q.filter(expression)
-    q.delete()
-
-
-def delete_by_id(etype, id):
-    """Delete entity instance by id.
-
-    :param etype: A supported entity type.
-    :type etype: class
-
-    :param id: id of entity.
-    :type id: int
-
-    """
-    delete_by_facet(etype, etype.id==id)
-
-
-def delete_by_name(etype, name):
-    """Deletes an entity instance by it's name.
-
-    :param etype: A supported entity type.
-    :type etype: class
-
-    :param name: Name of entity.
-    :type name: str
-
-    """
-    delete_by_facet(etype, etype.name==name)
+    return [] if collection is None else etype.get_sorted(collection)

@@ -13,7 +13,7 @@
 
 """
 from prodiguer import cv
-from prodiguer.db.pgres import validator as validator
+from prodiguer.db.pgres import validator
 
 
 
