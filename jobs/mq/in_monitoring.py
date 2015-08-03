@@ -11,9 +11,7 @@
 
 
 """
-from prodiguer import mq
 from prodiguer import rt
-from prodiguer.utils import logger
 
 import in_monitoring_0000
 import in_monitoring_0100
@@ -25,9 +23,12 @@ import in_monitoring_2900
 import in_monitoring_3000
 import in_monitoring_3100
 import in_monitoring_3900
+import in_monitoring_4000
+import in_monitoring_4100
 import in_monitoring_4900
+import in_monitoring_8888
+import in_monitoring_9000
 import in_monitoring_9999
-import null_consumer
 
 
 # Map of sub-consumer types to sub-consumers.
@@ -48,17 +49,13 @@ _SUB_CONSUMERS = {
     '3100': in_monitoring_3100,
     '3900': in_monitoring_3900,
     # Command messages.
-    '4000': null_consumer,
-    '4100': null_consumer,
+    '4000': in_monitoring_4000,
+    '4100': in_monitoring_4100,
     '4900': in_monitoring_4900,
-    '9000': in_monitoring_4900,  # TODO-DEPRECATE
+    '9000': in_monitoring_9000,  # TODO-DEPRECATE
     # Other messages.
-    '8888': null_consumer
+    '8888': in_monitoring_8888
 }
-
-# Set of auotmatically loggable consumers.
-# N.B. these are used during development.
-_LOGGABLE_CONSUMERS = {}
 
 
 def get_tasks():
@@ -74,11 +71,6 @@ def _process(ctx):
     """
     # Decode message content.
     ctx.decode()
-
-    # Log significant messages.
-    if ctx.props.type in _LOGGABLE_CONSUMERS:
-        msg = "Processing message of type {}".format(ctx.props.type)
-        logger.log_mq(msg)
 
     # Set sub-consumer.
     sub_consumer = _SUB_CONSUMERS[ctx.props.type]

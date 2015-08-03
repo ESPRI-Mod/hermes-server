@@ -1,28 +1,32 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: run_in_monitoring_3000.py
+.. module:: in_monitoring_8888.py
    :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: Consumes monitoring 3000 messages.
+   :synopsis: Consumes monitoring 8888 messages.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
-from prodiguer import cv
 from prodiguer import mq
 
-import in_monitoring_job_start as base
+import utils
 
 
 
-# Set of tasks to be executed when processing a message.
-get_tasks = base.get_tasks
+def get_tasks():
+    """Returns set of tasks to be executed when processing a message.
+
+    """
+    return (
+      _unpack_message_content
+      )
 
 
-class ProcessingContextInfo(base.ProcessingContextInfo):
+class ProcessingContextInfo(mq.Message):
     """Message processing context information.
 
     """
@@ -33,4 +37,9 @@ class ProcessingContextInfo(base.ProcessingContextInfo):
         super(ProcessingContextInfo, self).__init__(
             props, body, decode=decode)
 
-        self.job_type = cv.constants.JOB_TYPE_POST_PROCESSING_FROM_CHECKER
+
+def _unpack_message_content(ctx):
+    """Unpacks message being processed.
+
+    """
+    pass
