@@ -30,7 +30,7 @@ def _SimulationUID():
     """Validates incoming simulation uid query parameter.
 
     """
-    def f(val):
+    def func(val):
         """Inner function.
 
         """
@@ -39,21 +39,21 @@ def _SimulationUID():
             raise ValueError("Simulation {0} not found".format(val))
         db.session.end()
 
-    return f
+    return func
 
 
 def _MonitoringTimeslice():
     """Validates incoming simulation timeslice query parameter.
 
     """
-    def f(val):
+    def func(val):
         """Inner function.
 
         """
-        if val not in ['2W', '1M', '2M', '3M', '6M', '12M', 'ALL']:
+        if val not in ['1W', '2W', '1M', '2M', '3M', '6M', '12M', 'ALL']:
             raise ValueError("Unsupported monitoring timeslice")
 
-    return f
+    return func
 
 
 def validate_event(handler):
