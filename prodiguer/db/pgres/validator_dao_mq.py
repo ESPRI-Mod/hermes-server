@@ -55,7 +55,7 @@ def validate_create_message_email(email_id):
     """Function input validator: create_message_email.
 
     """
-    msg_validator.validate_email_id(uid)
+    msg_validator.validate_email_id(email_id)
 
 
 def validate_is_duplicate(uid):

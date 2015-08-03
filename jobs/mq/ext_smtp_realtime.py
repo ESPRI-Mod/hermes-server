@@ -74,16 +74,17 @@ def _get_message(uid):
             )
 
 
-    def _get_body(uid):
+    def _get_body():
         """Message body factory.
 
         """
         return {u"email_uid": uid}
 
     _log("Dispatching email {0} to MQ server".format(uid))
+
     return mq.Message(_get_props(),
-                     _get_body(uid),
-                     mq.constants.EXCHANGE_PRODIGUER_EXT)
+                      _get_body(),
+                      mq.constants.EXCHANGE_PRODIGUER_EXT)
 
 
 def _enqueue_emails():
@@ -99,6 +100,7 @@ def _enqueue_emails():
     msg = "{0} new messages to be enqueued: {1}"
     msg = msg.format(len(uid_list), uid_list)
     _log(msg)
+
 
     # Enqueue emails upon MQ server.
     mq.produce((_get_message(uid) for uid in uid_list),
