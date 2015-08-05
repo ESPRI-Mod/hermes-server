@@ -162,7 +162,8 @@ def validate_persist_simulation_02(execution_end_date, is_error, uid):
 
     """
     validator.validate_bool(is_error, 'Is Error flag')
-    validator.validate_execution_end_date(execution_end_date)
+    if execution_end_date is not None:
+        validator.validate_execution_end_date(execution_end_date)
     validator.validate_simulation_uid(uid)
 
 

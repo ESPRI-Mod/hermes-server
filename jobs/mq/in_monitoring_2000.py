@@ -12,7 +12,6 @@
 
 """
 from prodiguer import cv
-from prodiguer import mq
 
 import in_monitoring_job_start as base
 

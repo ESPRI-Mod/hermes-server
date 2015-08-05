@@ -106,7 +106,7 @@ def _notify_api(ctx):
     """Dispatches API notification.
 
     """
-    # Skip if simulation start (000) message not received.
+    # Skip if simulation start (0000) message not received.
     simulation = db.dao_monitoring.retrieve_simulation(ctx.simulation_uid)
     if simulation is None:
         return
