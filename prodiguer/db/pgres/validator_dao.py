@@ -57,7 +57,7 @@ def validate_delete_all(etype):
     _validate_entity_type(etype)
 
 
-def validate_delete_by_facet(etype, filter_expression):
+def validate_delete_by_facet(etype, filter_expression=None):
     """Function input validator: delete_by_facet.
 
     """

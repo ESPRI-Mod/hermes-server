@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: run_pgres_reset_email_table.py
+.. module:: run_pgres_reset_env_metrics_table.py
    :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: Resets prodiguer mq.tbl_message_email table.
+   :synopsis: Resets prodiguer monitoring.tbl_environment_metric table.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
@@ -21,18 +21,18 @@ def _main():
     """Main entry point.
 
     """
-    logger.log_db("Reset email table begins")
+    logger.log_db("Reset environment metrics table begins")
 
     # Start session.
     db.session.start(config.db.pgres.main)
 
     # Delete all records in table.
-    db.dao.delete_all(db.types.MessageEmail)
+    db.dao.delete_all(db.types.EnvironmentMetric)
 
     # End session.
     db.session.end()
 
-    logger.log_db("Reset email table complete")
+    logger.log_db("Reset environment metrics table complete")
 
 
 if __name__ == '__main__':

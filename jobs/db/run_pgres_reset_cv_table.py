@@ -11,8 +11,6 @@
 
 
 """
-import sqlalchemy
-
 from prodiguer.db import pgres as db
 from prodiguer.utils import config
 from prodiguer.utils import logger

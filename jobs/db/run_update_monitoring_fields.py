@@ -18,6 +18,7 @@ import io
 import prodiguer.db.pgres as db
 
 
+
 def _decode_base64_card(card):
 	return base64.decodestring(card)
 
