@@ -97,7 +97,7 @@ class _EventManager(object):
 
         """
         self.request_data = json.loads(handler.request.body)
-        self.type = self.data['event_type']
+        self.type = self.request_data['event_type']
         self.data_factory = _EVENT_DATA_FACTORIES[self.type]
 
 
@@ -126,7 +126,7 @@ class EventRequestHandler(tornado.web.RequestHandler):
         try:
             # Instantiate event manager.
             event = _EventManager(self)
-            _log("{0} event received: {1}".format(event.type, event.data))
+            _log("{0} event received: {1}".format(event.type, event.request_data))
 
             # Only broadcast when there is data.
             data = event.get_websocket_data()
