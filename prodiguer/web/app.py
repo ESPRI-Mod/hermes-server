@@ -132,7 +132,7 @@ def run():
                       **_get_app_settings())
 
     # Listen.
-    app.listen(int(config.web.host.split(":")[1]))
+    app.listen(config.web.port)
 
     # Set web-socket keep alive.
     websockets.keep_alive()

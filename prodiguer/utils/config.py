@@ -17,6 +17,7 @@ import urllib
 from prodiguer.utils.convert import json_to_namedtuple
 
 
+
 # Environment variables to be injected into config.
 _ENV_VARS = {
 	# ... general variables
@@ -41,7 +42,7 @@ _ENV_VARS = {
 
 	# ... web server variables
 	"PRODIGUER_WEB_API_COOKIE_SECRET": None,
-	"PRODIGUER_WEB_HOST": "localhost:8888",
+	"PRODIGUER_WEB_PORT": "8888",
 	"PRODIGUER_WEB_URL": "https://prodiguer-test-web.ipsl.fr"
 }
 
