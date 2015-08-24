@@ -53,7 +53,7 @@ logging.getLogger("requests").setLevel(logging.ERROR)
 
 # Map of agent type keys to agent handlers.
 _AGENTS = {
-    # Production agents.
+    # Live agents.
     'ext-smtp': ext_smtp,
     'ext-smtp-realtime': ext_smtp_realtime,
     'internal-api': internal_api,
@@ -63,27 +63,27 @@ _AGENTS = {
     'in-metrics-env': in_metrics_env,
     'in-metrics-sim': in_metrics_sim,
     # Debug agents.
-    'in-monitoring-0000': in_monitoring_0000,
-    'in-monitoring-0100': in_monitoring_0100,
-    'in-monitoring-1000': in_monitoring_1000,
-    'in-monitoring-1100': in_monitoring_1100,
-    'in-monitoring-2000': in_monitoring_2000,
-    'in-monitoring-2100': in_monitoring_2100,
-    'in-monitoring-2900': in_monitoring_2900,
-    'in-monitoring-3000': in_monitoring_3000,
-    'in-monitoring-3100': in_monitoring_3100,
-    'in-monitoring-3900': in_monitoring_3900,
-    'in-monitoring-4000': in_monitoring_4000,
-    'in-monitoring-4100': in_monitoring_4100,
-    'in-monitoring-4900': in_monitoring_4900,
-    'in-monitoring-7000': in_metrics_env,
-    'in-monitoring-7100': in_metrics_sim,
-    'in-monitoring-8888': in_monitoring_8888,
-    'in-monitoring-9000': in_monitoring_9000,   # TODO - deprecate
-    'in-monitoring-9999': in_monitoring_9999,
+    'debug-ext-smtp': ext_smtp,
+    'debug-in-metrics-env': in_metrics_env,
+    'debug-in-metrics-sim': in_metrics_sim,
+    'debug-in-monitoring-0000': in_monitoring_0000,
+    'debug-in-monitoring-0100': in_monitoring_0100,
+    'debug-in-monitoring-1000': in_monitoring_1000,
+    'debug-in-monitoring-1100': in_monitoring_1100,
+    'debug-in-monitoring-2000': in_monitoring_2000,
+    'debug-in-monitoring-2100': in_monitoring_2100,
+    'debug-in-monitoring-2900': in_monitoring_2900,
+    'debug-in-monitoring-3000': in_monitoring_3000,
+    'debug-in-monitoring-3100': in_monitoring_3100,
+    'debug-in-monitoring-3900': in_monitoring_3900,
+    'debug-in-monitoring-4000': in_monitoring_4000,
+    'debug-in-monitoring-4100': in_monitoring_4100,
+    'debug-in-monitoring-4900': in_monitoring_4900,
+    'debug-in-monitoring-8888': in_monitoring_8888,
+    'debug-in-monitoring-9000': in_monitoring_9000,   # TODO - deprecate
+    'debug-in-monitoring-9999': in_monitoring_9999,
     'debug-internal-api': internal_api,
     'debug-internal-cv': internal_cv,
-    'debug-ext-smtp': ext_smtp
 }
 
 
