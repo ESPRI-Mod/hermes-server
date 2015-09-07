@@ -50,7 +50,7 @@ def _main():
         setup(config.db.pgres.main.replace(_DB_USER, _DB_USER_ADMIN))
     except sqlalchemy.exc.ProgrammingError as err:
         print err
-        logger.log_db_error("SETUP ERROR : are db connections still open ? : db = {0}".format(connection))
+        logger.log_db_error("SETUP ERROR : are db connections still open ?")
 
 
 
