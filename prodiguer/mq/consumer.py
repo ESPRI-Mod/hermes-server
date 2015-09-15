@@ -117,7 +117,7 @@ class Consumer(object):
 
         # Open up a non-blocking connection.
         return pika.SelectConnection(
-            pika.URLParameters(str(self._url)),
+            pika.URLParameters(self._url),
             self._on_connection_open,
             stop_ioloop_on_close=self._stop_ioloop_on_disconnect
             )

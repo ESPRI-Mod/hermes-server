@@ -42,6 +42,23 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
             return db.utils.get_collection(factory(start_date))
 
 
+        def _get_job_history():
+            """Returns jobs data for front-end.
+
+            """
+            jobs = _get_data(db.dao_monitoring.retrieve_active_jobs)
+
+            # Delete unecessary fields in order to reduce payload size.
+            for job in [j for j in jobs if j['typeof'] == 'computing']:
+                del job['post_processing_name']
+                del job['post_processing_date']
+                del job['post_processing_dimension']
+                del job['post_processing_component']
+                del job['post_processing_file']
+
+            return jobs
+
+
         def _decode_request():
             """Decodes request.
 
@@ -71,12 +88,12 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
             """
             db.session.start()
             self.output = {
-                'job_history':
-                    _get_data(db.dao_monitoring.retrieve_active_jobs),
+                'job_history': _get_job_history(),
                 'simulation_list':
                     _get_data(db.dao_monitoring.retrieve_active_simulations)
             }
             db.session.end()
+
 
         # Invoke tasks.
         self.invoke(rv.validate_fetch_timeslice, [

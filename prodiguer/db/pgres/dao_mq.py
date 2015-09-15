@@ -42,7 +42,7 @@ def create_message(
     :param str user_id: Message user id, e.g. libl-igcm-user.
     :param str app_id: Message application id, e.g. smon.
     :param str producer_id: Message producer id, e.g. libigcm.
-    :param str type_id: Message type id, e.g. 1001000.
+    :param str type_id: Message type id, e.g. 0000.
     :param str name: Message content.
     :param str content_encoding: Message content encoding, e.g. utf-8.
     :param str content_type: Message content type, e.g. application/json.

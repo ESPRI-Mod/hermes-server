@@ -33,21 +33,38 @@ def validate_exists(uid):
 
 def validate_persist_job_01(
     accounting_project,
-    expected_completion_delay,
+    warning_delay,
     execution_start_date,
-    typeof,
+    job_type,
     job_uid,
-    simulation_uid
+    simulation_uid,
+    is_startup = False,
+    post_processing_name = None,
+    post_processing_date = None,
+    post_processing_dimension = None,
+    post_processing_component = None,
+    post_processing_file = None
     ):
     """Function input validator: persist_job_01.
 
     """
     validator.validate_accounting_project(accounting_project)
-    validator.validate_expected_completion_delay(expected_completion_delay)
+    validator.validate_job_warning_delay(warning_delay)
     validator.validate_execution_start_date(execution_start_date)
-    cv.validator.validate_job_type(typeof)
+    cv.validator.validate_job_type(job_type)
     validator.validate_job_uid(job_uid)
     validator.validate_simulation_uid(simulation_uid)
+    validator.validate_bool(is_startup, 'Is start up flag')
+    if post_processing_name is not None:
+        pass
+    if post_processing_date is not None:
+        pass
+    if post_processing_dimension is not None:
+        pass
+    if post_processing_component is not None:
+        pass
+    if post_processing_file is not None:
+        pass
 
 
 def validate_persist_job_02(

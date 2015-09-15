@@ -22,12 +22,11 @@ from prodiguer.utils import convert
 
 class Message(object):
     """Wraps a message either being consumed or produced."""
-    def __init__(self, props, content, exchange=None, decode=False):
+    def __init__(self, props, content, decode=False):
         """Constructor.
 
         :param pika.BasicProperties props: Set of AMPQ properties associated with the message.
         :param object content: Message content.
-        :param str exchange: An AMPQ message exchange.
         :param bool decode: Flag indicating whether message payload is to be decoded.
 
         """
@@ -36,7 +35,7 @@ class Message(object):
         self.content = content
         self.content_raw = content
         self.content_type = props.content_type
-        self.exchange = exchange
+        self.exchange = constants.MESSAGE_TYPE_EXCHANGE[props.type]
         self.msg = None
         self.props = self.properties = props
         self.routing_key = "{0}.{1}.{2}.{3}.{4}".format(config.deploymentMode,

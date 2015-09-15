@@ -342,20 +342,32 @@ def persist_simulation_configuration(uid, card):
 @decorators.validate(validator.validate_persist_job_01)
 def persist_job_01(
     accounting_project,
-    expected_completion_delay,
+    warning_delay,
     execution_start_date,
-    typeof,
+    job_type,
     job_uid,
-    simulation_uid
+    simulation_uid,
+    is_startup = False,
+    post_processing_name = None,
+    post_processing_date = None,
+    post_processing_dimension = None,
+    post_processing_component = None,
+    post_processing_file = None
     ):
     """Persists job information to db.
 
     :param str accounting_project: Name of associated accounting project.
-    :param int expected_completion_delay: Delay before job completion is considered to be late.
+    :param int warning_delay: Delay before a job is considered to be late.
     :param datetime execution_start_date: Simulation start date.
-    :param str typeof: Job type.
+    :param str job_type: Job type.
     :param str job_uid: Job UID.
     :param str simulation_uid: Simulation UID.
+    :param bool is_startup: Flag indicating whether the job is a simulation start up or not.
+    :param str post_processing_name: Post processing job name.
+    :param str post_processing_date: Post processing job name.
+    :param str post_processing_dimension: Post processing job name.
+    :param str post_processing_component: Post processing job name.
+    :param str post_processing_file: Post processing job name.
 
     :returns: Either a new or an updated job instance.
     :rtype: types.Job
@@ -368,14 +380,27 @@ def persist_job_01(
         if accounting_project:
             instance.accounting_project = unicode(accounting_project)
         instance.execution_start_date = execution_start_date
-        instance.typeof = unicode(typeof)
+        instance.typeof = unicode(job_type)
         instance.job_uid = unicode(job_uid)
         instance.simulation_uid = unicode(simulation_uid)
-        if expected_completion_delay:
-            instance.expected_execution_end_date = \
-                execution_start_date + \
-                datetime.timedelta(seconds=int(expected_completion_delay))
-            instance.set_was_late_flag()
+
+        # ... warning delay related
+        instance.warning_delay = int(warning_delay)
+        instance.expected_execution_end_date = \
+            execution_start_date + \
+            datetime.timedelta(seconds=int(warning_delay))
+        instance.set_was_late_flag()
+
+        # ... compute specific fields.
+        instance.is_startup = is_startup
+
+        # ... post processing specific fields
+        instance.post_processing_name = post_processing_name
+        instance.post_processing_date = post_processing_date
+        instance.post_processing_dimension = post_processing_dimension
+        instance.post_processing_component = post_processing_component
+        instance.post_processing_file = post_processing_file
+
 
     return _persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 

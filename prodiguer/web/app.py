@@ -97,7 +97,7 @@ def _get_app_settings():
     }
 
 
-def _get_app_debug_mode():
+def _is_in_debug_mode():
     """Returns app debug mode.
 
     """
@@ -128,7 +128,7 @@ def run():
 
     # Instantiate.
     app = Application(_get_app_routes(),
-                      debug=_get_app_debug_mode(),
+                      debug=_is_in_debug_mode(),
                       **_get_app_settings())
 
     # Listen.

@@ -63,12 +63,19 @@ class Job(Entity):
     simulation_uid = Column(Unicode(63))
     job_uid = Column(Unicode(63), nullable=False, unique=True)
     accounting_project = Column(Unicode(511))
+    execution_end_date = Column(DateTime)
     execution_start_date = Column(DateTime)
     expected_execution_end_date = Column(DateTime)
-    execution_end_date = Column(DateTime)
     is_error = Column(Boolean, default=False)
     typeof = Column(Unicode(63))
     was_late = Column(Boolean)
+    warning_delay = Column(Integer)
+    is_startup = Column(Boolean, default=False)
+    post_processing_name = Column(Unicode(63))
+    post_processing_date = Column(DateTime)
+    post_processing_dimension = Column(Unicode(63))
+    post_processing_component = Column(Unicode(63))
+    post_processing_file = Column(Unicode(127))
 
 
     def set_was_late_flag(self):

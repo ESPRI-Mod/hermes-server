@@ -17,6 +17,7 @@ import pika
 import sqlalchemy
 
 from prodiguer.db import pgres as db
+from prodiguer.mq import constants
 from prodiguer.mq import defaults
 from prodiguer.mq import message
 from prodiguer.mq import validator
@@ -30,7 +31,6 @@ from prodiguer.utils import logger
 def create_ampq_message_properties(
     user_id,
     producer_id,
-    app_id,
     message_type,
     message_id=None,
     headers=None,
@@ -42,13 +42,13 @@ def create_ampq_message_properties(
     expiration=None,
     priority=defaults.DEFAULT_PRIORITY,
     reply_to=None,
-    timestamp=None
+    timestamp=None,
+    delay_in_ms=None
     ):
     """Factory function to return set of AMQP message properties.
 
     :param str user_id: ID of AMPQ user account under which messages are being dispatched.
     :param str producer_id: Message producer identifier.
-    :param str app_id: Message application identifier.
     :param str message_type: Message type identifier.
     :param uuid message_id: Message unique identifier.
     :param dict headers: Custom message headers.
@@ -61,6 +61,7 @@ def create_ampq_message_properties(
     :param int priority: Messaging priority.
     :param str reply_to: Messaging RPC callback.
     :param str timestamp: Timestamp.
+    :param int delay_in_ms: Delay (in milliseconds) before message is routed.
 
     :returns pika.BasicProperties: Set of AMPQ message basic properties.
 
@@ -72,7 +73,6 @@ def create_ampq_message_properties(
         message_id = unicode(uuid.uuid4())
 
     # Validate inputs.
-    validator.validate_app_id(app_id)
     validator.validate_cluster_id(cluster_id)
     validator.validate_content_encoding(content_encoding)
     validator.validate_content_type(content_type)
@@ -105,6 +105,9 @@ def create_ampq_message_properties(
     # Set other headers.
     if 'producer_id' not in headers:
         headers['producer_id'] = producer_id
+    if delay_in_ms is not None:
+        headers['x-delay'] = delay_in_ms
+
 
     # Remove null headers.
     for key, value in headers.iteritems():
@@ -113,7 +116,7 @@ def create_ampq_message_properties(
 
     # Return a pika BasicProperties instance (follows AMPQ protocol).
     return pika.BasicProperties(
-        app_id=app_id,
+        app_id=constants.MESSAGE_TYPE_APPLICATION[message_type],
         cluster_id=cluster_id,
         content_type=content_type,
         content_encoding=content_encoding,

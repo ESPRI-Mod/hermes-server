@@ -30,8 +30,8 @@ def test_cc_smon_messages():
     """Test simulation monitoring messages"""
     # Map of event types to message types.
     msg_types = {
-        'new': constants.TYPE_SMON_1000,
-        'state_change': constants.TYPE_SMON_2000
+        'new': constants.MESSAGE_TYPE_1000,
+        'state_change': constants.MESSAGE_TYPE_2000
     }
 
     # Map of event types to content keys.

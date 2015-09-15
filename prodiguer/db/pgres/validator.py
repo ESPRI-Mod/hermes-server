@@ -294,11 +294,11 @@ def validate_job_state_info(info):
         raise TypeError('Job state info is undefined')
 
 
-def validate_expected_completion_delay(delay):
-    """Validates an expected completion transition delay time step.
+def validate_job_warning_delay(delay):
+    """Validates a job warning delay time step.
 
-    :param int delay: Number of seconds before a completion warning needs to be raised.
+    :param int delay: Number of seconds before a job warning needs to be raised.
 
     """
     if delay:
-        validate_int(delay, "Expected completion delay")
+        validate_int(delay, "Job warning delay")

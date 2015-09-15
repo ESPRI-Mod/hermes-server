@@ -75,7 +75,7 @@ def invoke(tasks, ctx=None, module="**"):
             break
 
 
-def invoke_mq(agent_type, tasks, error_tasks=None, ctx=None):
+def invoke_mq(agent_type, tasks, error_tasks, ctx):
     """Invokes a set of message queue tasks and handles errors.
 
     :param str: MQ agent type.
