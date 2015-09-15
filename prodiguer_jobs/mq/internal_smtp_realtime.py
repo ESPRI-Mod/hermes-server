@@ -13,7 +13,6 @@
 """
 import time
 
-
 import sqlalchemy
 
 from prodiguer import config
@@ -67,10 +66,9 @@ def _get_message(uid):
 
         """
         return mq.create_ampq_message_properties(
-            user_id = mq.constants.USER_IGCM,
+            user_id = mq.constants.USER_PRODIGUER,
             producer_id = mq.constants.PRODUCER_IGCM,
-            app_id = mq.constants.APP_MONITORING,
-            message_type = mq.constants.TYPE_GENERAL_SMTP
+            message_type = mq.constants.MESSAGE_TYPE_SMTP
             )
 
 
@@ -82,9 +80,7 @@ def _get_message(uid):
 
     _log("Dispatching email {0} to MQ server".format(uid))
 
-    return mq.Message(_get_props(),
-                      _get_body(),
-                      mq.constants.EXCHANGE_PRODIGUER_EXT)
+    return mq.Message(_get_props(), _get_body())
 
 
 def _enqueue_emails():
@@ -104,7 +100,7 @@ def _enqueue_emails():
 
     # Enqueue emails upon MQ server.
     mq.produce((_get_message(uid) for uid in uid_list),
-               connection_url=config.mq.connections.libigcm)
+               connection_url=config.mq.connections.main)
 
 
 def _requires_imap_reconnect(idle_response):

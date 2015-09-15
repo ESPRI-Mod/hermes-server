@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: in_monitoring_job_end.py
+.. module:: supervisor_8100.py
    :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: Consumes monitoring job end messages.
+   :synopsis: Consumes supervisor 8100 messages.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
 from prodiguer import mq
-from prodiguer.db.pgres import dao_monitoring as dao
-
-import utils
+from prodiguer_jobs.mq import utils
 
 
 
@@ -24,8 +22,9 @@ def get_tasks():
     """
     return (
       _unpack_message_content,
-      _persist_job_updates,
-      _notify_api
+      _set_script,
+      _format_script,
+      _enqueue_supervisor_dispatch
       )
 
 
@@ -48,38 +47,29 @@ def _unpack_message_content(ctx):
     """Unpacks message being processed.
 
     """
-    ctx.job_uid = ctx.content['jobuid']
-    ctx.simulation_uid = ctx.content['simuid']
+    ctx.job_uid = ctx.content['job_uid']
+    ctx.simulation_uid = ctx.content['simulation_uid']
 
 
-def _persist_job_updates(ctx):
-    """Persists job updates to dB.
-
-    """
-    dao.persist_job_02(
-        ctx.msg.timestamp,
-        False,
-        ctx.job_uid,
-        ctx.simulation_uid
-        )
-
-
-def _notify_api(ctx):
-    """Dispatches API notification.
+def _set_script(ctx):
+    """Sets the script for the job to be executed at the compute node.
 
     """
-    # Skip if simulation messages have not yet been received.
-    simulation = dao.retrieve_simulation(ctx.simulation_uid)
-    if simulation is None:
-        return
+    pass
 
-    # Skip if simulation is obsolete (i.e. it was restarted).
-    if simulation.is_obsolete:
-        return
 
-    # Enqueue API notification.
-    utils.enqueue(mq.constants.TYPE_GENERAL_API, {
-        "event_type": u"job_complete",
+def _format_script(ctx):
+    """Formats the script for the job to be executed at the compute node.
+
+    """
+    pass
+
+
+def _enqueue_supervisor_dispatch(ctx):
+    """Places a message upon the supervisor dispatch queue.
+
+    """
+    utils.enqueue(mq.constants.MESSAGE_TYPE_8200, {
         "job_uid": unicode(ctx.job_uid),
         "simulation_uid": unicode(ctx.simulation_uid)
     })

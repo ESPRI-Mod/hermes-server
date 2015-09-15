@@ -14,8 +14,6 @@
 from prodiguer import mq
 from prodiguer.db import pgres as db
 
-import utils
-
 
 
 def get_tasks():

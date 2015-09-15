@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: run_in_monitoring_0100.py
+.. module:: run_in_monitoring_9999.py
    :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: Consumes monitoring 0100 messages.
+   :synopsis: Consumes monitoring 9999 messages.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
+
 
 """
 from prodiguer import mq
 from prodiguer.db.pgres import dao_monitoring as dao
-
-import utils
+from prodiguer_jobs.mq import utils
 
 
 
@@ -25,8 +25,8 @@ def get_tasks():
         _unpack_message_content,
         _persist_simulation_updates,
         _persist_job,
-        _notify_api
-    )
+        _enqueue_front_end_notification
+        )
 
 
 class ProcessingContextInfo(mq.Message):
@@ -37,7 +37,8 @@ class ProcessingContextInfo(mq.Message):
         """Object constructor.
 
         """
-        super(ProcessingContextInfo, self).__init__(props, body, decode=decode)
+        super(ProcessingContextInfo, self).__init__(
+            props, body, decode=decode)
 
         self.job_uid = None
         self.simulation = None
@@ -58,7 +59,7 @@ def _persist_simulation_updates(ctx):
     """
     ctx.simulation = dao.persist_simulation_02(
         ctx.msg.timestamp,
-        False,
+        True,
         ctx.simulation_uid
         )
 
@@ -69,14 +70,14 @@ def _persist_job(ctx):
     """
     dao.persist_job_02(
         ctx.msg.timestamp,
-        False,
+        True,
         ctx.job_uid,
         ctx.simulation_uid
         )
 
 
-def _notify_api(ctx):
-    """Dispatches API notification.
+def _enqueue_front_end_notification(ctx):
+    """Places a message upon the front-end notification queue.
 
     """
     # Skip if the 0000 message has not yet been received.
@@ -88,8 +89,7 @@ def _notify_api(ctx):
     if ctx.simulation.uid != active_simulation.uid:
         return
 
-    # Enqueue API notification.
-    utils.enqueue(mq.constants.TYPE_GENERAL_API, {
-        "event_type": u"simulation_complete",
+    utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
+        "event_type": u"simulation_error",
         "simulation_uid": unicode(ctx.simulation_uid)
     })

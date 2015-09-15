@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: run_in_monitoring_4900.py
+.. module:: monitoring_job_error.py
    :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: Consumes monitoring 4900 messages: pop stack failure.
+   :synopsis: Consumes monitoring job fail messages.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
@@ -13,8 +13,7 @@
 """
 from prodiguer import mq
 from prodiguer.db.pgres import dao_monitoring as dao
-
-import utils
+from prodiguer_jobs.mq import utils
 
 
 
@@ -25,7 +24,7 @@ def get_tasks():
     return (
       _unpack_message_content,
       _persist_job_updates,
-      _notify_api
+      _enqueue_front_end_notification
       )
 
 
@@ -42,6 +41,7 @@ class ProcessingContextInfo(mq.Message):
 
         self.job = None
         self.job_uid = None
+        self.simulation = None
         self.simulation_uid = None
 
 
@@ -57,25 +57,32 @@ def _persist_job_updates(ctx):
     """Persists job updates to dB.
 
     """
+    # Retrieve job.
     job = dao.retrieve_job(ctx.job_uid)
-    if not job or job.is_error == False:
-        ctx.job = dao.persist_job_02(
-            ctx.msg.timestamp,
-            True,
-            ctx.job_uid,
-            ctx.simulation_uid
-            )
+
+    # Escape if job already in error state.
+    if job and job.is_error:
+        ctx.abort = True
+        return
+
+    # Update job.
+    ctx.job = dao.persist_job_02(
+        ctx.msg.timestamp,
+        True,
+        ctx.job_uid,
+        ctx.simulation_uid
+        )
 
 
-def _notify_api(ctx):
-    """Dispatches API notification.
+def _enqueue_front_end_notification(ctx):
+    """Places a message upon the front-end notification queue.
 
     """
-    # Skip if job error has already been raised.
+    # Skip if job already in error state.
     if ctx.job is None:
         return
 
-    # Skip if simulation messages have not yet been received.
+    # Skip if simulation start (0000) message not received.
     simulation = dao.retrieve_simulation(ctx.simulation_uid)
     if simulation is None:
         return
@@ -84,8 +91,7 @@ def _notify_api(ctx):
     if simulation.is_obsolete:
         return
 
-    # Enqueue API notification.
-    utils.enqueue(mq.constants.TYPE_GENERAL_API, {
+    utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
         "event_type": u"job_error",
         "job_uid": unicode(ctx.job_uid),
         "simulation_uid": unicode(ctx.simulation_uid)

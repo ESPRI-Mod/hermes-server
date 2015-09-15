@@ -32,7 +32,8 @@ _parser.add_argument(
     help="Web service endpoint",
     dest="endpoint",
     type=str,
-    default=r'https://prodiguer-test-web.ipsl.fr/api/1/simulation/monitoring/event'
+    # default=r'https://prodiguer-test-web.ipsl.fr/api/1/simulation/monitoring/event'
+    default=r'http://localhost:8888/api/1/simulation/monitoring/event'
     )
 _parser.add_argument(
     "-sim", "--simulation-uid",
@@ -108,23 +109,13 @@ def _publish_1100(args):
     })
 
 
-def _publish_4900(args):
-    """Job error."""
-    return _invoke(args.endpoint, payload={
-        "event_type": u"job_error",
-        "job_uid": args.job_uid,
-        "simulation_uid": args.simulation_uid
-    })
-
-
 # Set of publishers keyed by message type.
 _PUBLISHERS = {
     '0000': _publish_0000,
     '0100': _publish_0100,
     '9999': _publish_9999,
     '1000': _publish_1000,
-    '1100': _publish_1100,
-    '4900': _publish_4900
+    '1100': _publish_1100
 }
 
 

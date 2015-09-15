@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: in_monitoring_job_start.py
+.. module:: monitoring_job_start.py
    :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
@@ -15,9 +15,23 @@ from prodiguer import cv
 from prodiguer import mq
 from prodiguer.db import pgres as db
 from prodiguer.utils import config
+from prodiguer_jobs.mq import utils
 
-import utils
 
+
+# Map of job types to warning delay message types.
+_WARNING_DELAY_MESSAGE_TYPES = {
+    cv.constants.JOB_TYPE_COMPUTING: mq.constants.MESSAGE_TYPE_1199,
+    cv.constants.JOB_TYPE_POST_PROCESSING: mq.constants.MESSAGE_TYPE_2199,
+    cv.constants.JOB_TYPE_POST_PROCESSING_FROM_CHECKER: mq.constants.MESSAGE_TYPE_3199
+}
+
+# Map of message to job types.
+_MESSAGE_JOB_TYPES = {
+    mq.constants.MESSAGE_TYPE_1000: cv.constants.JOB_TYPE_COMPUTING,
+    mq.constants.MESSAGE_TYPE_2000: cv.constants.JOB_TYPE_POST_PROCESSING,
+    mq.constants.MESSAGE_TYPE_3000: cv.constants.JOB_TYPE_POST_PROCESSING_FROM_CHECKER
+}
 
 
 def get_tasks():
@@ -29,7 +43,8 @@ def get_tasks():
         _unpack_message_content,
         _persist_job,
         _persist_simulation_updates,
-        _notify_api
+        _enqueue_job_warning_delay,
+        _enqueue_front_end_notification
     ]
 
 
@@ -45,10 +60,15 @@ class ProcessingContextInfo(mq.Message):
             props, body, decode=decode)
 
         self.accounting_project = None
-        self.job_type = None
+        self.job_type = _MESSAGE_JOB_TYPES[self.props.type]
         self.job_uid = None
         self.job_warning_delay = None
         self.simulation_uid = None
+        self.pp_name = None
+        self.pp_date = None
+        self.pp_dimension = None
+        self.pp_component = None
+        self.pp_file = None
 
 
 def _drop_obsoletes(ctx):
@@ -70,6 +90,11 @@ def _unpack_message_content(ctx):
     ctx.job_warning_delay = ctx.content.get(
         'jobWarningDelay', config.apps.monitoring.defaultJobWarningDelayInSeconds)
     ctx.simulation_uid = ctx.content['simuid']
+    ctx.pp_name = ctx.content.get('postProcessingName')
+    ctx.pp_date = ctx.content.get('postProcessingDate')
+    ctx.pp_dimension = ctx.content.get('postProcessingDimn')
+    ctx.pp_component = ctx.content.get('postProcessingComp')
+    ctx.pp_file = ctx.content.get('postProcessingFile')
 
 
 def _persist_job(ctx):
@@ -82,7 +107,12 @@ def _persist_job(ctx):
         ctx.msg.timestamp,
         ctx.job_type,
         ctx.job_uid,
-        ctx.simulation_uid
+        ctx.simulation_uid,
+        post_processing_name = ctx.pp_name,
+        post_processing_date = ctx.pp_date,
+        post_processing_dimension = ctx.pp_dimension,
+        post_processing_component = ctx.pp_component,
+        post_processing_file = ctx.pp_file
         )
 
 
@@ -102,8 +132,23 @@ def _persist_simulation_updates(ctx):
         )
 
 
-def _notify_api(ctx):
-    """Dispatches API notification.
+def _enqueue_job_warning_delay(ctx):
+    """Places a delayed message indicating the amount of time before the job is considered to be late.
+
+    """
+    utils.enqueue(
+        _WARNING_DELAY_MESSAGE_TYPES[ctx.job_type],
+        # delay_in_ms = ctx.job_warning_delay * 1000,
+        delay_in_ms = 5000,
+        payload={
+            "simulation_uid": ctx.simulation_uid,
+            "job_uid": ctx.job_uid
+        }
+    )
+
+
+def _enqueue_front_end_notification(ctx):
+    """Places a message upon the front-end notification queue.
 
     """
     # Skip if simulation start (0000) message not received.
@@ -115,8 +160,7 @@ def _notify_api(ctx):
     if simulation.is_obsolete:
         return
 
-    # Enqueue API notification.
-    utils.enqueue(mq.constants.TYPE_GENERAL_API, {
+    utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
         "event_type": u"job_start",
         "job_uid": unicode(ctx.job_uid),
         "simulation_uid": unicode(ctx.simulation_uid)

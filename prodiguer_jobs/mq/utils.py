@@ -25,7 +25,8 @@ def enqueue(
     payload=None,
     mq_user_id=mq.constants.USER_PRODIGUER,
     mq_producer_id = mq.constants.PRODUCER_PRODIGUER,
-    mq_app_id = mq.constants.APP_MONITORING
+    mq_exchange=mq.constants.EXCHANGE_PRODIGUER_SECONDARY,
+    delay_in_ms=None
     ):
     """Enqueues a message upon MQ server.
 
@@ -33,7 +34,7 @@ def enqueue(
     :param dict payload: Message payload.
     :param str mq_user_id: MQ server user id, e.g. prodiguer-mq-user.
     :param str mq_producer_id: MQ server producer id, e.g. lilIGCM.
-    :param str mq_app_id: MQ server app id, e.g. monitoring.
+    :param int delay_in_ms: Delay (in milliseconds) before message is routed.
 
     """
     def _get_msg_props():
@@ -43,18 +44,15 @@ def enqueue(
         return mq.utils.create_ampq_message_properties(
             user_id = mq_user_id,
             producer_id = mq_producer_id,
-            app_id = mq_app_id,
-            message_type = message_type
+            message_type = message_type,
+            delay_in_ms = delay_in_ms
             )
-
 
     def _yield_message():
         """Yeild a mesage to be enqueued.
 
         """
-        yield mq.Message(_get_msg_props(),
-                         payload or {},
-                         mq.constants.EXCHANGE_PRODIGUER_INTERNAL)
+        yield mq.Message(_get_msg_props(), payload or {})
 
     mq.produce(_yield_message)
 

@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: in_monitoring_4100.py
+.. module:: supervisor_8000.py
    :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: Consumes monitoring 4100 messages.
+   :synopsis: Consumes supervisor 8000 messages.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
 from prodiguer import mq
-
-import utils
+from prodiguer_jobs.mq import utils
 
 
 
@@ -22,7 +21,9 @@ def get_tasks():
 
     """
     return (
-      _unpack_message_content
+      _unpack_message_content,
+      _verify_supervision,
+      _enqueue_supervisor_format
       )
 
 
@@ -37,9 +38,30 @@ class ProcessingContextInfo(mq.Message):
         super(ProcessingContextInfo, self).__init__(
             props, body, decode=decode)
 
+        self.job_uid = None
+        self.simulation_uid = None
+
 
 def _unpack_message_content(ctx):
     """Unpacks message being processed.
 
     """
+    ctx.job_uid = ctx.content['job_uid']
+    ctx.simulation_uid = ctx.content['simulation_uid']
+
+
+def _verify_supervision(ctx):
+    """Verifies that supervision is required.
+
+    """
     pass
+
+
+def _enqueue_supervisor_format(ctx):
+    """Places a message upon the supervisor format queue.
+
+    """
+    utils.enqueue(mq.constants.MESSAGE_TYPE_8100, {
+        "job_uid": unicode(ctx.job_uid),
+        "simulation_uid": unicode(ctx.simulation_uid)
+    })

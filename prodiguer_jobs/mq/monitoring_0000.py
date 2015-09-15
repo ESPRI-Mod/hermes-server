@@ -19,8 +19,7 @@ from prodiguer import mq
 from prodiguer.db import pgres as db
 from prodiguer.utils import config
 from prodiguer.utils import logger
-
-import utils
+from prodiguer_jobs.mq import utils
 
 
 
@@ -35,11 +34,12 @@ def get_tasks():
         _persist_cv_terms_to_fs,
         _persist_cv_terms_to_db,
         _persist_simulation,
-        _set_active_simulation,
+        _persist_active_simulation,
         _persist_simulation_configuration,
         _persist_job,
-        _push_cv_terms,
-        _notify_api
+        _enqueue_job_warning_delay,
+        _enqueue_cv_terms_commit,
+        _enqueue_front_end_notification
         )
 
 
@@ -224,7 +224,7 @@ def _persist_simulation(ctx):
         )
 
 
-def _set_active_simulation(ctx):
+def _persist_active_simulation(ctx):
     """Sets the so-called active simulation.
 
     """
@@ -256,12 +256,28 @@ def _persist_job(ctx):
         ctx.msg.timestamp,
         ctx.job_type,
         ctx.job_uid,
-        ctx.simulation_uid
+        ctx.simulation_uid,
+        is_startup = True
         )
 
 
-def _push_cv_terms(ctx):
-    """Pushes new CV terms to remote GitHub repo.
+def _enqueue_job_warning_delay(ctx):
+    """Places a delayed message indicating the amount of time before the job is considered to be late.
+
+    """
+    utils.enqueue(
+        mq.constants.MESSAGE_TYPE_1199,
+        # delay_in_ms = ctx.job_warning_delay * 1000,
+        delay_in_ms=5000,
+        payload={
+            "simulation_uid": ctx.simulation_uid,
+            "job_uid": ctx.job_uid
+        }
+    )
+
+
+def _enqueue_cv_terms_commit(ctx):
+    """Places a message upon the new cv terms notification queue.
 
     """
     # Skip if unnecessary.
@@ -269,15 +285,14 @@ def _push_cv_terms(ctx):
         return
 
     # Enqueue CV notification.
-    utils.enqueue(mq.constants.TYPE_GENERAL_CV)
+    utils.enqueue(mq.constants.MESSAGE_TYPE_CV)
 
 
-def _notify_api(ctx):
-    """Dispatches API notification.
+def _enqueue_front_end_notification(ctx):
+    """Places a message upon the front-end notification queue.
 
     """
-    # Enqueue API notification.
-    utils.enqueue(mq.constants.TYPE_GENERAL_API, {
+    utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
         "event_type": u"simulation_start",
         "cv_terms": db.utils.get_collection(ctx.cv_terms_persisted_to_db),
         "simulation_uid": ctx.active_simulation.uid

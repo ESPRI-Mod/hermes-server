@@ -19,9 +19,7 @@ import uuid
 
 import prodiguer_client
 from prodiguer import mq
-from prodiguer.db import pgres as db
-
-import utils
+from prodiguer_jobs.mq import utils
 
 
 

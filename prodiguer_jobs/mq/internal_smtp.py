@@ -19,7 +19,6 @@ import uuid
 from prodiguer import config
 from prodiguer import mail
 from prodiguer import mq
-from prodiguer.db import pgres as db
 from prodiguer.utils import logger
 
 
@@ -218,7 +217,6 @@ def _process_attachments(ctx):
         return
 
     # Escape if attachment is not associated with a single message.
-    # TODO emit warning
     if len(ctx.messages_dict) != 1:
         return
 
@@ -244,13 +242,12 @@ def _set_messages_ampq(ctx):
         timestamp = mq.Timestamp.from_ns(data['msgTimestamp'])
 
         return mq.utils.create_ampq_message_properties(
-            user_id = mq.constants.USER_IGCM,
-            producer_id = data['msgProducer'],
-            app_id = data['msgApplication'],
-            message_id = data['msgUID'],
-            message_type = data['msgCode'],
-            timestamp = timestamp.as_ms_int,
-            headers = {
+            user_id=mq.constants.USER_PRODIGUER,
+            producer_id=data['msgProducer'],
+            message_id=data['msgUID'],
+            message_type=data['msgCode'],
+            timestamp=timestamp.as_ms_int,
+            headers={
                 'timestamp': unicode(timestamp.as_ns_raw),
                 'timestamp_precision': u'ns',
                 'correlation_id_1': data.get('simuid'),
@@ -271,9 +268,7 @@ def _set_messages_ampq(ctx):
 
         """
         try:
-            return mq.Message(_get_ampq_props(data),
-                              _get_ampq_payload(data),
-                              mq.constants.EXCHANGE_PRODIGUER_IN)
+            return mq.Message(_get_ampq_props(data), _get_ampq_payload(data))
         except Exception as err:
             return data, err
 
@@ -290,7 +285,7 @@ def _dispatch(ctx):
 
     """
     mq.produce(ctx.messages_ampq,
-               connection_url=config.mq.connections.libigcm)
+               connection_url=config.mq.connections.main)
 
 
 def _dequeue_email(ctx):

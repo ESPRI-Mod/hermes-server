@@ -11,9 +11,7 @@
 
 
 """
-from prodiguer import mq
-
-import utils
+from prodiguer_jobs.mq import utils
 
 
 
