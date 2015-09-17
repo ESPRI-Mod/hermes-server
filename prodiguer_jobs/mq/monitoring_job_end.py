@@ -16,15 +16,22 @@ from prodiguer.db.pgres import dao_monitoring as dao
 from prodiguer_jobs.mq import utils
 
 
+# Set of message type that correspond to job errors.
+_JOB_ERROR_MESSAGE_TYPES = {
+    mq.constants.MESSAGE_TYPE_2900,
+    mq.constants.MESSAGE_TYPE_3900,
+    mq.constants.MESSAGE_TYPE_9999
+}
+
 
 def get_tasks():
     """Returns set of tasks to be executed when processing a message.
 
     """
     return (
-      _unpack_message_content,
-      _persist_job_updates,
-      _enqueue_front_end_notification
+      unpack_message_content,
+      persist_job,
+      enqueue_front_end_notification
       )
 
 
@@ -43,7 +50,7 @@ class ProcessingContextInfo(mq.Message):
         self.simulation_uid = None
 
 
-def _unpack_message_content(ctx):
+def unpack_message_content(ctx):
     """Unpacks message being processed.
 
     """
@@ -51,19 +58,19 @@ def _unpack_message_content(ctx):
     ctx.simulation_uid = ctx.content['simuid']
 
 
-def _persist_job_updates(ctx):
+def persist_job(ctx):
     """Persists job updates to dB.
 
     """
     dao.persist_job_02(
         ctx.msg.timestamp,
-        False,
+        ctx.props.type in _JOB_ERROR_MESSAGE_TYPES,
         ctx.job_uid,
         ctx.simulation_uid
         )
 
 
-def _enqueue_front_end_notification(ctx):
+def enqueue_front_end_notification(ctx):
     """Places a message upon the front-end notification queue.
 
     """
@@ -76,8 +83,14 @@ def _enqueue_front_end_notification(ctx):
     if simulation.is_obsolete:
         return
 
+    # Set front-end event type.    
+    if ctx.props.type in _JOB_ERROR_MESSAGE_TYPES:
+        event_type = u"job_error"
+    else:
+        event_type = u"job_complete"
+
     utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
-        "event_type": u"job_complete",
+        "event_type": event_type,
         "job_uid": unicode(ctx.job_uid),
         "simulation_uid": unicode(ctx.simulation_uid)
     })

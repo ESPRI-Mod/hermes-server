@@ -11,7 +11,10 @@
 
 
 """
+import arrow
+
 from prodiguer import mq
+from prodiguer.db import pgres as db
 from prodiguer_jobs.mq import utils
 
 
@@ -22,6 +25,7 @@ def get_tasks():
     """
     return (
       _unpack_message_content,
+      _verify_is_late,
       _enqueue_supervisor_notification
       )
 
@@ -45,9 +49,16 @@ def _unpack_message_content(ctx):
     """Unpacks message being processed.
 
     """
-    print ctx.content
     ctx.job_uid = ctx.content['job_uid']
     ctx.simulation_uid = ctx.content['simulation_uid']
+
+
+def _verify_is_late(ctx):
+    """Verifies that the job is late.
+
+    """
+    job = db.dao_monitoring.retrieve_job(ctx.job_uid)
+    ctx.abort = job is None or job.execution_end_date is None 
 
 
 def _enqueue_supervisor_notification(ctx):
@@ -55,6 +66,7 @@ def _enqueue_supervisor_notification(ctx):
 
     """
     utils.enqueue(mq.constants.MESSAGE_TYPE_8000, {
+        "reason": "late_job",
         "job_uid": unicode(ctx.job_uid),
         "simulation_uid": unicode(ctx.simulation_uid)
     })

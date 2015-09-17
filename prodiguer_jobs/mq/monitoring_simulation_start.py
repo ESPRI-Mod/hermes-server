@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: run_in_monitoring_0000.py
+.. module:: monitoring_simulation_start.py
    :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
@@ -20,6 +20,7 @@ from prodiguer.db import pgres as db
 from prodiguer.utils import config
 from prodiguer.utils import logger
 from prodiguer_jobs.mq import utils
+from prodiguer_jobs.mq import monitoring_job_start
 
 
 
@@ -36,14 +37,14 @@ def get_tasks():
         _persist_simulation,
         _persist_active_simulation,
         _persist_simulation_configuration,
-        _persist_job,
-        _enqueue_job_warning_delay,
+        monitoring_job_start.persist_job,
+        monitoring_job_start.enqueue_job_warning_delay,
         _enqueue_cv_terms_commit,
         _enqueue_front_end_notification
         )
 
 
-class ProcessingContextInfo(mq.Message):
+class ProcessingContextInfo(monitoring_job_start.ProcessingContextInfo):
     """Message processing context information.
 
     """
@@ -53,8 +54,7 @@ class ProcessingContextInfo(mq.Message):
         """
         super(ProcessingContextInfo, self).__init__(
             props, body, decode=decode)
-
-        self.abort = False
+            
         self.accounting_project = None
         self.activity = self.activity_raw = None
         self.compute_node = self.compute_node_raw = None
@@ -66,9 +66,6 @@ class ProcessingContextInfo(mq.Message):
         self.cv_terms_new = []
         self.cv_terms_persisted_to_db = []
         self.experiment = self.experiment_raw = None
-        self.job_type = cv.constants.JOB_TYPE_COMPUTING
-        self.job_uid = None
-        self.job_warning_delay = None
         self.model = self.model_raw = None
         self.name = None
         self.output_start_date = None
@@ -112,6 +109,10 @@ def _unpack_message_content(ctx):
     """Unpacks message content prior to further processing.
 
     """
+    # Unpack job related fields.
+    monitoring_job_start.unpack_message_content(ctx)
+
+    # Unpack simulation related fields.
     ctx.accounting_project = ctx.content.get('accountingProject')
     ctx.activity = ctx.activity_raw = ctx.content['activity']
     ctx.compute_node = ctx.compute_node_raw = ctx.content['centre']
@@ -120,9 +121,6 @@ def _unpack_message_content(ctx):
         "{0}-{1}".format(ctx.compute_node, ctx.content['machine'])
     ctx.configuration = ctx.content.get('configuration')
     ctx.experiment = ctx.experiment_raw = ctx.content['experiment']
-    ctx.job_uid = ctx.content['jobuid']
-    ctx.job_warning_delay = ctx.content.get(
-        'jobWarningDelay', config.apps.monitoring.defaultJobWarningDelayInSeconds)
     ctx.model = ctx.model_raw = ctx.content['model']
     ctx.name = ctx.content['name']
     ctx.output_start_date = arrow.get(ctx.content['startDate']).datetime
@@ -244,36 +242,6 @@ def _persist_simulation_configuration(ctx):
         ctx.simulation_uid,
         ctx.configuration
         )
-
-
-def _persist_job(ctx):
-    """Persists job info to db.
-
-    """
-    db.dao_monitoring.persist_job_01(
-        ctx.accounting_project,
-        ctx.job_warning_delay,
-        ctx.msg.timestamp,
-        ctx.job_type,
-        ctx.job_uid,
-        ctx.simulation_uid,
-        is_startup = True
-        )
-
-
-def _enqueue_job_warning_delay(ctx):
-    """Places a delayed message indicating the amount of time before the job is considered to be late.
-
-    """
-    utils.enqueue(
-        mq.constants.MESSAGE_TYPE_1199,
-        # delay_in_ms = ctx.job_warning_delay * 1000,
-        delay_in_ms=5000,
-        payload={
-            "simulation_uid": ctx.simulation_uid,
-            "job_uid": ctx.job_uid
-        }
-    )
 
 
 def _enqueue_cv_terms_commit(ctx):

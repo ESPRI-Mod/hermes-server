@@ -32,6 +32,7 @@ class Message(object):
         """
         validator.validate_ampq_basic_properties(props)
 
+        self.abort = False
         self.content = content
         self.content_raw = content
         self.content_type = props.content_type

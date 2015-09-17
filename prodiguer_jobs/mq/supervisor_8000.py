@@ -22,7 +22,6 @@ def get_tasks():
     """
     return (
       _unpack_message_content,
-      _verify_supervision,
       _enqueue_supervisor_format
       )
 
@@ -48,13 +47,6 @@ def _unpack_message_content(ctx):
     """
     ctx.job_uid = ctx.content['job_uid']
     ctx.simulation_uid = ctx.content['simulation_uid']
-
-
-def _verify_supervision(ctx):
-    """Verifies that supervision is required.
-
-    """
-    pass
 
 
 def _enqueue_supervisor_format(ctx):

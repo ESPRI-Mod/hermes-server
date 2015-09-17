@@ -131,7 +131,7 @@ def invoke_mq(agent_type, tasks, error_tasks, ctx):
         # ... abort tasks.
         else:
             try:
-                if ctx.abort:
+                if ctx.abort == True:
                     break
             except AttributeError:
                 pass

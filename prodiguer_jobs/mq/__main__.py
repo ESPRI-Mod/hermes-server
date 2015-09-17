@@ -22,16 +22,14 @@ from prodiguer_jobs.mq import internal_cv
 from prodiguer_jobs.mq import internal_fe
 from prodiguer_jobs.mq import internal_smtp
 from prodiguer_jobs.mq import internal_smtp_realtime
-from prodiguer_jobs.mq import metrics_7000
-from prodiguer_jobs.mq import metrics_7100
+from prodiguer_jobs.mq import metrics_environment
+from prodiguer_jobs.mq import metrics_pcmdi
 from prodiguer_jobs.mq import monitoring
-from prodiguer_jobs.mq import monitoring_0000
-from prodiguer_jobs.mq import monitoring_0100
-from prodiguer_jobs.mq import monitoring_9999
 from prodiguer_jobs.mq import monitoring_job_end
-from prodiguer_jobs.mq import monitoring_job_error
 from prodiguer_jobs.mq import monitoring_job_late
 from prodiguer_jobs.mq import monitoring_job_start
+from prodiguer_jobs.mq import monitoring_simulation_end
+from prodiguer_jobs.mq import monitoring_simulation_start
 from prodiguer_jobs.mq import supervisor
 from prodiguer_jobs.mq import supervisor_8000
 from prodiguer_jobs.mq import supervisor_8100
@@ -57,182 +55,144 @@ logging.getLogger("pika").setLevel(logging.ERROR)
 logging.getLogger("requests").setLevel(logging.ERROR)
 
 
-# Map of agent type keys to corresponding handlers.
-_AGENTS = {
-    # ... debug agents
-    'debug-0000': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_PRIMARY,
-        'handler': monitoring_0000
-        },
-    'debug-0100': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_PRIMARY,
-        'handler': monitoring_0100
-        },
-    'debug-1000': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_PRIMARY,
-        'handler': monitoring_job_start
-        },
-    'debug-1100': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_PRIMARY,
-        'handler': monitoring_job_end
-        },
-    'debug-1199': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_SECONDARY_DELAYED,
-        'handler': monitoring_job_late
-        },
-    'debug-2000': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_PRIMARY,
-        'handler': monitoring_job_start
-        },
-    'debug-2100': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_PRIMARY,
-        'handler': monitoring_job_end
-        },
-    'debug-2199': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_SECONDARY_DELAYED,
-        'handler': monitoring_job_late
-        },
-    'debug-2900': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_PRIMARY,
-        'handler': monitoring_job_error
-        },
-    'debug-3000': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_PRIMARY,
-        'handler': monitoring_job_start
-        },
-    'debug-3100': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_PRIMARY,
-        'handler': monitoring_job_end
-        },
-    'debug-3199': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_SECONDARY_DELAYED,
-        'handler': monitoring_job_late
-        },
-    'debug-3900': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_PRIMARY,
-        'handler': monitoring_job_error
-        },
-    'debug-7000': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_PRIMARY,
-        'handler': metrics_7000
-        },
-    'debug-7100': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_PRIMARY,
-        'handler': metrics_7100
-        },
-    'debug-8000': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_SECONDARY,
-        'handler': supervisor_8000
-        },
-    'debug-8100': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_SECONDARY,
-        'handler': supervisor_8100
-        },
-    'debug-8200': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_SECONDARY,
-        'handler': supervisor_8200
-        },
-    'debug-9999': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_PRIMARY,
-        'handler': monitoring_9999
-        },
-    'debug-cv': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_SECONDARY,
-        'handler': internal_cv
-        },
-    'debug-fe': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_SECONDARY,
-        'handler': internal_fe
-        },
-    'debug-smtp': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_SECONDARY,
-        'handler': internal_smtp
-        },
-    'debug-smtp-realtime': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_SECONDARY,
-        'handler': internal_smtp_realtime
-        },
-    # ... live agents
-    'live-cv': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_SECONDARY,
-        'handler': internal_cv
-        },
-    'live-fe': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_SECONDARY,
-        'handler': internal_fe
-        },
-    'live-metrics-env': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_PRIMARY,
-        'handler': metrics_7000
-        },
-    'live-metrics-sim': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_PRIMARY,
-        'handler': metrics_7100
-        },
-    'live-monitoring-compute': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_PRIMARY,
-        'handler': monitoring
-        },
-    'live-monitoring-post-processing': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_PRIMARY,
-        'handler': monitoring
-        },
-    'live-smtp': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_SECONDARY,
-        'handler': internal_smtp
-        },
-    'live-smtp-realtime': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_SECONDARY,
-        'handler': internal_smtp_realtime
-        },
-    'live-superviseur': {
-        'exchange': mq.constants.EXCHANGE_PRODIGUER_SECONDARY,
-        'handler': supervisor
-        }
+# Map of MQ agents to MQ handlers.
+_AGENT_HANDLERS = {
+    'debug-0000': monitoring_simulation_start,
+    'debug-0100': monitoring_simulation_end,
+    'debug-1000': monitoring_job_start,
+    'debug-1100': monitoring_job_end,
+    'debug-1199': monitoring_job_late,
+    'debug-2000': monitoring_job_start,
+    'debug-2100': monitoring_job_end,
+    'debug-2199': monitoring_job_late,
+    'debug-2900': monitoring_job_end,
+    'debug-3000': monitoring_job_start,
+    'debug-3100': monitoring_job_end,
+    'debug-3199': monitoring_job_late,
+    'debug-3900': monitoring_job_end,
+    'debug-7000': metrics_environment,
+    'debug-7100': metrics_pcmdi,
+    'debug-8000': supervisor_8000,
+    'debug-8100': supervisor_8100,
+    'debug-8200': supervisor_8200,
+    'debug-9999': monitoring_simulation_end,
+    'debug-cv': internal_cv,
+    'debug-fe': internal_fe,
+    'debug-smtp': internal_smtp,
+    'debug-smtp-realtime': internal_smtp_realtime,
+    'live-cv': internal_cv,
+    'live-fe': internal_fe,
+    'live-metrics-env': metrics_environment,
+    'live-metrics-pcmdi': metrics_pcmdi,
+    'live-monitoring-compute': monitoring,
+    'live-monitoring-post-processing': monitoring,
+    'live-smtp': internal_smtp,
+    'live-smtp-realtime': internal_smtp_realtime,
+    'live-superviseur': supervisor
+}
+
+# Map of MQ exchanges to MQ agents.
+_AGENT_EXCHANGES = {
+    mq.constants.EXCHANGE_PRODIGUER_PRIMARY: {
+        'debug-0000',
+        'debug-0100',
+        'debug-1000',
+        'debug-1100',
+        'debug-2000',
+        'debug-2100',
+        'debug-2900',
+        'debug-3000',
+        'debug-3100',
+        'debug-3900',
+        'debug-7000',
+        'debug-7100',
+        'debug-9999',
+        'live-metrics-env',
+        'live-metrics-pcmdi',
+        'live-monitoring-compute',
+        'live-monitoring-post-processing'
+    },
+    mq.constants.EXCHANGE_PRODIGUER_SECONDARY: {
+        'debug-8000',
+        'debug-8100',
+        'debug-8200',
+        'debug-cv',
+        'debug-fe',
+        'debug-smtp',
+        'debug-smtp-realtime'
+        'live-cv',
+        'live-fe',
+        'live-smtp',
+        'live-smtp-realtime',
+        'live-superviseur'
+    },
+    mq.constants.EXCHANGE_PRODIGUER_SECONDARY_DELAYED: {
+        'debug-1199',
+        'debug-2199',
+        'debug-3199',
     }
+}
 
 
-def _get_handler_context_type(agent):
+def _get_handler_context_type(handler):
     """Returns an agent handler's processing context type.
 
     """
     try:
-        return agent['handler'].ProcessingContextInfo
+        return handler.ProcessingContextInfo
     except AttributeError:
         return mq.Message
 
 
-def _get_handler_tasks(agent):
-    """Returns an agent handler's set of message processing tasks.
+def _get_exchange(agent_type):
+    """Returns MQ exchange to which to bind.
+
+    """
+    pass
+
+
+def _get_queue(agent_type):
+    """Returns MQ queue to which to bind.
+
+    """
+    return agent_type
+
+
+def _get_handler_tasks(handler):
+    """Returns a handler's set of processing tasks.
 
     """
     try:
-        return agent['handler'].get_tasks()
+        task_factory = handler.get_tasks
     except AttributeError:
         return []
+    else:
+        return task_factory()
 
 
-def _get_handler_error_tasks(agent):
-    """Returns an agent handler's set of message error processing tasks.
+def _get_handler_error_tasks(handler):
+    """Returns a handler's set of error processing tasks.
 
     """
     try:
-        return agent['handler'].get_error_tasks()
+        task_factory = handler.get_error_tasks
     except AttributeError:
         return []
+    else:
+        return task_factory()
 
 
-def _process(agent, agent_type, ctx):
+def _process(agent_type, handler, ctx):
     """Processes a message.
 
     """
-    tasks = _get_handler_tasks(agent)
-    error_tasks = _get_handler_error_tasks(agent)
+    tasks = _get_handler_tasks(handler)
+    error_tasks = _get_handler_error_tasks(handler)
 
     rt.invoke_mq(agent_type, tasks, error_tasks, ctx)
 
 
-def _execute_agent(agent, agent_type, agent_limit):
+def _execute_agent(agent_type, agent_limit, handler):
     """Executes a standard agent.
 
     """
@@ -244,11 +204,11 @@ def _execute_agent(agent, agent_type, agent_limit):
         cv.session.init()
 
         # Consume messages.
-        mq.utils.consume(agent['exchange'],
-                         agent.get('queue', agent_type),
-                         lambda ctx: _process(agent, agent_type, ctx),
+        mq.utils.consume(_get_exchange(agent_type),
+                         _get_queue(agent_type),
+                         lambda ctx: _process(agent_type, handler, ctx),
                          consume_limit=agent_limit,
-                         context_type=_get_handler_context_type(agent),
+                         context_type=_get_handler_context_type(handler),
                          verbose=agent_limit > 0)
     finally:
         db.session.end()
@@ -258,23 +218,18 @@ def _execute(agent_type, agent_limit):
     """Executes message agent.
 
     """
-    # Set agent to be launched.
+    # Set handler.
     try:
-        agent = _AGENTS[agent_type]
+        handler = _AGENT_HANDLERS[agent_type]
     except KeyError:
         raise ValueError("Invalid agent type: {0}".format(agent_type))
 
-    # Escape if handler is not yet developed
-    if agent['handler'] is None:
-        logger.log_mq("Message agent is null: {0}".format(agent_type))
-        return
-
     # Execute.
     logger.log_mq("Launching message agent: {0}".format(agent_type))
-    if hasattr(agent['handler'], 'execute'):
-        agent['handler'].execute(agent_limit)
+    if hasattr(handler, 'execute'):
+        handler.execute(agent_limit)
     else:
-        _execute_agent(agent, agent_type, agent_limit)
+        _execute_agent(agent_type, agent_limit, handler)
 
 
 # Main entry point.

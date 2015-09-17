@@ -42,7 +42,7 @@ def get_tasks():
         _drop_obsolete_messages,
         _process_attachments,
         _set_messages_ampq,
-        _dispatch,
+        _enqueue_messages,
         _log_stats,
         _dequeue_email,
         _close_imap_client
@@ -280,8 +280,8 @@ def _set_messages_ampq(ctx):
             ctx.messages_ampq.append(msg)
 
 
-def _dispatch(ctx):
-    """Dispatches messages to MQ server.
+def _enqueue_messages(ctx):
+    """Enqueues messages upon MQ server.
 
     """
     mq.produce(ctx.messages_ampq,
