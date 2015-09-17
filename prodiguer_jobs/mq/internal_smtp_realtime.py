@@ -31,7 +31,7 @@ def _log(msg):
     func("EXT-SMTP-REALTIME :: {}".format(msg))
 
 
-def _get_new_emails():
+def _get_emails():
     """Returns emails to be enqueued upon MQ server.
 
     """
@@ -40,21 +40,21 @@ def _get_new_emails():
     if not emails:
         return
 
-    # Exclude those that have already been processed.
+    # Use db to exclude those which have already been processed.
+    new_emails = []
     try:
         db.session.start()
-        result = []
         for uid in emails:
             try:
                 db.dao_mq.create_message_email(uid)
             except sqlalchemy.exc.IntegrityError:
                 db.session.rollback()
             else:
-                result.append(uid)
+                new_emails.append(uid)                
     finally:
         db.session.end()
 
-    return result
+    return new_emails
 
 
 def _get_message(uid):
@@ -71,7 +71,6 @@ def _get_message(uid):
             message_type = mq.constants.MESSAGE_TYPE_SMTP
             )
 
-
     def _get_body():
         """Message body factory.
 
@@ -87,20 +86,17 @@ def _enqueue_emails():
     """Dispatches messages to MQ server.
 
     """
-    # Get new emails.
-    uid_list = _get_new_emails()
-    if not uid_list:
-        return
+    # Get emails.
+    emails = _get_emails()
+    if emails:
+        # Log.
+        msg = "{} new emails to be enqueued: {}"
+        msg = msg.format(len(emails), emails)
+        _log(msg)
 
-    # Log.
-    msg = "{0} new messages to be enqueued: {1}"
-    msg = msg.format(len(uid_list), uid_list)
-    _log(msg)
-
-
-    # Enqueue emails upon MQ server.
-    mq.produce((_get_message(uid) for uid in uid_list),
-               connection_url=config.mq.connections.main)
+        # Enqueue.
+        mq.produce((_get_message(uid) for uid in emails),
+                    connection_url=config.mq.connections.main)
 
 
 def _requires_imap_reconnect(idle_response):
