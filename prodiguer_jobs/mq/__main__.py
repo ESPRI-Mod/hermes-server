@@ -148,7 +148,11 @@ def _get_exchange(agent_type):
     """Returns MQ exchange to which to bind.
 
     """
-    pass
+    for exchange, agent_types in _AGENT_EXCHANGES.items():
+        if agent_type in agent_types:
+            return exchange        
+
+    raise ValueError("Agent cannot be mapped to exchange: {}".format(agent_type))       
 
 
 def _get_queue(agent_type):
