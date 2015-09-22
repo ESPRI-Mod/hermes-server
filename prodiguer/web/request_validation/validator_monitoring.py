@@ -15,31 +15,14 @@ import uuid
 
 from voluptuous import All, Required, Schema
 
-from prodiguer.db import pgres as db
-from prodiguer.db.pgres import dao_monitoring as dao
 from prodiguer.web.request_validation import validator as rv
 
 
 
 # Query parameter names.
 _PARAM_TIMESLICE = 'timeslice'
-_PARAM_UID = 'uid'
-
-
-def _SimulationUID():
-    """Validates incoming simulation uid query parameter.
-
-    """
-    def func(val):
-        """Inner function.
-
-        """
-        db.session.start()
-        if not dao.exists(val):
-            raise ValueError("Simulation {0} not found".format(val))
-        db.session.end()
-
-    return func
+_PARAM_HASHID = 'hashid'
+_PARAM_TRYID = 'tryID'
 
 
 def _MonitoringTimeslice():
@@ -102,7 +85,8 @@ def validate_fetch_one(handler):
 
         """
         rv.validate_data(handler.request.query_arguments, {
-            Required(_PARAM_UID): All(rv.Sequence(uuid.UUID), _SimulationUID())
+            Required(_PARAM_HASHID): All(rv.Sequence(str)),
+            Required(_PARAM_TRYID): All(rv.Sequence(int))
             })
 
     rv.validate(handler, query_validator=_query_validator)

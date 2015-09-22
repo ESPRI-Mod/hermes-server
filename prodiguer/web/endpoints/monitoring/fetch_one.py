@@ -14,13 +14,15 @@
 import base64
 
 from prodiguer.db import pgres as db
+from prodiguer.db.pgres import dao_monitoring as dao
 from prodiguer.web.request_validation import validator_monitoring as rv
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
 
 
 # Query parameter names.
-_PARAM_UID = 'uid'
+_PARAM_HASHID = 'hashid'
+_PARAM_TRYID = 'tryID'
 
 
 
@@ -36,48 +38,45 @@ class FetchOneRequestHandler(ProdiguerHTTPRequestHandler):
             """Decodes request.
 
             """
-            self.uid = self.get_argument(_PARAM_UID)
+            self.hashid = self.get_argument(_PARAM_HASHID)
+            self.try_id = self.get_argument(_PARAM_TRYID)
+            
+        
+        def _set_data():
+            """Pulls data from db.
+            
+            """
+            db.session.start()
+            self.simulation = dao.retrieve_simulation_try(self.hashid, self.try_id)
+            self.simulation_configuration = dao.retrieve_simulation_configuration(self.simulation.uid)
+            self.job_history = dao.retrieve_simulation_jobs(self.simulation.uid)
+            db.session.end()
 
 
-        def _get_data(factory):
-            """Returns data for front-end.
+        def _get_configuration_card():
+            """Returns simulation configuration card formatted for front-end.
 
             """
-            data = factory(self.uid)
-            try:
-                iter(data)
-            except TypeError:
-                return db.utils.get_item(data)
+            if self.simulation_configuration:                
+                return base64.b64decode(self.simulation_configuration.card)
             else:
-                return db.utils.get_collection(data)
-
-
-        def _get_configuration_card(uid):
-            """Returns simulation configuration card.
-
-            """
-            configuration = db.dao_monitoring.retrieve_simulation_configuration(uid)
-
-            return base64.b64decode(configuration.card) if configuration else ''
+                return unicode()
 
 
         def _set_output():
             """Sets response to be returned to client.
 
             """
-            db.session.start()
             self.output = {
-                'job_history':
-                    _get_data(db.dao_monitoring.retrieve_simulation_jobs),
-                'simulation':
-                    _get_data(db.dao_monitoring.retrieve_simulation),
-                'config_card':
-                    _get_configuration_card(self.uid)
+                'job_history': db.utils.get_collection(self.job_history),
+                'simulation': db.utils.get_item(self.simulation),
+                'config_card': _get_configuration_card()
             }
-            db.session.end()
+
 
         # Invoke tasks.
         self.invoke(rv.validate_fetch_one, [
             _decode_request,
+            _set_data,
             _set_output
         ])

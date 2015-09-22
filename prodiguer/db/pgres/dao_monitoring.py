@@ -112,6 +112,24 @@ def retrieve_simulation(uid):
     return dao.get_by_facet(types.Simulation, qfilter=qfilter)
 
 
+# @decorators.validate(validator.validate_retrieve_simulation)
+def retrieve_simulation_try(hashid, try_id):
+    """Retrieves simulation details from db.
+
+    :param str hashid: Simulation hash identifier.
+    :param int try_id: Simulation try identifier.
+
+    :returns: Simulation details.
+    :rtype: types.monitoring.Simulation
+
+    """
+    qry = session.query(types.Simulation)
+    qry = qry.filter(types.Simulation.hashid == unicode(hashid))
+    qry = qry.filter(types.Simulation.try_id == int(try_id))
+
+    return dao.exec_query(types.Simulation, qry)
+
+
 @decorators.validate(validator.validate_exists)
 def exists(uid):
     """Returns a flag indicating whether simulation already exists.
