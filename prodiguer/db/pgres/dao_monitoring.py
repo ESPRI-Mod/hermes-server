@@ -41,42 +41,6 @@ def _persist(hydrate, create, retrieve):
     return instance
 
 
-@decorators.validate(validator.validate_retrieve_active_simulations)
-def retrieve_active_simulations(start_date=None):
-    """Retrieves active simulation details from db.
-
-    :param datetime.datetime start_date: Simulation execution start date.
-
-    :returns: Simulation details.
-    :rtype: list
-
-    """
-    qry = session.query(types.Simulation)
-    qry = qry.filter(types.Simulation.name != None)
-    qry = qry.filter(types.Simulation.is_obsolete == False)
-    if start_date is not None:
-        qry = qry.filter(types.Simulation.execution_start_date >= start_date)
-
-    return dao.exec_query(types.Simulation, qry, True)
-
-
-@decorators.validate(validator.validate_retrieve_active_simulation)
-def retrieve_active_simulation(hashid):
-    """Retrieves an active simulation from db.
-
-    :param str hashid: Simulation hash identifier.
-
-    :returns: An active simulation instance.
-    :rtype: types.Simulation
-
-    """
-    qry = session.query(types.Simulation)
-    qry = qry.filter(types.Simulation.hashid == hashid)
-    qry = qry.filter(types.Simulation.is_obsolete == False)
-
-    return dao.exec_query(types.Simulation, qry)
-
-
 @decorators.validate(validator.validate_retrieve_active_jobs)
 def retrieve_active_jobs(start_date=None):
     """Retrieves active job details from db.
@@ -97,6 +61,42 @@ def retrieve_active_jobs(start_date=None):
     return dao.exec_query(types.Job, qry, True)
 
 
+@decorators.validate(validator.validate_retrieve_active_simulation)
+def retrieve_active_simulation(hashid):
+    """Retrieves an active simulation from db.
+
+    :param str hashid: Simulation hash identifier.
+
+    :returns: An active simulation instance.
+    :rtype: types.Simulation
+
+    """
+    qry = session.query(types.Simulation)
+    qry = qry.filter(types.Simulation.hashid == hashid)
+    qry = qry.filter(types.Simulation.is_obsolete == False)
+
+    return dao.exec_query(types.Simulation, qry)
+
+
+@decorators.validate(validator.validate_retrieve_active_simulations)
+def retrieve_active_simulations(start_date=None):
+    """Retrieves active simulation details from db.
+
+    :param datetime.datetime start_date: Simulation execution start date.
+
+    :returns: Simulation details.
+    :rtype: list
+
+    """
+    qry = session.query(types.Simulation)
+    qry = qry.filter(types.Simulation.name != None)
+    qry = qry.filter(types.Simulation.is_obsolete == False)
+    if start_date is not None:
+        qry = qry.filter(types.Simulation.execution_start_date >= start_date)
+
+    return dao.exec_query(types.Simulation, qry, True)
+
+
 @decorators.validate(validator.validate_retrieve_simulation)
 def retrieve_simulation(uid):
     """Retrieves simulation details from db.
@@ -112,7 +112,7 @@ def retrieve_simulation(uid):
     return dao.get_by_facet(types.Simulation, qfilter=qfilter)
 
 
-# @decorators.validate(validator.validate_retrieve_simulation)
+@decorators.validate(validator.validate_retrieve_simulation_try)
 def retrieve_simulation_try(hashid, try_id):
     """Retrieves simulation details from db.
 
@@ -191,8 +191,8 @@ def retrieve_job(uid):
     return dao.get_by_facet(types.Job, qfilter=qfilter)
 
 
-@decorators.validate(validator.validate_persist_metric)
-def persist_metric(
+@decorators.validate(validator.validate_persist_environment_metric)
+def persist_environment_metric(
     action_name,
     action_timestamp,
     dir_from,
@@ -401,13 +401,7 @@ def persist_job_01(
         instance.typeof = unicode(job_type)
         instance.job_uid = unicode(job_uid)
         instance.simulation_uid = unicode(simulation_uid)
-
-        # ... warning delay related
         instance.warning_delay = int(warning_delay)
-        instance.expected_execution_end_date = \
-            execution_start_date + \
-            datetime.timedelta(seconds=int(warning_delay))
-        instance.set_was_late_flag()
 
         # ... compute specific fields.
         instance.is_startup = is_startup
@@ -444,7 +438,6 @@ def persist_job_02(execution_end_date, is_error, job_uid, simulation_uid):
         instance.is_error = is_error
         instance.job_uid = unicode(job_uid)
         instance.simulation_uid = unicode(simulation_uid)
-        instance.set_was_late_flag()
 
     return _persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 

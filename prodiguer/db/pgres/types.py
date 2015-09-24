@@ -21,11 +21,12 @@ from prodiguer.db.pgres.types_monitoring import Simulation
 from prodiguer.db.pgres.types_monitoring import SimulationConfiguration
 from prodiguer.db.pgres.types_mq import Message
 from prodiguer.db.pgres.types_mq import MessageEmail
+from prodiguer.db.pgres.types_superviseur import Supervision
 
 
 
 # Set of supported model schemas.
-SCHEMAS = {'cv', 'monitoring', 'mq'}
+SCHEMAS = {'cv', 'monitoring', 'mq', 'superviseur'}
 
 
 # Set of supported model types.
@@ -35,6 +36,7 @@ SUPPORTED = TYPES = [
     Job,
     Simulation,
     SimulationConfiguration,
+    Supervision,
     Message,
     MessageEmail,
 ]

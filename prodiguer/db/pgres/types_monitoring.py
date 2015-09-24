@@ -65,10 +65,8 @@ class Job(Entity):
     accounting_project = Column(Unicode(511))
     execution_end_date = Column(DateTime)
     execution_start_date = Column(DateTime)
-    expected_execution_end_date = Column(DateTime)
     is_error = Column(Boolean, default=False)
     typeof = Column(Unicode(63))
-    was_late = Column(Boolean)
     warning_delay = Column(Integer)
     is_startup = Column(Boolean, default=False)
     post_processing_name = Column(Unicode(63))
@@ -76,18 +74,6 @@ class Job(Entity):
     post_processing_dimension = Column(Unicode(63))
     post_processing_component = Column(Unicode(63))
     post_processing_file = Column(Unicode(127))
-
-
-    def set_was_late_flag(self):
-        """Sets value of was_late flag based upon execution status.
-
-        """
-        if self.was_late is not None or \
-           self.expected_execution_end_date is None or \
-           self.execution_end_date is None:
-            return
-
-        self.was_late = self.execution_end_date > self.expected_execution_end_date
 
 
 class Simulation(Entity):
@@ -172,4 +158,3 @@ class SimulationConfiguration(Entity):
     card_mime_type = Column(Unicode(63),
                             nullable=True,
                             default=u"application/base64")
-

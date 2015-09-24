@@ -15,6 +15,7 @@ from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import dao_cv
 from prodiguer.db.pgres import dao_monitoring
 from prodiguer.db.pgres import dao_mq
+from prodiguer.db.pgres import dao_superviseur
 from prodiguer.db.pgres import factory
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import setup

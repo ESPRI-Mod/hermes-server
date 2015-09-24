@@ -82,7 +82,7 @@ def validate_persist_job_02(
     validator.validate_simulation_uid(simulation_uid)
 
 
-def validate_persist_metric(
+def validate_persist_environment_metric(
     action_name,
     action_timestamp,
     dir_from,
@@ -93,7 +93,7 @@ def validate_persist_metric(
     size_mb,
     throughput_mb_s
     ):
-    """Function input validator: persist_metric.
+    """Function input validator: persist_environment_metric.
 
     """
 
@@ -241,6 +241,14 @@ def validate_retrieve_simulation_jobs(uid):
 
     """
     validator.validate_simulation_uid(uid)
+
+
+def validate_retrieve_simulation_try(hashid, try_id):
+    """Function input validator: retrieve_simulation_jobs.
+
+    """
+    validator.validate_simulation_hashid(hashid)
+    validator.validate_simulation_try_id(try_id)
 
 
 def validate_update_active_simulation(hashid):

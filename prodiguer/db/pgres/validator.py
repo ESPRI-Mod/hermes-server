@@ -201,6 +201,15 @@ def validate_simulation_hashid(identifier):
     pass
 
 
+def validate_simulation_try_id(identifier):
+    """Validates a simulation try id.
+
+    :param str identifier: A simulation try identifier.
+
+    """
+    validate_int(identifier, "Simulation try id")
+
+
 def validate_raw_activity(name):
     """Validates a raw activity name.
 
