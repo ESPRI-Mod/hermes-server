@@ -12,17 +12,17 @@
 
 """
 from prodiguer import rt
-from prodiguer_jobs.mq import supervisor_8000
-from prodiguer_jobs.mq import supervisor_8100
-from prodiguer_jobs.mq import supervisor_8200
+from prodiguer_jobs.mq import supervisor_detect_late_job
+from prodiguer_jobs.mq import supervisor_dispatch_script
+from prodiguer_jobs.mq import supervisor_format_script
 
 
 
 # Map of sub-consumer types to sub-consumers.
 _SUB_AGENTS = {
-    '8000': supervisor_8000,
-    '8100': supervisor_8100,
-    '8200': supervisor_8200
+    '8000': supervisor_detect_late_job,
+    '8100': supervisor_format_script,
+    '8200': supervisor_dispatch_script
 }
 
 

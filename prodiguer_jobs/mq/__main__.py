@@ -26,14 +26,13 @@ from prodiguer_jobs.mq import metrics_environment
 from prodiguer_jobs.mq import metrics_pcmdi
 from prodiguer_jobs.mq import monitoring
 from prodiguer_jobs.mq import monitoring_job_end
-from prodiguer_jobs.mq import monitoring_job_late
 from prodiguer_jobs.mq import monitoring_job_start
 from prodiguer_jobs.mq import monitoring_simulation_end
 from prodiguer_jobs.mq import monitoring_simulation_start
 from prodiguer_jobs.mq import supervisor
-from prodiguer_jobs.mq import supervisor_8000
-from prodiguer_jobs.mq import supervisor_8100
-from prodiguer_jobs.mq import supervisor_8200
+from prodiguer_jobs.mq import supervisor_detect_late_job
+from prodiguer_jobs.mq import supervisor_dispatch_script
+from prodiguer_jobs.mq import supervisor_format_script
 
 from tornado.options import define
 from tornado.options import options
@@ -61,20 +60,17 @@ _AGENT_HANDLERS = {
     'debug-0100': monitoring_simulation_end,
     'debug-1000': monitoring_job_start,
     'debug-1100': monitoring_job_end,
-    'debug-1199': monitoring_job_late,
     'debug-2000': monitoring_job_start,
     'debug-2100': monitoring_job_end,
-    'debug-2199': monitoring_job_late,
     'debug-2900': monitoring_job_end,
     'debug-3000': monitoring_job_start,
     'debug-3100': monitoring_job_end,
-    'debug-3199': monitoring_job_late,
     'debug-3900': monitoring_job_end,
     'debug-7000': metrics_environment,
     'debug-7100': metrics_pcmdi,
-    'debug-8000': supervisor_8000,
-    'debug-8100': supervisor_8100,
-    'debug-8200': supervisor_8200,
+    'debug-8000': supervisor_detect_late_job,
+    'debug-8100': supervisor_format_script,
+    'debug-8200': supervisor_dispatch_script,
     'debug-9999': monitoring_simulation_end,
     'debug-cv': internal_cv,
     'debug-fe': internal_fe,

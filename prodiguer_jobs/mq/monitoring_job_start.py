@@ -23,13 +23,6 @@ from prodiguer_jobs.mq import utils
 
 
 
-# Map of job types to warning delay message types.
-_WARNING_DELAY_MESSAGE_TYPES = {
-    cv.constants.JOB_TYPE_COMPUTING: mq.constants.MESSAGE_TYPE_1199,
-    cv.constants.JOB_TYPE_POST_PROCESSING: mq.constants.MESSAGE_TYPE_2199,
-    cv.constants.JOB_TYPE_POST_PROCESSING_FROM_CHECKER: mq.constants.MESSAGE_TYPE_3199
-}
-
 # Map of message to job types.
 _MESSAGE_JOB_TYPES = {
     mq.constants.MESSAGE_TYPE_0000: cv.constants.JOB_TYPE_COMPUTING,
@@ -159,12 +152,13 @@ def enqueue_job_warning_delay(ctx):
 
     # Enqueue.
     utils.enqueue(
-        _WARNING_DELAY_MESSAGE_TYPES[ctx.job_type],
+        mq.constants.MESSAGE_TYPE_8000,
         # delay_in_ms=delta_in_ms,
         delay_in_ms=180000,
         payload={
             "job_uid": ctx.job_uid,
-            "simulation_uid": ctx.job_simulation_uid
+            "simulation_uid": ctx.job_simulation_uid,
+            "trigger_code": ctx.props.type
         }
     )
 

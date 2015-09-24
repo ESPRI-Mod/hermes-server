@@ -17,7 +17,6 @@ from sqlalchemy.exc import IntegrityError
 from prodiguer import cv
 from prodiguer import mq
 from prodiguer.db import pgres as db
-from prodiguer.utils import config
 from prodiguer.utils import logger
 from prodiguer_jobs.mq import utils
 from prodiguer_jobs.mq import monitoring_job_start
