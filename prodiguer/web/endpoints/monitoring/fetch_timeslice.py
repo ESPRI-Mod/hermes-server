@@ -17,6 +17,7 @@ import arrow
 
 from prodiguer import cv
 from prodiguer.db import pgres as db
+from prodiguer.utils import config
 from prodiguer.web.request_validation import validator_monitoring as rv
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
@@ -41,14 +42,14 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
             start_date = self.start_date.datetime if self.start_date else None
 
             return db.utils.get_collection(factory(start_date))
-            
-        
+
+
         def _get_simulation_list():
             """Returns simulation data for front-end.
 
             """
             data = _get_data(db.dao_monitoring.retrieve_active_simulations)
-            
+
             # Reduce response payload size by deleting unnecessary fields.
             for simulation in data:
                 # ... delete fields not required by front end
@@ -68,7 +69,7 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
                 if simulation['parent_simulation_branch_date'] is None:
                     del simulation['parent_simulation_branch_date']
                 if simulation['parent_simulation_name'] is None:
-                    del simulation['parent_simulation_name']               
+                    del simulation['parent_simulation_name']
 
                 # ... delete null cv fields
                 for field in {
@@ -81,10 +82,10 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
                     'space'
                     }:
                     if simulation[field] is None:
-                        del simulation[field]                        
+                        del simulation[field]
                     if simulation["{}_raw".format(field)] is None:
                         del simulation["{}_raw".format(field)]
-                          
+
             return data
 
 
@@ -113,17 +114,18 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
                     del job['post_processing_file']
                 if job['post_processing_name'] is None:
                     del job['post_processing_name']
-                if job['was_late'] == False or job['was_late'] is None:
-                    del job['was_late']
-                                        
+
                 # ... delete start up field for post-processing jobs
                 if job['typeof'] != cv.constants.JOB_TYPE_COMPUTING:
                     del job['is_startup']
-                    
-                # ... delete type field for post-processing jobs
+
+                # ... delete fields with matching defaults
                 if job['typeof'] == cv.constants.JOB_TYPE_POST_PROCESSING:
-                    del job['typeof']                
-            
+                    del job['typeof']
+                if job['warning_delay'] == config.apps.monitoring.defaultJobWarningDelayInSeconds:
+                    del job['warning_delay']
+
+
             return data
 
 
