@@ -29,6 +29,9 @@ def _main():
     # Delete all records in table.
     db.dao.delete_all(db.types.MessageEmail)
 
+    # Commit deletions.
+    db.session.commit()
+
     # End session.
     db.session.end()
 

@@ -29,6 +29,9 @@ def _main():
     # Delete existing terms.
     db.dao.delete_all(db.types.ControlledVocabularyTerm)
 
+    # Commit deletions.
+    db.session.commit()
+
     # Reinitialise terms from cv files.
     db.setup.init_cv_terms()
 
