@@ -65,7 +65,7 @@ def _persist_metric(ctx):
     """Persists metric info to db.
 
     """
-    db.dao_monitoring.persist_metric(
+    db.dao_monitoring.persist_environment_metric(
         ctx.action_name,
         ctx.msg.timestamp,
         ctx.dir_from,

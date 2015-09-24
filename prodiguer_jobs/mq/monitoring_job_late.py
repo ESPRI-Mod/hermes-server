@@ -11,10 +11,9 @@
 
 
 """
-import arrow
-
 from prodiguer import mq
 from prodiguer.db import pgres as db
+from prodiguer.utils import logger
 from prodiguer_jobs.mq import utils
 
 
@@ -26,7 +25,8 @@ def get_tasks():
     return (
       _unpack_message_content,
       _verify_is_late,
-      _enqueue_supervisor_notification
+      _persist_supervision,
+      _enqueue_supervision_notification
       )
 
 
@@ -43,6 +43,7 @@ class ProcessingContextInfo(mq.Message):
 
         self.job_uid = None
         self.simulation_uid = None
+        self.supervision = None
 
 
 def _unpack_message_content(ctx):
@@ -58,15 +59,27 @@ def _verify_is_late(ctx):
 
     """
     job = db.dao_monitoring.retrieve_job(ctx.job_uid)
-    ctx.abort = job is None or job.execution_end_date is None 
+    ctx.abort = job.execution_end_date is not None
 
 
-def _enqueue_supervisor_notification(ctx):
-    """Places a message upon the supervisor notification queue.
+def _persist_supervision(ctx):
+    """Persist supervision info to database.
+
+    """
+    ctx.supervision = db.dao_superviseur.create_supervision(
+        ctx.simulation_uid,
+        ctx.job_uid,
+        ctx.props.type
+        )
+
+
+def _enqueue_supervision_notification(ctx):
+    """Places a message upon the supervisor queue.
 
     """
     utils.enqueue(mq.constants.MESSAGE_TYPE_8000, {
-        "reason": "late_job",
         "job_uid": unicode(ctx.job_uid),
-        "simulation_uid": unicode(ctx.simulation_uid)
+        "simulation_uid": unicode(ctx.simulation_uid),
+        "supervision_id": ctx.supervision.id,
+        "trigger_code": ctx.props.type
     })

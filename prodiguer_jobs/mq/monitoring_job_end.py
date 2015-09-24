@@ -74,16 +74,7 @@ def enqueue_front_end_notification(ctx):
     """Places a message upon the front-end notification queue.
 
     """
-    # Skip if simulation start (0000) message not received.
-    simulation = dao.retrieve_simulation(ctx.simulation_uid)
-    if simulation is None:
-        return
-
-    # Skip if simulation is obsolete (i.e. it was restarted).
-    if simulation.is_obsolete:
-        return
-
-    # Set front-end event type.    
+    # Set front-end event type.
     if ctx.props.type in _JOB_ERROR_MESSAGE_TYPES:
         event_type = u"job_error"
     else:

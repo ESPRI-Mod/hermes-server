@@ -149,7 +149,7 @@ def enqueue_job_warning_delay(ctx):
     expected = arrow.get(ctx.job.execution_start_date) + \
                datetime.timedelta(seconds=ctx.job.warning_delay)
 
-    # Calculate time delta until system must check if job is late or not. 
+    # Calculate time delta until system must check if job is late or not.
     now = arrow.get()
     delta_in_s = int((expected - now).total_seconds())
     if delta_in_s < 0:
@@ -161,7 +161,7 @@ def enqueue_job_warning_delay(ctx):
     utils.enqueue(
         _WARNING_DELAY_MESSAGE_TYPES[ctx.job_type],
         # delay_in_ms=delta_in_ms,
-        delay_in_ms=5000,
+        delay_in_ms=180000,
         payload={
             "job_uid": ctx.job_uid,
             "simulation_uid": ctx.job_simulation_uid
@@ -173,15 +173,6 @@ def _enqueue_front_end_notification(ctx):
     """Places a message upon the front-end notification queue.
 
     """
-    # Skip if simulation start (0000) message not received.
-    simulation = db.dao_monitoring.retrieve_simulation(ctx.job_simulation_uid)
-    if simulation is None:
-        return
-
-    # Skip if simulation is obsolete (i.e. it was restarted).
-    if simulation.is_obsolete:
-        return
-
     utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
         "event_type": u"job_start",
         "job_uid": unicode(ctx.job_uid),

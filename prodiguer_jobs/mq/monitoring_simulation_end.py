@@ -66,8 +66,8 @@ def _enqueue_front_end_notification(ctx):
     active_simulation = dao.retrieve_active_simulation(ctx.simulation.hashid)
     if ctx.simulation.uid != active_simulation.uid:
         return
-        
-    # Set front-end event type.    
+
+    # Set front-end event type.
     if ctx.props.type == mq.constants.MESSAGE_TYPE_9999:
         event_type = u"simulation_error"
     else:

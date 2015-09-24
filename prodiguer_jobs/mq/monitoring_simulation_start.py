@@ -54,7 +54,7 @@ class ProcessingContextInfo(monitoring_job_start.ProcessingContextInfo):
         """
         super(ProcessingContextInfo, self).__init__(
             props, body, decode=decode)
-            
+
         self.accounting_project = None
         self.activity = self.activity_raw = None
         self.compute_node = self.compute_node_raw = None
