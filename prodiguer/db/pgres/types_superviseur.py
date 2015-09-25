@@ -13,6 +13,7 @@ import datetime
 
 from sqlalchemy import Column
 from sqlalchemy import DateTime
+from sqlalchemy import Integer
 from sqlalchemy import Text
 from sqlalchemy import Unicode
 
@@ -38,8 +39,8 @@ class Supervision(Entity):
     simulation_uid = Column(Unicode(63), nullable=False)
     job_uid = Column(Unicode(63), nullable=False)
     dispatch_date = Column(DateTime)
+    dispatch_error = Column(Text)
+    dispatch_try_count = Column(Integer, default=0)
     script = Column(Text, nullable=True)
-    script_encoding = Column(Unicode(63), nullable=True, default=u"utf-8")
-    script_mime_type = Column(Unicode(63), nullable=True, default=u"text/plain")
     trigger_code = Column(Unicode(63), nullable=False)
     trigger_date = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)

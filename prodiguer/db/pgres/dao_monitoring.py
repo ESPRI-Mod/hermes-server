@@ -12,6 +12,7 @@
 
 """
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import not_
 
 from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import session
@@ -165,13 +166,32 @@ def retrieve_simulation_jobs(uid):
     :param str uid: UID of simulation.
 
     :returns: List of jobs associated with a simulation.
-    :rtype: types.monitoring.Job
+    :rtype: list
 
     """
-    qfilter = types.Job.simulation_uid == unicode(uid)
+    qry = session.query(types.Job)
+    qry = qry.filter(types.Job.simulation_uid == unicode(uid))
+    qry = qry.order_by(types.Job.execution_start_date)
 
-    return dao.get_by_facet(types.Job, qfilter=qfilter, get_iterable=True,
-                            order_by=types.Job.execution_start_date.asc())
+    return qry.all()
+
+
+@decorators.validate(validator.validate_retrieve_simulation_messages)
+def retrieve_simulation_messages(uid):
+    """Retrieves message details from db.
+
+    :param str uid: UID of simulation.
+
+    :returns: List of message associated with a simulation.
+    :rtype: list
+
+    """
+    qry = session.query(types.Message)
+    qry = qry.filter(types.Message.correlation_id_1 == unicode(uid))
+    qry = qry.filter(not_(types.Message.type_id.in_({u'7000'})))
+    qry = qry.order_by(types.Message.timestamp)
+
+    return qry.all()
 
 
 @decorators.validate(validator.validate_retrieve_job)
