@@ -146,14 +146,15 @@ def enqueue_job_warning_delay(ctx):
     now = arrow.get()
     delta_in_s = int((expected - now).total_seconds())
     if delta_in_s < 0:
-        delta_in_s = 0
-    delta_in_ms = (delta_in_s + 1) * 1000
-    logger.log_mq("Enqueuing job late warning message with delay = {}".format(delta_in_ms))
+        delta_in_s = 600    # default to 10 minute delay for historical messages
+    else:
+        delta_in_s += 60     # add 1 minute to allow for potential latency in recieving job end notification
+    logger.log_mq("Enqueuing job late warning message with delay = {} seconds".format(delta_in_s))
 
     # Enqueue.
     utils.enqueue(
         mq.constants.MESSAGE_TYPE_8000,
-        # delay_in_ms=delta_in_ms,
+        # delay_in_ms=delta_in_s * 1000,
         delay_in_ms=180000,
         payload={
             "job_uid": ctx.job_uid,

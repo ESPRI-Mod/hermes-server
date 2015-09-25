@@ -11,6 +11,7 @@
 
 
 """
+from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
 from prodiguer.db.pgres import validator_dao_superviseur as validator
@@ -19,11 +20,9 @@ from prodiguer.utils import decorators
 
 
 @decorators.validate(validator.validate_create_supervision)
-def create_supervision(
-    simulation_uid,
-    job_uid,
-    trigger_code
-    ):
+def create_supervision(simulation_uid,
+                       job_uid,
+                       trigger_code):
     """Creates a new supervision record in db.
 
     :param str simulation_uid: Simulation unique identifer.
@@ -31,7 +30,7 @@ def create_supervision(
     :param str trigger_code: Code explaining what caused the supervision act to be triggered.
 
     :returns: Newly created instance.
-    :rtype: prodiguer.db.pgres.types.SimulationSupervision
+    :rtype: prodiguer.db.pgres.types.Supervision
 
     """
     instance = types.Supervision()
@@ -43,3 +42,15 @@ def create_supervision(
     session.add(instance)
 
     return instance
+
+
+def retrieve_supervision(identifer):
+    """Retrieves supervision details from db.
+
+    :param str identifer: Supervision identifier.
+
+    :returns: Supervision details.
+    :rtype: prodiguer.db.pgres.types.Supervision
+
+    """
+    return dao.get_by_id(types.Supervision, identifer)

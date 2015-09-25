@@ -43,6 +43,7 @@ class ProcessingContextInfo(mq.Message):
         self.job_uid = None
         self.simulation_uid = None
         self.supervision = None
+        self.trigger_code = None
 
 
 def _unpack_message_content(ctx):

@@ -13,8 +13,6 @@
 """
 from sqlalchemy.exc import IntegrityError
 
-import datetime
-
 from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
