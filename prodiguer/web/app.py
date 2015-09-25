@@ -53,6 +53,8 @@ def _get_app_routes():
             monitoring.FetchControlledVocabularyRequestHandler),
         (r'/api/1/simulation/monitoring/fetch_one',
             monitoring.FetchOneRequestHandler),
+        (r'/api/1/simulation/monitoring/fetch_messages',
+            monitoring.FetchMessagesRequestHandler),
         (r'/api/1/simulation/monitoring/fetch_timeslice',
             monitoring.FetchTimeSliceRequestHandler),
         (r'/api/1/simulation/monitoring/ws/all',

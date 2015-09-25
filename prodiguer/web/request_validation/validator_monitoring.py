@@ -23,6 +23,7 @@ from prodiguer.web.request_validation import validator as rv
 _PARAM_TIMESLICE = 'timeslice'
 _PARAM_HASHID = 'hashid'
 _PARAM_TRYID = 'tryID'
+_PARAM_UID = 'uid'
 
 
 def _MonitoringTimeslice():
@@ -59,6 +60,21 @@ def validate_fetch_all(handler):
 
     """
     rv.validate(handler)
+
+
+def validate_fetch_messages(handler):
+    """Validates fetch_messages endpoint HTTP request.
+
+    """
+    def _query_validator(handler):
+        """Validates HTTP request query arguments.
+
+        """
+        rv.validate_data(handler.request.query_arguments, {
+            Required(_PARAM_UID): All(rv.Sequence(uuid.UUID))
+            })
+
+    rv.validate(handler, query_validator=_query_validator)
 
 
 def validate_fetch_timeslice(handler):

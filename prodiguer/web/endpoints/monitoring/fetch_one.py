@@ -40,11 +40,11 @@ class FetchOneRequestHandler(ProdiguerHTTPRequestHandler):
             """
             self.hashid = self.get_argument(_PARAM_HASHID)
             self.try_id = self.get_argument(_PARAM_TRYID)
-            
-        
+
+
         def _set_data():
             """Pulls data from db.
-            
+
             """
             db.session.start()
             self.simulation = dao.retrieve_simulation_try(self.hashid, self.try_id)
@@ -57,7 +57,7 @@ class FetchOneRequestHandler(ProdiguerHTTPRequestHandler):
             """Returns simulation configuration card formatted for front-end.
 
             """
-            if self.simulation_configuration:                
+            if self.simulation_configuration:
                 return base64.b64decode(self.simulation_configuration.card)
             else:
                 return unicode()
@@ -68,9 +68,9 @@ class FetchOneRequestHandler(ProdiguerHTTPRequestHandler):
 
             """
             self.output = {
+                'config_card': _get_configuration_card(),
                 'job_history': db.utils.get_collection(self.job_history),
-                'simulation': db.utils.get_item(self.simulation),
-                'config_card': _get_configuration_card()
+                'simulation': db.utils.get_item(self.simulation)
             }
 
 
