@@ -50,7 +50,7 @@ def _get_emails():
             except sqlalchemy.exc.IntegrityError:
                 db.session.rollback()
             else:
-                new_emails.append(uid)                
+                new_emails.append(uid)
     finally:
         db.session.end()
 
@@ -66,9 +66,9 @@ def _get_message(uid):
 
         """
         return mq.create_ampq_message_properties(
-            user_id = mq.constants.USER_PRODIGUER,
-            producer_id = mq.constants.PRODUCER_IGCM,
-            message_type = mq.constants.MESSAGE_TYPE_SMTP
+            user_id=mq.constants.USER_PRODIGUER,
+            producer_id=mq.constants.PRODUCER_IGCM,
+            message_type=mq.constants.MESSAGE_TYPE_SMTP
             )
 
     def _get_body():
