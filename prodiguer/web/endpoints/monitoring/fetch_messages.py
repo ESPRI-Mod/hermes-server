@@ -30,6 +30,32 @@ class FetchMessagesRequestHandler(ProdiguerHTTPRequestHandler):
         """HTTP GET handler.
 
         """
+        def _get_message_history():
+            """Returns simulation message history for front-end.
+
+            """
+            data = db.utils.get_collection(dao.retrieve_simulation_messages(self.simulation_uid))
+
+            # Set job identifier.
+            for msg in data:
+                msg['job_uid'] = msg['correlation_id_2']
+
+            # Reduce response payload size by deleting unnecessary fields.
+            for msg in data:
+                del msg['app_id']
+                del msg['content_type']
+                del msg['content_encoding']
+                del msg['correlation_id_1']
+                del msg['correlation_id_2']
+                del msg['correlation_id_3']
+                del msg['producer_id']
+                del msg['timestamp_raw']
+                del msg['timestamp_precision']
+                del msg['user_id']
+
+            return data
+
+
         def _decode_request():
             """Decodes request.
 
@@ -43,11 +69,10 @@ class FetchMessagesRequestHandler(ProdiguerHTTPRequestHandler):
             """
             db.session.start()
             self.output = {
-                'message_history': dao.retrieve_simulation_messages(self.simulation_uid),
+                'message_history': _get_message_history(),
                 'simulation': dao.retrieve_simulation(self.simulation_uid)
             }
             db.session.end()
-
 
         # Invoke tasks.
         self.invoke(rv.validate_fetch_messages, [
