@@ -37,4 +37,4 @@ class ControlledVocabularyTerm(Entity):
     name = Column(Unicode(127), nullable=False)
     display_name = Column(Unicode(127))
     synonyms = Column(Unicode(1023))
-
+    uid = Column(Unicode(63), nullable=False, unique=True)

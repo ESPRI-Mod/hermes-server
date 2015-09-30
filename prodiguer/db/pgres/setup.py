@@ -38,6 +38,7 @@ def init_cv_terms():
         item.name = cv.get_name(term)
         item.display_name = cv.get_display_name(term)
         item.synonyms = ", ".join(cv.get_synonyms(term)) or None
+        item.uid = cv.get_uid(term)
         db_session.add(item)
 
 
