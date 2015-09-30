@@ -12,29 +12,43 @@
 
 """
 from prodiguer.db import pgres as db
-from prodiguer.web.request_validation import validator_monitoring as rv
+from prodiguer.web.request_validation import validator_cv as rv
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
 
 
-class FetchControlledVocabularyRequestHandler(ProdiguerHTTPRequestHandler):
-    """Simulation monitoring front end controlled vocabulary setup request handler.
+class FetchRequestHandler(ProdiguerHTTPRequestHandler):
+    """Fetch controlled vocabulary setup request handler.
 
     """
     def get(self, *args):
         """HTTP GET handler.
 
         """
+        def _get_terms():
+            """Returns sorted list of cv terms.
+
+            """
+            data  = db.utils.get_list(db.types.ControlledVocabularyTerm)
+
+            for item in data:
+                if item['sort_key'] is None:
+                    del item['sort_key']
+                if item['synonyms'] is None:
+                    del item['synonyms']
+
+            return data
+
+
         def _set_output():
             """Sets response to be returned to client.
 
             """
             db.session.start()
             self.output = {
-                'cv_terms':
-                    db.utils.get_list(db.types.ControlledVocabularyTerm)
+                'cv_terms': _get_terms()
             }
             db.session.end()
 
         # Invoke tasks.
-        self.invoke(rv.validate_fetch_cv, _set_output)
+        self.invoke(rv.validate_fetch, _set_output)

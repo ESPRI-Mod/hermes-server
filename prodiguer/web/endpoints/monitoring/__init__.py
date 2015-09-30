@@ -12,7 +12,6 @@
 
 """
 from prodiguer.web.endpoints.monitoring.event import EventRequestHandler
-from prodiguer.web.endpoints.monitoring.fetch_cv import FetchControlledVocabularyRequestHandler
 from prodiguer.web.endpoints.monitoring.fetch_one import FetchOneRequestHandler
 from prodiguer.web.endpoints.monitoring.fetch_messages import FetchMessagesRequestHandler
 from prodiguer.web.endpoints.monitoring.fetch_timeslice import FetchTimeSliceRequestHandler

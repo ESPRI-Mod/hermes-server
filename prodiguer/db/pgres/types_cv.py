@@ -38,3 +38,5 @@ class ControlledVocabularyTerm(Entity):
     display_name = Column(Unicode(127))
     synonyms = Column(Unicode(1023))
     uid = Column(Unicode(63), nullable=False, unique=True)
+    sort_key = Column(Unicode(127))
+

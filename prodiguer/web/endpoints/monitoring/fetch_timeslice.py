@@ -148,7 +148,7 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
                 self.start_date = arrow.now() - datetime.timedelta(days=183)
             elif timeslice == '12M':
                 self.start_date = arrow.now() - datetime.timedelta(days=365)
-            elif timeslice == 'ALL':
+            elif timeslice == '*':
                 self.start_date = None
 
 

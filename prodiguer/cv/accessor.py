@@ -99,7 +99,7 @@ def get_sort_key(term):
     """Returns a term type.
 
     """
-    return term['meta']['sort_key']
+    return term['meta'].get('sort_key')
 
 
 def set_sort_key(term):

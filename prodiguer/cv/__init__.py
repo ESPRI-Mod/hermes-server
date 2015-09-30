@@ -23,6 +23,7 @@ from prodiguer.cv.accessor import get_name
 from prodiguer.cv.accessor import get_synonyms
 from prodiguer.cv.accessor import get_type
 from prodiguer.cv.accessor import get_uid
+from prodiguer.cv.accessor import get_sort_key
 from prodiguer.cv.factory import create
 from prodiguer.cv.exceptions import TermNameError
 from prodiguer.cv.exceptions import TermTypeError

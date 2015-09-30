@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.web.endpoints.sim_metrics.request_validator.py
+.. module:: prodiguer.web.request_validation.validator_monitoring.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -34,7 +34,7 @@ def _MonitoringTimeslice():
         """Inner function.
 
         """
-        if val not in ['1W', '2W', '1M', '2M', '3M', '6M', '12M', 'ALL']:
+        if val not in ['1W', '2W', '1M', '2M', '3M', '6M', '12M', '*']:
             raise ValueError("Unsupported monitoring timeslice")
 
     return func
@@ -46,13 +46,6 @@ def validate_event(handler):
     """
     # TODO
     pass
-
-
-def validate_fetch_cv(handler):
-    """Validates fetch_cv endpoint HTTP request.
-
-    """
-    rv.validate(handler)
 
 
 def validate_fetch_all(handler):

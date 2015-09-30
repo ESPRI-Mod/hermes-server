@@ -15,8 +15,9 @@ import tornado
 from tornado.web import Application
 
 
-from prodiguer import cv
+import prodiguer
 from prodiguer.web.endpoints import aggregations
+from prodiguer.web.endpoints import cv
 from prodiguer.web.endpoints import monitoring
 from prodiguer.web.endpoints import ops
 from prodiguer.web.endpoints import sim_metrics
@@ -48,9 +49,10 @@ def _get_app_routes():
     return (
         # Aggregation routes.
         # (r'/api/1/aggregations/find', aggregations.FindRequestHandler),
+        # Controlled vocabulary routes.
+        (r'/api/1/cv/fetch',
+            cv.FetchRequestHandler),
         # Simulation monitoring routes.
-        (r'/api/1/simulation/monitoring/fetch_cv',
-            monitoring.FetchControlledVocabularyRequestHandler),
         (r'/api/1/simulation/monitoring/fetch_one',
             monitoring.FetchOneRequestHandler),
         (r'/api/1/simulation/monitoring/fetch_messages',
@@ -103,19 +105,19 @@ def _is_in_debug_mode():
     """Returns app debug mode.
 
     """
-    return config.deploymentMode=='dev'
+    return config.deploymentMode == 'dev'
 
 
-def get_endpoint(ep):
+def get_endpoint(suffix):
     """Returns the endpoint prefixed with base address.
 
-    :param str ep: Endpoint suffix.
+    :param str suffix: Endpoint suffix.
 
     :returns: The endpoint prefixed with base address.
     :rtype: str
 
     """
-    return _BASE_ADDRESS.format(config.web.url, ep)
+    return _BASE_ADDRESS.format(config.web.url, suffix)
 
 
 def run():
@@ -126,7 +128,7 @@ def run():
     logger.log_web("Initializing")
 
     # Initialise cv session.
-    cv.session.init()
+    prodiguer.cv.session.init()
 
     # Instantiate.
     app = Application(_get_app_routes(),
