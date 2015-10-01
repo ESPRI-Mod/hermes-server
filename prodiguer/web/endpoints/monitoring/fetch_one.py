@@ -15,6 +15,8 @@ import base64
 
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
+from prodiguer.web.endpoints.monitoring.utils import trim_job
+from prodiguer.web.endpoints.monitoring.utils import trim_simulation
 from prodiguer.web.request_validation import validator_monitoring as rv
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
@@ -47,9 +49,11 @@ class FetchOneRequestHandler(ProdiguerHTTPRequestHandler):
 
             """
             db.session.start()
+
             self.simulation = dao.retrieve_simulation_try(self.hashid, self.try_id)
             self.simulation_configuration = dao.retrieve_simulation_configuration(self.simulation.uid)
             self.job_history = dao.retrieve_simulation_jobs(self.simulation.uid)
+
             db.session.end()
 
 
@@ -69,8 +73,8 @@ class FetchOneRequestHandler(ProdiguerHTTPRequestHandler):
             """
             self.output = {
                 'config_card': _get_configuration_card(),
-                'job_history': db.utils.get_collection(self.job_history),
-                'simulation': db.utils.get_item(self.simulation)
+                'job_history': [trim_job(j) for j in self.job_history],
+                'simulation': trim_simulation(self.simulation)
             }
 
 

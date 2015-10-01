@@ -13,6 +13,7 @@
 """
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
+from prodiguer.web.endpoints.monitoring.utils import trim_message
 from prodiguer.web.request_validation import validator_monitoring as rv
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
@@ -34,26 +35,7 @@ class FetchMessagesRequestHandler(ProdiguerHTTPRequestHandler):
             """Returns simulation message history for front-end.
 
             """
-            data = db.utils.get_collection(dao.retrieve_simulation_messages(self.simulation_uid))
-
-            # Set job identifier.
-            for msg in data:
-                msg['job_uid'] = msg['correlation_id_2']
-
-            # Reduce response payload size by deleting unnecessary fields.
-            for msg in data:
-                del msg['app_id']
-                del msg['content_type']
-                del msg['content_encoding']
-                del msg['correlation_id_1']
-                del msg['correlation_id_2']
-                del msg['correlation_id_3']
-                del msg['producer_id']
-                del msg['timestamp_raw']
-                del msg['timestamp_precision']
-                del msg['user_id']
-
-            return data
+            return [trim_message(m) for m in dao.retrieve_simulation_messages(self.simulation_uid)]
 
 
         def _decode_request():

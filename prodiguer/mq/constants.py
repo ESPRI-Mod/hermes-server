@@ -16,22 +16,22 @@ AMPQ_EXCHANGE_TYPE_HEADER = "header"
 AMPQ_EXCHANGE_TYPE_TOPIC = "topic"
 
 # All AMPQ exchange types.
-AMPQ_EXCHANGE_TYPES = set([
+AMPQ_EXCHANGE_TYPES = {
 	AMPQ_EXCHANGE_TYPE_DIRECT,
 	AMPQ_EXCHANGE_TYPE_FANOUT,
 	AMPQ_EXCHANGE_TYPE_HEADER,
 	AMPQ_EXCHANGE_TYPE_TOPIC
-	])
+	}
 
 # AMPQ message delivery modes.
 AMPQ_DELIVERY_MODE_NON_PERSISTENT = 1
 AMPQ_DELIVERY_MODE_PERSISTENT = 2
 
 # All AMPQ message delivery modes.
-AMPQ_DELIVERY_MODES = set([
+AMPQ_DELIVERY_MODES = {
 	AMPQ_DELIVERY_MODE_NON_PERSISTENT,
 	AMPQ_DELIVERY_MODE_PERSISTENT
-	])
+	}
 
 # Message server virtual host.
 VHOST = "prodiguer"
@@ -42,13 +42,14 @@ EXCHANGE_PRODIGUER_SECONDARY = "x-secondary"
 EXCHANGE_PRODIGUER_SECONDARY_DELAYED = "x-secondary-delayed"
 
 # All exchanges.
-EXCHANGES = set([
+EXCHANGES = {
 	EXCHANGE_PRODIGUER_PRIMARY,
 	EXCHANGE_PRODIGUER_SECONDARY,
 	EXCHANGE_PRODIGUER_SECONDARY_DELAYED
-	])
+	}
 
 # Live message queues.
+QUEUE_LIVE_ARCHIVE = 'live-archive'
 QUEUE_LIVE_CV = 'live-cv'
 QUEUE_LIVE_FE = 'live-fe'
 QUEUE_LIVE_METRICS_ENV = 'live-metrics-env'
@@ -75,13 +76,15 @@ QUEUE_DEBUG_8000 = 'debug-8000'
 QUEUE_DEBUG_8100 = 'debug-8100'
 QUEUE_DEBUG_8200 = 'debug-8200'
 QUEUE_DEBUG_9999 = 'debug-9999'
+QUEUE_DEBUG_ARCHIVE = 'debug-archive'
 QUEUE_DEBUG_CV = 'debug-cv'
 QUEUE_DEBUG_FE = 'debug-fe'
 QUEUE_DEBUG_SMTP = 'debug-smtp'
 
 # All queues.
-QUEUES = set([
+QUEUES = {
 	# Live queues.
+	QUEUE_LIVE_ARCHIVE,
 	QUEUE_LIVE_CV,
 	QUEUE_LIVE_FE,
 	QUEUE_LIVE_METRICS_ENV,
@@ -91,6 +94,7 @@ QUEUES = set([
 	QUEUE_LIVE_SMTP,
 	QUEUE_LIVE_SUPERVISEUR,
 	# Debug queues.
+	QUEUE_DEBUG_ARCHIVE,
 	QUEUE_DEBUG_0000,
 	QUEUE_DEBUG_0100,
 	QUEUE_DEBUG_1000,
@@ -110,27 +114,27 @@ QUEUES = set([
 	QUEUE_DEBUG_CV,
 	QUEUE_DEBUG_FE,
 	QUEUE_DEBUG_SMTP
-	])
+	}
 
 # Message producers.
 PRODUCER_IGCM = "libigcm"
 PRODUCER_PRODIGUER = "prodiguer"
 
 # All producers.
-PRODUCERS = set([
+PRODUCERS = {
 	PRODUCER_IGCM,
 	PRODUCER_PRODIGUER
-	])
+	}
 
 # Message server users.
 USER_PRODIGUER = "prodiguer-mq-user"
 USER_PRODIGUER_ADMIN = "prodiguer-mq-admin"
 
 # All users.
-USERS = set([
+USERS = {
 	USER_PRODIGUER,
 	USER_PRODIGUER_ADMIN
-	])
+	}
 
 # Message application identifiers.
 APP_INTERNAL = "internal"
@@ -139,12 +143,12 @@ APP_METRICS = "metrics"
 APP_SUPERVISEUR = "superviseur"
 
 # All apps.
-APPS = set([
+APPS = {
 	APP_INTERNAL,
 	APP_METRICS,
 	APP_MONITORING,
 	APP_SUPERVISEUR
-	])
+	}
 
 # Message types:
 # ... general message types.
@@ -170,7 +174,7 @@ MESSAGE_TYPE_SMTP = "-3000"		# Internal - smtp inputs
 
 
 # All types.
-TYPES = set([
+TYPES = {
 	# ... monitoring - simulation
 	MESSAGE_TYPE_0000,
 	MESSAGE_TYPE_0100,
@@ -197,7 +201,7 @@ TYPES = set([
 	MESSAGE_TYPE_FE,
 	MESSAGE_TYPE_CV,
 	MESSAGE_TYPE_SMTP
-	])
+	}
 
 # Map of applications to message types.
 MESSAGE_TYPE_APPLICATION = {
@@ -227,7 +231,7 @@ MESSAGE_TYPE_APPLICATION = {
 	MESSAGE_TYPE_FE: APP_INTERNAL,
 	MESSAGE_TYPE_CV: APP_INTERNAL,
 	MESSAGE_TYPE_SMTP: APP_INTERNAL
-}
+	}
 
 # Map of exchanges to message types.
 MESSAGE_TYPE_EXCHANGE = {
@@ -257,17 +261,17 @@ MESSAGE_TYPE_EXCHANGE = {
 	MESSAGE_TYPE_FE: EXCHANGE_PRODIGUER_SECONDARY,
 	MESSAGE_TYPE_CV: EXCHANGE_PRODIGUER_SECONDARY,
 	MESSAGE_TYPE_SMTP: EXCHANGE_PRODIGUER_SECONDARY
-}
+	}
 
 # Timestamp precision types.
 TIMESTAMP_PRECISION_NS = 'ns'
 TIMESTAMP_PRECISION_MS = 'ms'
 
 # All timestamp precision types.
-TIMESTAMP_PRECISIONS = set([
+TIMESTAMP_PRECISIONS = {
 	TIMESTAMP_PRECISION_NS,
 	TIMESTAMP_PRECISION_MS
-	])
+	}
 
 # Content types.
 CONTENT_TYPE_JSON = 'application/json'
@@ -275,19 +279,19 @@ CONTENT_TYPE_BASE64 = 'application/base64'
 CONTENT_TYPE_BASE64_JSON = 'application/base64+json'
 
 # All content types.
-CONTENT_TYPES = set([
+CONTENT_TYPES = {
 	CONTENT_TYPE_JSON,
 	CONTENT_TYPE_BASE64,
 	CONTENT_TYPE_BASE64_JSON,
-	])
+	}
 
 # Content encodings.
 CONTENT_ENCODING_UNICODE = "utf-8"
 
 # All content encodings.
-CONTENT_ENCODINGS = set([
+CONTENT_ENCODINGS = {
 	CONTENT_ENCODING_UNICODE
-	])
+	}
 
 # Message priorities.
 PRIORITY_LOW = 1
@@ -297,11 +301,11 @@ PRIORITY_URGENT = 9
 PRIORITY_CRITICAL = 10
 
 # All message priorities.
-PRIORITIES = set([
+PRIORITIES = {
 	PRIORITY_LOW,
 	PRIORITY_NORMAL,
 	PRIORITY_HIGH,
 	PRIORITY_URGENT,
 	PRIORITY_CRITICAL,
-	])
+	}
 

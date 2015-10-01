@@ -30,6 +30,12 @@ _EXCLUDED_TERMSETS = {
     'experiment_group'
     }
 
+# Set of fields that can be stripped from payload if they are null.
+_NULLABLE_FIELDS = {
+    'sort_key',
+    'synonyms'
+}
+
 
 
 class FetchRequestHandler(ProdiguerHTTPRequestHandler):
@@ -47,10 +53,9 @@ class FetchRequestHandler(ProdiguerHTTPRequestHandler):
             data  = db.utils.get_list(db.types.ControlledVocabularyTerm)
             data = [i for i in data if i['typeof'] not in _EXCLUDED_TERMSETS]
             for item in data:
-                if item['sort_key'] is None:
-                    del item['sort_key']
-                if item['synonyms'] is None:
-                    del item['synonyms']
+                for field in _NULLABLE_FIELDS:
+                    if item[field] is None:
+                        del item[field]
 
             return data
 

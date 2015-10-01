@@ -72,10 +72,12 @@ _AGENT_HANDLERS = {
     'debug-8100': supervisor_format_script,
     'debug-8200': supervisor_dispatch_script,
     'debug-9999': monitoring_simulation_end,
+    'debug-archive': None,
     'debug-cv': internal_cv,
     'debug-fe': internal_fe,
     'debug-smtp': internal_smtp,
     'debug-smtp-realtime': internal_smtp_realtime,
+    'live-archive': None,
     'live-cv': internal_cv,
     'live-fe': internal_fe,
     'live-metrics-env': metrics_environment,
@@ -146,9 +148,9 @@ def _get_exchange(agent_type):
     """
     for exchange, agent_types in _AGENT_EXCHANGES.items():
         if agent_type in agent_types:
-            return exchange        
+            return exchange
 
-    raise ValueError("Agent cannot be mapped to exchange: {}".format(agent_type))       
+    raise ValueError("Agent cannot be mapped to exchange: {}".format(agent_type))
 
 
 def _get_queue(agent_type):
