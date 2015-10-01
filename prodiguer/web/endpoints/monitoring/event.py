@@ -55,7 +55,8 @@ def _get_simulation_event_data(request_data):
     return {
         'cv_terms': request_data.get('cv_terms', []),
         'job_history': jobs,
-        'simulation': simulation
+        'simulation': simulation,
+        'simulation_uid': simulation.uid
         }
 
 
@@ -73,7 +74,8 @@ def _get_job_event_data(request_data):
 
     # Return event data.
     return {
-        'job': job
+        'job': job,
+        'simulation_uid': job.simulation_uid
         }
 
 
@@ -117,6 +119,17 @@ class EventRequestHandler(tornado.web.RequestHandler):
         """HTTP POST handler.
 
         """
+        def _ws_client_filter(client, data):
+            """Determines whether the data will be pushed to the web-socket client.
+
+            """
+            simulation_uid = client.get_argument("simulationUID", None)
+            if simulation_uid is None:
+                return True
+            else:
+                return data['simulation_uid'] == simulation_uid
+
+
         # Signal asynch.
         self.finish()
 
@@ -140,7 +153,7 @@ class EventRequestHandler(tornado.web.RequestHandler):
                 })
 
                 # Broadcast to clients.
-                websockets.on_write(_WS_KEY, data)
+                websockets.on_write(_WS_KEY, data, _ws_client_filter)
 
         # Close db session.
         finally:

@@ -87,11 +87,13 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
 
             """
             db.session.start()
-            self.output = {
-                'job_history': _get_job_history(),
-                'simulation_list': _get_simulation_list()
-            }
-            db.session.end()
+            try:
+                self.output = {
+                    'job_history': _get_job_history(),
+                    'simulation_list': _get_simulation_list()
+                }
+            finally:
+                db.session.end()
 
 
         # Invoke tasks.

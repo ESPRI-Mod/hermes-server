@@ -49,12 +49,12 @@ class FetchOneRequestHandler(ProdiguerHTTPRequestHandler):
 
             """
             db.session.start()
-
-            self.simulation = dao.retrieve_simulation_try(self.hashid, self.try_id)
-            self.simulation_configuration = dao.retrieve_simulation_configuration(self.simulation.uid)
-            self.job_history = dao.retrieve_simulation_jobs(self.simulation.uid)
-
-            db.session.end()
+            try:
+                self.simulation = dao.retrieve_simulation_try(self.hashid, self.try_id)
+                self.simulation_configuration = dao.retrieve_simulation_configuration(self.simulation.uid)
+                self.job_history = dao.retrieve_simulation_jobs(self.simulation.uid)
+            finally:
+                db.session.end()
 
 
         def _get_configuration_card():

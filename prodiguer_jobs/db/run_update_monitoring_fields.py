@@ -28,27 +28,27 @@ def _main():
 
     """
     db.session.start()
+    try:
+        for simulation in db.dao.get_all(db.types.Simulation):
+        	configuration = db.dao_monitoring.retrieve_simulation_configuration(simulation.uid)
+        	if configuration is None or configuration.card is None:
+        		continue
 
-    for simulation in db.dao.get_all(db.types.Simulation):
-    	configuration = db.dao_monitoring.retrieve_simulation_configuration(simulation.uid)
-    	if configuration is None or configuration.card is None:
-    		continue
+        	print simulation.uid
 
-    	print simulation.uid
+        	card = _decode_base64_card(configuration.card)
+        	print card
 
-    	card = _decode_base64_card(configuration.card)
-    	print card
+        	config = ConfigParser.RawConfigParser(allow_no_value=True)
+        	config.readfp(io.BytesIO(card))
 
-    	config = ConfigParser.RawConfigParser(allow_no_value=True)
-    	config.readfp(io.BytesIO(card))
+        	print dir(config)
+        	print config.sections()
+        	print config.get('UserChoices', 'ExpType')
 
-    	print dir(config)
-    	print config.sections()
-    	print config.get('UserChoices', 'ExpType')
-
-    	break
-
-    db.session.end()
+        	break
+    finally:
+        db.session.end()
 
 
 # Main entry point.

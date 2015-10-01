@@ -28,8 +28,7 @@ _WS_CLIENTS = collections.defaultdict(list)
 def get_client_count(key=None):
     """Returns count of connected clients.
 
-    :param key: Web socket client cache key.
-    :param type: str
+    :param str key: Web socket client cache key.
 
     :returns: Web socket client count.
     :rtype: int
@@ -41,18 +40,27 @@ def get_client_count(key=None):
         return reduce(lambda x, y: x + len(y), _WS_CLIENTS.values(), 0)
 
 
-def on_write(key, data):
+def on_write(key, data, client_filter=None):
     """Broadcasts web socket message to relevant clients.
 
-    :param key: Web socket client cache key.
-    :param type: str
-
-    :param data: Data dictionary to send to client.
-    :param data: dict
+    :param str key: Web socket client cache key.
+    :param dict data: Data dictionary to send to client.
+    :param function client_filter: Predicate to determines whether a client is to be written to.
 
     """
+    # Get clients to be broadcast to.
+    if client_filter is None:
+        clients = _WS_CLIENTS[key]
+    else:
+        clients = [c for c in _WS_CLIENTS[key] if client_filter(c, data) == True]
+
+    # Escape if there are no clients.
+    if not clients:
+        return
+
+    # Write data to clients.
     data = data_convertor.jsonify(data)
-    for client in _WS_CLIENTS[key]:
+    for client in clients:
         try:
             client.write_message(data)
         except tornado.websocket.WebSocketClosedError:
@@ -62,11 +70,8 @@ def on_write(key, data):
 def on_connect(key, client):
     """Caches a client connection.
 
-    :param key: Web socket client cache key.
-    :param type: str
-
-    :param client: Web socket handler pointer.
-    :type client: torndao.websocket.WebSocketHandler
+    :param str key: Web socket client cache key.
+    :param torndao.websocket.WebSocketHandler client: Web socket handler pointer.
 
     """
     if client not in _WS_CLIENTS[key]:
@@ -77,11 +82,8 @@ def on_connect(key, client):
 def on_disconnect(key, client):
     """Removes a client connection from cache.
 
-    :param key: Web socket client cache key.
-    :param type: str
-
-    :param c: Web socket handler pointer.
-    :param c: torndao.websocket.WebSocketHandler
+    :param str key: Web socket client cache key.
+    :param torndao.websocket.WebSocketHandler client: Web socket handler pointer.
 
     """
     if client in _WS_CLIENTS[key]:
@@ -92,8 +94,7 @@ def on_disconnect(key, client):
 def clear_cache(key=None):
     """Removes client connections from cache.
 
-    :param key: Web socket client cache key.
-    :param type: str
+    :param str key: Web socket client cache key.
 
     """
     keys = _WS_CLIENTS.keys() if key is None else { key }

@@ -50,11 +50,13 @@ class FetchMessagesRequestHandler(ProdiguerHTTPRequestHandler):
 
             """
             db.session.start()
-            self.output = {
-                'message_history': _get_message_history(),
-                'simulation': dao.retrieve_simulation(self.simulation_uid)
-            }
-            db.session.end()
+            try:
+                self.output = {
+                    'message_history': _get_message_history(),
+                    'simulation': dao.retrieve_simulation(self.simulation_uid)
+                }
+            finally:
+                db.session.end()
 
         # Invoke tasks.
         self.invoke(rv.validate_fetch_messages, [
