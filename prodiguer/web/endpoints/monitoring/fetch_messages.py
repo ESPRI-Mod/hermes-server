@@ -13,9 +13,9 @@
 """
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
-from prodiguer.web.endpoints.monitoring.utils import trim_message
 from prodiguer.web.request_validation import validator_monitoring as rv
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
+from prodiguer.web.utils.payload import trim_message
 
 
 

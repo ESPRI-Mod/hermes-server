@@ -17,10 +17,10 @@ import arrow
 
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
-from prodiguer.web.endpoints.monitoring.utils import trim_job
-from prodiguer.web.endpoints.monitoring.utils import trim_simulation
 from prodiguer.web.request_validation import validator_monitoring as rv
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
+from prodiguer.web.utils.payload import trim_job
+from prodiguer.web.utils.payload import trim_simulation
 
 
 
