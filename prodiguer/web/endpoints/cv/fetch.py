@@ -17,6 +17,21 @@ from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
 
 
+# Set of termsets not required for front-end.
+_EXCLUDED_TERMSETS = {
+    'execution_state',
+    'institute',
+    'message_type',
+    'message_application',
+    'message_producer',
+    'message_user',
+    'model_forcing',
+    'job_type',
+    'experiment_group'
+    }
+
+
+
 class FetchRequestHandler(ProdiguerHTTPRequestHandler):
     """Fetch controlled vocabulary setup request handler.
 
@@ -30,7 +45,7 @@ class FetchRequestHandler(ProdiguerHTTPRequestHandler):
 
             """
             data  = db.utils.get_list(db.types.ControlledVocabularyTerm)
-
+            data = [i for i in data if i['typeof'] not in _EXCLUDED_TERMSETS]
             for item in data:
                 if item['sort_key'] is None:
                     del item['sort_key']
