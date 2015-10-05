@@ -243,6 +243,13 @@ def validate_retrieve_simulation_messages(uid):
     validator.validate_simulation_uid(uid)
 
 
+def validate_retrieve_simulation_message_count(uid):
+    """Function input validator: retrieve_simulation_message_count.
+
+    """
+    validator.validate_simulation_uid(uid)
+
+
 def validate_retrieve_simulation_jobs(uid):
     """Function input validator: retrieve_simulation_jobs.
 
