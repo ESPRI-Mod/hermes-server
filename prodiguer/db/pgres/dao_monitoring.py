@@ -53,9 +53,12 @@ def retrieve_active_jobs(start_date=None):
     qry = session.query(types.Job)
     qry = qry.join(types.Simulation,
                    types.Job.simulation_uid==types.Simulation.uid)
+    qry = qry.filter(types.Simulation.name != None)
     qry = qry.filter(types.Simulation.is_obsolete == False)
     if start_date is not None:
         qry = qry.filter(types.Job.execution_start_date >= start_date)
+
+    return qry.all()
 
     return dao.exec_query(types.Job, qry, True)
 
@@ -92,6 +95,8 @@ def retrieve_active_simulations(start_date=None):
     qry = qry.filter(types.Simulation.is_obsolete == False)
     if start_date is not None:
         qry = qry.filter(types.Simulation.execution_start_date >= start_date)
+
+    return qry.all()
 
     return dao.exec_query(types.Simulation, qry, True)
 
