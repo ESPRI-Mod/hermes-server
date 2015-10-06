@@ -96,6 +96,10 @@ def unpack_message_content(ctx):
     ctx.job_warning_delay = ctx.content.get(
         'jobWarningDelay', config.apps.monitoring.defaultJobWarningDelayInSeconds)
 
+    # Override job warning delay if set to 0.
+    if ctx.job_warning_delay <= 0:
+        ctx.job_warning_delay = config.apps.monitoring.defaultJobWarningDelayInSeconds
+
 
 def persist_job(ctx):
     """Persists job info to db.
