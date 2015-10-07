@@ -17,49 +17,62 @@ from prodiguer.utils import config
 
 
 
-def _delete_fields(data, fields):
+def _delete_fields(obj, fields):
     """Deletes fields from data.
 
     """
     for field in fields:
-        del data[field]
+        del obj[field]
+
+    return obj
 
 
-def _delete_null_fields(data, fields):
+def _delete_null_fields(obj, fields):
     """Deletes null fields from data.
 
     """
-    _delete_fields(data, [f for f in fields if data[f] is None])
+    _delete_fields(obj, [f for f in fields if obj[f] is None])
 
 
-def _delete_false_fields(data, fields):
+def _delete_false_fields(obj, fields):
     """Deletes false fields from data.
 
     """
-    _delete_fields(data, [f for f in fields if data[f] == False])
+    _delete_fields(obj, [f for f in fields if obj[f] == False])
 
 
-def trim_simulation(data):
+def _convert_to_dict(instance):
+    """Returns an instance of a mapped db row as a dictionary.
+
+    """
+    return _delete_fields(db.convertor.convert(instance), {
+        'id',
+        'row_create_date',
+        'row_update_date'
+        })
+
+
+def trim_simulation(instance):
     """Trims size of a simulation being returned to front-end by removing superfluos information.
 
-    :param prodiguer.db.pgres.types.Simulation data: Simulation being returned to front-end.
+    :param prodiguer.db.pgres.types.Simulation instance: Simulation being returned to front-end.
 
     :returns: Trimmed simulation.
     :rtype: dict
 
     """
-    # Convert to trimmed dictionary.
-    data = db.utils.get_item(data)
+    # Convert to dictionary.
+    obj = _convert_to_dict(instance)
 
     # Delete fields not required by front end
-    _delete_null_fields(data, {
+    _delete_null_fields(obj, {
         'output_start_date',
         'output_end_date',
         'ensemble_member'
         })
 
     # Delete null fields.
-    _delete_null_fields(data, {
+    _delete_null_fields(obj, {
         'accounting_project',
         'execution_end_date',
         'parent_simulation_branch_date',
@@ -70,7 +83,7 @@ def trim_simulation(data):
         })
 
     # Delete null cv fields
-    _delete_null_fields(data, {
+    _delete_null_fields(obj, {
         'activity',
         'activity_raw',
         'compute_node',
@@ -88,28 +101,28 @@ def trim_simulation(data):
         })
 
     # Delete false fields
-    _delete_false_fields(data, {
+    _delete_false_fields(obj, {
         'is_error',
         'is_obsolete'
         })
 
-    return data
+    return obj
 
 
-def trim_job(data):
+def trim_job(instance):
     """Trims size of a job being returned to front-end by removing superfluos information.
 
-    :param prodiguer.db.pgres.types.Job data: Job being returned to front-end.
+    :param prodiguer.db.pgres.types.Job instance: Job being returned to front-end.
 
     :returns: Trimmed job.
     :rtype: dict
 
     """
-    # Convert to trimmed dictionary.
-    data = db.utils.get_item(data)
+    # Convert to dictionary.
+    obj = _convert_to_dict(instance)
 
     # Delete null fields
-    _delete_null_fields(data, {
+    _delete_null_fields(obj, {
         'accounting_project',
         'execution_end_date',
         'post_processing_component',
@@ -120,40 +133,40 @@ def trim_job(data):
         })
 
     # Delete false fields
-    _delete_false_fields(data, {
+    _delete_false_fields(obj, {
         'is_error'
         })
 
     # Delete start up field for post-processing jobs
-    if data['typeof'] != cv.constants.JOB_TYPE_COMPUTING:
-        del data['is_startup']
+    if obj['typeof'] != cv.constants.JOB_TYPE_COMPUTING:
+        del obj['is_startup']
 
     # Delete fields with matching defaults
-    if data['typeof'] == cv.constants.JOB_TYPE_POST_PROCESSING:
-        del data['typeof']
-    if data['warning_delay'] == config.apps.monitoring.defaultJobWarningDelayInSeconds:
-        del data['warning_delay']
+    if obj['typeof'] == cv.constants.JOB_TYPE_POST_PROCESSING:
+        del obj['typeof']
+    if obj['warning_delay'] == config.apps.monitoring.defaultJobWarningDelayInSeconds:
+        del obj['warning_delay']
 
-    return data
+    return obj
 
 
-def trim_message(data):
+def trim_message(instance):
     """Trims size of a message being returned to front-end by removing superfluos information.
 
-    :param prodiguer.db.pgres.types.Message data: Message being returned to front-end.
+    :param prodiguer.db.pgres.types.Message instance: Message being returned to front-end.
 
     :returns: Trimmed message.
     :rtype: dict
 
     """
-    # Convert to trimmed dictionary.
-    data = db.utils.get_item(data)
+    # Convert to dictionary.
+    obj = _convert_to_dict(instance)
 
     # Rename a field.
-    data['job_uid'] = data['correlation_id_2']
+    obj['job_uid'] = obj['correlation_id_2']
 
     # Delete fields
-    _delete_fields(data, {
+    _delete_fields(obj, {
         'app_id',
         'content_type',
         'content_encoding',
@@ -166,25 +179,25 @@ def trim_message(data):
         'user_id'
         })
 
-    return data
+    return obj
 
 
-def trim_term(data):
+def trim_term(instance):
     """Trims size of a term being returned to front-end by removing superfluos information.
 
-    :param prodiguer.db.pgres.types.ControlledVocabularyTerm data: Term being returned to front-end.
+    :param prodiguer.db.pgres.types.ControlledVocabularyTerm instance: Term being returned to front-end.
 
     :returns: Trimmed message.
     :rtype: dict
 
     """
-    # Convert to trimmed dictionary.
-    data = db.utils.get_item(data)
+    # Convert to dictionary.
+    obj = _convert_to_dict(instance)
 
     # Delete null fields
-    _delete_null_fields(data, {
+    _delete_null_fields(obj, {
         'sort_key',
         'synonyms'
         })
 
-    return data
+    return obj

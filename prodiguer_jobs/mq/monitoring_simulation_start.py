@@ -261,6 +261,6 @@ def _enqueue_front_end_notification(ctx):
     """
     utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
         "event_type": u"simulation_start",
-        "cv_terms": db.utils.get_collection(ctx.cv_terms_persisted_to_db),
+        "cv_terms": ctx.cv_terms_persisted_to_db,
         "simulation_uid": ctx.active_simulation.uid
     })

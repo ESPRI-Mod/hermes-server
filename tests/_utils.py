@@ -334,14 +334,8 @@ def assert_db_convertor(type):
     # Create instance via factory.
     x = db.factory.create(type)
 
-    # Convert to string.
-    assert_obj(convertor.to_string(x), str)
-
     # Convert to dictionary.
     assert_obj(convertor.to_dict(x), dict)
-
-    # Convert to json.
-    assert convertor.to_json(x) is not None
 
     # Reset type factory.
     db.factory.reset()

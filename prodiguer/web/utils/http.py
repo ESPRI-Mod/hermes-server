@@ -16,8 +16,9 @@ import json
 import tornado
 
 from prodiguer.utils import convert
+from prodiguer.utils import data_convertor
 from prodiguer.utils import logger
-from prodiguer.utils.data_convertor import jsonify
+from prodiguer.utils import string_convertor
 
 
 
@@ -68,8 +69,8 @@ class ProdiguerHTTPRequestHandler(tornado.web.RequestHandler):
             """Writes HTTP response data.
 
             """
-            # Write JSON response.
-            self.write(jsonify(data))
+            # Write response.
+            self.write(data_convertor.convert(data, string_convertor.to_camel_case))
 
             # Set HTTP header.
             self.set_header("Content-Type", "application/json; charset=utf-8")
@@ -113,13 +114,23 @@ class ProdiguerHTTPRequestHandler(tornado.web.RequestHandler):
             _write_error(_HTTP_RESPONSE_SERVER_ERROR, err)
 
 
+        def _log_start():
+            """Logs start of request processing.
+
+            """
+            api_type = str(self).split(".")[2]
+            msg = "{0} --> executing --> {1} [{2}]"
+            msg = msg.format(api_type, self, id(self))
+            logger.log_web(msg)
+
+
         def _log_success():
             """Logs a successful response.
 
             """
             api_type = str(self).split(".")[2]
-            msg = "{0} --> success --> {1}"
-            msg = msg.format(api_type, self)
+            msg = "{0} --> success --> {1} [{2}]"
+            msg = msg.format(api_type, self, id(self))
             logger.log_web(msg)
 
 
@@ -130,8 +141,8 @@ class ProdiguerHTTPRequestHandler(tornado.web.RequestHandler):
 
             """
             api_type = str(self).split(".")[2]
-            msg = "{0} --> error --> {1} --> {2}"
-            msg = msg.format(api_type, self, error)
+            msg = "{0} --> error --> {1} [{2}] --> {3}"
+            msg = msg.format(api_type, self, id(self), error)
             logger.log_web_error(msg)
 
 
@@ -178,6 +189,9 @@ class ProdiguerHTTPRequestHandler(tornado.web.RequestHandler):
                         pass
                     return err
 
+
+        # Log start.
+        _log_start()
 
         # Validate request.
         taskset = _get_taskset(validation_taskset)
