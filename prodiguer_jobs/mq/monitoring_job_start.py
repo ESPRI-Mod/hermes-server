@@ -97,7 +97,7 @@ def unpack_message_content(ctx):
         'jobWarningDelay', config.apps.monitoring.defaultJobWarningDelayInSeconds)
 
     # Override job warning delay if set to 0.
-    if ctx.job_warning_delay <= 0:
+    if ctx.job_warning_delay == "0":
         ctx.job_warning_delay = config.apps.monitoring.defaultJobWarningDelayInSeconds
 
 
