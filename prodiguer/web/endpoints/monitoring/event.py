@@ -54,7 +54,7 @@ def _get_simulation_event_data(request_data):
     # Return event data.
     return {
         'cv_terms': request_data.get('cv_terms', []),
-        'job_history': jobs,
+        'job_list': jobs,
         'simulation': simulation,
         'simulation_uid': simulation.uid
         }

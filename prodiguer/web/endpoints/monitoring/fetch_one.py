@@ -18,6 +18,7 @@ from prodiguer.db.pgres import dao_monitoring as dao
 from prodiguer.web.request_validation import validator_monitoring as rv
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 from prodiguer.web.utils.payload import trim_job
+from prodiguer.web.utils.payload import trim_message
 from prodiguer.web.utils.payload import trim_simulation
 
 
@@ -52,7 +53,7 @@ class FetchOneRequestHandler(ProdiguerHTTPRequestHandler):
             try:
                 self.simulation = dao.retrieve_simulation_try(self.hashid, self.try_id)
                 self.simulation_configuration = dao.retrieve_simulation_configuration(self.simulation.uid)
-                self.job_history = dao.retrieve_simulation_jobs(self.simulation.uid)
+                self.job_list = dao.retrieve_simulation_jobs(self.simulation.uid)
                 self.message_count = dao.retrieve_simulation_message_count(self.simulation.uid)
             finally:
                 db.session.end()
@@ -74,7 +75,7 @@ class FetchOneRequestHandler(ProdiguerHTTPRequestHandler):
             """
             self.output = {
                 'config_card': _get_configuration_card(),
-                'job_history': [trim_job(j) for j in self.job_history],
+                'job_list': [trim_job(j) for j in self.job_list],
                 'message_count': self.message_count,
                 'simulation': trim_simulation(self.simulation)
             }

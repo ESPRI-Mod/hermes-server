@@ -52,7 +52,7 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
             return [trim_simulation(s) for s in _get_data(dao.retrieve_active_simulations)]
 
 
-        def _get_job_history():
+        def _get_job_list():
             """Returns job data for front-end.
 
             """
@@ -88,10 +88,12 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
             """
             db.session.start()
             try:
+                then = arrow.now()
                 self.output = {
-                    'job_history': _get_job_history(),
+                    'job_list': _get_job_list(),
                     'simulation_list': _get_simulation_list()
                 }
+                print arrow.now() - then, "OUTPUT ASSIGNED"
             finally:
                 db.session.end()
 
