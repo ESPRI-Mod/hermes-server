@@ -159,7 +159,6 @@ def enqueue_job_warning_delay(ctx):
     utils.enqueue(
         mq.constants.MESSAGE_TYPE_8000,
         delay_in_ms=delta_in_s * 1000,
-        # delay_in_ms=180000,
         payload={
             "job_uid": ctx.job_uid,
             "simulation_uid": ctx.job_simulation_uid,

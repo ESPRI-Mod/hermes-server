@@ -35,13 +35,12 @@ def get_tasks():
     """
     return (
         _set_email,
-        _set_messages_b64,
-        _set_messages_json,
-        _set_messages_dict,
+        _set_msg_b64,
+        _set_msg_json,
+        _set_msg_dict,
         _drop_excluded_messages,
-        _drop_obsolete_messages,
         _process_attachments,
-        _set_messages_ampq,
+        _set_msg_ampq,
         _enqueue_messages,
         _log_stats,
         _dequeue_email,
@@ -70,80 +69,61 @@ class ProcessingContextInfo(mq.Message):
         self.email_attachments = None
         self.email_uid = self.content['email_uid']
         self.imap_client = None
-        self.messages_ampq = []
-        self.messages_ampq_error = []
-        self.messages_b64 = []
-        self.messages_json = []
-        self.messages_json_error = []
-        self.messages_dict = []
-        self.messages_dict_error = []
-        self.messages_dict_excluded = []
-        self.messages_dict_obsolete = []
+        self.msg_ampq = []
+        self.msg_ampq_error = []
+        self.msg_b64 = []
+        self.msg_json = []
+        self.msg_json_error = []
+        self.msg_dict = []
+        self.msg_dict_error = []
+        self.msg_dict_excluded = []
+        self.msg_dict_obsolete = []
 
 
 def _set_email(ctx):
-    """Initializes email to be processed.
+    """Set email to be processed.
 
     """
     # Connect to imap server.
     ctx.imap_client = mail.connect()
 
-    # Pull email.
+    # Download & decode email.
     body, attachments = mail.get_email(ctx.email_uid, ctx.imap_client)
-
-    # Decode email.
     ctx.email = body.get_payload(decode=True)
     ctx.email_attachments = [a.get_payload(decode=True) for a in attachments]
 
 
-def _set_messages_b64(ctx):
+def _set_msg_b64(ctx):
     """Sets base64 encoded messages to be processed.
 
     """
-    ctx.messages_b64 += [l for l in ctx.email.splitlines() if l]
+    ctx.msg_b64 += [l for l in ctx.email.splitlines() if l]
 
 
-def _set_messages_json(ctx):
-    """Decode json encoded strings from base64 encoded string.
-
-    """
-    def _decode(data):
-        """Decodes base64 encoded text.
-
-        """
-        try:
-            return base64.b64decode(data)
-        except Exception as err:
-            return data, err
-
-    for msg in [_decode(m) for m in ctx.messages_b64]:
-        if isinstance(msg, tuple):
-            ctx.messages_json_error.append(msg)
-        else:
-            ctx.messages_json.append(msg)
-
-
-def _set_messages_dict(ctx):
-    """Encode json encoded strings to dictionaries.
+def _set_msg_json(ctx):
+    """Set json encoded messages to be processed.
 
     """
-    def _encode(data):
-        """Encodes json encoded text.
-
-        """
+    for msg in ctx.msg_b64:
         try:
-            return json.loads(data)
-        except Exception as err:
+            ctx.msg_json.append(base64.b64decode(msg))
+        except:
+            ctx.msg_json_error.append(msg)
+
+
+def _set_msg_dict(ctx):
+    """Set dictionary encoded messages to be processed.
+
+    """
+    for msg in ctx.msg_json:
+        try:
+            ctx.msg_dict.append(json.loads(msg))
+        except:
             try:
-                return json.loads(data.replace('\\', ''))
-            except Exception as err:
-                return data, err
-
-    for msg in [_encode(m) for m in ctx.messages_json]:
-        if isinstance(msg, tuple):
-            ctx.messages_dict_error.append(msg)
-        else:
-            ctx.messages_dict.append(msg)
+                msg = msg.replace('\\', '')
+                ctx.msg_dict.append(json.loads(msg))
+            except:
+                ctx.msg_dict_error.append(msg)
 
 
 def _drop_excluded_messages(ctx):
@@ -154,37 +134,18 @@ def _drop_excluded_messages(ctx):
         """Determines whether the message is deemed to be excluded.
 
         """
-        return msg['msgCode'] in config.mq.mail.smtpConsumer.excludedTypes
+        return 'msgProducerVersion' not in msg or \
+               msg['msgCode'] in config.mq.mail.smtpConsumer.excludedTypes
 
-    ctx.messages_dict_excluded = \
-        [m for m in ctx.messages_dict if _is_excluded(m)]
-    ctx.messages_dict = \
-        [m for m in ctx.messages_dict if m not in ctx.messages_dict_excluded]
-
-
-def _drop_obsolete_messages(ctx):
-    """Drops messages that came from an obsolete source.
-
-    """
-    def _is_obsolete(msg):
-        """Determines whether the message is deemed to be obsolete.
-
-        """
-        # Obsolete if old pop / push stack messages.
-        if msg['msgCode'] in ['2000', '3000'] and "command" in msg:
-            return True
-
-    ctx.messages_dict_obsolete = \
-        [m for m in ctx.messages_dict if _is_obsolete(m)]
-    ctx.messages_dict = \
-        [m for m in ctx.messages_dict if m not in ctx.messages_dict_obsolete]
+    ctx.msg_dict_excluded = [m for m in ctx.msg_dict if _is_excluded(m)]
+    ctx.msg_dict = [m for m in ctx.msg_dict if m not in ctx.msg_dict_excluded]
 
 
 def _process_attachments_0000(ctx):
     """Processes email attachments for message type 0000.
 
     """
-    msg = ctx.messages_dict[0]
+    msg = ctx.msg_dict[0]
     msg['configuration'] = ctx.email_attachments[0]
 
 
@@ -192,13 +153,13 @@ def _process_attachments_7100(ctx):
     """Processes email attachments for message type 7100.
 
     """
-    msg = ctx.messages_dict[0]
-    ctx.messages_dict = []
+    msg = ctx.msg_dict[0]
+    ctx.msg_dict = []
     for attachment in ctx.email_attachments:
         new_msg = copy.deepcopy(msg)
         new_msg['msgUID'] = unicode(uuid.uuid4())
         new_msg['metrics'] = base64.encodestring(attachment)
-        ctx.messages_dict.append(new_msg)
+        ctx.msg_dict.append(new_msg)
 
 
 # Map of attachment handlers to message types.
@@ -217,20 +178,21 @@ def _process_attachments(ctx):
         return
 
     # Escape if attachment is not associated with a single message.
-    if len(ctx.messages_dict) != 1:
+    if len(ctx.msg_dict) != 1:
         return
 
     # Escape if message type is not mapped to a handler.
-    msg = ctx.messages_dict[0]
-    if msg['msgCode'] not in _ATTACHMENT_HANDLERS:
+    msg = ctx.msg_dict[0]
+    msg_code = msg['msgCode']
+    if msg_code not in _ATTACHMENT_HANDLERS:
         return
 
     # Invoke handler.
-    handler = _ATTACHMENT_HANDLERS[msg['msgCode']]
+    handler = _ATTACHMENT_HANDLERS[msg_code]
     handler(ctx)
 
 
-def _set_messages_ampq(ctx):
+def _set_msg_ampq(ctx):
     """Set AMPQ messages to be dispatched.
 
     """
@@ -244,6 +206,7 @@ def _set_messages_ampq(ctx):
         return mq.utils.create_ampq_message_properties(
             user_id=mq.constants.USER_PRODIGUER,
             producer_id=data['msgProducer'],
+            producer_version=data['msgProducerVersion'],
             message_id=data['msgUID'],
             message_type=data['msgCode'],
             timestamp=timestamp.as_ms_int,
@@ -273,18 +236,18 @@ def _set_messages_ampq(ctx):
             return data, err
 
 
-    for msg in [_encode(m) for m in ctx.messages_dict]:
+    for msg in [_encode(m) for m in ctx.msg_dict]:
         if isinstance(msg, tuple):
-            ctx.messages_ampq_error.append(msg)
+            ctx.msg_ampq_error.append(msg)
         else:
-            ctx.messages_ampq.append(msg)
+            ctx.msg_ampq.append(msg)
 
 
 def _enqueue_messages(ctx):
     """Enqueues messages upon MQ server.
 
     """
-    mq.produce(ctx.messages_ampq,
+    mq.produce(ctx.msg_ampq,
                connection_url=config.mq.connections.main)
 
 
@@ -313,17 +276,17 @@ def _log_stats(ctx):
 
     """
     msg = "Email uid: {};  ".format(ctx.email_uid)
-    msg += "Incoming: {};  ".format(len(ctx.messages_b64))
-    if ctx.messages_json_error:
-        msg += "Base64 decoding errors: {};  ".format(len(ctx.messages_json_error))
-    if ctx.messages_dict_error:
-        msg += "JSON encoding errors: {};  ".format(len(ctx.messages_dict_error))
-    if ctx.messages_ampq_error:
-        msg += "AMPQ encoding errors: {};  ".format(len(ctx.messages_ampq_error))
-    if ctx.messages_dict_excluded:
-        msg += "Type Exclusions: {};  ".format(len(ctx.messages_dict_excluded))
-    if ctx.messages_dict_obsolete:
-        msg += "Obsoletes: {};  ".format(len(ctx.messages_dict_obsolete))
-    msg += "Outgoing: {}.".format(len(ctx.messages_ampq))
+    msg += "Incoming: {};  ".format(len(ctx.msg_b64))
+    if ctx.msg_json_error:
+        msg += "Base64 decoding errors: {};  ".format(len(ctx.msg_json_error))
+    if ctx.msg_dict_error:
+        msg += "JSON encoding errors: {};  ".format(len(ctx.msg_dict_error))
+    if ctx.msg_ampq_error:
+        msg += "AMPQ encoding errors: {};  ".format(len(ctx.msg_ampq_error))
+    if ctx.msg_dict_excluded:
+        msg += "Type Exclusions: {};  ".format(len(ctx.msg_dict_excluded))
+    if ctx.msg_dict_obsolete:
+        msg += "Obsoletes: {};  ".format(len(ctx.msg_dict_obsolete))
+    msg += "Outgoing: {}.".format(len(ctx.msg_ampq))
 
     logger.log_mq(msg)

@@ -31,6 +31,7 @@ from prodiguer.utils import logger
 def create_ampq_message_properties(
     user_id,
     producer_id,
+    producer_version,
     message_type,
     message_id=None,
     headers=None,
@@ -49,6 +50,7 @@ def create_ampq_message_properties(
 
     :param str user_id: ID of AMPQ user account under which messages are being dispatched.
     :param str producer_id: Message producer identifier.
+    :param float producer_version: Message producer version identifier.
     :param str message_type: Message type identifier.
     :param uuid message_id: Message unique identifier.
     :param dict headers: Custom message headers.
@@ -83,6 +85,7 @@ def create_ampq_message_properties(
     validator.validate_message_id(message_id)
     validator.validate_priority(priority)
     validator.validate_producer_id(producer_id)
+    validator.validate_producer_version(producer_version)
     validator.validate_reply_to(reply_to)
     validator.validate_type(message_type)
     validator.validate_user_id(user_id)
@@ -105,9 +108,10 @@ def create_ampq_message_properties(
     # Set other headers.
     if 'producer_id' not in headers:
         headers['producer_id'] = producer_id
+    if 'producer_version' not in headers:
+        headers['producer_version'] = producer_version
     if delay_in_ms is not None:
         headers['x-delay'] = delay_in_ms
-
 
     # Remove null headers.
     for key, value in headers.iteritems():

@@ -66,14 +66,16 @@ class Job(Entity):
     execution_end_date = Column(DateTime)
     execution_start_date = Column(DateTime)
     is_error = Column(Boolean, default=False)
-    typeof = Column(Unicode(63))
-    warning_delay = Column(Integer)
     is_startup = Column(Boolean, default=False)
+    scheduler_id = Column(Unicode(255))
+    submission_path = Column(Unicode(2047))
     post_processing_name = Column(Unicode(63))
     post_processing_date = Column(DateTime)
     post_processing_dimension = Column(Unicode(63))
     post_processing_component = Column(Unicode(63))
     post_processing_file = Column(Unicode(127))
+    typeof = Column(Unicode(63))
+    warning_delay = Column(Integer)
 
 
 class Simulation(Entity):

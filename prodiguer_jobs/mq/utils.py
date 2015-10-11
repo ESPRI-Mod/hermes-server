@@ -17,23 +17,27 @@ import subprocess
 import arrow
 
 from prodiguer import mq
+from prodiguer import __version__ as PRODIGUER_VERSION
 
 
 
 def enqueue(
     message_type,
     payload=None,
-    mq_user_id=mq.constants.USER_PRODIGUER,
-    mq_producer_id = mq.constants.PRODUCER_PRODIGUER,
-    mq_exchange=mq.constants.EXCHANGE_PRODIGUER_SECONDARY,
+    user_id=mq.constants.USER_PRODIGUER,
+    producer_id = mq.constants.PRODUCER_PRODIGUER,
+    producer_version = PRODIGUER_VERSION,
+    exchange=mq.constants.EXCHANGE_PRODIGUER_SECONDARY,
     delay_in_ms=None
     ):
     """Enqueues a message upon MQ server.
 
     :param str message_type: Message type, e.g. 0000.
     :param dict payload: Message payload.
-    :param str mq_user_id: MQ server user id, e.g. prodiguer-mq-user.
-    :param str mq_producer_id: MQ server producer id, e.g. lilIGCM.
+    :param str user_id: MQ user id, e.g. prodiguer-mq-user.
+    :param str producer_id: MQ producer identifier, e.g. libIGCM.
+    :param str producer_version: MQ server producer version, e.g. 2.7.
+    :param str exchange: MQ exchange, e.g. x-secondary.
     :param int delay_in_ms: Delay (in milliseconds) before message is routed.
 
     """
@@ -42,10 +46,11 @@ def enqueue(
 
         """
         return mq.utils.create_ampq_message_properties(
-            user_id = mq_user_id,
-            producer_id = mq_producer_id,
-            message_type = message_type,
-            delay_in_ms = delay_in_ms
+            user_id=user_id,
+            producer_id=producer_id,
+            producer_version=producer_version,
+            message_type=message_type,
+            delay_in_ms=delay_in_ms
             )
 
     def _yield_message():

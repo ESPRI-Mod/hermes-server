@@ -39,6 +39,7 @@ class Message(Entity):
     # Attributes.
     app_id = Column(Unicode(63), nullable=False)
     producer_id = Column(Unicode(63), nullable=False)
+    producer_version = Column(Unicode(31), nullable=False)
     type_id = Column(Unicode(63), nullable=False)
     user_id = Column(Unicode(63), nullable=False)
     uid = Column(Unicode(63),

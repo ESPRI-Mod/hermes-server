@@ -33,6 +33,10 @@ def validate_ampq_basic_properties(props):
         msg = "[producer_id] is a required header field."
         raise ValueError(msg)
     validate_producer_id(props.headers['producer_id'])
+    if 'producer_version' not in props.headers:
+        msg = "[producer_version] is a required header field."
+        raise ValueError(msg)
+    validate_producer_version(props.headers['producer_version'])
 
     # Validate application id.
     validate_app_id(props.app_id)
@@ -109,7 +113,7 @@ def validate_email_id(identifier):
     try:
         int(identifier)
     except ValueError:
-        raise ValueError("Emial identifier must be an integer: {}".format(identifier))
+        raise ValueError("Email identifier must be an integer: {}".format(identifier))
 
 
 def validate_priority(priority):
@@ -130,6 +134,22 @@ def validate_producer_id(identifier):
     """
     if identifier not in constants.PRODUCERS:
         raise ValueError('Message producer id is unknown: {}'.format(identifier))
+
+
+def validate_producer_version(version):
+    """Validates a messaging producer version identifier.
+
+    :param float version: A Messaging producer version.
+
+    """
+    try:
+        elements = version.split('.')
+    except AttributeError:
+        raise ValueError("Message producer version must consist of '.' delimited integers : {}".format(version))
+    try:
+        [int(v) for v in elements]
+    except ValueError:
+        raise ValueError("Message producer version must consist of '.' delimited integers : {}".format(version))
 
 
 def validate_type(identifier):
