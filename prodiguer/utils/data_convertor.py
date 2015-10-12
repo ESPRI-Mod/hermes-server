@@ -69,4 +69,4 @@ def jsonify(data):
     :rtype: str
 
     """
-    return json.dumps(convert(data), key_convertor=to_camel_case)
+    return json.dumps(convert(data, key_convertor=to_camel_case))
