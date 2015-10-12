@@ -25,6 +25,7 @@ from prodiguer_jobs.mq import internal_smtp_realtime
 from prodiguer_jobs.mq import metrics_environment
 from prodiguer_jobs.mq import metrics_pcmdi
 from prodiguer_jobs.mq import monitoring
+from prodiguer_jobs.mq import monitoring_command_fail
 from prodiguer_jobs.mq import monitoring_job_end
 from prodiguer_jobs.mq import monitoring_job_start
 from prodiguer_jobs.mq import monitoring_simulation_end
@@ -60,15 +61,15 @@ _AGENT_HANDLERS = {
     'debug-0100': monitoring_simulation_end,
     'debug-1000': monitoring_job_start,
     'debug-1100': monitoring_job_end,
-    'debug-1900': None,
+    'debug-1900': monitoring_command_fail,
     'debug-1999': monitoring_job_end,
     'debug-2000': monitoring_job_start,
     'debug-2100': monitoring_job_end,
-    'debug-2900': None,
+    'debug-2900': monitoring_command_fail,
     'debug-2999': monitoring_job_end,
     'debug-3000': monitoring_job_start,
     'debug-3100': monitoring_job_end,
-    'debug-3900': None,
+    'debug-3900': monitoring_command_fail,
     'debug-3999': monitoring_job_end,
     'debug-7000': metrics_environment,
     'debug-7100': metrics_pcmdi,
@@ -76,12 +77,10 @@ _AGENT_HANDLERS = {
     'debug-8100': supervisor_format_script,
     'debug-8200': supervisor_dispatch_script,
     'debug-8888': None,
-    'debug-archive': None,
     'debug-cv': internal_cv,
     'debug-fe': internal_fe,
     'debug-smtp': internal_smtp,
     'debug-smtp-realtime': internal_smtp_realtime,
-    'live-archive': None,
     'live-cv': internal_cv,
     'live-fe': internal_fe,
     'live-metrics-env': metrics_environment,

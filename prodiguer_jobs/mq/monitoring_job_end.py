@@ -16,11 +16,12 @@ from prodiguer.db.pgres import dao_monitoring as dao
 from prodiguer_jobs.mq import utils
 
 
+
 # Set of message type that correspond to job errors.
 _JOB_ERROR_MESSAGE_TYPES = {
-    mq.constants.MESSAGE_TYPE_2900,
-    mq.constants.MESSAGE_TYPE_3900,
-    mq.constants.MESSAGE_TYPE_9999
+    mq.constants.MESSAGE_TYPE_1999,     # Compute job fatal error
+    mq.constants.MESSAGE_TYPE_2999,     # Post-processing job fatal error
+    mq.constants.MESSAGE_TYPE_3999      # Post-processing-from-checker job fatal error
 }
 
 

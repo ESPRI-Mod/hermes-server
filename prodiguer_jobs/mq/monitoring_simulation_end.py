@@ -12,7 +12,6 @@
 """
 from prodiguer import mq
 from prodiguer.db.pgres import dao_monitoring as dao
-from prodiguer_jobs.mq import monitoring_job_end
 from prodiguer_jobs.mq import utils
 
 
@@ -22,14 +21,14 @@ def get_tasks():
 
     """
     return (
-        monitoring_job_end.unpack_message_content,
+        _unpack_message_content,
         _persist_simulation,
-        monitoring_job_end.persist_job,
+        _persist_job,
         _enqueue_front_end_notification
     )
 
 
-class ProcessingContextInfo(monitoring_job_end.ProcessingContextInfo):
+class ProcessingContextInfo(mq.Message):
     """Message processing context information.
 
     """
@@ -40,7 +39,18 @@ class ProcessingContextInfo(monitoring_job_end.ProcessingContextInfo):
         super(ProcessingContextInfo, self).__init__(
             props, body, decode=decode)
 
+        self.is_error = props.type == mq.constants.MESSAGE_TYPE_1999
+        self.job_uid = None
         self.simulation = None
+        self.simulation_uid = None
+
+
+def _unpack_message_content(ctx):
+    """Unpacks message being processed.
+
+    """
+    ctx.job_uid = ctx.content['jobuid']
+    ctx.simulation_uid = ctx.content['simuid']
 
 
 def _persist_simulation(ctx):
@@ -49,7 +59,19 @@ def _persist_simulation(ctx):
     """
     ctx.simulation = dao.persist_simulation_02(
         ctx.msg.timestamp,
-        ctx.props.type == mq.constants.MESSAGE_TYPE_9999,
+        ctx.is_error,
+        ctx.simulation_uid
+        )
+
+
+def _persist_job(ctx):
+    """Persists job updates to dB.
+
+    """
+    dao.persist_job_02(
+        ctx.msg.timestamp,
+        ctx.is_error,
+        ctx.job_uid,
         ctx.simulation_uid
         )
 
@@ -67,12 +89,10 @@ def _enqueue_front_end_notification(ctx):
     if ctx.simulation.uid != active_simulation.uid:
         return
 
-    # Set front-end event type.
-    if ctx.props.type == mq.constants.MESSAGE_TYPE_9999:
-        event_type = u"simulation_error"
-    else:
-        event_type = u"simulation_complete"
+    # Set event type.
+    event_type = u"simulation_error" if ctx.is_error else u"simulation_complete"
 
+    # Enqueue notification.
     utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
         "event_type": event_type,
         "simulation_uid": unicode(ctx.simulation_uid)

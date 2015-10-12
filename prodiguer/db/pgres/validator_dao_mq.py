@@ -20,6 +20,7 @@ def validate_create_message(
     user_id,
     app_id,
     producer_id,
+    producer_version,
     type_id,
     content,
     content_encoding,
@@ -46,6 +47,7 @@ def validate_create_message(
         msg_validator.validate_correlation_id(correlation_id_3)
     msg_validator.validate_message_id(uid)
     msg_validator.validate_producer_id(producer_id)
+    msg_validator.validate_producer_version(producer_version)
     msg_validator.validate_timestamp_info(timestamp, timestamp_precision, timestamp_raw)
     msg_validator.validate_type(type_id)
     msg_validator.validate_user_id(user_id)

@@ -25,6 +25,7 @@ def create_message(
     user_id,
     app_id,
     producer_id,
+    producer_version,
     type_id,
     content,
     content_encoding='utf-8',
@@ -42,6 +43,7 @@ def create_message(
     :param str user_id: Message user id, e.g. libl-igcm-user.
     :param str app_id: Message application id, e.g. smon.
     :param str producer_id: Message producer id, e.g. libigcm.
+    :param str producer_version: Message producer version identifier.
     :param str type_id: Message type id, e.g. 0000.
     :param str name: Message content.
     :param str content_encoding: Message content encoding, e.g. utf-8.
@@ -69,6 +71,7 @@ def create_message(
     if correlation_id_3:
         instance.correlation_id_3 = unicode(correlation_id_3)
     instance.producer_id = unicode(producer_id)
+    instance.producer_version = unicode(producer_version)
     if timestamp is not None:
         instance.timestamp = timestamp
     if timestamp_precision is not None:
@@ -79,10 +82,7 @@ def create_message(
     instance.uid = unicode(uid)
     instance.user_id = unicode(user_id)
 
-    # Push to db.
-    session.add(instance)
-
-    return instance
+    return session.add(instance)
 
 
 @decorators.validate(validator.validate_create_message_email)
@@ -93,10 +93,7 @@ def create_message_email(email_id):
     instance = types.MessageEmail()
     instance.uid = email_id
 
-    # Push to db.
-    session.add(instance)
-
-    return instance
+    return session.add(instance)
 
 
 @decorators.validate(validator.validate_is_duplicate)

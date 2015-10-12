@@ -50,7 +50,7 @@ def create_ampq_message_properties(
 
     :param str user_id: ID of AMPQ user account under which messages are being dispatched.
     :param str producer_id: Message producer identifier.
-    :param float producer_version: Message producer version identifier.
+    :param str producer_version: Message producer version identifier.
     :param str message_type: Message type identifier.
     :param uuid message_id: Message unique identifier.
     :param dict headers: Custom message headers.
@@ -195,7 +195,6 @@ def consume(
         # Persist message.
         try:
             ctx.msg = persist(ctx.properties, ctx.content_raw)
-
         # Skip duplicate messages.
         except sqlalchemy.exc.IntegrityError:
             msg = "Duplicate message skipped: TYPE={1};  UID={0}"
@@ -274,6 +273,7 @@ def persist(properties, payload):
         properties.user_id,
         properties.app_id,
         _get_header('producer_id'),
+        _get_header('producer_version'),
         properties.type,
         payload,
         properties.content_encoding,

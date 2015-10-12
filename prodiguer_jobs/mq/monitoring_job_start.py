@@ -100,6 +100,18 @@ def unpack_message_content(ctx):
     if ctx.job_warning_delay == "0":
         ctx.job_warning_delay = config.apps.monitoring.defaultJobWarningDelayInSeconds
 
+    # Override post-processing fields set to string literal null.
+    if ctx.job_pp_name == "null":
+        ctx.job_pp_name = None
+    if ctx.job_pp_date == "null":
+        ctx.job_pp_date = None
+    if ctx.job_pp_dimension == "null":
+        ctx.job_pp_dimension = None
+    if ctx.job_pp_component == "null":
+        ctx.job_pp_component = None
+    if ctx.job_pp_file == "null":
+        ctx.job_pp_file = None
+
 
 def persist_job(ctx):
     """Persists job info to db.

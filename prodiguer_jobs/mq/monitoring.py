@@ -12,6 +12,7 @@
 
 """
 from prodiguer import rt
+from prodiguer_jobs.mq import monitoring_command_fail
 from prodiguer_jobs.mq import monitoring_job_end
 from prodiguer_jobs.mq import monitoring_job_start
 from prodiguer_jobs.mq import monitoring_simulation_end
@@ -21,21 +22,23 @@ from prodiguer_jobs.mq import monitoring_simulation_start
 
 # Map of sub-consumer types to sub-consumers.
 _SUB_AGENTS = {
-    # Simulation messages.
     '0000': monitoring_simulation_start,
     '0100': monitoring_simulation_end,
-    '9999': monitoring_simulation_end,
-    # Computing job messages.
+    '1999': monitoring_simulation_end,
+    # ... computing jobs
     '1000': monitoring_job_start,
     '1100': monitoring_job_end,
-    # Post processing job messages.
+    '1900': monitoring_command_fail,
+    # ... post processing jobs
     '2000': monitoring_job_start,
     '2100': monitoring_job_end,
-    '2900': monitoring_job_end,
-    # Post processing from checker job messages.
+    '2900': monitoring_command_fail,
+    '2999': monitoring_job_end,
+    # ... post processing from checker jobs
     '3000': monitoring_job_start,
     '3100': monitoring_job_end,
-    '3900': monitoring_job_end
+    '3900': monitoring_command_fail,
+    '3999': monitoring_job_end
 }
 
 

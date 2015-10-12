@@ -27,26 +27,23 @@ from prodiguer.db.pgres.entity import Entity
 SCHEMA = 'monitoring'
 
 
-class EnvironmentMetric(Entity):
-    """Simulation environment metric (OS performance at compute node).
+class Command(Entity):
+    """A command executed during the course of a job.
 
     """
     # SQLAlchemy directives.
-    __tablename__ = 'tbl_environment_metric'
+    __tablename__ = 'tbl_command'
     __table_args__ = (
         {'schema':SCHEMA}
     )
 
     # Attributes.
-    simulation_uid = Column(Unicode(63), nullable=False)
-    job_uid = Column(Unicode(63), nullable=False)
-    action_name = Column(Unicode(511), nullable=False)
-    action_timestamp = Column(DateTime, nullable=False)
-    dir_to = Column(Unicode(4096), nullable=False)
-    dir_from = Column(Unicode(4096), nullable=False)
-    duration_ms = Column(Integer, nullable=False)
-    size_mb = Column(Float, nullable=False)
-    throughput_mb_s = Column(Float, nullable=False)
+    simulation_uid = Column(Unicode(63))
+    job_uid = Column(Unicode(63))
+    uid = Column(Unicode(63))
+    timestamp = Column(DateTime)
+    instruction = Column(Text)
+    is_error = Column(Boolean, default=True)
 
 
 class Job(Entity):
@@ -160,3 +157,25 @@ class SimulationConfiguration(Entity):
     card_mime_type = Column(Unicode(63),
                             nullable=True,
                             default=u"application/base64")
+
+
+class EnvironmentMetric(Entity):
+    """Simulation environment metric (OS performance at compute node).
+
+    """
+    # SQLAlchemy directives.
+    __tablename__ = 'tbl_environment_metric'
+    __table_args__ = (
+        {'schema':SCHEMA}
+    )
+
+    # Attributes.
+    simulation_uid = Column(Unicode(63), nullable=False)
+    job_uid = Column(Unicode(63), nullable=False)
+    action_name = Column(Unicode(511), nullable=False)
+    action_timestamp = Column(DateTime, nullable=False)
+    dir_to = Column(Unicode(4096), nullable=False)
+    dir_from = Column(Unicode(4096), nullable=False)
+    duration_ms = Column(Integer, nullable=False)
+    size_mb = Column(Float, nullable=False)
+    throughput_mb_s = Column(Float, nullable=False)

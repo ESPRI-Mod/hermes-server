@@ -15,6 +15,7 @@ from sqlalchemy import Column
 from sqlalchemy import DateTime
 
 from prodiguer.db.pgres.types_cv import ControlledVocabularyTerm
+from prodiguer.db.pgres.types_monitoring import Command
 from prodiguer.db.pgres.types_monitoring import EnvironmentMetric
 from prodiguer.db.pgres.types_monitoring import Job
 from prodiguer.db.pgres.types_monitoring import Simulation
@@ -31,6 +32,7 @@ SCHEMAS = {'cv', 'monitoring', 'mq', 'superviseur'}
 
 # Set of supported model types.
 SUPPORTED = TYPES = [
+    Command,
     ControlledVocabularyTerm,
     EnvironmentMetric,
     Job,

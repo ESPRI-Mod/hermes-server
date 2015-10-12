@@ -84,6 +84,7 @@ def _set_email(ctx):
     """Set email to be processed.
 
     """
+    print "DSDASDS"
     # Connect to imap server.
     ctx.imap_client = mail.connect()
 

@@ -41,10 +41,7 @@ def create_term(
     instance.name = term_name
     instance.display_name = term_display_name
 
-    # Push to db.
-    session.add(instance)
-
-    return instance
+    return session.add(instance)
 
 
 @decorators.validate(validator.validate_retrieve_term)
