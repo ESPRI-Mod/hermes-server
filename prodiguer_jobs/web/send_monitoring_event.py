@@ -109,13 +109,53 @@ def _publish_1100(args):
     })
 
 
+def _publish_1999(args):
+    """Job error."""
+    return _invoke(args.endpoint, payload={
+        "event_type": u"job_error",
+        "job_uid": args.job_uid,
+        "simulation_uid": args.simulation_uid
+    })
+
+
+def _publish_2000(args):
+    """Post-processing job start."""
+    return _invoke(args.endpoint, payload={
+        "event_type": u"job_start",
+        "job_uid": args.job_uid,
+        "simulation_uid": args.simulation_uid
+    })
+
+
+def _publish_2100(args):
+    """Post-processing job complete."""
+    return _invoke(args.endpoint, payload={
+        "event_type": u"job_complete",
+        "job_uid": args.job_uid,
+        "simulation_uid": args.simulation_uid
+    })
+
+
+def _publish_2999(args):
+    """Post-processing job error."""
+    return _invoke(args.endpoint, payload={
+        "event_type": u"job_error",
+        "job_uid": args.job_uid,
+        "simulation_uid": args.simulation_uid
+    })
+
+
 # Set of publishers keyed by message type.
 _PUBLISHERS = {
     '0000': _publish_0000,
     '0100': _publish_0100,
     '9999': _publish_9999,
     '1000': _publish_1000,
-    '1100': _publish_1100
+    '1100': _publish_1100,
+    '1999': _publish_1999,
+    '2000': _publish_2000,
+    '2100': _publish_2100,
+    '2999': _publish_2999
 }
 
 

@@ -62,7 +62,7 @@ _AGENT_HANDLERS = {
     'debug-1000': monitoring_job_start,
     'debug-1100': monitoring_job_end,
     'debug-1900': monitoring_command_fail,
-    'debug-1999': monitoring_job_end,
+    'debug-1999': monitoring_simulation_end,
     'debug-2000': monitoring_job_start,
     'debug-2100': monitoring_job_end,
     'debug-2900': monitoring_command_fail,

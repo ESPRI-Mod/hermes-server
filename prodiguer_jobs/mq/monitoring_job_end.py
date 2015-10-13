@@ -9,7 +9,6 @@
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
-
 """
 from prodiguer import mq
 from prodiguer.db.pgres import dao_monitoring as dao
@@ -49,6 +48,7 @@ class ProcessingContextInfo(mq.Message):
 
         self.job_uid = None
         self.simulation_uid = None
+        self.is_error = props.type in _JOB_ERROR_MESSAGE_TYPES
 
 
 def unpack_message_content(ctx):
@@ -65,7 +65,7 @@ def persist_job(ctx):
     """
     dao.persist_job_02(
         ctx.msg.timestamp,
-        ctx.props.type in _JOB_ERROR_MESSAGE_TYPES,
+        ctx.is_error,
         ctx.job_uid,
         ctx.simulation_uid
         )
@@ -75,14 +75,8 @@ def enqueue_front_end_notification(ctx):
     """Places a message upon the front-end notification queue.
 
     """
-    # Set front-end event type.
-    if ctx.props.type in _JOB_ERROR_MESSAGE_TYPES:
-        event_type = u"job_error"
-    else:
-        event_type = u"job_complete"
-
     utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
-        "event_type": event_type,
+        "event_type": u"job_error" if ctx.is_error else u"job_complete",
         "job_uid": unicode(ctx.job_uid),
         "simulation_uid": unicode(ctx.simulation_uid)
     })

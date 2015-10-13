@@ -89,11 +89,8 @@ def _enqueue_front_end_notification(ctx):
     if ctx.simulation.uid != active_simulation.uid:
         return
 
-    # Set event type.
-    event_type = u"simulation_error" if ctx.is_error else u"simulation_complete"
-
     # Enqueue notification.
     utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
-        "event_type": event_type,
+        "event_type": u"simulation_error" if ctx.is_error else u"simulation_complete",
         "simulation_uid": unicode(ctx.simulation_uid)
     })
