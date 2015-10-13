@@ -424,12 +424,14 @@ def persist_job_01(
     job_type,
     job_uid,
     simulation_uid,
-    is_startup = False,
-    post_processing_name = None,
-    post_processing_date = None,
-    post_processing_dimension = None,
-    post_processing_component = None,
-    post_processing_file = None
+    is_startup=False,
+    post_processing_name=None,
+    post_processing_date=None,
+    post_processing_dimension=None,
+    post_processing_component=None,
+    post_processing_file=None,
+    scheduler_id=None,
+    submission_path=None
     ):
     """Persists job information to db.
 
@@ -445,6 +447,8 @@ def persist_job_01(
     :param str post_processing_dimension: Post processing job name.
     :param str post_processing_component: Post processing job name.
     :param str post_processing_file: Post processing job name.
+    :param str scheduler_id: ID attributed by the scheduler to this job.
+    :param str submission_path:  Submit directory and job localisation.
 
     :returns: Either a new or an updated job instance.
     :rtype: types.Job
@@ -454,24 +458,30 @@ def persist_job_01(
         """Assigns instance values from input parameters.
 
         """
-        if accounting_project:
-            instance.accounting_project = unicode(accounting_project)
         instance.execution_start_date = execution_start_date
         instance.typeof = unicode(job_type)
         instance.job_uid = unicode(job_uid)
+        instance.is_startup = is_startup
         instance.simulation_uid = unicode(simulation_uid)
         instance.warning_delay = int(warning_delay)
 
-        # ... compute specific fields.
-        instance.is_startup = is_startup
-
-        # ... post processing specific fields
-        instance.post_processing_name = post_processing_name
-        instance.post_processing_date = post_processing_date
-        instance.post_processing_dimension = post_processing_dimension
-        instance.post_processing_component = post_processing_component
-        instance.post_processing_file = post_processing_file
-
+        # ... optional fields
+        if accounting_project:
+            instance.accounting_project = unicode(accounting_project)
+        if post_processing_name:
+            instance.post_processing_name = unicode(post_processing_name)
+        if post_processing_date:
+            instance.post_processing_date = post_processing_date
+        if post_processing_dimension:
+            instance.post_processing_dimension = unicode(post_processing_dimension)
+        if post_processing_component:
+            instance.post_processing_component = unicode(post_processing_component)
+        if post_processing_file:
+            instance.post_processing_file = unicode(post_processing_file)
+        if scheduler_id:
+            instance.scheduler_id = unicode(scheduler_id)
+        if submission_path:
+            instance.submission_path = unicode(submission_path)
 
     return _persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 

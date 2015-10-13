@@ -129,7 +129,9 @@ def trim_job(instance):
         'post_processing_date',
         'post_processing_dimension',
         'post_processing_file',
-        'post_processing_name'
+        'post_processing_name',
+        'scheduler_id',
+        'submission_path'
         })
 
     # Delete false fields

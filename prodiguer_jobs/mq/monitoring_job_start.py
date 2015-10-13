@@ -65,7 +65,9 @@ class ProcessingContextInfo(mq.Message):
         self.job_pp_dimension = None
         self.job_pp_component = None
         self.job_pp_file = None
+        self.job_scheduler_id = None
         self.job_simulation_uid = None
+        self.job_submission_path = None
         self.job_type = _MESSAGE_JOB_TYPES[self.props.type]
         self.job_uid = None
         self.job_warning_delay = None
@@ -91,7 +93,9 @@ def unpack_message_content(ctx):
     ctx.job_pp_dimension = ctx.content.get('postProcessingDimn')
     ctx.job_pp_component = ctx.content.get('postProcessingComp')
     ctx.job_pp_file = ctx.content.get('postProcessingFile')
+    ctx.job_scheduler_id = ctx.content.get('jobSchedulerID')
     ctx.job_simulation_uid = ctx.content['simuid']
+    ctx.job_submission_path = ctx.content.get('jobSubmissionPath')
     ctx.job_uid = ctx.content['jobuid']
     ctx.job_warning_delay = ctx.content.get(
         'jobWarningDelay', config.apps.monitoring.defaultJobWarningDelayInSeconds)
@@ -100,7 +104,7 @@ def unpack_message_content(ctx):
     if ctx.job_warning_delay == "0":
         ctx.job_warning_delay = config.apps.monitoring.defaultJobWarningDelayInSeconds
 
-    # Override post-processing fields set to string literal null.
+    # Override fields set to string literal null.
     if ctx.job_pp_name == "null":
         ctx.job_pp_name = None
     if ctx.job_pp_date == "null":
@@ -111,6 +115,10 @@ def unpack_message_content(ctx):
         ctx.job_pp_component = None
     if ctx.job_pp_file == "null":
         ctx.job_pp_file = None
+    if ctx.job_scheduler_id == "null":
+        ctx.job_scheduler_id = None
+    if ctx.job_submission_path == "null":
+        ctx.job_submission_path = None
 
 
 def persist_job(ctx):
@@ -129,7 +137,9 @@ def persist_job(ctx):
         post_processing_date=ctx.job_pp_date,
         post_processing_dimension=ctx.job_pp_dimension,
         post_processing_component=ctx.job_pp_component,
-        post_processing_file=ctx.job_pp_file
+        post_processing_file=ctx.job_pp_file,
+        scheduler_id=ctx.job_scheduler_id,
+        submission_path=ctx.job_submission_path
         )
 
 

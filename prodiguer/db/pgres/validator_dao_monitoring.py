@@ -61,7 +61,9 @@ def validate_persist_job_01(
     post_processing_date = None,
     post_processing_dimension = None,
     post_processing_component = None,
-    post_processing_file = None
+    post_processing_file = None,
+    scheduler_id=None,
+    submission_path=None
     ):
     """Function input validator: persist_job_01.
 
@@ -82,6 +84,10 @@ def validate_persist_job_01(
     if post_processing_component is not None:
         pass
     if post_processing_file is not None:
+        pass
+    if scheduler_id is not None:
+        pass
+    if submission_path is not None:
         pass
 
 
