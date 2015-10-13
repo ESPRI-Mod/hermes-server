@@ -118,9 +118,8 @@ class ProdiguerHTTPRequestHandler(tornado.web.RequestHandler):
             """Logs start of request processing.
 
             """
-            api_type = str(self).split(".")[2]
-            msg = "{0} --> executing --> {1} [{2}]"
-            msg = msg.format(api_type, self, id(self))
+            msg = "[{0}]: executing --> {1}"
+            msg = msg.format(id(self), self)
             logger.log_web(msg)
 
 
@@ -128,9 +127,8 @@ class ProdiguerHTTPRequestHandler(tornado.web.RequestHandler):
             """Logs a successful response.
 
             """
-            api_type = str(self).split(".")[2]
-            msg = "{0} --> success --> {1} [{2}]"
-            msg = msg.format(api_type, self, id(self))
+            msg = "[{0}]: success --> {1}"
+            msg = msg.format(id(self), self)
             logger.log_web(msg)
 
 
@@ -140,9 +138,8 @@ class ProdiguerHTTPRequestHandler(tornado.web.RequestHandler):
             :param Exception error: Runtime error.
 
             """
-            api_type = str(self).split(".")[2]
-            msg = "{0} --> error --> {1} [{2}] --> {3}"
-            msg = msg.format(api_type, self, id(self), error)
+            msg = "[{0}]: --> error --> {1} --> {2}"
+            msg = msg.format(id(self), self, error)
             logger.log_web_error(msg)
 
 

@@ -109,10 +109,11 @@ def trim_simulation(instance):
     return obj
 
 
-def trim_job(instance):
+def trim_job(instance, full_trim=False):
     """Trims size of a job being returned to front-end by removing superfluos information.
 
     :param prodiguer.db.pgres.types.Job instance: Job being returned to front-end.
+    :param bool full_trim: Flag indicating whether the job is to be fully trimmed or not.
 
     :returns: Trimmed job.
     :rtype: dict
@@ -121,33 +122,39 @@ def trim_job(instance):
     # Convert to dictionary.
     obj = _convert_to_dict(instance)
 
-    # Delete null fields
-    _delete_null_fields(obj, {
-        'accounting_project',
-        'execution_end_date',
-        'post_processing_component',
-        'post_processing_date',
-        'post_processing_dimension',
-        'post_processing_file',
-        'post_processing_name',
-        'scheduler_id',
-        'submission_path'
-        })
-
-    # Delete false fields
-    _delete_false_fields(obj, {
-        'is_error'
-        })
-
-    # Delete start up field for post-processing jobs
-    if obj['typeof'] != cv.constants.JOB_TYPE_COMPUTING:
-        del obj['is_startup']
-
-    # Delete fields with matching defaults
+    _delete_null_fields(obj, {'execution_end_date'})
+    _delete_false_fields(obj, {'is_error'})
     if obj['typeof'] == cv.constants.JOB_TYPE_POST_PROCESSING:
         del obj['typeof']
-    if obj['warning_delay'] == config.apps.monitoring.defaultJobWarningDelayInSeconds:
-        del obj['warning_delay']
+
+    if full_trim == True:
+        _delete_fields(obj, {
+            'accounting_project',
+            'is_startup',
+            'post_processing_component',
+            'post_processing_date',
+            'post_processing_dimension',
+            'post_processing_file',
+            'post_processing_name',
+            'scheduler_id',
+            'submission_path',
+            'warning_delay'
+            })
+    else:
+        _delete_null_fields(obj, {
+            'accounting_project',
+            'post_processing_component',
+            'post_processing_date',
+            'post_processing_dimension',
+            'post_processing_file',
+            'post_processing_name',
+            'scheduler_id',
+            'submission_path'
+            })
+        if obj['warning_delay'] == config.apps.monitoring.defaultJobWarningDelayInSeconds:
+            del obj['warning_delay']
+        if obj.get('typeof') != cv.constants.JOB_TYPE_COMPUTING:
+            del obj['is_startup']
 
     return obj
 
