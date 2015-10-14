@@ -109,13 +109,25 @@ def exec_sqlalchmey(timeslice_delta, target):
     return data
 
 
+def _get_psycopg2_connection():
+    """Returns a pscopg2 connection to the db.
+
+    """
+    return psycopg2.connect(
+        database=db.constants.PRODIGUER_DB_NAME,
+        user=db.constants.PRODIGUER_DB_USER,
+        host=os.getenv("PRODIGUER_DB_PGRES_HOST").split(":")[0],
+        password=os.getenv("PRODIGUER_DB_PGRES_USER_PASSWORD")
+        )
+
+
 def exec_psycopg2(timeslice_delta, target):
     """Performs a psycopg2 based db query."""
     if timeslice_delta:
         timeslice_delta = "AND \n\ts.execution_start_date >= '{}'".format(timeslice_delta)
     else:
         timeslice_delta = ""
-    conn = psycopg2.connect(config.db.pgres.main)
+    conn = _get_psycopg2_connection()
     cur = conn.cursor()
     sql = _PSYCOPG2_FACTORIES[target].format(timeslice_delta)
     cur.execute(sql)

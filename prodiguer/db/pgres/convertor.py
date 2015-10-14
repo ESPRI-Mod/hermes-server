@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.type_convertor.py
+.. module:: prodiguer.db.convertor.py
    :platform: Unix
    :synopsis: Converts prodiguer db types to dictionaries.
 

@@ -19,11 +19,6 @@ from prodiguer.utils import logger
 
 
 
-# Db user names.
-_DB_USER = "prodiguer_db_user"
-_DB_USER_ADMIN = "prodiguer_db_admin"
-
-
 def _main():
     """Main entry point.
 
@@ -47,7 +42,8 @@ def _main():
 
     # Setup target db.
     try:
-        setup(config.db.pgres.main.replace(_DB_USER, _DB_USER_ADMIN))
+        setup(config.db.pgres.main.replace(db.constants.PRODIGUER_DB_USER,
+                                           db.constants.PRODIGUER_DB_ADMIN_USER))
     except sqlalchemy.exc.ProgrammingError as err:
         print err
         logger.log_db_error("SETUP ERROR : are db connections still open ?")

@@ -12,6 +12,7 @@
 
 """
 from prodiguer.db.pgres import convertor
+from prodiguer.db.pgres import constants
 from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import dao_cv
 from prodiguer.db.pgres import dao_monitoring
