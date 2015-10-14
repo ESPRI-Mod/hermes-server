@@ -88,14 +88,10 @@ def exec_shell_command(cmd):
     :param str cmd: Prodiguer shell command to be executed.
 
     """
-    # Set prodiguer-shell path.
-    shell = os.path.dirname(__file__)
-    for _ in range(4):
-        shell = os.path.dirname(shell)
-    shell = os.path.join(shell, 'exec.sh')
-
-    # Set prodiguer shell command.
-    cmd = '{0} {1}'.format(shell, cmd)
-
-    # Invoke command.
-    subprocess.call(cmd, shell=True)
+    cmd_type = cmd.split("-")[0]
+    cmd_name = "_".join(cmd.split("-")[1:])
+    script = os.getenv("PRODIGUER_HOME")
+    script = os.path.join(script, "bash")
+    script = os.path.join(script, cmd_type)
+    script = os.path.join(script, "{}.sh".format(cmd_name))
+    subprocess.call(script, shell=True)
