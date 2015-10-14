@@ -51,31 +51,14 @@ def retrieve_active_jobs(start_date=None):
 
     """
     qry = session.query(types.Job)
-    qry = qry.join(types.Simulation,
-                   types.Job.simulation_uid==types.Simulation.uid)
+    qry = qry.join(types.Simulation, types.Job.simulation_uid==types.Simulation.uid)
+    qry = qry.filter(types.Job.execution_start_date != None)
     qry = qry.filter(types.Simulation.execution_start_date != None)
     qry = qry.filter(types.Simulation.is_obsolete == False)
     if start_date is not None:
-        qry = qry.filter(types.Job.execution_start_date >= start_date)
+        qry = qry.filter(types.Simulation.execution_start_date >= start_date)
 
     return qry.all()
-
-
-@decorators.validate(validator.validate_retrieve_active_simulation)
-def retrieve_active_simulation(hashid):
-    """Retrieves an active simulation from db.
-
-    :param str hashid: Simulation hash identifier.
-
-    :returns: An active simulation instance.
-    :rtype: types.Simulation
-
-    """
-    qry = session.query(types.Simulation)
-    qry = qry.filter(types.Simulation.hashid == hashid)
-    qry = qry.filter(types.Simulation.is_obsolete == False)
-
-    return dao.exec_query(types.Simulation, qry)
 
 
 @decorators.validate(validator.validate_retrieve_active_simulations)
@@ -95,6 +78,23 @@ def retrieve_active_simulations(start_date=None):
         qry = qry.filter(types.Simulation.execution_start_date >= start_date)
 
     return qry.all()
+
+
+@decorators.validate(validator.validate_retrieve_active_simulation)
+def retrieve_active_simulation(hashid):
+    """Retrieves an active simulation from db.
+
+    :param str hashid: Simulation hash identifier.
+
+    :returns: An active simulation instance.
+    :rtype: types.Simulation
+
+    """
+    qry = session.query(types.Simulation)
+    qry = qry.filter(types.Simulation.hashid == hashid)
+    qry = qry.filter(types.Simulation.is_obsolete == False)
+
+    return dao.exec_query(types.Simulation, qry)
 
 
 @decorators.validate(validator.validate_retrieve_simulation)

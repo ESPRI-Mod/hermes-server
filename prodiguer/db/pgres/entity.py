@@ -39,7 +39,7 @@ class _BaseEntity(object):
         """Debugging representation.
 
         """
-        return unicode(convertor.to_dict(self))
+        return unicode(convertor.convert(self))
 
 
     @property
