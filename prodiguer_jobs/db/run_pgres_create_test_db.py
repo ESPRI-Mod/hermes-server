@@ -23,6 +23,16 @@ from prodiguer.utils import config
 from prodiguer.utils import logger
 
 
+
+# Number of days for which to create test simulations.
+_QUOTA_DAYS = 500
+
+# Number of simulations to create per day.
+_QUOTA_SIMS_PER_DAY = 100
+
+# Number of jobs to create per simulation.
+_QUOTA_JOBS_PER_SIM = 8
+
 # Set of accounting projects to be used.
 _ACCOUNTING_PROJECTS = [
     u"ipsl",
@@ -61,10 +71,16 @@ _JOB_TYPESET = [
 
 
 def _get_cv_term(term_type):
+    """Get a test cv term.
+
+    """
     return cv.get_name(cv.cache.get_random_term(term_type))
 
 
 def _create_job(simulation, job_index):
+    """Create a test job.
+
+    """
     instance = db.types.Job()
     instance.simulation_uid = simulation.uid
     instance.job_uid = unicode(uuid.uuid4())
@@ -83,12 +99,13 @@ def _create_job(simulation, job_index):
     instance.typeof = random.choice(_JOB_TYPESET)
     instance.warning_delay = config.apps.monitoring.defaultJobWarningDelayInSeconds
 
-    db.session.insert(instance)
-
-    return instance
+    return db.session.insert(instance)
 
 
 def _create_simulation(start_date, end_date):
+    """Create a test simulation.
+
+    """
     instance = db.types.Simulation()
     instance.activity = u"ipsl"
     instance.accounting_project = random.choice(_ACCOUNTING_PROJECTS)
@@ -109,26 +126,32 @@ def _create_simulation(start_date, end_date):
     instance.uid = unicode(uuid.uuid4())
     instance.hashid = instance.get_hashid()
 
-    db.session.insert(instance)
-
-    return instance
+    return db.session.insert(instance)
 
 
 def _main():
+    """Main entry point.
+
+    """
+    # Initialize.
     then = arrow.now()
     cv.cache.load()
     db.session.start()
 
-    for start_date in (_NOW - datetime.timedelta(days=x) for x in xrange(500, 1, -1)):
-        logger.log_db("creating simulations starting at: {}".format(start_date))
+    # Create N simulations per day for the last M days.
+    for start_date in (_NOW - datetime.timedelta(days=x) for x in xrange(_QUOTA_DAYS, 1, -1)):
+        logger.log_db("creating {} simulations starting at: {}".format(_QUOTA_SIMS_PER_DAY, start_date))
         end_date = start_date + datetime.timedelta(days=4)
-        for _ in range(500):
+        for _ in range(_QUOTA_SIMS_PER_DAY):
             simulation = _create_simulation(start_date, end_date)
-            for i in range(8):
+            for i in range(_QUOTA_JOBS_PER_SIM):
                 _create_job(simulation, i + 1)
 
+    # Finalize.
     db.session.end()
-    logger.log_db("created 250000 simulations in: {}".format(arrow.now() - then))
+    msg = "created {} simulations in: {}"
+    msg = msg.format(_QUOTA_DAYS * _QUOTA_SIMS_PER_DAY, arrow.now() - then)
+    logger.log_db(msg)
 
 if __name__ == '__main__':
     _main()
