@@ -61,7 +61,7 @@ def validate_int(val, var):
         _raise_value_error(val, var, int)
 
 
-def validate_date(val, var):
+def validate_date(val, var, date_format=None):
     """Validates a date.
 
     """
@@ -69,7 +69,10 @@ def validate_date(val, var):
         raise ValueError('{0} is undefined date'.format(var))
 
     try:
-        arrow.get(val)
+        if date_format is not None:
+            arrow.get(val, date_format)
+        else:
+            arrow.get(val)
     except arrow.parser.ParserError:
         _raise_value_error(val, var, 'date')
 

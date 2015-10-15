@@ -78,7 +78,7 @@ def validate_persist_job_01(
     if post_processing_name is not None:
         pass
     if post_processing_date is not None:
-        pass
+        validator.validate_date(post_processing_date, "post_processing_date", "YYYYMMDD")
     if post_processing_dimension is not None:
         pass
     if post_processing_component is not None:
