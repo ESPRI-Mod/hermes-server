@@ -123,7 +123,7 @@ _AGENT_EXCHANGES = {
         'debug-cv',
         'debug-fe',
         'debug-smtp',
-        'debug-smtp-realtime'
+        'debug-smtp-realtime',
         'live-cv',
         'live-fe',
         'live-smtp',
