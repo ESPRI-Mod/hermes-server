@@ -28,6 +28,7 @@ def get_tasks():
 
     """
     return (
+        monitoring_job_start.unpack_message_content,
         _unpack_message_content,
         _reformat_message_content,
         _parse_cv_terms,
@@ -108,10 +109,6 @@ def _unpack_message_content(ctx):
     """Unpacks message content prior to further processing.
 
     """
-    # Unpack job related fields.
-    monitoring_job_start.unpack_message_content(ctx)
-
-    # Unpack simulation related fields.
     ctx.accounting_project = ctx.content.get('accountingProject')
     ctx.activity = ctx.activity_raw = ctx.content['activity']
     ctx.compute_node = ctx.compute_node_raw = ctx.content['centre']

@@ -69,11 +69,19 @@ class ProdiguerHTTPRequestHandler(tornado.web.RequestHandler):
             """Writes HTTP response data.
 
             """
+            msg = "[{0}]: response writing begins --> {1}"
+            msg = msg.format(id(self), self)
+            logger.log_web(msg)
+
             # Write response.
             self.write(data_convertor.convert(data, string_convertor.to_camel_case))
 
             # Set HTTP header.
             self.set_header("Content-Type", "application/json; charset=utf-8")
+
+            msg = "[{0}]: response writing ends --> {1}"
+            msg = msg.format(id(self), self)
+            logger.log_web(msg)
 
 
         def _write_error(http_status_code, err):
