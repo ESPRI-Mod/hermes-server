@@ -41,15 +41,17 @@ def _delete_false_fields(obj, fields):
     _delete_fields(obj, [f for f in fields if obj[f] == False])
 
 
-def _convert_to_dict(instance):
+def _convert_to_dict(instance, remove_standard_fields=True):
     """Returns an instance of a mapped db row as a dictionary.
 
     """
-    return _delete_fields(db.convertor.convert(instance), {
-        'id',
-        'row_create_date',
-        'row_update_date'
-        })
+    if remove_standard_fields:
+        return _delete_fields(db.convertor.convert(instance), {
+            'id',
+            # 'row_create_date',
+            'row_update_date'
+            })
+    return db.convertor.convert(instance)
 
 
 def trim_simulation(instance):
@@ -169,7 +171,7 @@ def trim_message(instance):
 
     """
     # Convert to dictionary.
-    obj = _convert_to_dict(instance)
+    obj = _convert_to_dict(instance, False)
 
     # Rename a field.
     obj['job_uid'] = obj['correlation_id_2']

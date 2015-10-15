@@ -215,7 +215,8 @@ def _set_msg_ampq(ctx):
                 'timestamp': unicode(timestamp.as_ns_raw),
                 'timestamp_precision': u'ns',
                 'correlation_id_1': data.get('simuid'),
-                'correlation_id_2': data.get('jobuid')
+                'correlation_id_2': data.get('jobuid'),
+                'email_id': ctx.email_uid
             })
 
 
@@ -248,8 +249,7 @@ def _enqueue_messages(ctx):
     """Enqueues messages upon MQ server.
 
     """
-    mq.produce(ctx.msg_ampq,
-               connection_url=config.mq.connections.main)
+    mq.produce(ctx.msg_ampq, connection_url=config.mq.connections.main)
 
 
 def _dequeue_email(ctx):

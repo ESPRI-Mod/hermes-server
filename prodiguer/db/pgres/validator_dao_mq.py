@@ -30,7 +30,8 @@ def validate_create_message(
     correlation_id_3,
     timestamp,
     timestamp_precision,
-    timestamp_raw
+    timestamp_raw,
+    email_id
     ):
     """Function input validator: create_message.
 
@@ -51,6 +52,8 @@ def validate_create_message(
     msg_validator.validate_timestamp_info(timestamp, timestamp_precision, timestamp_raw)
     msg_validator.validate_type(type_id)
     msg_validator.validate_user_id(user_id)
+    if email_id:
+        msg_validator.validate_email_id(email_id)
 
 
 def validate_create_message_email(email_id):

@@ -283,5 +283,6 @@ def persist(properties, payload):
         _get_header('correlation_id_3'),
         ts_parsed,
         ts_precision,
-        ts_raw
+        ts_raw,
+        _get_header('email_id')
         )

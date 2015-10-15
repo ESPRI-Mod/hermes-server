@@ -42,6 +42,7 @@ class Message(Entity):
     producer_version = Column(Unicode(31), nullable=False)
     type_id = Column(Unicode(63), nullable=False)
     user_id = Column(Unicode(63), nullable=False)
+    email_id = Column(BigInteger)
     uid = Column(Unicode(63),
                  nullable=False,
                  unique=True,

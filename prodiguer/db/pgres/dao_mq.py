@@ -35,7 +35,8 @@ def create_message(
     correlation_id_3=None,
     timestamp=None,
     timestamp_precision=None,
-    timestamp_raw=None
+    timestamp_raw=None,
+    email_id=None
     ):
     """Creates a new message record in db.
 
@@ -54,6 +55,7 @@ def create_message(
     :param datetime.datetime timestamp: Message timestamp.
     :param str timestamp_precision: Message timestamp precision (ns | ms).
     :param str timestamp_raw: Message raw timestamp.
+    :param int email_id: ID of email in which the message was dispatched.
 
     :returns: Newly created message.
     :rtype: types.Message
@@ -81,6 +83,8 @@ def create_message(
     instance.type_id = unicode(type_id)
     instance.uid = unicode(uid)
     instance.user_id = unicode(user_id)
+    if email_id:
+        instance.email_id = int(email_id)
 
     return session.add(instance)
 

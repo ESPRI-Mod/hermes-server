@@ -39,7 +39,7 @@ def get_tasks():
     return [
         unpack_message_content,
         persist_job,
-        _persist_simulation_updates,
+        _persist_simulation,
         enqueue_job_warning_delay,
         _enqueue_front_end_notification
     ]
@@ -94,20 +94,17 @@ def unpack_message_content(ctx):
         ctx.job_warning_delay = config.apps.monitoring.defaultJobWarningDelayInSeconds
 
     # Override fields set to string literal null.
-    if ctx.job_pp_name == "null":
-        ctx.job_pp_name = None
-    if ctx.job_pp_date == "null":
-        ctx.job_pp_date = None
-    if ctx.job_pp_dimension == "null":
-        ctx.job_pp_dimension = None
-    if ctx.job_pp_component == "null":
-        ctx.job_pp_component = None
-    if ctx.job_pp_file == "null":
-        ctx.job_pp_file = None
-    if ctx.job_scheduler_id == "null":
-        ctx.job_scheduler_id = None
-    if ctx.job_submission_path == "null":
-        ctx.job_submission_path = None
+    for field in [
+        "job_pp_name",
+        "job_pp_date",
+        "job_pp_dimension",
+        "job_pp_component",
+        "job_pp_file",
+        "job_scheduler_id",
+        "job_submission_path"
+        ]:
+        if getattr(ctx, field) == "null":
+            setattr(ctx, field, None)
 
 
 def persist_job(ctx):
@@ -132,7 +129,7 @@ def persist_job(ctx):
         )
 
 
-def _persist_simulation_updates(ctx):
+def _persist_simulation(ctx):
     """Updates simulation (compute jobs only)
 
     """
