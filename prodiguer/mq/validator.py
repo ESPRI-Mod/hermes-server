@@ -36,7 +36,7 @@ def validate_ampq_basic_properties(props):
     # if 'producer_version' not in props.headers:
     #     msg = "[producer_version] is a required header field."
     #     raise ValueError(msg)
-    validate_producer_version(props.headers['producer_version'])
+    # validate_producer_version(props.headers['producer_version'])
 
     # Validate application id.
     validate_app_id(props.app_id)
