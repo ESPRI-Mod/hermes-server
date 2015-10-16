@@ -11,6 +11,8 @@
 
 
 """
+import datetime
+
 from prodiguer import cv
 from prodiguer.db import pgres as db
 from prodiguer.utils import config
@@ -41,17 +43,15 @@ def _delete_false_fields(obj, fields):
     _delete_fields(obj, [f for f in fields if obj[f] == False])
 
 
-def _convert_to_dict(instance, remove_standard_fields=True):
+def _convert_to_dict(instance):
     """Returns an instance of a mapped db row as a dictionary.
 
     """
-    if remove_standard_fields:
-        return _delete_fields(db.convertor.convert(instance), {
-            'id',
-            # 'row_create_date',
-            'row_update_date'
-            })
-    return db.convertor.convert(instance)
+    return _delete_fields(db.convertor.convert(instance), {
+        'id',
+        'row_create_date',
+        'row_update_date'
+        })
 
 
 def trim_simulation(instance):
@@ -171,10 +171,11 @@ def trim_message(instance):
 
     """
     # Convert to dictionary.
-    obj = _convert_to_dict(instance, False)
+    obj = _convert_to_dict(instance)
 
-    # Rename a field.
-    obj['job_uid'] = obj['correlation_id_2']
+    # Inject fields.
+    obj['job_uid'] = instance.correlation_id_2
+    obj['processed'] = instance.row_create_date
 
     # Delete fields
     _delete_fields(obj, {
