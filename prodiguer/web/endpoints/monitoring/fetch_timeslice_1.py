@@ -42,22 +42,6 @@ class FetchTimeSlice1RequestHandler(ProdiguerHTTPRequestHandler):
         """HTTP GET handler.
 
         """
-        def _get_data(factory):
-            """Returns data for front-end.
-
-            """
-            start_date = self.start_date.datetime if self.start_date else None
-
-            return factory(start_date)
-
-
-        def _get_job_list():
-            """Returns job data for front-end.
-
-            """
-            return [trim_job(i) for i in _get_data(dao.retrieve_active_jobs)]
-
-
         def _decode_request():
             """Decodes request.
 
@@ -79,6 +63,8 @@ class FetchTimeSlice1RequestHandler(ProdiguerHTTPRequestHandler):
                 self.start_date = arrow.now() - datetime.timedelta(days=365)
             elif timeslice == '*':
                 self.start_date = None
+            if self.start_date is not None:
+                self.start_date = self.start_date.datetime
 
 
         def _set_output():
@@ -86,8 +72,8 @@ class FetchTimeSlice1RequestHandler(ProdiguerHTTPRequestHandler):
 
             """
             self.output = {
-                'job_list': _get_job_list(),
-                'simulation_list': _get_data(dao.retrieve_active_simulations)
+                'job_list': [trim_job(i) for i in dao.retrieve_active_jobs(self.start_date)],
+                'simulation_list': dao.retrieve_active_simulations(self.start_date)
             }
 
 
