@@ -25,15 +25,6 @@ from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 _PARAM_TIMESLICE = 'timeslice'
 
 
-def trim_job(i):
-    """Returns job tuple stripped of superfluous information.
-
-    """
-    if i[5] == "post-processing":
-        return i[0:5]
-    return i
-
-
 class FetchTimeSlice1RequestHandler(ProdiguerHTTPRequestHandler):
     """Fetches a time slice of simulations.
 
@@ -72,7 +63,7 @@ class FetchTimeSlice1RequestHandler(ProdiguerHTTPRequestHandler):
 
             """
             self.output = {
-                'jobList': [trim_job(i) for i in dao.retrieve_active_jobs(self.start_date)],
+                'jobList': dao.retrieve_active_jobs(self.start_date),
                 'simulationList': dao.retrieve_active_simulations(self.start_date)
             }
 
