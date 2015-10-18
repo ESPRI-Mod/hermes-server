@@ -1,0 +1,137 @@
+# -*- coding: utf-8 -*-
+
+"""
+.. module:: prodiguer.db.dao_monitoring_ll.py
+   :copyright: Copyright "Apr 26, 2013", IPSL
+   :license: GPL/CeCIL
+   :platform: Unix
+   :synopsis: Monitoring data access operations using low-level db driver.
+
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
+
+
+"""
+import os
+
+import psycopg2
+
+from prodiguer.db import pgres as db
+from prodiguer.db.pgres import validator_dao_monitoring as validator
+from prodiguer.utils import decorators
+
+
+
+# Sql statement for selecting active simulations.
+_SQL_SELECT_ACTIVE_SIMULATIONS = """SELECT
+    s.accounting_project,
+    s.activity,
+    s.activity_raw,
+    s.compute_node,
+    s.compute_node_raw,
+    s.compute_node_login,
+    s.compute_node_login_raw,
+    s.compute_node_machine,
+    s.compute_node_machine_raw,
+    s.execution_end_date,
+    s.execution_start_date,
+    s.experiment,
+    s.experiment_raw,
+    s.is_error,
+    s.hashid,
+    s.model,
+    s.model_raw,
+    s.name,
+    s.output_end_date,
+    s.output_start_date,
+    s.space,
+    s.space_raw,
+    s.try_id,
+    s.uid
+FROM
+    monitoring.tbl_simulation as s
+WHERE
+    s.execution_start_date IS NOT NULL AND
+    s.is_obsolete = false
+"""
+
+# Sql statement for selecting active jobs.
+_SQL_SELECT_ACTIVE_JOBS = """SELECT
+    j.execution_end_date,
+    j.execution_start_date,
+    j.is_error,
+    j.job_uid,
+    j.simulation_uid,
+    j.typeof
+FROM
+    monitoring.tbl_job as j
+JOIN
+    monitoring.tbl_simulation as s ON j.simulation_uid = s.uid
+WHERE
+    s.execution_start_date IS NOT NULL AND
+    s.is_obsolete = false
+"""
+
+# Sql statement for selecting simulations.
+_SQL_TIMESLICE_CRITERIA = " AND s.execution_start_date >= '{}'"
+
+
+def _get_psycopg2_connection():
+    """Returns a pscopg2 connection to the db.
+
+    """
+    return psycopg2.connect(
+        database=db.constants.PRODIGUER_DB_NAME,
+        user=db.constants.PRODIGUER_DB_USER,
+        host=os.getenv("PRODIGUER_DB_PGRES_HOST").split(":")[0],
+        password=os.getenv("PRODIGUER_DB_PGRES_USER_PASSWORD")
+        )
+
+
+def _fetch_all(sql):
+    """Executes a sql statement and return data returned by cursor.
+
+    """
+    conn = _get_psycopg2_connection()
+    cur = conn.cursor()
+    cur.execute(sql)
+    data = cur.fetchall()
+    conn.close()
+
+    return data
+
+
+@decorators.validate(validator.validate_retrieve_active_simulations)
+def retrieve_active_simulations(start_date=None):
+    """Retrieves active simulation details from db.
+
+    :param datetime.datetime start_date: Simulation execution start date.
+
+    :returns: Simulation details.
+    :rtype: list
+
+    """
+    sql = _SQL_SELECT_ACTIVE_SIMULATIONS
+    if start_date:
+        sql += _SQL_TIMESLICE_CRITERIA.format(start_date)
+    sql += ";"
+
+    return _fetch_all(sql)
+
+
+@decorators.validate(validator.validate_retrieve_active_jobs)
+def retrieve_active_jobs(start_date=None):
+    """Retrieves active job details from db.
+
+    :param datetime.datetime start_date: Job execution start date.
+
+    :returns: Job details.
+    :rtype: list
+
+    """
+    sql = _SQL_SELECT_ACTIVE_JOBS
+    if start_date:
+        sql += _SQL_TIMESLICE_CRITERIA.format(start_date)
+    sql += ";"
+
+    return _fetch_all(sql)
+

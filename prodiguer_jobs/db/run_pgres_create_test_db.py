@@ -25,10 +25,10 @@ from prodiguer.utils import logger
 
 
 # Number of days for which to create test simulations.
-_QUOTA_DAYS = 500
+_QUOTA_DAYS = 93
 
 # Number of simulations to create per day.
-_QUOTA_SIMS_PER_DAY = 100
+_QUOTA_SIMS_PER_DAY = 90
 
 # Number of jobs to create per simulation.
 _QUOTA_JOBS_PER_SIM = 8
@@ -64,8 +64,8 @@ PP_DATE = arrow.get("20100101", "YYYYMMDD").datetime
 
 # Set of job types.
 _JOB_TYPESET = [
-    "computing",
-    "post-processing",
+    u"computing",
+    u"post-processing",
     # "post-processing-from-checker",
 ]
 

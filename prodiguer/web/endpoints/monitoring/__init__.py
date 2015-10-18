@@ -15,4 +15,5 @@ from prodiguer.web.endpoints.monitoring.event import EventRequestHandler
 from prodiguer.web.endpoints.monitoring.fetch_one import FetchOneRequestHandler
 from prodiguer.web.endpoints.monitoring.fetch_messages import FetchMessagesRequestHandler
 from prodiguer.web.endpoints.monitoring.fetch_timeslice import FetchTimeSliceRequestHandler
+from prodiguer.web.endpoints.monitoring.fetch_timeslice_1 import FetchTimeSlice1RequestHandler
 from prodiguer.web.endpoints.monitoring.websocket import FrontEndWebSocketAllHandler
