@@ -72,8 +72,8 @@ class FetchTimeSlice1RequestHandler(ProdiguerHTTPRequestHandler):
 
             """
             self.output = {
-                'job_list': [trim_job(i) for i in dao.retrieve_active_jobs(self.start_date)],
-                'simulation_list': dao.retrieve_active_simulations(self.start_date)
+                'jobList': [trim_job(i) for i in dao.retrieve_active_jobs(self.start_date)],
+                'simulationList': dao.retrieve_active_simulations(self.start_date)
             }
 
 
@@ -81,4 +81,4 @@ class FetchTimeSlice1RequestHandler(ProdiguerHTTPRequestHandler):
         self.invoke(rv.validate_fetch_timeslice, [
             _decode_request,
             _set_output,
-            ])
+            ], convert_before_write=False)
