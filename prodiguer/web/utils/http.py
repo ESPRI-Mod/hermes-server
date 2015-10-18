@@ -61,7 +61,7 @@ class ProdiguerHTTPRequestHandler(tornado.web.RequestHandler):
         validation_taskset,
         processing_taskset,
         processing_error_taskset=[],
-        convert_before_write=True
+        write_raw_output=False
         ):
         """Invokes handler tasks.
 
@@ -75,10 +75,10 @@ class ProdiguerHTTPRequestHandler(tornado.web.RequestHandler):
             logger.log_web(msg)
 
             # Write response.
-            if convert_before_write:
-                self.write(data_convertor.convert(data, string_convertor.to_camel_case))
-            else:
+            if write_raw_output:
                 self.write(data)
+            else:
+                self.write(data_convertor.convert(data, string_convertor.to_camel_case))
 
             # Set HTTP header.
             self.set_header("Content-Type", "application/json; charset=utf-8")

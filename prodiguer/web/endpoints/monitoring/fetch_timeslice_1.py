@@ -81,4 +81,4 @@ class FetchTimeSlice1RequestHandler(ProdiguerHTTPRequestHandler):
         self.invoke(rv.validate_fetch_timeslice, [
             _decode_request,
             _set_output,
-            ], convert_before_write=False)
+            ], write_raw_output=True)
