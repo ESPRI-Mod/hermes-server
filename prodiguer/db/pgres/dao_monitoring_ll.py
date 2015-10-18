@@ -32,8 +32,8 @@ _SQL_SELECT_ACTIVE_SIMULATIONS = """SELECT
     s.compute_node_login_raw,
     s.compute_node_machine,
     s.compute_node_machine_raw,
-    s.execution_end_date,
-    s.execution_start_date,
+    to_char(s.execution_end_date, 'YYYY-MM-DD HH24:MI:ss.US'),
+    to_char(s.execution_start_date, 'YYYY-MM-DD HH24:MI:ss.US'),
     s.experiment,
     s.experiment_raw,
     s.is_error,
@@ -41,8 +41,8 @@ _SQL_SELECT_ACTIVE_SIMULATIONS = """SELECT
     s.model,
     s.model_raw,
     s.name,
-    s.output_end_date,
-    s.output_start_date,
+    to_char(s.output_end_date, 'YYYY-MM-DD'),
+    to_char(s.output_start_date, 'YYYY-MM-DD'),
     s.space,
     s.space_raw,
     s.try_id,
@@ -56,8 +56,8 @@ WHERE
 
 # Sql statement for selecting active jobs.
 _SQL_SELECT_ACTIVE_JOBS = """SELECT
-    j.execution_end_date,
-    j.execution_start_date,
+    to_char(j.execution_end_date, 'YYYY-MM-DD HH24:MI:ss.US'),
+    to_char(j.execution_start_date, 'YYYY-MM-DD HH24:MI:ss.US'),
     j.is_error,
     j.job_uid,
     j.simulation_uid,
