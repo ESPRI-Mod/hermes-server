@@ -15,7 +15,6 @@ from prodiguer.db import pgres as db
 from prodiguer.db. pgres import dao
 from prodiguer.web.request_validation import validator_cv as rv
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
-from prodiguer.web.utils.payload import trim_term
 
 
 
@@ -33,6 +32,13 @@ _EXCLUDED_TERMSETS = {
     }
 
 
+def map_term(term):
+    """Maps a term for output to client.
+
+    """
+    return (term.display_name, term.name, term.sort_key, term.synonyms or [], term.typeof, term.uid)
+
+
 class FetchRequestHandler(ProdiguerHTTPRequestHandler):
     """Fetch controlled vocabulary setup request handler.
 
@@ -45,10 +51,8 @@ class FetchRequestHandler(ProdiguerHTTPRequestHandler):
             """Returns sorted list of cv terms.
 
             """
-            data = [trim_term(t) for t in dao.get_all(db.types.ControlledVocabularyTerm)]
-            data = [t for t in data if t['typeof'] not in _EXCLUDED_TERMSETS]
-
-            return data
+            return [map_term(t) for t in dao.get_all(db.types.ControlledVocabularyTerm)
+                    if t.typeof not in _EXCLUDED_TERMSETS]
 
 
         def _set_output():
@@ -58,10 +62,10 @@ class FetchRequestHandler(ProdiguerHTTPRequestHandler):
             db.session.start()
             try:
                 self.output = {
-                    'cv_terms': _get_terms()
+                    'cvTerms': _get_terms()
                 }
             finally:
                 db.session.end()
 
         # Invoke tasks.
-        self.invoke(rv.validate_fetch, _set_output)
+        self.invoke(rv.validate_fetch, _set_output, write_raw_output=True)
