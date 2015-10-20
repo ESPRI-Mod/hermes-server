@@ -84,10 +84,48 @@ _TARGETS = [
     "jobs"
 ]
 
+def retrieve_active_simulations(start_date=None):
+    """Retrieves active simulation details from db.
+
+    :param datetime.datetime start_date: Simulation execution start date.
+
+    :returns: Simulation details.
+    :rtype: list
+
+    """
+    qry = db.session.query(db.types.Simulation)
+    qry = qry.filter(db.types.Simulation.execution_start_date != None)
+    qry = qry.filter(db.types.Simulation.is_obsolete == False)
+    if start_date is not None:
+        qry = qry.filter(db.types.Simulation.execution_start_date >= start_date)
+
+    return qry.all()
+
+
+def retrieve_active_jobs(start_date=None):
+    """Retrieves active job details from db.
+
+    :param datetime.datetime start_date: Job execution start date.
+
+    :returns: Job details.
+    :rtype: list
+
+    """
+    qry = db.session.query(db.types.Job)
+    qry = qry.join(db.types.Simulation, db.types.Job.simulation_uid==db.types.Simulation.uid)
+    qry = qry.filter(db.types.Job.execution_start_date != None)
+    qry = qry.filter(db.types.Simulation.execution_start_date != None)
+    qry = qry.filter(db.types.Simulation.is_obsolete == False)
+    if start_date is not None:
+        qry = qry.filter(db.types.Simulation.execution_start_date >= start_date)
+
+    return qry.all()
+
+
 # Map of db query targets to sqlalchmey based functions.
 _SQLALCHEMY_FACTORIES = {
-    "simulations": db.dao_monitoring.retrieve_active_simulations,
-    "jobs": db.dao_monitoring.retrieve_active_jobs,
+    "simulations": retrieve_active_simulations,
+    "jobs": retrieve_active_jobs,
 }
 
 # Map of db query targets to psycopg2 sql statements.

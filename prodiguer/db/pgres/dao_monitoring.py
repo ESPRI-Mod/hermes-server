@@ -40,46 +40,6 @@ def _persist(hydrate, create, retrieve):
     return instance
 
 
-@decorators.validate(validator.validate_retrieve_active_jobs)
-def retrieve_active_jobs(start_date=None):
-    """Retrieves active job details from db.
-
-    :param datetime.datetime start_date: Job execution start date.
-
-    :returns: Job details.
-    :rtype: list
-
-    """
-    qry = session.query(types.Job)
-    qry = qry.join(types.Simulation, types.Job.simulation_uid==types.Simulation.uid)
-    qry = qry.filter(types.Job.execution_start_date != None)
-    qry = qry.filter(types.Simulation.execution_start_date != None)
-    qry = qry.filter(types.Simulation.is_obsolete == False)
-    if start_date is not None:
-        qry = qry.filter(types.Simulation.execution_start_date >= start_date)
-
-    return qry.all()
-
-
-@decorators.validate(validator.validate_retrieve_active_simulations)
-def retrieve_active_simulations(start_date=None):
-    """Retrieves active simulation details from db.
-
-    :param datetime.datetime start_date: Simulation execution start date.
-
-    :returns: Simulation details.
-    :rtype: list
-
-    """
-    qry = session.query(types.Simulation)
-    qry = qry.filter(types.Simulation.execution_start_date != None)
-    qry = qry.filter(types.Simulation.is_obsolete == False)
-    if start_date is not None:
-        qry = qry.filter(types.Simulation.execution_start_date >= start_date)
-
-    return qry.all()
-
-
 @decorators.validate(validator.validate_retrieve_active_simulation)
 def retrieve_active_simulation(hashid):
     """Retrieves an active simulation from db.
