@@ -56,7 +56,6 @@ def validate_persist_job_01(
     job_type,
     job_uid,
     simulation_uid,
-    is_compute_start=False,
     post_processing_name=None,
     post_processing_date=None,
     post_processing_dimension=None,
@@ -74,7 +73,6 @@ def validate_persist_job_01(
     cv.validator.validate_job_type(job_type)
     validator.validate_job_uid(job_uid)
     validator.validate_simulation_uid(simulation_uid)
-    validator.validate_bool(is_compute_start, 'Is compute start up flag')
     if post_processing_name is not None:
         pass
     if post_processing_date is not None:

@@ -366,7 +366,6 @@ def persist_job_01(
     job_type,
     job_uid,
     simulation_uid,
-    is_compute_start=False,
     post_processing_name=None,
     post_processing_date=None,
     post_processing_dimension=None,
@@ -383,7 +382,6 @@ def persist_job_01(
     :param str job_type: Job type.
     :param str job_uid: Job UID.
     :param str simulation_uid: Simulation UID.
-    :param bool is_compute_start: Flag indicating whether the job is a simulation start up or not.
     :param str post_processing_name: Post processing job name.
     :param str post_processing_date: Post processing job name.
     :param str post_processing_dimension: Post processing job name.
@@ -403,7 +401,6 @@ def persist_job_01(
         instance.execution_start_date = execution_start_date
         instance.typeof = unicode(job_type)
         instance.job_uid = unicode(job_uid)
-        instance.is_compute_start = is_compute_start
         instance.simulation_uid = unicode(simulation_uid)
         instance.warning_delay = int(warning_delay)
 

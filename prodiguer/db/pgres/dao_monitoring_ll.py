@@ -101,7 +101,6 @@ _SQL_SELECT_SIMULATION_JOBS = """SELECT
     to_char(j.execution_start_date, 'YYYY-MM-DD HH24:MI:ss.US'),
     j.is_error,
     j.is_compute_end,
-    j.is_compute_start,
     j.job_uid,
     j.post_processing_component,
     to_char(j.post_processing_date, 'YYYY-MM-DD'),
