@@ -67,9 +67,30 @@ FROM
 JOIN
     monitoring.tbl_simulation as s ON j.simulation_uid = s.uid
 WHERE
+    j.execution_start_date IS NOT NULL AND
     s.execution_start_date IS NOT NULL AND
     s.is_obsolete = false
 """
+
+# Sql statement for selecting simulation messages.
+_SQL_SELECT_SIMULATION_MESSAGES = """SELECT
+    m.content,
+    m.email_id,
+    m.correlation_id_2,
+    to_char(m.row_create_date + INTERVAL '2 hours', 'YYYY-MM-DD HH24:MI:ss.US'),
+    m.producer_version,
+    to_char(m.timestamp, 'YYYY-MM-DD HH24:MI:ss.US'),
+    m.type_id,
+    m.uid
+FROM
+    mq.tbl_message as m
+WHERE
+    m.correlation_id_1 = '{}' AND
+    m.type_id NOT IN ('7000')
+ORDER BY
+    m.timestamp;
+"""
+
 
 # Sql statement for selecting simulations.
 _SQL_TIMESLICE_CRITERIA = " AND s.execution_start_date >= '{}'"
@@ -135,3 +156,17 @@ def retrieve_active_jobs(start_date=None):
 
     return _fetch_all(sql)
 
+
+@decorators.validate(validator.validate_retrieve_simulation_messages)
+def retrieve_simulation_messages(uid):
+    """Retrieves message details from db.
+
+    :param str uid: UID of simulation.
+
+    :returns: List of message associated with a simulation.
+    :rtype: list
+
+    """
+    sql = _SQL_SELECT_SIMULATION_MESSAGES.format(uid)
+
+    return _fetch_all(sql)

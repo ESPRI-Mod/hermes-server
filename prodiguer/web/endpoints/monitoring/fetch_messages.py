@@ -13,9 +13,9 @@
 """
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
+from prodiguer.db.pgres import dao_monitoring_ll as dao_ll
 from prodiguer.web.request_validation import validator_monitoring as rv
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
-from prodiguer.web.utils.payload import trim_message
 
 
 
@@ -31,13 +31,6 @@ class FetchMessagesRequestHandler(ProdiguerHTTPRequestHandler):
         """HTTP GET handler.
 
         """
-        def _get_message_history():
-            """Returns simulation message history for front-end.
-
-            """
-            return [trim_message(m) for m in dao.retrieve_simulation_messages(self.simulation_uid)]
-
-
         def _decode_request():
             """Decodes request.
 
@@ -52,7 +45,7 @@ class FetchMessagesRequestHandler(ProdiguerHTTPRequestHandler):
             db.session.start()
             try:
                 self.output = {
-                    'message_history': _get_message_history(),
+                    'message_history': dao_ll.retrieve_simulation_messages(self.simulation_uid),
                     'simulation': dao.retrieve_simulation(self.simulation_uid)
                 }
             finally:
