@@ -15,12 +15,9 @@ import datetime
 
 import arrow
 
-from prodiguer.db import pgres as db
-from prodiguer.db.pgres import dao_monitoring as dao
+from prodiguer.db.pgres import dao_monitoring_ll as dao
 from prodiguer.web.request_validation import validator_monitoring as rv
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
-from prodiguer.web.utils.payload import trim_job
-from prodiguer.web.utils.payload import trim_simulation
 
 
 
@@ -36,29 +33,6 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
         """HTTP GET handler.
 
         """
-        def _get_data(factory):
-            """Returns data for front-end.
-
-            """
-            start_date = self.start_date.datetime if self.start_date else None
-
-            return factory(start_date)
-
-
-        def _get_simulation_list():
-            """Returns simulation data for front-end.
-
-            """
-            return [trim_simulation(s) for s in _get_data(dao.retrieve_active_simulations)]
-
-
-        def _get_job_list():
-            """Returns job data for front-end.
-
-            """
-            return [trim_job(j, True) for j in _get_data(dao.retrieve_active_jobs)]
-
-
         def _decode_request():
             """Decodes request.
 
@@ -80,26 +54,22 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
                 self.start_date = arrow.now() - datetime.timedelta(days=365)
             elif timeslice == '*':
                 self.start_date = None
+            if self.start_date is not None:
+                self.start_date = self.start_date.datetime
 
 
         def _set_output():
             """Sets response to be returned to client.
 
             """
-            db.session.start()
-            try:
-                # then = arrow.now()
-                self.output = {
-                    'job_list': _get_job_list(),
-                    'simulation_list': _get_simulation_list()
-                }
-                # print arrow.now() - then, "OUTPUT ASSIGNED"
-            finally:
-                db.session.end()
+            self.output = {
+                'jobList': dao.retrieve_active_jobs(self.start_date),
+                'simulationList': dao.retrieve_active_simulations(self.start_date)
+            }
 
 
         # Invoke tasks.
         self.invoke(rv.validate_fetch_timeslice, [
             _decode_request,
             _set_output,
-            ])
+            ], write_raw_output=True)
