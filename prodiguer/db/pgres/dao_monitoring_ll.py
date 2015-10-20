@@ -72,6 +72,9 @@ WHERE
     s.is_obsolete = false
 """
 
+# Sql statement for selecting active timesliaces.
+_SQL_SELECT_ACTIVE_TIMESLICE_CRITERIA = " AND s.execution_start_date >= '{}'"
+
 # Sql statement for selecting simulation messages.
 _SQL_SELECT_SIMULATION_MESSAGES = """SELECT
     m.content,
@@ -91,9 +94,33 @@ ORDER BY
     m.timestamp;
 """
 
+# Sql statement for selecting simulation jobs.
+_SQL_SELECT_SIMULATION_JOBS = """SELECT
+    j.accounting_project,
+    to_char(j.execution_end_date, 'YYYY-MM-DD HH24:MI:ss.US'),
+    to_char(j.execution_start_date, 'YYYY-MM-DD HH24:MI:ss.US'),
+    j.is_error,
+    j.is_startup,
+    j.job_uid,
+    j.post_processing_component,
+    to_char(j.post_processing_date, 'YYYY-MM-DD'),
+    j.post_processing_dimension,
+    j.post_processing_file,
+    j.post_processing_name,
+    j.simulation_uid,
+    j.scheduler_id,
+    j.submission_path,
+    j.typeof,
+    j.warning_delay
+FROM
+    monitoring.tbl_job as j
+WHERE
+    j.execution_start_date IS NOT NULL AND
+    j.simulation_uid = '{}'
+ORDER BY
+    j.execution_start_date;
+"""
 
-# Sql statement for selecting simulations.
-_SQL_TIMESLICE_CRITERIA = " AND s.execution_start_date >= '{}'"
 
 
 def _get_psycopg2_connection():
@@ -133,7 +160,7 @@ def retrieve_active_simulations(start_date=None):
     """
     sql = _SQL_SELECT_ACTIVE_SIMULATIONS
     if start_date:
-        sql += _SQL_TIMESLICE_CRITERIA.format(start_date)
+        sql += _SQL_SELECT_ACTIVE_TIMESLICE_CRITERIA.format(start_date)
     sql += ";"
 
     return _fetch_all(sql)
@@ -151,7 +178,7 @@ def retrieve_active_jobs(start_date=None):
     """
     sql = _SQL_SELECT_ACTIVE_JOBS
     if start_date:
-        sql += _SQL_TIMESLICE_CRITERIA.format(start_date)
+        sql += _SQL_SELECT_ACTIVE_TIMESLICE_CRITERIA.format(start_date)
     sql += ";"
 
     return _fetch_all(sql)
@@ -168,5 +195,20 @@ def retrieve_simulation_messages(uid):
 
     """
     sql = _SQL_SELECT_SIMULATION_MESSAGES.format(uid)
+
+    return _fetch_all(sql)
+
+
+@decorators.validate(validator.validate_retrieve_simulation_jobs)
+def retrieve_simulation_jobs(uid):
+    """Retrieves job details from db.
+
+    :param str uid: UID of simulation.
+
+    :returns: List of jobs associated with a simulation.
+    :rtype: list
+
+    """
+    sql = _SQL_SELECT_SIMULATION_JOBS.format(uid)
 
     return _fetch_all(sql)

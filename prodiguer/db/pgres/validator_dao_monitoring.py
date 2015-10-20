@@ -282,7 +282,7 @@ def validate_retrieve_simulation_jobs(uid):
 
 
 def validate_retrieve_simulation_try(hashid, try_id):
-    """Function input validator: retrieve_simulation_jobs.
+    """Function input validator: retrieve_simulation_try.
 
     """
     validator.validate_simulation_hashid(hashid)
