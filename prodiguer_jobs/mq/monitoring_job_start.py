@@ -58,7 +58,7 @@ class ProcessingContextInfo(mq.Message):
 
         self.job = None
         self.job_accounting_project = None
-        self.job_is_startup = self.props.type == mq.constants.MESSAGE_TYPE_0000
+        self.job_is_compute_start = self.props.type == mq.constants.MESSAGE_TYPE_0000
         self.job_pp_name = None
         self.job_pp_date = None
         self.job_pp_dimension = None
@@ -118,7 +118,7 @@ def persist_job(ctx):
         ctx.job_type,
         ctx.job_uid,
         ctx.job_simulation_uid,
-        is_startup=ctx.job_is_startup,
+        is_compute_start=ctx.job_is_compute_start,
         post_processing_name=ctx.job_pp_name,
         post_processing_date=ctx.job_pp_date,
         post_processing_dimension=ctx.job_pp_dimension,

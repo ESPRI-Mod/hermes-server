@@ -28,7 +28,6 @@ from prodiguer_jobs.mq import monitoring
 from prodiguer_jobs.mq import monitoring_command_fail
 from prodiguer_jobs.mq import monitoring_job_end
 from prodiguer_jobs.mq import monitoring_job_start
-from prodiguer_jobs.mq import monitoring_simulation_end
 from prodiguer_jobs.mq import monitoring_simulation_start
 from prodiguer_jobs.mq import supervisor
 from prodiguer_jobs.mq import supervisor_detect_late_job
@@ -58,11 +57,11 @@ logging.getLogger("requests").setLevel(logging.ERROR)
 # Map of MQ agents to MQ handlers.
 _AGENT_HANDLERS = {
     'debug-0000': monitoring_simulation_start,
-    'debug-0100': monitoring_simulation_end,
+    'debug-0100': monitoring_job_end,
     'debug-1000': monitoring_job_start,
     'debug-1100': monitoring_job_end,
     'debug-1900': monitoring_command_fail,
-    'debug-1999': monitoring_simulation_end,
+    'debug-1999': monitoring_job_end,
     'debug-2000': monitoring_job_start,
     'debug-2100': monitoring_job_end,
     'debug-2900': monitoring_command_fail,

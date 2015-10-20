@@ -132,7 +132,7 @@ def trim_job(instance, full_trim=False):
     if full_trim == True:
         _delete_fields(obj, {
             'accounting_project',
-            'is_startup',
+            'is_compute_start',
             'post_processing_component',
             'post_processing_date',
             'post_processing_dimension',
@@ -156,7 +156,8 @@ def trim_job(instance, full_trim=False):
         if obj['warning_delay'] == config.apps.monitoring.defaultJobWarningDelayInSeconds:
             del obj['warning_delay']
         if obj.get('typeof') != cv.constants.JOB_TYPE_COMPUTING:
-            del obj['is_startup']
+            del obj['is_compute_start']
+            del obj['is_compute_end']
 
     return obj
 

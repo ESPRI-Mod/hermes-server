@@ -88,7 +88,8 @@ def _create_job(simulation, job_index):
     instance.execution_start_date = simulation.execution_start_date + datetime.timedelta(hours=job_index * 2)
     instance.execution_end_date = instance.execution_start_date + datetime.timedelta(hours=1)
     instance.is_error = False
-    instance.is_startup = False
+    instance.is_compute_start = False
+    instance.is_compute_end = False
     instance.scheduler_id = random.randint(2000000, 9000000)
     instance.submission_path = unicode(uuid.uuid4())
     instance.post_processing_name = unicode(uuid.uuid4())[0:15]

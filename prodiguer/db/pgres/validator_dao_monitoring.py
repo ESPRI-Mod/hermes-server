@@ -56,12 +56,12 @@ def validate_persist_job_01(
     job_type,
     job_uid,
     simulation_uid,
-    is_startup = False,
-    post_processing_name = None,
-    post_processing_date = None,
-    post_processing_dimension = None,
-    post_processing_component = None,
-    post_processing_file = None,
+    is_compute_start=False,
+    post_processing_name=None,
+    post_processing_date=None,
+    post_processing_dimension=None,
+    post_processing_component=None,
+    post_processing_file=None,
     scheduler_id=None,
     submission_path=None
     ):
@@ -74,7 +74,7 @@ def validate_persist_job_01(
     cv.validator.validate_job_type(job_type)
     validator.validate_job_uid(job_uid)
     validator.validate_simulation_uid(simulation_uid)
-    validator.validate_bool(is_startup, 'Is start up flag')
+    validator.validate_bool(is_compute_start, 'Is compute start up flag')
     if post_processing_name is not None:
         pass
     if post_processing_date is not None:
@@ -93,14 +93,16 @@ def validate_persist_job_01(
 
 def validate_persist_job_02(
     execution_end_date,
+    is_compute_end,
     is_error,
     job_uid,
-    simulation_uid
+    simulation_uid,
     ):
     """Function input validator: persist_job_02.
 
     """
     validator.validate_execution_end_date(execution_end_date)
+    validator.validate_bool(is_compute_end, 'Is compute end flag')
     validator.validate_bool(is_error, 'Is Error flag')
     validator.validate_job_uid(job_uid)
     validator.validate_simulation_uid(simulation_uid)
