@@ -51,6 +51,9 @@ def _get_simulation_event_data(request_data):
     # Load simulation jobs.
     jobs = db.dao_monitoring.retrieve_simulation_jobs(simulation_uid)
 
+    print "NEW CV TERMS ::", request_data.get('cv_terms', [])
+    print "NEW CV TERMS ::", request_data.get('cvTerms', [])
+
     # Return event data.
     return {
         'cv_terms': request_data.get('cv_terms', []),

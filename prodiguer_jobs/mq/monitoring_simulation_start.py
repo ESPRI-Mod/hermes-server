@@ -34,6 +34,7 @@ def get_tasks():
         _parse_cv_terms,
         _persist_cv_terms_to_fs,
         _persist_cv_terms_to_db,
+        _set_cv_terms_for_fe,
         _persist_simulation,
         _persist_active_simulation,
         _persist_simulation_configuration,
@@ -63,6 +64,7 @@ class ProcessingContextInfo(monitoring_job_start.ProcessingContextInfo):
         self.configuration = None
         self.active_simulation = None
         self.cv_terms = []
+        self.cv_terms_for_fe = []
         self.cv_terms_new = []
         self.cv_terms_persisted_to_db = []
         self.experiment = self.experiment_raw = None
@@ -181,13 +183,29 @@ def _persist_cv_terms_to_db(ctx):
             persisted_term = db.dao_cv.create_term(
                 term['meta']['type'],
                 term['meta']['name'],
-                term['meta'].get('display_name', None)
+                term['meta'].get('display_name', None),
+                term['meta']['uid']
                 )
         except IntegrityError:
             db.session.rollback()
         finally:
             if persisted_term:
                 ctx.cv_terms_persisted_to_db.append(persisted_term)
+
+
+def _set_cv_terms_for_fe(ctx):
+    """Sets cv terms to be passed to front-end.
+
+    """
+    for term in ctx.cv_terms_persisted_to_db:
+        ctx.cv_terms_for_fe.append({
+            'typeof': term.typeof,
+            'name': term.name,
+            'displayName': term.display_name,
+            'synonyms': term.synonyms,
+            'uid': term.uid,
+            'sortKey': term.sort_key
+            })
 
 
 def _persist_simulation(ctx):
@@ -256,8 +274,9 @@ def _enqueue_front_end_notification(ctx):
     """Places a message upon the front-end notification queue.
 
     """
+    print "NEW CV TERMS: ", len(ctx.cv_terms_for_fe)
     utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
         "event_type": u"simulation_start",
-        "cv_terms": ctx.cv_terms_persisted_to_db,
+        "cv_terms": ctx.cv_terms_for_fe,
         "simulation_uid": ctx.active_simulation.uid
     })

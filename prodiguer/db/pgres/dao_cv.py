@@ -25,12 +25,14 @@ def create_term(
     term_type,
     term_name,
     term_display_name,
+    term_uid
     ):
     """Creates a CV term in db.
 
     :param str term_type: Type of term being created.
     :param str term_name: Name of term being created.
     :param str term_display_name: Display name of term being created.
+    :param str term_uid: UID of term being created.
 
     :returns: Newly created CV term.
     :rtype: types.ControlledVocabularyTerm
@@ -40,6 +42,7 @@ def create_term(
     instance.typeof = term_type
     instance.name = term_name
     instance.display_name = term_display_name
+    instance.uid = term_uid
 
     return session.add(instance)
 

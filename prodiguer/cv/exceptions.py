@@ -12,6 +12,19 @@
 
 """
 
+class TermUIDError(Exception):
+    """Error thrown when encountering an invalid term uid.
+
+    """
+    def __init__(self, uid):
+        """Object constructor.
+
+        """
+        self.uid = uid
+        msg = "Unknown CV term uid :: {}".format(uid)
+        super(TermUIDError, self).__init__(msg)
+
+
 class TermTypeError(Exception):
     """Error thrown when encountering an unknown term type.
 

@@ -11,6 +11,8 @@
 
 
 """
+import uuid
+
 from prodiguer.cv import constants
 from prodiguer.cv import cache
 from prodiguer.cv import exceptions
@@ -80,6 +82,17 @@ def validate_term_display_name(term_display_name):
 
     """
     pass
+
+
+def validate_term_uid(term_uid):
+    """Validates a term's uid.
+
+    """
+    if not isinstance(term_uid, uuid.UUID):
+        try:
+            uuid.UUID(term_uid)
+        except ValueError:
+            raise exceptions.TermUIDError(term_uid)
 
 
 def validate_term_data(term_data):
