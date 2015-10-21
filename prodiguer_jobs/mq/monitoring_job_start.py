@@ -2,10 +2,10 @@
 
 """
 .. module:: monitoring_job_start.py
-   :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
+   :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: Consumes monitoring job start messages.
+   :synopsis: Consumes messages emitted by libIGCM whenever a job starts.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
@@ -14,21 +14,47 @@
 import datetime
 
 import arrow
+from sqlalchemy.exc import IntegrityError
+
 from prodiguer import cv
 from prodiguer import mq
+from prodiguer.cv.constants import JOB_TYPE_COMPUTING
+from prodiguer.cv.constants import JOB_TYPE_POST_PROCESSING
+from prodiguer.cv.constants import JOB_TYPE_POST_PROCESSING_FROM_CHECKER
 from prodiguer.db import pgres as db
+from prodiguer.db.pgres import dao_monitoring as dao
 from prodiguer.utils import config
 from prodiguer.utils import logger
-from prodiguer_jobs.mq import utils
+from prodiguer_jobs.mq import utils as mq_utils
 
 
+
+# Set of CV related simulation fields.
+_SIMULATION_CV_TERM_FIELDS = {
+    'activity',
+    'compute_node',
+    'compute_node_login',
+    'compute_node_machine',
+    'experiment',
+    'model',
+    'simulation_space'
+}
+
+# Set of lower case CV related simulation fields.
+_SIMULATION_CV_TERM_FIELDS_LOWER_CASE = {
+    'activity',
+    'compute_node',
+    'compute_node_machine',
+    'model',
+    'simulation_space'
+}
 
 # Map of message to job types.
 _MESSAGE_JOB_TYPES = {
-    mq.constants.MESSAGE_TYPE_0000: cv.constants.JOB_TYPE_COMPUTING,
-    mq.constants.MESSAGE_TYPE_1000: cv.constants.JOB_TYPE_COMPUTING,
-    mq.constants.MESSAGE_TYPE_2000: cv.constants.JOB_TYPE_POST_PROCESSING,
-    mq.constants.MESSAGE_TYPE_3000: cv.constants.JOB_TYPE_POST_PROCESSING_FROM_CHECKER
+    mq.constants.MESSAGE_TYPE_0000: JOB_TYPE_COMPUTING,
+    mq.constants.MESSAGE_TYPE_1000: JOB_TYPE_COMPUTING,
+    mq.constants.MESSAGE_TYPE_2000: JOB_TYPE_POST_PROCESSING,
+    mq.constants.MESSAGE_TYPE_3000: JOB_TYPE_POST_PROCESSING_FROM_CHECKER
 }
 
 
@@ -36,13 +62,17 @@ def get_tasks():
     """Returns set of tasks to be executed when processing a message.
 
     """
-    return [
-        unpack_message_content,
-        persist_job,
+    return (
+        _unpack_content,
+        _parse_cv,
+        _persist_cv,
+        _persist_job,
         _persist_simulation,
-        enqueue_job_warning_delay,
-        _enqueue_front_end_notification
-    ]
+        _enqueue_cv_git_push,
+        _enqueue_late_job_detection,
+        _enqueue_fe_notification_job,
+        _enqueue_fe_notification_simulation
+        )
 
 
 class ProcessingContextInfo(mq.Message):
@@ -56,129 +86,262 @@ class ProcessingContextInfo(mq.Message):
         super(ProcessingContextInfo, self).__init__(
             props, body, decode=decode)
 
-        self.job = None
-        self.job_accounting_project = None
-        self.job_pp_name = None
-        self.job_pp_date = None
-        self.job_pp_dimension = None
-        self.job_pp_component = None
-        self.job_pp_file = None
-        self.job_scheduler_id = None
-        self.job_simulation_uid = None
-        self.job_submission_path = None
+        self.cv_terms = []
+        self.cv_terms_for_fe = []
+        self.cv_terms_new = []
+        self.cv_terms_persisted_to_db = []
+
+        self.activity = self.activity_raw = None
+        self.compute_node = self.compute_node_raw = None
+        self.compute_node_login = self.compute_node_login_raw = None
+        self.compute_node_machine = self.compute_node_machine_raw = None
+        self.experiment = self.experiment_raw = None
+        self.model = self.model_raw = None
+        self.simulation_space = self.simulation_space_raw = None
+
+        self.active_simulation = None
+        self.is_simulation_start = props.type == mq.constants.MESSAGE_TYPE_0000
         self.job_type = _MESSAGE_JOB_TYPES[self.props.type]
         self.job_uid = None
         self.job_warning_delay = None
+        self.simulation_uid = None
 
 
-def unpack_message_content(ctx):
-    """Unpacks message being processed.
+def _unpack_content(ctx):
+    """Unpacks message content.
 
     """
-    ctx.job_accounting_project = ctx.content.get('accountingProject')
-    ctx.job_pp_name = ctx.content.get('postProcessingName')
-    ctx.job_pp_date = ctx.content.get('postProcessingDate')
-    ctx.job_pp_dimension = ctx.content.get('postProcessingDimn')
-    ctx.job_pp_component = ctx.content.get('postProcessingComp')
-    ctx.job_pp_file = ctx.content.get('postProcessingFile')
-    ctx.job_scheduler_id = ctx.content.get('jobSchedulerID')
-    ctx.job_simulation_uid = ctx.content['simuid']
-    ctx.job_submission_path = ctx.content.get('jobSubmissionPath')
     ctx.job_uid = ctx.content['jobuid']
-    ctx.job_warning_delay = ctx.content.get(
+    ctx.job_warning_delay = ctx.get_field(
         'jobWarningDelay', config.apps.monitoring.defaultJobWarningDelayInSeconds)
-
-    # Override job warning delay if set to 0.
     if ctx.job_warning_delay == "0":
         ctx.job_warning_delay = config.apps.monitoring.defaultJobWarningDelayInSeconds
+    ctx.simulation_uid = ctx.content['simuid']
+    if ctx.is_simulation_start:
+        ctx.activity = ctx.activity_raw = ctx.content['activity']
+        ctx.compute_node = ctx.compute_node_raw = ctx.content['centre']
+        ctx.compute_node_login = ctx.content['login']
+        ctx.compute_node_machine = ctx.compute_node_machine_raw = \
+            "{0}-{1}".format(ctx.compute_node, ctx.content['machine'])
+        ctx.experiment = ctx.experiment_raw = ctx.content['experiment']
+        ctx.model = ctx.model_raw = ctx.content['model']
+        ctx.simulation_space = ctx.simulation_space_raw = ctx.content['space']
+        for field in _SIMULATION_CV_TERM_FIELDS_LOWER_CASE:
+            setattr(ctx, field, getattr(ctx, field).lower())
 
-    # Override fields set to string literal null.
-    for field in [
-        "job_pp_name",
-        "job_pp_date",
-        "job_pp_dimension",
-        "job_pp_component",
-        "job_pp_file",
-        "job_scheduler_id",
-        "job_submission_path"
-        ]:
-        if getattr(ctx, field) == "null":
-            setattr(ctx, field, None)
+
+def _parse_cv(ctx):
+    """Parses cv terms contained within message content.
+
+    """
+    # Skip if unnecessary.
+    if not ctx.is_simulation_start:
+        return
+
+    for term_type in _SIMULATION_CV_TERM_FIELDS:
+        term_name = getattr(ctx, term_type)
+        try:
+            cv.validator.validate_term_name(term_type, term_name)
+        except cv.TermNameError:
+            ctx.cv_terms_new.append(cv.create(term_type, term_name))
+        else:
+            parsed_term_name = cv.parser.parse_term_name(term_type, term_name)
+            if term_name != parsed_term_name:
+                setattr(ctx, term_type, parsed_term_name)
+                msg = "CV term subsitution: {0}.{1} --> {0}.{2}"
+                msg = msg.format(term_type, term_name, parsed_term_name)
+                logger.log_mq(msg)
+                term_name = parsed_term_name
+            ctx.cv_terms.append(cv.cache.get_term(term_type, term_name))
 
 
-def persist_job(ctx):
+def _persist_cv(ctx):
+    """Parses cv terms contained within message content.
+
+    """
+    # Skip if unnecessary.
+    if not ctx.is_simulation_start:
+        return
+
+    # Commit cv session.
+    cv.session.insert(ctx.cv_terms_new)
+    cv.session.commit()
+
+    # Reparse.
+    ctx.cv_terms = []
+    _parse_cv(ctx)
+
+    # Persist to database.
+    for term in ctx.cv_terms:
+        persisted_term = None
+        try:
+            persisted_term = db.dao_cv.create_term(
+                term['meta']['type'],
+                term['meta']['name'],
+                term['meta'].get('display_name', None),
+                term['meta']['uid']
+                )
+        except IntegrityError:
+            db.session.rollback()
+        finally:
+            if persisted_term:
+                ctx.cv_terms_persisted_to_db.append(persisted_term)
+
+    # Sets cv terms to be passed to front-end.
+    for term in ctx.cv_terms_persisted_to_db:
+        ctx.cv_terms_for_fe.append({
+            'typeof': term.typeof,
+            'name': term.name,
+            'displayName': term.display_name,
+            'synonyms': term.synonyms,
+            'uid': term.uid,
+            'sortKey': term.sort_key
+            })
+
+
+def _persist_job(ctx):
     """Persists job info to db.
 
     """
-    ctx.job = db.dao_monitoring.persist_job_01(
-        ctx.job_accounting_project,
+    # Persist job.
+    dao.persist_job_01(
+        ctx.get_field('accountingProject'),
         ctx.job_warning_delay,
         ctx.msg.timestamp,
         ctx.job_type,
         ctx.job_uid,
-        ctx.job_simulation_uid,
-        post_processing_name=ctx.job_pp_name,
-        post_processing_date=ctx.job_pp_date,
-        post_processing_dimension=ctx.job_pp_dimension,
-        post_processing_component=ctx.job_pp_component,
-        post_processing_file=ctx.job_pp_file,
-        scheduler_id=ctx.job_scheduler_id,
-        submission_path=ctx.job_submission_path
+        ctx.simulation_uid,
+        post_processing_component=ctx.get_field('postProcessingComp'),
+        post_processing_date=ctx.get_field('postProcessingDate'),
+        post_processing_dimension=ctx.get_field('postProcessingDimn'),
+        post_processing_file=ctx.get_field('postProcessingFile'),
+        post_processing_name=ctx.get_field('postProcessingName'),
+        scheduler_id=ctx.get_field('jobSchedulerID'),
+        submission_path=ctx.get_field('jobSubmissionPath')
         )
+
+    # Update simulation (compute jobs only).
+    if not ctx.is_simulation_start and ctx.job_type != JOB_TYPE_COMPUTING:
+        dao.persist_simulation_02(
+            None,
+            False,
+            ctx.simulation_uid
+            )
 
 
 def _persist_simulation(ctx):
-    """Updates simulation (compute jobs only)
+    """Persists simulation information to db.
 
     """
-    # Skip if not processing a compute job.
-    if ctx.job_type != cv.constants.JOB_TYPE_COMPUTING:
+    # Skip if unnecessary.
+    if not ctx.is_simulation_start:
         return
 
-    # Ensure simulation is not considered to be in an error state.
-    db.dao_monitoring.persist_simulation_02(
-        None,
-        False,
-        ctx.job_simulation_uid
+    # Persist simulation.
+    simulation = dao.persist_simulation_01(
+        ctx.get_field('accountingProject'),
+        ctx.activity,
+        ctx.activity_raw,
+        ctx.compute_node,
+        ctx.compute_node_raw,
+        ctx.compute_node_login,
+        ctx.compute_node_login_raw,
+        ctx.compute_node_machine,
+        ctx.compute_node_machine_raw,
+        ctx.msg.timestamp,
+        ctx.experiment,
+        ctx.experiment_raw,
+        ctx.model,
+        ctx.model_raw,
+        ctx.content['name'],
+        arrow.get(ctx.content['startDate']).datetime,
+        arrow.get(ctx.content['endDate']).datetime,
+        ctx.simulation_space,
+        ctx.simulation_space_raw,
+        ctx.simulation_uid
         )
 
+    # Persist active simulation.
+    ctx.active_simulation = \
+        dao.update_active_simulation(simulation.hashid)
+    db.session.commit()
 
-def enqueue_job_warning_delay(ctx):
+    # Persist simulation configuration.
+    config_card = ctx.get_field('configuration')
+    if config_card:
+        dao.persist_simulation_configuration(
+            ctx.simulation_uid,
+            config_card
+            )
+
+
+def _enqueue_late_job_detection(ctx):
     """Places a delayed message indicating the amount of time
     before the job is considered to be late.
 
     """
     # Calculate expected job completion moment.
-    expected = arrow.get(ctx.job.execution_start_date) + \
-               datetime.timedelta(seconds=ctx.job.warning_delay)
+    expected = arrow.get(ctx.msg.timestamp) + \
+               datetime.timedelta(seconds=ctx.job_warning_delay)
 
     # Calculate time delta until system must check if job is late or not.
-    now = arrow.get()
-    delta_in_s = int((expected - now).total_seconds())
+    delta_in_s = int((expected - arrow.get()).total_seconds())
     if delta_in_s < 0:
-        delta_in_s = 600    # default to 10 minute delay for historical messages
+        delta_in_s = 600    # 10 minutes for historical messages
     else:
-        delta_in_s += 60     # add 1 minute to allow for potential latency in recieving job end notification
+        delta_in_s += 300   # +5 mins for potential job end latency
     logger.log_mq("Enqueuing job late warning message with delay = {} seconds".format(delta_in_s))
 
     # Enqueue.
-    utils.enqueue(
+    mq_utils.enqueue(
         mq.constants.MESSAGE_TYPE_8000,
         delay_in_ms=delta_in_s * 1000,
         payload={
             "job_uid": ctx.job_uid,
-            "simulation_uid": ctx.job_simulation_uid,
+            "simulation_uid": ctx.simulation_uid,
             "trigger_code": ctx.props.type
         }
     )
 
 
-def _enqueue_front_end_notification(ctx):
+def _enqueue_cv_git_push(ctx):
+    """Places a message upon the new cv terms notification queue.
+
+    """
+    # Skip if unnecessary.
+    if not ctx.is_simulation_start:
+        return
+    if not ctx.cv_terms_persisted_to_db and not ctx.cv_terms_new:
+        return
+
+    mq_utils.enqueue(mq.constants.MESSAGE_TYPE_CV)
+
+
+def _enqueue_fe_notification_job(ctx):
     """Places a message upon the front-end notification queue.
 
     """
-    utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
+    # Skip if unnecessary.
+    if ctx.is_simulation_start:
+        return
+
+    mq_utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
         "event_type": u"job_start",
         "job_uid": unicode(ctx.job_uid),
-        "simulation_uid": unicode(ctx.job_simulation_uid)
+        "simulation_uid": unicode(ctx.simulation_uid)
         })
+
+
+def _enqueue_fe_notification_simulation(ctx):
+    """Places a message upon the front-end notification queue.
+
+    """
+    # Skip if unnecessary.
+    if not ctx.is_simulation_start:
+        return
+
+    mq_utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
+        "event_type": u"simulation_start",
+        "cv_terms": ctx.cv_terms_for_fe,
+        "simulation_uid": ctx.active_simulation.uid
+    })

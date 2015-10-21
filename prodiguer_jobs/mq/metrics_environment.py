@@ -2,7 +2,7 @@
 
 """
 .. module:: run_in_monitoring_7000.py
-   :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
+   :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
    :synopsis: Consumes monitoring 7000 messages.
@@ -21,7 +21,7 @@ def get_tasks():
 
     """
     return (
-      _unpack_message_content,
+      _unpack_content,
       _persist_metric
       )
 
@@ -47,7 +47,7 @@ class ProcessingContextInfo(mq.Message):
         self.throughput_mb_s = None
 
 
-def _unpack_message_content(ctx):
+def _unpack_content(ctx):
     """Unpacks message being processed.
 
     """

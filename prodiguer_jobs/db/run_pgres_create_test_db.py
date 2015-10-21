@@ -2,7 +2,7 @@
 
 """
 .. module:: run_pgres_create_test_db.py
-   :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
+   :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
    :synopsis: Creates a test database that simulates a years worth of simulations.

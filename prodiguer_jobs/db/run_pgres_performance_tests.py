@@ -2,7 +2,7 @@
 
 """
 .. module:: run_pgres_performance_tests.py
-   :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
+   :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
    :synopsis: Executes prodiguer postgres database performance tests and writes results to file system.

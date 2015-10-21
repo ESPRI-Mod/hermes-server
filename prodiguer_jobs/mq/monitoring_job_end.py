@@ -2,7 +2,7 @@
 
 """
 .. module:: monitoring_job_end.py
-   :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
+   :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
    :synopsis: Consumes monitoring job end messages.
@@ -35,7 +35,7 @@ def get_tasks():
 
     """
     return (
-      _unpack_message_content,
+      _unpack_content,
       _persist_job,
       _persist_simulation,
       _enqueue_fe_job_notification,
@@ -54,7 +54,7 @@ class ProcessingContextInfo(mq.Message):
         super(ProcessingContextInfo, self).__init__(
             props, body, decode=decode)
 
-        self.execution_end_date = props.timestamp
+        # self.execution_start_date = self.msg.timestamp
         self.is_compute_end = props.type == mq.constants.MESSAGE_TYPE_0100
         self.is_error = props.type in _ERROR_MESSAGE_TYPES
         self.job_uid = None
@@ -62,7 +62,7 @@ class ProcessingContextInfo(mq.Message):
         self.simulation_uid = None
 
 
-def _unpack_message_content(ctx):
+def _unpack_content(ctx):
     """Unpacks message being processed.
 
     """

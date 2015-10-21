@@ -2,7 +2,7 @@
 
 """
 .. module:: supervisor_format_script.py
-   :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
+   :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
    :synopsis: Formats supervision scripts in readiness for dispatch.
@@ -23,7 +23,7 @@ def get_tasks():
 
     """
     return (
-        _unpack_message_content,
+        _unpack_content,
         _set_data,
         _format
         )
@@ -47,7 +47,7 @@ class ProcessingContextInfo(mq.Message):
         self.script = None
 
 
-def _unpack_message_content(ctx):
+def _unpack_content(ctx):
     """Unpacks message being processed.
 
     """

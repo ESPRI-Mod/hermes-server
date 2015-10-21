@@ -2,7 +2,7 @@
 
 """
 .. module:: monitoring.py
-   :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
+   :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
    :synopsis: Processes simulation monitoring related messages (by delegation).
@@ -15,13 +15,12 @@ from prodiguer import rt
 from prodiguer_jobs.mq import monitoring_command_fail
 from prodiguer_jobs.mq import monitoring_job_end
 from prodiguer_jobs.mq import monitoring_job_start
-from prodiguer_jobs.mq import monitoring_simulation_start
 
 
 
 # Map of sub-consumer types to sub-consumers.
 _SUB_AGENTS = {
-    '0000': monitoring_simulation_start,
+    '0000': monitoring_job_start,
     '0100': monitoring_job_end,
     '1999': monitoring_job_end,
     # ... computing jobs

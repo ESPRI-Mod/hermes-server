@@ -2,7 +2,7 @@
 
 """
 .. module:: monitoring_command_fail.py
-   :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
+   :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
    :synopsis: Consumes monitoring job end messages.

@@ -2,7 +2,7 @@
 
 """
 .. module:: update_monitoring_fields.py
-   :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
+   :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
    :synopsis: Ensures that all simulation fields related to monitoring are assigned.

@@ -2,7 +2,7 @@
 
 """
 .. module:: run_pgres_reset_message_table.py
-   :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
+   :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
    :synopsis: Resets prodiguer mq.tbl_message table.

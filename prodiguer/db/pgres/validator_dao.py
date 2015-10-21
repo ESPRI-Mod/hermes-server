@@ -2,7 +2,7 @@
 
 """
 .. module:: prodiguer.db.dao.validator.py
-   :copyright: Copyright "Apr 26, 2013", IPSL
+   :copyright: Copyright "Mar 21, 2015", IPSL
    :license: GPL/CeCIL
    :platform: Unix
    :synopsis: General data access operations validator.

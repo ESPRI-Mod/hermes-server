@@ -74,3 +74,14 @@ class Message(object):
         """Encodes message content."""
         if isinstance(self.content, dict):
             self.content = convert.dict_to_json(self.content)
+
+    def get_field(self, field_name, default_val=None):
+        """Returns value of a message content field.
+
+        """
+        val = self.content.get(field_name, default_val)
+        if val and val == "null":
+            return None
+        return val
+
+

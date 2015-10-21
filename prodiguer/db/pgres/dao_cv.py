@@ -2,7 +2,7 @@
 
 """
 .. module:: prodiguer.db.dao_mq.py
-   :copyright: Copyright "Apr 26, 2013", IPSL
+   :copyright: Copyright "Mar 21, 2015", IPSL
    :license: GPL/CeCIL
    :platform: Unix
    :synopsis: MQ data access operations.

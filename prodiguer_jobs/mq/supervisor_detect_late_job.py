@@ -2,7 +2,7 @@
 
 """
 .. module:: supervisor_detect_late_job.py
-   :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
+   :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
    :synopsis: Detects whether jobs are late and if so initiates a supervision.
@@ -22,7 +22,7 @@ def get_tasks():
 
     """
     return (
-        _unpack_message_content,
+        _unpack_content,
         _verify_is_late,
         _persist_supervision,
         _enqueue_supervisor_format
@@ -46,7 +46,7 @@ class ProcessingContextInfo(mq.Message):
         self.trigger_code = None
 
 
-def _unpack_message_content(ctx):
+def _unpack_content(ctx):
     """Unpacks message being processed.
 
     """

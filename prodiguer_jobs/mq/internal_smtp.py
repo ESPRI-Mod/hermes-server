@@ -2,7 +2,7 @@
 
 """
 .. module:: ext_smtp.py
-   :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
+   :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
    :synopsis: Enqueues messages embedded in enqueued emails received from libIGCM.

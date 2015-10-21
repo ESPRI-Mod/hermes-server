@@ -2,7 +2,7 @@
 
 """
 .. module:: __main__.py
-   :copyright: Copyright "Apr 26, 2013", Institute Pierre Simon Laplace
+   :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
    :synopsis: Main entry point for launching message agents.
@@ -28,7 +28,6 @@ from prodiguer_jobs.mq import monitoring
 from prodiguer_jobs.mq import monitoring_command_fail
 from prodiguer_jobs.mq import monitoring_job_end
 from prodiguer_jobs.mq import monitoring_job_start
-from prodiguer_jobs.mq import monitoring_simulation_start
 from prodiguer_jobs.mq import supervisor
 from prodiguer_jobs.mq import supervisor_detect_late_job
 from prodiguer_jobs.mq import supervisor_dispatch_script
@@ -56,7 +55,7 @@ logging.getLogger("requests").setLevel(logging.ERROR)
 
 # Map of MQ agents to MQ handlers.
 _AGENT_HANDLERS = {
-    'debug-0000': monitoring_simulation_start,
+    'debug-0000': monitoring_job_start,
     'debug-0100': monitoring_job_end,
     'debug-1000': monitoring_job_start,
     'debug-1100': monitoring_job_end,
