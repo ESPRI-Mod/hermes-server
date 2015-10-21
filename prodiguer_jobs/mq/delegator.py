@@ -21,8 +21,8 @@ from prodiguer_jobs.mq import supervisor_format_script
 
 
 
-# Map of sub-consumer types to sub-consumers.
-_SUB_AGENTS = {
+# Map of message type to agents.
+_AGENTS = {
     # ... monitoring handlers
     '0000': monitoring_job_start,
     '0100': monitoring_job_end,
@@ -60,18 +60,14 @@ def _process(ctx):
     ctx.decode()
 
     # Set sub-agent.
-    agent = _SUB_AGENTS[ctx.props.type]
+    agent = _AGENTS[ctx.props.type]
 
     # Set sub-context.
     sub_ctx = agent.ProcessingContextInfo(ctx.props, ctx.content, decode=False)
     sub_ctx.msg = ctx.msg
 
-    # Set tasks to be invoked.
-    tasks = agent.get_tasks()
-    try:
-        error_tasks = agent.get_error_tasks()
-    except AttributeError:
-        error_tasks = []
-
     # Invoke tasks.
-    rt.invoke_mq(ctx.props.type, tasks, error_tasks, sub_ctx)
+    rt.invoke_mq(ctx.props.type,
+                 agent.get_tasks(),
+                 agent.get_error_tasks() if hasattr(agent, "get_error_tasks") else [],
+                 sub_ctx)
