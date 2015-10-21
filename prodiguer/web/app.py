@@ -53,8 +53,8 @@ def _get_app_routes():
         (r'/api/1/cv/fetch',
             cv.FetchRequestHandler),
         # Simulation monitoring routes.
-        (r'/api/1/simulation/monitoring/fetch_one',
-            monitoring.FetchOneRequestHandler),
+        (r'/api/1/simulation/monitoring/fetch_detail',
+            monitoring.FetchDetailRequestHandler),
         (r'/api/1/simulation/monitoring/fetch_messages',
             monitoring.FetchMessagesRequestHandler),
         (r'/api/1/simulation/monitoring/fetch_timeslice',

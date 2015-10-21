@@ -51,13 +51,16 @@ FROM
     monitoring.tbl_simulation as s
 WHERE
     s.execution_start_date IS NOT NULL AND
-    s.is_obsolete = false
+    s.is_obsolete = false {}
+ORDER BY
+    s.execution_start_date;
 """
 
 # Sql statement for selecting active jobs.
 _SQL_SELECT_ACTIVE_JOBS = """SELECT
     to_char(j.execution_end_date, 'YYYY-MM-DD HH24:MI:ss.US'),
     to_char(j.execution_start_date, 'YYYY-MM-DD HH24:MI:ss.US'),
+    j.is_compute_end,
     j.is_error,
     j.job_uid,
     j.simulation_uid,
@@ -69,7 +72,9 @@ JOIN
 WHERE
     j.execution_start_date IS NOT NULL AND
     s.execution_start_date IS NOT NULL AND
-    s.is_obsolete = false
+    s.is_obsolete = false {}
+ORDER BY
+    j.execution_start_date;
 """
 
 # Sql statement for selecting active timesliaces.
@@ -99,8 +104,8 @@ _SQL_SELECT_SIMULATION_JOBS = """SELECT
     j.accounting_project,
     to_char(j.execution_end_date, 'YYYY-MM-DD HH24:MI:ss.US'),
     to_char(j.execution_start_date, 'YYYY-MM-DD HH24:MI:ss.US'),
-    j.is_error,
     j.is_compute_end,
+    j.is_error,
     j.job_uid,
     j.post_processing_component,
     to_char(j.post_processing_date, 'YYYY-MM-DD'),
@@ -158,10 +163,11 @@ def retrieve_active_simulations(start_date=None):
     :rtype: list
 
     """
-    sql = _SQL_SELECT_ACTIVE_SIMULATIONS
-    if start_date:
-        sql += _SQL_SELECT_ACTIVE_TIMESLICE_CRITERIA.format(start_date)
-    sql += ";"
+    if start_date is None:
+        start_date = ""
+    else:
+        start_date = _SQL_SELECT_ACTIVE_TIMESLICE_CRITERIA.format(start_date)
+    sql = _SQL_SELECT_ACTIVE_SIMULATIONS.format(start_date)
 
     return _fetch_all(sql)
 
@@ -176,10 +182,11 @@ def retrieve_active_jobs(start_date=None):
     :rtype: list
 
     """
-    sql = _SQL_SELECT_ACTIVE_JOBS
-    if start_date:
-        sql += _SQL_SELECT_ACTIVE_TIMESLICE_CRITERIA.format(start_date)
-    sql += ";"
+    if start_date is None:
+        start_date = ""
+    else:
+        start_date = _SQL_SELECT_ACTIVE_TIMESLICE_CRITERIA.format(start_date)
+    sql = _SQL_SELECT_ACTIVE_JOBS.format(start_date)
 
     return _fetch_all(sql)
 

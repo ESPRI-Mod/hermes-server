@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.web.endpoints.monitoring.fetch_one.py
+.. module:: prodiguer.web.endpoints.monitoring.fetch_detail.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
-   :synopsis: Simulation monitoring front end setup request handler.
+   :synopsis: Simulation detail front end setup request handler.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
@@ -18,7 +18,6 @@ from prodiguer.db.pgres import dao_monitoring as dao
 from prodiguer.db.pgres import dao_monitoring_ll as dao_ll
 from prodiguer.web.request_validation import validator_monitoring as rv
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
-from prodiguer.web.utils.payload import trim_simulation
 
 
 
@@ -28,7 +27,7 @@ _PARAM_TRYID = 'tryID'
 
 
 
-class FetchOneRequestHandler(ProdiguerHTTPRequestHandler):
+class FetchDetailRequestHandler(ProdiguerHTTPRequestHandler):
     """Simulation monitor front end setup request handler.
 
     """
