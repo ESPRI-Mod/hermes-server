@@ -260,11 +260,6 @@ def _persist_simulation(ctx):
         ctx.simulation_uid
         )
 
-    # Persist active simulation.
-    ctx.active_simulation = \
-        dao.update_active_simulation(simulation.hashid)
-    db.session.commit()
-
     # Persist simulation configuration.
     config_card = ctx.get_field('configuration')
     if config_card:
@@ -273,6 +268,11 @@ def _persist_simulation(ctx):
             config_card
             )
 
+    # Persist active simulation.
+    ctx.active_simulation = \
+        dao.update_active_simulation(simulation.hashid)
+    db.session.commit()
+
 
 def _enqueue_late_job_detection(ctx):
     """Places a delayed message upon the supervisor detection queue.
@@ -280,7 +280,7 @@ def _enqueue_late_job_detection(ctx):
     """
     # Calculate expected job completion moment.
     expected = arrow.get(ctx.msg.timestamp) + \
-               datetime.timedelta(seconds=ctx.job_warning_delay)
+               datetime.timedelta(seconds=int(ctx.job_warning_delay))
 
     # Calculate time delta until system must check if job is late or not.
     delta_in_s = int((expected - arrow.get()).total_seconds())
@@ -323,5 +323,5 @@ def _enqueue_fe_notification(ctx):
         "event_type": u"simulation_start" if ctx.is_simulation_start else "job_start",
         "cv_terms": ctx.cv_terms_for_fe,
         "job_uid": unicode(ctx.job_uid),
-        "simulation_uid": ctx.active_simulation.uid
+        "simulation_uid": ctx.active_simulation.uid if ctx.is_simulation_start else ctx.simulation_uid
     })

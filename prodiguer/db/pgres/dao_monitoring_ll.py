@@ -101,21 +101,21 @@ ORDER BY
 
 # Sql statement for selecting simulation jobs.
 _SQL_SELECT_SIMULATION_JOBS = """SELECT
-    j.accounting_project,
     to_char(j.execution_end_date, 'YYYY-MM-DD HH24:MI:ss.US'),
     to_char(j.execution_start_date, 'YYYY-MM-DD HH24:MI:ss.US'),
     j.is_compute_end,
     j.is_error,
     j.job_uid,
+    j.simulation_uid,
+    j.typeof,
+    j.accounting_project,
     j.post_processing_component,
     to_char(j.post_processing_date, 'YYYY-MM-DD'),
     j.post_processing_dimension,
     j.post_processing_file,
     j.post_processing_name,
-    j.simulation_uid,
     j.scheduler_id,
     j.submission_path,
-    j.typeof,
     j.warning_delay
 FROM
     monitoring.tbl_job as j
@@ -126,6 +126,29 @@ ORDER BY
     j.execution_start_date;
 """
 
+# Sql statement for selecting an individual jobs.
+_SQL_SELECT_JOB = """SELECT
+    to_char(j.execution_end_date, 'YYYY-MM-DD HH24:MI:ss.US'),
+    to_char(j.execution_start_date, 'YYYY-MM-DD HH24:MI:ss.US'),
+    j.is_compute_end,
+    j.is_error,
+    j.job_uid,
+    j.simulation_uid,
+    j.typeof,
+    j.accounting_project,
+    j.post_processing_component,
+    to_char(j.post_processing_date, 'YYYY-MM-DD'),
+    j.post_processing_dimension,
+    j.post_processing_file,
+    j.post_processing_name,
+    j.scheduler_id,
+    j.submission_path,
+    j.warning_delay
+FROM
+    monitoring.tbl_job as j
+WHERE
+    j.job_uid = '{}'
+"""
 
 
 def _get_psycopg2_connection():
@@ -140,14 +163,14 @@ def _get_psycopg2_connection():
         )
 
 
-def _fetch_all(sql):
+def _fetch(sql, fetch_type):
     """Executes a sql statement and return data returned by cursor.
 
     """
     conn = _get_psycopg2_connection()
     cur = conn.cursor()
     cur.execute(sql)
-    data = cur.fetchall()
+    data = getattr(cur, "fetch{}".format(fetch_type))()
     conn.close()
 
     return data
@@ -169,7 +192,7 @@ def retrieve_active_simulations(start_date=None):
         start_date = _SQL_SELECT_ACTIVE_TIMESLICE_CRITERIA.format(start_date)
     sql = _SQL_SELECT_ACTIVE_SIMULATIONS.format(start_date)
 
-    return _fetch_all(sql)
+    return _fetch(sql, "all")
 
 
 @decorators.validate(validator.validate_retrieve_active_jobs)
@@ -188,7 +211,7 @@ def retrieve_active_jobs(start_date=None):
         start_date = _SQL_SELECT_ACTIVE_TIMESLICE_CRITERIA.format(start_date)
     sql = _SQL_SELECT_ACTIVE_JOBS.format(start_date)
 
-    return _fetch_all(sql)
+    return _fetch(sql, "all")
 
 
 @decorators.validate(validator.validate_retrieve_simulation_messages)
@@ -203,7 +226,7 @@ def retrieve_simulation_messages(uid):
     """
     sql = _SQL_SELECT_SIMULATION_MESSAGES.format(uid)
 
-    return _fetch_all(sql)
+    return _fetch(sql, "all")
 
 
 @decorators.validate(validator.validate_retrieve_simulation_jobs)
@@ -218,4 +241,19 @@ def retrieve_simulation_jobs(uid):
     """
     sql = _SQL_SELECT_SIMULATION_JOBS.format(uid)
 
-    return _fetch_all(sql)
+    return _fetch(sql, "all")
+
+
+@decorators.validate(validator.validate_retrieve_simulation_jobs)
+def retrieve_job(uid):
+    """Retrieves job details from db.
+
+    :param str uid: UID of job.
+
+    :returns: Tuple of job information retrieved from db.
+    :rtype: tuple
+
+    """
+    sql = _SQL_SELECT_JOB.format(uid)
+
+    return _fetch(sql, "one")

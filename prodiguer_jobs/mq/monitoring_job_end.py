@@ -68,7 +68,7 @@ def _unpack_content(ctx):
     ctx.simulation_uid = ctx.content['simuid']
 
 
-def _persist_job(ctx):
+def _persist(ctx):
     """Persists job updates to dB.
 
     """
@@ -84,7 +84,7 @@ def _persist_job(ctx):
     # Persist simulation info.
     if ctx.props.type in _END_SIMULATION_MESSAGE_TYPES:
         ctx.simulation = dao.persist_simulation_02(
-            ctx.execution_end_date,
+            ctx.msg.timestamp,
             ctx.is_error,
             ctx.simulation_uid
             )
