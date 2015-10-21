@@ -70,8 +70,7 @@ def get_tasks():
         _persist_simulation,
         _enqueue_cv_git_push,
         _enqueue_late_job_detection,
-        _enqueue_fe_notification_job,
-        _enqueue_fe_notification_simulation
+        _enqueue_fe_notification
         )
 
 
@@ -276,8 +275,7 @@ def _persist_simulation(ctx):
 
 
 def _enqueue_late_job_detection(ctx):
-    """Places a delayed message indicating the amount of time
-    before the job is considered to be late.
+    """Places a delayed message upon the supervisor detection queue.
 
     """
     # Calculate expected job completion moment.
@@ -317,31 +315,13 @@ def _enqueue_cv_git_push(ctx):
     mq_utils.enqueue(mq.constants.MESSAGE_TYPE_CV)
 
 
-def _enqueue_fe_notification_job(ctx):
+def _enqueue_fe_notification(ctx):
     """Places a message upon the front-end notification queue.
 
     """
-    # Skip if unnecessary.
-    if ctx.is_simulation_start:
-        return
-
     mq_utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
-        "event_type": u"job_start",
-        "job_uid": unicode(ctx.job_uid),
-        "simulation_uid": unicode(ctx.simulation_uid)
-        })
-
-
-def _enqueue_fe_notification_simulation(ctx):
-    """Places a message upon the front-end notification queue.
-
-    """
-    # Skip if unnecessary.
-    if not ctx.is_simulation_start:
-        return
-
-    mq_utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
-        "event_type": u"simulation_start",
+        "event_type": u"simulation_start" if ctx.is_simulation_start else "job_start",
         "cv_terms": ctx.cv_terms_for_fe,
+        "job_uid": unicode(ctx.job_uid),
         "simulation_uid": ctx.active_simulation.uid
     })
