@@ -59,7 +59,10 @@ def _get_job_event_data(request_data):
     job_uid = request_data['job_uid']
     job = dao_ll.retrieve_job(job_uid)
     if job:
-        return {'job': job}
+        return {
+            'job': job,
+            'simulation_uid': request_data['simulation_uid']
+        }
 
 
 class _EventManager(object):
@@ -94,6 +97,7 @@ def _ws_client_filter(client, data):
     if simulation_uid is None:
         return True
     else:
+        print "DSDS", data
         return data['simulation_uid'] == simulation_uid
 
 
