@@ -35,12 +35,11 @@ def get_tasks():
 
     """
     return (
-      _unpack_content,
-      _persist_job,
-      _persist_simulation,
-      _enqueue_fe_job_notification,
-      _enqueue_fe_simulation_notification
-      )
+        _unpack_content,
+        _persist,
+        _enqueue_fe_notification_job,
+        _enqueue_fe_notification_simulation
+        )
 
 
 class ProcessingContextInfo(mq.Message):
@@ -54,7 +53,6 @@ class ProcessingContextInfo(mq.Message):
         super(ProcessingContextInfo, self).__init__(
             props, body, decode=decode)
 
-        # self.execution_start_date = self.msg.timestamp
         self.is_compute_end = props.type == mq.constants.MESSAGE_TYPE_0100
         self.is_error = props.type in _ERROR_MESSAGE_TYPES
         self.job_uid = None
@@ -74,6 +72,7 @@ def _persist_job(ctx):
     """Persists job updates to dB.
 
     """
+    # Persist job info.
     dao.persist_job_02(
         ctx.msg.timestamp,
         ctx.is_compute_end,
@@ -82,22 +81,16 @@ def _persist_job(ctx):
         ctx.simulation_uid
         )
 
-
-def _persist_simulation(ctx):
-    """Persists simulation updates to dB.
-
-    """
-    if ctx.props.type not in _END_SIMULATION_MESSAGE_TYPES:
-        return
-
-    ctx.simulation = dao.persist_simulation_02(
-        ctx.execution_end_date,
-        ctx.is_error,
-        ctx.simulation_uid
-        )
+    # Persist simulation info.
+    if ctx.props.type in _END_SIMULATION_MESSAGE_TYPES:
+        ctx.simulation = dao.persist_simulation_02(
+            ctx.execution_end_date,
+            ctx.is_error,
+            ctx.simulation_uid
+            )
 
 
-def _enqueue_fe_job_notification(ctx):
+def _enqueue_fe_notification_job(ctx):
     """Places a job event message upon the front-end notification queue.
 
     """
@@ -111,7 +104,7 @@ def _enqueue_fe_job_notification(ctx):
     })
 
 
-def _enqueue_fe_simulation_notification(ctx):
+def _enqueue_fe_notification_simulation(ctx):
     """Places a simulation event message upon the front-end notification queue.
 
     """
