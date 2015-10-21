@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: monitoring.py
+.. module:: delegator.py
    :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: Processes simulation monitoring related messages (by delegation).
+   :synopsis: A message sub-handler that delegates message processing to other actual handlers.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
 from prodiguer import rt
+from prodiguer_jobs.mq import monitoring_command_fail
+from prodiguer_jobs.mq import monitoring_job_end
+from prodiguer_jobs.mq import monitoring_job_start
 from prodiguer_jobs.mq import supervisor_detect_late_job
 from prodiguer_jobs.mq import supervisor_dispatch_script
 from prodiguer_jobs.mq import supervisor_format_script
@@ -20,6 +23,22 @@ from prodiguer_jobs.mq import supervisor_format_script
 
 # Map of sub-consumer types to sub-consumers.
 _SUB_AGENTS = {
+    # ... monitoring handlers
+    '0000': monitoring_job_start,
+    '0100': monitoring_job_end,
+    '1999': monitoring_job_end,
+    '1000': monitoring_job_start,
+    '1100': monitoring_job_end,
+    '1900': monitoring_command_fail,
+    '2000': monitoring_job_start,
+    '2100': monitoring_job_end,
+    '2900': monitoring_command_fail,
+    '2999': monitoring_job_end,
+    '3000': monitoring_job_start,
+    '3100': monitoring_job_end,
+    '3900': monitoring_command_fail,
+    '3999': monitoring_job_end,
+    # ... supervisor handlers
     '8000': supervisor_detect_late_job,
     '8100': supervisor_format_script,
     '8200': supervisor_dispatch_script

@@ -21,9 +21,9 @@ def get_tasks():
 
     """
     return (
-      unpack_message_content,
-      persist_command,
-      )
+        _unpack_content,
+        _persist,
+        )
 
 
 class ProcessingContextInfo(mq.Message):
@@ -42,7 +42,7 @@ class ProcessingContextInfo(mq.Message):
         self.simulation_uid = None
 
 
-def unpack_message_content(ctx):
+def _unpack_content(ctx):
     """Unpacks message being processed.
 
     """
@@ -51,8 +51,8 @@ def unpack_message_content(ctx):
     ctx.simulation_uid = ctx.content['simuid']
 
 
-def persist_command(ctx):
-    """Persists failed command information to db.
+def _persist(ctx):
+    """Persists information to db.
 
     """
     dao.persist_command(

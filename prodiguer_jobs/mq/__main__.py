@@ -18,17 +18,16 @@ from prodiguer import mq
 from prodiguer.utils import logger
 from prodiguer.utils import rt
 from prodiguer.db import pgres as db
+from prodiguer_jobs.mq import delegator
 from prodiguer_jobs.mq import internal_cv
 from prodiguer_jobs.mq import internal_fe
 from prodiguer_jobs.mq import internal_smtp
 from prodiguer_jobs.mq import internal_smtp_realtime
 from prodiguer_jobs.mq import metrics_environment
 from prodiguer_jobs.mq import metrics_pcmdi
-from prodiguer_jobs.mq import monitoring
 from prodiguer_jobs.mq import monitoring_command_fail
 from prodiguer_jobs.mq import monitoring_job_end
 from prodiguer_jobs.mq import monitoring_job_start
-from prodiguer_jobs.mq import supervisor
 from prodiguer_jobs.mq import supervisor_detect_late_job
 from prodiguer_jobs.mq import supervisor_dispatch_script
 from prodiguer_jobs.mq import supervisor_format_script
@@ -83,11 +82,11 @@ _AGENT_HANDLERS = {
     'live-fe': internal_fe,
     'live-metrics-env': metrics_environment,
     'live-metrics-pcmdi': metrics_pcmdi,
-    'live-monitoring-compute': monitoring,
-    'live-monitoring-post-processing': monitoring,
+    'live-monitoring-compute': delegator,
+    'live-monitoring-post-processing': delegator,
     'live-smtp': internal_smtp,
     'live-smtp-realtime': internal_smtp_realtime,
-    'live-superviseur': supervisor
+    'live-superviseur': delegator
 }
 
 # Map of MQ exchanges to MQ agents.
