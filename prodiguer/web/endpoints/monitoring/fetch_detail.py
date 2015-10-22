@@ -15,7 +15,6 @@ import base64
 
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
-from prodiguer.db.pgres import dao_monitoring_ll as dao_ll
 from prodiguer.web.request_validation import validator_monitoring as rv
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
@@ -50,7 +49,7 @@ class FetchDetailRequestHandler(ProdiguerHTTPRequestHandler):
             db.session.start()
             try:
                 self.simulation = dao.retrieve_simulation_try(self.hashid, self.try_id)
-                self.job_list = dao_ll.retrieve_simulation_jobs(self.simulation.uid)
+                self.job_list = dao.retrieve_simulation_jobs(self.simulation.uid)
                 self.simulation_configuration = dao.retrieve_simulation_configuration(self.simulation.uid)
                 self.message_count = dao.retrieve_simulation_message_count(self.simulation.uid)
             finally:

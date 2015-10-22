@@ -18,7 +18,6 @@ import tornado.web
 
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
-from prodiguer.db.pgres import dao_monitoring_ll as dao_ll
 from prodiguer.utils import logger
 from prodiguer.utils import string_convertor as sc
 from prodiguer.web.utils import websockets
@@ -46,7 +45,7 @@ def _get_simulation_event_data(request_data):
     if simulation:
         return {
             'cv_terms': request_data.get('cv_terms', []),
-            'job_list': dao_ll.retrieve_simulation_jobs(simulation_uid),
+            'job_list': dao.retrieve_simulation_jobs(simulation_uid),
             'simulation': simulation,
             'simulation_uid': simulation_uid
             }
@@ -57,7 +56,7 @@ def _get_job_event_data(request_data):
 
     """
     job_uid = request_data['job_uid']
-    job = dao_ll.retrieve_job(job_uid)
+    job = dao.retrieve_job_subset(job_uid)
     if job:
         return {
             'job': job,

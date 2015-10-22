@@ -13,7 +13,6 @@
 """
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
-from prodiguer.db.pgres import dao_monitoring_ll as dao_ll
 from prodiguer.web.request_validation import validator_monitoring as rv
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
@@ -45,7 +44,7 @@ class FetchMessagesRequestHandler(ProdiguerHTTPRequestHandler):
             db.session.start()
             try:
                 self.output = {
-                    'message_history': dao_ll.retrieve_simulation_messages(self.simulation_uid),
+                    'message_history': dao.retrieve_simulation_messages(self.simulation_uid),
                     'simulation': dao.retrieve_simulation(self.simulation_uid)
                 }
             finally:

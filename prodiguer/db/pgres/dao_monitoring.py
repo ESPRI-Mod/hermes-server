@@ -18,6 +18,8 @@ from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
 from prodiguer.db.pgres import validator_dao_monitoring as validator
+from prodiguer.db.pgres.convertor import as_date_string
+from prodiguer.db.pgres.convertor import as_datetime_string
 from prodiguer.utils import decorators
 
 
@@ -40,6 +42,39 @@ def _persist(hydrate, create, retrieve):
     return instance
 
 
+@decorators.validate(validator.validate_retrieve_active_jobs)
+def retrieve_active_jobs(start_date=None):
+    """Retrieves active job details from db.
+
+    :param datetime.datetime start_date: Job execution start date.
+
+    :returns: Job details.
+    :rtype: list
+
+    """
+    j = types.Job
+    s = types.Simulation
+
+    qry = session.sa_session.query(
+        as_datetime_string(j.execution_end_date),
+        as_datetime_string(j.execution_start_date),
+        j.is_compute_end,
+        j.is_error,
+        j.job_uid,
+        j.simulation_uid,
+        j.typeof
+        )
+    qry = qry.join(s, j.simulation_uid == s.uid)
+    qry = qry.filter(j.execution_start_date != None)
+    qry = qry.filter(s.execution_start_date != None)
+    qry = qry.filter(s.is_obsolete == False)
+    if start_date:
+        qry = qry.filter(s.execution_start_date >= start_date)
+    qry = qry.order_by(j.execution_start_date)
+
+    return qry.all()
+
+
 @decorators.validate(validator.validate_retrieve_active_simulation)
 def retrieve_active_simulation(hashid):
     """Retrieves an active simulation from db.
@@ -55,6 +90,53 @@ def retrieve_active_simulation(hashid):
     qry = qry.filter(types.Simulation.is_obsolete == False)
 
     return dao.exec_query(types.Simulation, qry)
+
+
+@decorators.validate(validator.validate_retrieve_active_simulations)
+def retrieve_active_simulations(start_date=None):
+    """Retrieves active simulation details from db.
+
+    :param datetime.datetime start_date: Simulation execution start date.
+
+    :returns: Simulation details.
+    :rtype: list
+
+    """
+    s = types.Simulation
+
+    qry = session.sa_session.query(
+        s.accounting_project,
+        s.activity,
+        s.activity_raw,
+        s.compute_node,
+        s.compute_node_raw,
+        s.compute_node_login,
+        s.compute_node_login_raw,
+        s.compute_node_machine,
+        s.compute_node_machine_raw,
+        as_datetime_string(s.execution_end_date),
+        as_datetime_string(s.execution_start_date),
+        s.experiment,
+        s.experiment_raw,
+        s.is_error,
+        s.hashid,
+        s.model,
+        s.model_raw,
+        s.name,
+        as_date_string(s.output_end_date),
+        as_date_string(s.output_start_date),
+        s.space,
+        s.space_raw,
+        s.try_id,
+        s.uid
+        )
+    qry = qry.filter(s.execution_start_date != None)
+    qry = qry.filter(s.is_obsolete == False)
+    if start_date:
+        qry = qry.filter(s.execution_start_date >= start_date)
+    qry = qry.order_by(s.execution_start_date)
+
+    return qry.all()
 
 
 @decorators.validate(validator.validate_retrieve_simulation)
@@ -130,9 +212,29 @@ def retrieve_simulation_jobs(uid):
     :rtype: list
 
     """
-    qry = session.query(types.Job)
-    qry = qry.filter(types.Job.simulation_uid == unicode(uid))
-    qry = qry.order_by(types.Job.execution_start_date)
+    j = types.Job
+
+    qry = session.sa_session.query(
+        as_datetime_string(j.execution_end_date),
+        as_datetime_string(j.execution_start_date),
+        j.is_compute_end,
+        j.is_error,
+        j.job_uid,
+        j.simulation_uid,
+        j.typeof,
+        j.accounting_project,
+        j.post_processing_component,
+        as_date_string(j.post_processing_date),
+        j.post_processing_dimension,
+        j.post_processing_file,
+        j.post_processing_name,
+        j.scheduler_id,
+        j.submission_path,
+        j.warning_delay
+        )
+    qry = qry.filter(j.execution_start_date != None)
+    qry = qry.filter(j.simulation_uid == unicode(uid))
+    qry = qry.order_by(j.execution_start_date)
 
     return qry.all()
 
@@ -154,6 +256,35 @@ def retrieve_simulation_message_count(uid):
     return qry.count()
 
 
+@decorators.validate(validator.validate_retrieve_simulation_messages)
+def retrieve_simulation_messages(uid):
+    """Retrieves message details from db.
+
+    :param str uid: UID of simulation.
+
+    :returns: List of message associated with a simulation.
+    :rtype: list
+
+    """
+    m = types.Message
+
+    qry = session.sa_session.query(
+        m.content,
+        m.email_id,
+        m.correlation_id_2,
+        as_datetime_string(m.row_create_date),
+        m.producer_version,
+        as_datetime_string(m.timestamp),
+        m.type_id,
+        m.uid
+        )
+    qry = qry.filter(m.correlation_id_1 == uid)
+    qry = qry.filter(m.type_id != u'7000')
+    qry = qry.order_by(m.timestamp)
+
+    return qry.all()
+
+
 @decorators.validate(validator.validate_retrieve_job)
 def retrieve_job(uid):
     """Retrieves job details from db.
@@ -167,6 +298,41 @@ def retrieve_job(uid):
     qfilter = types.Job.job_uid == unicode(uid)
 
     return dao.get_by_facet(types.Job, qfilter=qfilter)
+
+
+@decorators.validate(validator.validate_retrieve_job_subset)
+def retrieve_job_subset(uid):
+    """Retrieves a subset of job details from db.
+
+    :param str uid: UID of job.
+
+    :returns: A subset of job details.
+    :rtype: tuple
+
+    """
+    j = types.Job
+
+    qry = session.sa_session.query(
+        as_datetime_string(j.execution_end_date),
+        as_datetime_string(j.execution_start_date),
+        j.is_compute_end,
+        j.is_error,
+        j.job_uid,
+        j.simulation_uid,
+        j.typeof,
+        j.accounting_project,
+        j.post_processing_component,
+        as_date_string(j.post_processing_date),
+        j.post_processing_dimension,
+        j.post_processing_file,
+        j.post_processing_name,
+        j.scheduler_id,
+        j.submission_path,
+        j.warning_delay
+        )
+    qry = qry.filter(j.job_uid == unicode(uid))
+
+    return qry.one()
 
 
 @decorators.validate(validator.validate_persist_environment_metric)

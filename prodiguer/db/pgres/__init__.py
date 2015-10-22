@@ -12,6 +12,8 @@
 
 """
 from prodiguer.db.pgres import convertor
+from prodiguer.db.pgres.convertor import as_datetime_string
+from prodiguer.db.pgres.convertor import as_date_string
 from prodiguer.db.pgres import constants
 from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import dao_cv

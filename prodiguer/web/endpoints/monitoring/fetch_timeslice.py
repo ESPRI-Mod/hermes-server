@@ -15,7 +15,8 @@ import datetime
 
 import arrow
 
-from prodiguer.db.pgres import dao_monitoring_ll as dao
+from prodiguer.db import pgres as db
+from prodiguer.db.pgres import dao_monitoring as dao
 from prodiguer.web.request_validation import validator_monitoring as rv
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
@@ -62,10 +63,14 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
             """Sets response to be returned to client.
 
             """
-            self.output = {
-                'jobList': dao.retrieve_active_jobs(self.start_date),
-                'simulationList': dao.retrieve_active_simulations(self.start_date)
-            }
+            db.session.start()
+            try:
+                self.output = {
+                    'jobList': dao.retrieve_active_jobs(self.start_date),
+                    'simulationList': dao.retrieve_active_simulations(self.start_date)
+                }
+            finally:
+                db.session.end()
 
 
         # Invoke tasks.

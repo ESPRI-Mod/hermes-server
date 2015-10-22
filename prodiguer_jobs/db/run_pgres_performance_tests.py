@@ -16,6 +16,7 @@ import os
 
 import arrow
 import psycopg2
+from sqlalchemy import func
 
 from prodiguer.db import pgres as db
 from prodiguer.utils import config
@@ -25,25 +26,61 @@ from prodiguer.utils import logger
 
 # Sql statement for selecting simulations.
 _SQL_SELECT_SIMULATIONS = """SELECT
-    s.*
+    s.accounting_project,
+    s.activity,
+    s.activity_raw,
+    s.compute_node,
+    s.compute_node_raw,
+    s.compute_node_login,
+    s.compute_node_login_raw,
+    s.compute_node_machine,
+    s.compute_node_machine_raw,
+    to_char(s.execution_end_date, 'YYYY-MM-DD HH24:MI:ss.US'),
+    to_char(s.execution_start_date, 'YYYY-MM-DD HH24:MI:ss.US'),
+    s.experiment,
+    s.experiment_raw,
+    s.is_error,
+    s.hashid,
+    s.model,
+    s.model_raw,
+    s.name,
+    to_char(s.output_end_date, 'YYYY-MM-DD'),
+    to_char(s.output_start_date, 'YYYY-MM-DD'),
+    s.space,
+    s.space_raw,
+    s.try_id,
+    s.uid
 FROM
     monitoring.tbl_simulation as s
 WHERE
     s.execution_start_date IS NOT NULL AND
-    s.is_obsolete = false {};
+    s.is_obsolete = false {}
+ORDER BY
+    s.execution_start_date;
 """
+
 
 # Sql statement for selecting jobs.
 _SQL_SELECT_JOBS = """SELECT
-    j.*
+    to_char(j.execution_end_date, 'YYYY-MM-DD HH24:MI:ss.US'),
+    to_char(j.execution_start_date, 'YYYY-MM-DD HH24:MI:ss.US'),
+    j.is_compute_end,
+    j.is_error,
+    j.job_uid,
+    j.simulation_uid,
+    j.typeof
 FROM
     monitoring.tbl_job as j
 JOIN
     monitoring.tbl_simulation as s ON j.simulation_uid = s.uid
 WHERE
+    j.execution_start_date IS NOT NULL AND
     s.execution_start_date IS NOT NULL AND
-    s.is_obsolete = false {};
+    s.is_obsolete = false {}
+ORDER BY
+    j.execution_start_date;
 """
+
 
 # Global now.
 _NOW = arrow.utcnow()
@@ -51,13 +88,13 @@ _NOW = arrow.utcnow()
 # Set of timeslices to test.
 _TIMESLICES = [
     "1W",
-    "2W",
-    "1M",
-    "2M",
-    "3M",
-    "6M",
-    "12M",
-    "ALL",
+    # "2W",
+    # "1M",
+    # "2M",
+    # "3M",
+    # "6M",
+    # "12M",
+    # "ALL",
 ]
 
 # Map of timeslice tokens to time deltas.
@@ -74,7 +111,8 @@ _TIMESLICE_DELTAS = {
 
 # Set of db drivers to test.
 _DRIVERS = [
-    "sqlalchemy",
+    # "sqlalchemy",
+    "sqlalchemy-direct",
     "psycopg2"
 ]
 
@@ -83,6 +121,87 @@ _TARGETS = [
     "simulations",
     "jobs"
 ]
+
+def retrieve_active_simulations_direct(start_date=None):
+    """Retrieves active simulation details from db.
+
+    :param datetime.datetime start_date: Simulation execution start date.
+
+    :returns: Simulation details.
+    :rtype: list
+
+    """
+
+    s = db.types.Simulation
+    qry = db.session.sa_session.query(
+        s.accounting_project,
+        s.activity,
+        s.activity_raw,
+        s.compute_node,
+        s.compute_node_raw,
+        s.compute_node_login,
+        s.compute_node_login_raw,
+        s.compute_node_machine,
+        s.compute_node_machine_raw,
+        db.as_datetime_string(s.execution_end_date),
+        db.as_datetime_string(s.execution_start_date),
+        s.experiment,
+        s.experiment_raw,
+        s.is_error,
+        s.hashid,
+        s.model,
+        s.model_raw,
+        s.name,
+        db.as_date_string(s.output_end_date),
+        db.as_date_string(s.output_start_date),
+        s.space,
+        s.space_raw,
+        s.try_id,
+        s.uid
+        )
+    qry = qry.filter(s.execution_start_date != None)
+    qry = qry.filter(s.is_obsolete == False)
+    if start_date:
+        qry = qry.filter(s.execution_start_date >= start_date)
+
+    sims = qry.all()
+
+    print sims[0]
+
+    return sims
+
+    return qry.all()
+
+
+def retrieve_active_jobs_direct(start_date=None):
+    """Retrieves active job details from db.
+
+    :param datetime.datetime start_date: Job execution start date.
+
+    :returns: Job details.
+    :rtype: list
+
+    """
+    j = db.types.Job
+    s = db.types.Simulation
+    qry = db.session.sa_session.query(
+        j.execution_end_date,
+        j.execution_start_date,
+        j.is_compute_end,
+        j.is_error,
+        j.job_uid,
+        j.simulation_uid,
+        j.typeof
+        )
+    qry = qry.join(s, j.simulation_uid == s.uid)
+    qry = qry.filter(j.execution_start_date != None)
+    qry = qry.filter(s.execution_start_date != None)
+    qry = qry.filter(s.is_obsolete == False)
+    if start_date:
+        qry = qry.filter(s.execution_start_date >= start_date)
+
+    return qry.all()
+
 
 def retrieve_active_simulations(start_date=None):
     """Retrieves active simulation details from db.
@@ -128,6 +247,12 @@ _SQLALCHEMY_FACTORIES = {
     "jobs": retrieve_active_jobs,
 }
 
+# Map of db query targets to sqlalchmey based functions.
+_SQLALCHEMY_FACTORIES_DIRECT = {
+    "simulations": retrieve_active_simulations_direct,
+    "jobs": retrieve_active_jobs_direct,
+}
+
 # Map of db query targets to psycopg2 sql statements.
 _PSYCOPG2_FACTORIES = {
     "simulations": _SQL_SELECT_SIMULATIONS,
@@ -147,16 +272,16 @@ def exec_sqlalchmey(timeslice_delta, target):
     return data
 
 
-def _get_psycopg2_connection():
-    """Returns a pscopg2 connection to the db.
+def exec_sqlalchmey_direct(timeslice_delta, target):
+    """Performs a sqlalchemy based db query."""
+    if timeslice_delta:
+        timeslice_delta = timeslice_delta.datetime
+    timeslice_factory = _SQLALCHEMY_FACTORIES_DIRECT[target]
+    db.session.start()
+    data = timeslice_factory(timeslice_delta)
+    db.session.end()
 
-    """
-    return psycopg2.connect(
-        database=db.constants.PRODIGUER_DB_NAME,
-        user=db.constants.PRODIGUER_DB_USER,
-        host=os.getenv("PRODIGUER_DB_PGRES_HOST").split(":")[0],
-        password=os.getenv("PRODIGUER_DB_PGRES_USER_PASSWORD")
-        )
+    return data
 
 
 def exec_psycopg2(timeslice_delta, target):
@@ -165,7 +290,12 @@ def exec_psycopg2(timeslice_delta, target):
         timeslice_delta = "AND \n\ts.execution_start_date >= '{}'".format(timeslice_delta)
     else:
         timeslice_delta = ""
-    conn = _get_psycopg2_connection()
+    conn = psycopg2.connect(
+        database=db.constants.PRODIGUER_DB_NAME,
+        user=db.constants.PRODIGUER_DB_USER,
+        host=os.getenv("PRODIGUER_DB_PGRES_HOST").split(":")[0],
+        password=os.getenv("PRODIGUER_DB_PGRES_USER_PASSWORD")
+        )
     cur = conn.cursor()
     sql = _PSYCOPG2_FACTORIES[target].format(timeslice_delta)
     cur.execute(sql)
@@ -178,6 +308,7 @@ def exec_psycopg2(timeslice_delta, target):
 # Map of db drivers to functions that perform queries.
 _DATA_FACTORIES = {
     "sqlalchemy": exec_sqlalchmey,
+    "sqlalchemy-direct": exec_sqlalchmey_direct,
     "psycopg2": exec_psycopg2
 }
 

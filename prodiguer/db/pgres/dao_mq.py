@@ -66,25 +66,25 @@ def create_message(
     instance.content = content
     instance.content_encoding = unicode(content_encoding)
     instance.content_type = unicode(content_type)
+    instance.producer_id = unicode(producer_id)
+    instance.producer_version = unicode(producer_version)
+    instance.type_id = unicode(type_id)
+    instance.uid = unicode(uid)
+    instance.user_id = unicode(user_id)
     if correlation_id_1:
         instance.correlation_id_1 = unicode(correlation_id_1)
     if correlation_id_2:
         instance.correlation_id_2 = unicode(correlation_id_2)
     if correlation_id_3:
         instance.correlation_id_3 = unicode(correlation_id_3)
-    instance.producer_id = unicode(producer_id)
-    instance.producer_version = unicode(producer_version)
+    if email_id:
+        instance.email_id = int(email_id)
     if timestamp is not None:
         instance.timestamp = timestamp
     if timestamp_precision is not None:
         instance.timestamp_precision = unicode(timestamp_precision)
     if timestamp_raw is not None:
         instance.timestamp_raw = unicode(timestamp_raw)
-    instance.type_id = unicode(type_id)
-    instance.uid = unicode(uid)
-    instance.user_id = unicode(user_id)
-    if email_id:
-        instance.email_id = int(email_id)
 
     return session.add(instance)
 

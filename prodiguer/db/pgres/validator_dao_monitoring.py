@@ -246,6 +246,13 @@ def validate_retrieve_job(uid):
     validator.validate_job_uid(uid)
 
 
+def validate_retrieve_job_subset(uid):
+    """Function input validator: retrieve_job_subset.
+
+    """
+    validator.validate_job_uid(uid)
+
+
 def validate_retrieve_simulation(uid):
     """Function input validator: retrieve_simulation.
 

@@ -23,3 +23,12 @@ def convert(instance):
 
     """
     return {c.name: getattr(instance, c.name) for c in sa.inspect(instance).mapper.columns}
+
+
+
+def as_datetime_string(col):
+	return sa.func.to_char(col, "YYYY-MM-DD HH24:MI:ss.US")
+
+
+def as_date_string(col):
+	return sa.func.to_char(col, "YYYY-MM-DD")
