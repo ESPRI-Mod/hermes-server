@@ -11,8 +11,6 @@
 
 
 """
-import base64
-
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
 from prodiguer.web.request_validation import validator_monitoring as rv
@@ -50,20 +48,10 @@ class FetchDetailRequestHandler(ProdiguerHTTPRequestHandler):
             try:
                 self.simulation = dao.retrieve_simulation_try(self.hashid, self.try_id)
                 self.job_list = dao.retrieve_simulation_jobs(self.simulation.uid)
-                self.simulation_configuration = dao.retrieve_simulation_configuration(self.simulation.uid)
+                self.configuration = dao.retrieve_simulation_configuration(self.simulation.uid)
                 self.message_count = dao.retrieve_simulation_message_count(self.simulation.uid)
             finally:
                 db.session.end()
-
-
-        def _get_configuration_card():
-            """Returns simulation configuration card formatted for front-end.
-
-            """
-            if self.simulation_configuration:
-                return base64.b64decode(self.simulation_configuration.card)
-            else:
-                return unicode()
 
 
         def _set_output():
@@ -71,12 +59,11 @@ class FetchDetailRequestHandler(ProdiguerHTTPRequestHandler):
 
             """
             self.output = {
-                'config_card': _get_configuration_card(),
+                'config_card': self.configuration.card if self.configuration else None,
                 'job_list': self.job_list,
                 'message_count': self.message_count,
                 'simulation': self.simulation
             }
-
 
         # Invoke tasks.
         self.invoke(rv.validate_fetch_one, [
