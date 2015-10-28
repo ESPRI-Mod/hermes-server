@@ -69,6 +69,13 @@ def get_type(term):
     return term['meta']['type']
 
 
+def get_create_date(term):
+    """Returns a term's create date.
+
+    """
+    return term['meta']['create_date']
+
+
 def get_synonyms(term):
     """Returns a term's synonyms.
 

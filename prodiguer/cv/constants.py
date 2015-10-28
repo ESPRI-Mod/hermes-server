@@ -11,6 +11,12 @@
 
 
 """
+# Prodiguer cv domain.
+VOCAB_DOMAIN = u"earth-system.modelling"
+
+# Prodiguer cv sub-domain.
+VOCAB_SUBDOMAIN = 'ipsl.prodiguer'
+
 # Term governance states.
 TERM_GOVERNANCE_STATE_NEW = "new"
 TERM_GOVERNANCE_STATE_APPROVED = "approved"

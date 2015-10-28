@@ -21,14 +21,14 @@ from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 # Set of termsets not required for front-end.
 _EXCLUDED_TERMSETS = {
     'execution_state',
+    'experiment_group',
     'institute',
-    'message_type',
+    'job_type',
     'message_application',
     'message_producer',
+    'message_type',
     'message_user',
-    'model_forcing',
-    'job_type',
-    'experiment_group'
+    'model_forcing'
     }
 
 

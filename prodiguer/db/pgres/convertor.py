@@ -14,7 +14,7 @@ import sqlalchemy as sa
 
 
 def convert(instance):
-    """Converts instance to a dictionary.
+    """Converts mapped entity instance to a dictionary.
 
     :param object instance: Data to be converted.
 
@@ -27,8 +27,24 @@ def convert(instance):
 
 
 def as_datetime_string(col):
-	return sa.func.to_char(col, "YYYY-MM-DD HH24:MI:ss.US")
+    """Converts a column result into a datetime string.
+
+    :param sqlalchemy.Column col: Collumn to be converted.
+
+    :returns: The column wrapped in a date string conversion function.
+    :rtype: sqlalchemy.Column
+
+    """
+    return sa.func.to_char(col, "YYYY-MM-DD HH24:MI:ss.US")
 
 
 def as_date_string(col):
-	return sa.func.to_char(col, "YYYY-MM-DD")
+    """Converts a column result into a date string.
+
+    :param sqlalchemy.Column col: Collumn to be converted.
+
+    :returns: The column wrapped in a date string conversion function.
+    :rtype: sqlalchemy.Column
+
+    """
+    return sa.func.to_char(col, "YYYY-MM-DD")
