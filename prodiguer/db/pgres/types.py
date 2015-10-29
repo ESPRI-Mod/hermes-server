@@ -14,6 +14,10 @@ import datetime
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 
+from prodiguer.db.pgres.types_conso import ConsumptionByLogin
+from prodiguer.db.pgres.types_conso import ConsumptionByProject
+from prodiguer.db.pgres.types_conso import OccupationStore
+from prodiguer.db.pgres.types_conso import Project
 from prodiguer.db.pgres.types_cv import ControlledVocabularyTerm
 from prodiguer.db.pgres.types_monitoring import Command
 from prodiguer.db.pgres.types_monitoring import EnvironmentMetric
@@ -27,20 +31,29 @@ from prodiguer.db.pgres.types_superviseur import Supervision
 
 
 # Set of supported model schemas.
-SCHEMAS = {'cv', 'monitoring', 'mq', 'superviseur'}
+SCHEMAS = {'conso', 'cv', 'monitoring', 'mq', 'superviseur'}
 
 
 # Set of supported model types.
 SUPPORTED = TYPES = [
-    Command,
+    # ... conso types
+    ConsumptionByLogin,
+    ConsumptionByProject,
+    OccupationStore,
+    Project,
+    # ... cv types
     ControlledVocabularyTerm,
+    # ... monitoring types
+    Command,
     EnvironmentMetric,
     Job,
     Simulation,
     SimulationConfiguration,
-    Supervision,
+    # ... mq types
     Message,
     MessageEmail,
+    # ... superviseur types
+    Supervision
 ]
 
 # Extend type with other fields.

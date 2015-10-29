@@ -12,7 +12,10 @@
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import Float
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
 from sqlalchemy import Unicode
+from sqlalchemy import UniqueConstraint
 
 from prodiguer.db.pgres.entity import Entity
 
@@ -29,34 +32,38 @@ class Project(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_project'
     __table_args__ = (
+        UniqueConstraint('name', 'centre', 'machine', 'node_type', 'start_date'),
         {'schema':SCHEMA}
     )
 
     # Columns.
-    name = Column(Unicode(127), nullable=False, unique=True)
-    centre = Column(Unicode(127), required=True)
-    machine = Column(Unicode(127), required=True)
-    node_type = Column(Unicode(127), required=True)
-    allocation = Column(Unicode(127), required=True)
-    start_date = Column(DateTime, required=True)
-    end_date = Column(DateTime, required=True)
+    name = Column(Unicode(127), nullable=False)
+    centre = Column(Unicode(127), nullable=False)
+    machine = Column(Unicode(127), nullable=False)
+    node_type = Column(Unicode(127), nullable=False)
+    allocation = Column(Unicode(127), nullable=False)
+    start_date = Column(DateTime, nullable=False)
+    end_date = Column(DateTime, nullable=False)
 
 
-class Consumption(Entity):
-    """Resource consumption statistical data per centre.
+class ConsumptionByProject(Entity):
+    """Resource consumption statistical data by project.
 
     """
     # SQLAlchemy directives.
-    __tablename__ = 'tbl_consumption'
+    __tablename__ = 'tbl_consumption_by_project'
     __table_args__ = (
         {'schema':SCHEMA}
     )
 
-    #TODO
+    # Columns.
+    project_id = Column(Integer, ForeignKey('conso.tbl_project.id'))
+    date = Column(DateTime, nullable=False)
+    total = Column(Float, nullable=False)
 
 
 class ConsumptionByLogin(Entity):
-    """Resource consumption statistical data per login.
+    """Resource consumption statistical data by project & login.
 
     """
     # SQLAlchemy directives.
@@ -66,10 +73,10 @@ class ConsumptionByLogin(Entity):
     )
 
     # Columns.
-    project = Column(Unicode(127), required=True)
-    login = Column(Unicode(127), required=True)
-    date = Column(DateTime, required=True)
-    total = Column(Float, required=True)
+    project_id = Column(Integer, ForeignKey('conso.tbl_project.id'))
+    login = Column(Unicode(127), nullable=False)
+    date = Column(DateTime, nullable=False)
+    total = Column(Float, nullable=False)
 
 
 class OccupationStore(Entity):
@@ -82,8 +89,7 @@ class OccupationStore(Entity):
         {'schema':SCHEMA}
     )
 
-    project = Column(Unicode(127), required=True)
-    login = Column(Unicode(127), required=True)
-    date = Column(DateTime, required=True)
-    store_name = Column(Unicode(127), required=True)
-    store_size = Column(Float, required=True)
+    login = Column(Unicode(127), nullable=False)
+    date = Column(DateTime, nullable=False)
+    store_name = Column(Unicode(127), nullable=False)
+    store_size = Column(Float, nullable=False)
