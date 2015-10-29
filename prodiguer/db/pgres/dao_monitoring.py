@@ -62,7 +62,8 @@ def retrieve_active_jobs(start_date=None):
         j.is_error,
         j.job_uid,
         j.simulation_uid,
-        j.typeof
+        j.typeof,
+        j.post_processing_name
         )
     qry = qry.join(s, j.simulation_uid == s.uid)
     qry = qry.filter(j.execution_start_date != None)
@@ -105,11 +106,8 @@ def retrieve_active_simulations(start_date=None):
     s = types.Simulation
 
     qry = session.sa_session.query(
-        s.accounting_project,
         s.activity,
         s.activity_raw,
-        s.compute_node,
-        s.compute_node_raw,
         s.compute_node_login,
         s.compute_node_login_raw,
         s.compute_node_machine,

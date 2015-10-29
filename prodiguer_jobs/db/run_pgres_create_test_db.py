@@ -25,7 +25,7 @@ from prodiguer.utils import logger
 
 
 # Number of days for which to create test simulations.
-_QUOTA_DAYS = 185
+_QUOTA_DAYS = 31
 
 # Number of simulations to create per day.
 _QUOTA_SIMS_PER_DAY = 90
@@ -70,17 +70,41 @@ _JOB_TYPESET = [
 ]
 
 
+# Set of job types.
+_POST_PROCESSING_JOB_NAMES = [
+    u"monitoring",
+    unicode(uuid.uuid4())[0:15],
+    unicode(uuid.uuid4())[0:15],
+    unicode(uuid.uuid4())[0:15],
+    unicode(uuid.uuid4())[0:15],
+    unicode(uuid.uuid4())[0:15],
+    unicode(uuid.uuid4())[0:15],
+    unicode(uuid.uuid4())[0:15],
+]
+
 def _get_cv_term(term_type):
     """Get a test cv term.
 
     """
-    return cv.get_name(cv.cache.get_random_term(term_type))
+    name = ''
+    while len(name) == 0:
+        name = cv.get_name(cv.cache.get_random_term(term_type))
+
+    return name
 
 
 def _create_job(simulation, job_index):
     """Create a test job.
 
     """
+    typeof = random.choice(_JOB_TYPESET)
+    if typeof == "post-processing":
+        pp_date = PP_DATE
+        pp_name = random.choice(_POST_PROCESSING_JOB_NAMES)
+    else:
+        pp_date = None
+        pp_name = None
+
     instance = db.types.Job()
     instance.simulation_uid = simulation.uid
     instance.job_uid = unicode(uuid.uuid4())
@@ -91,12 +115,12 @@ def _create_job(simulation, job_index):
     instance.is_compute_end = False
     instance.scheduler_id = random.randint(2000000, 9000000)
     instance.submission_path = unicode(uuid.uuid4())
-    instance.post_processing_name = unicode(uuid.uuid4())[0:15]
+    instance.post_processing_name = pp_name
     instance.post_processing_date = PP_DATE
     instance.post_processing_dimension = None
     instance.post_processing_component = None
     instance.post_processing_file = None
-    instance.typeof = random.choice(_JOB_TYPESET)
+    instance.typeof = typeof
     instance.warning_delay = config.apps.monitoring.defaultJobWarningDelayInSeconds
 
     return db.session.insert(instance)
@@ -106,12 +130,15 @@ def _create_simulation(start_date, end_date):
     """Create a test simulation.
 
     """
+    compute_node_machine = _get_cv_term(cv.constants.TERM_TYPE_COMPUTE_NODE_MACHINE)
+    compute_node = compute_node_machine.split("-")[0]
+
     instance = db.types.Simulation()
     instance.activity = u"ipsl"
     instance.accounting_project = random.choice(_ACCOUNTING_PROJECTS)
-    instance.compute_node = _get_cv_term(cv.constants.TERM_TYPE_COMPUTE_NODE)
+    instance.compute_node = compute_node
     instance.compute_node_login = _get_cv_term(cv.constants.TERM_TYPE_COMPUTE_NODE_LOGIN)
-    instance.compute_node_machine = _get_cv_term(cv.constants.TERM_TYPE_COMPUTE_NODE_MACHINE)
+    instance.compute_node_machine = compute_node_machine
     instance.experiment = _get_cv_term(cv.constants.TERM_TYPE_EXPERIMENT)
     is_error = False
     is_obsolete = False
