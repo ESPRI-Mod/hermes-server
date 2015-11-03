@@ -25,58 +25,43 @@ from prodiguer.db.pgres.entity import Entity
 SCHEMA = 'conso'
 
 
-class Project(Entity):
-    """A project being tracked for resource consumption.
+
+class Allocation(Entity):
+    """Resource allocation information.
 
     """
     # SQLAlchemy directives.
-    __tablename__ = 'tbl_project'
+    __tablename__ = 'tbl_allocation'
     __table_args__ = (
-        UniqueConstraint('name', 'centre', 'machine', 'node_type', 'start_date'),
+        UniqueConstraint('centre', 'machine', 'node_type', 'project', 'start_date'),
         {'schema':SCHEMA}
     )
 
     # Columns.
-    name = Column(Unicode(127), nullable=False)
-    centre = Column(Unicode(127), nullable=False)
-    machine = Column(Unicode(127), nullable=False)
-    node_type = Column(Unicode(127), nullable=False)
-    allocation = Column(Unicode(127), nullable=False)
-    start_date = Column(DateTime, nullable=False)
-    end_date = Column(DateTime, nullable=False)
+    centre = Column(Unicode(127), nullable=False)       # centre on which the project is active
+    end_date = Column(DateTime, nullable=False)         # allocation end date
+    machine = Column(Unicode(127), nullable=False)      # machine on which there is a resource allocation
+    node_type = Column(Unicode(127), nullable=False)    # architecture on which there is a resource allocation
+    project = Column(Unicode(127), nullable=False)      # name of associated project
+    start_date = Column(DateTime, nullable=False)       # allocation start date
+    total_hrs = Column(Unicode(127), nullable=False)    # amount of the allocation (hours)
 
 
-class ConsumptionByProject(Entity):
-    """Resource consumption statistical data by project.
-
-    """
-    # SQLAlchemy directives.
-    __tablename__ = 'tbl_consumption_by_project'
-    __table_args__ = (
-        {'schema':SCHEMA}
-    )
-
-    # Columns.
-    project_id = Column(Integer, ForeignKey('conso.tbl_project.id'))
-    date = Column(DateTime, nullable=False)
-    total = Column(Float, nullable=False)
-
-
-class ConsumptionByLogin(Entity):
-    """Resource consumption statistical data by project & login.
+class Consumption(Entity):
+    """Resource consumption information.
 
     """
     # SQLAlchemy directives.
-    __tablename__ = 'tbl_consumption_by_login'
+    __tablename__ = 'tbl_consumption'
     __table_args__ = (
         {'schema':SCHEMA}
     )
 
     # Columns.
-    project_id = Column(Integer, ForeignKey('conso.tbl_project.id'))
-    login = Column(Unicode(127), nullable=False)
-    date = Column(DateTime, nullable=False)
-    total = Column(Float, nullable=False)
+    allocation_id = Column(Integer, ForeignKey('conso.tbl_allocation.id'))
+    date = Column(DateTime, nullable=False)             # date considered
+    total_hrs = Column(Float, nullable=False)           # amount of resources (hours) used at date for considered allocation
+    login = Column(Unicode(127), nullable=True)         # login considered
 
 
 class OccupationStore(Entity):
@@ -89,7 +74,7 @@ class OccupationStore(Entity):
         {'schema':SCHEMA}
     )
 
-    login = Column(Unicode(127), nullable=False)
-    date = Column(DateTime, nullable=False)
-    store_name = Column(Unicode(127), nullable=False)
-    store_size = Column(Float, nullable=False)
+    date = Column(DateTime, nullable=False)             # date considered
+    login = Column(Unicode(127), nullable=False)        # login considered
+    name = Column(Unicode(127), nullable=False)         # name of the storage space
+    size = Column(Float, nullable=False)                # space used by the considered login

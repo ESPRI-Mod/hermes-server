@@ -12,6 +12,8 @@
 
 """
 from prodiguer import rt
+from prodiguer_jobs.mq import metrics_conso
+from prodiguer_jobs.mq import metrics_environment
 from prodiguer_jobs.mq import monitoring_command_fail
 from prodiguer_jobs.mq import monitoring_job_end
 from prodiguer_jobs.mq import monitoring_job_start
@@ -38,6 +40,9 @@ _AGENTS = {
     '3100': monitoring_job_end,
     '3900': monitoring_command_fail,
     '3999': monitoring_job_end,
+    # ... metrics handlers
+    '7000': metrics_environment,
+    '7010': metrics_conso,
     # ... supervisor handlers
     '8000': supervisor_detect_late_job,
     '8100': supervisor_format_script,

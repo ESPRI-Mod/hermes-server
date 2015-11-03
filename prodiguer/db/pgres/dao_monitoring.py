@@ -11,7 +11,6 @@
 
 
 """
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy import not_
 
 from prodiguer.db.pgres import dao
@@ -22,24 +21,6 @@ from prodiguer.db.pgres.convertor import as_date_string
 from prodiguer.db.pgres.convertor import as_datetime_string
 from prodiguer.utils import decorators
 
-
-
-def _persist(hydrate, create, retrieve):
-    """Persists to db by either creating a new instance or
-       retrieving and updating an existing instance.
-
-    """
-    try:
-        instance = create()
-        hydrate(instance)
-        session.insert(instance)
-    except IntegrityError:
-        session.rollback()
-        instance = retrieve()
-        hydrate(instance)
-        session.update(instance)
-
-    return instance
 
 
 @decorators.validate(validator.validate_retrieve_active_jobs)
@@ -451,7 +432,7 @@ def persist_simulation_01(
         instance.uid = unicode(uid)
         instance.hashid = instance.get_hashid()
 
-    return _persist(_assign, types.Simulation, lambda: retrieve_simulation(uid))
+    return dao.persist(_assign, types.Simulation, lambda: retrieve_simulation(uid))
 
 
 @decorators.validate(validator.validate_persist_simulation_02)
@@ -474,7 +455,7 @@ def persist_simulation_02(execution_end_date, is_error, uid):
         instance.is_error = is_error
         instance.uid = unicode(uid)
 
-    return _persist(_assign, types.Simulation, lambda: retrieve_simulation(uid))
+    return dao.persist(_assign, types.Simulation, lambda: retrieve_simulation(uid))
 
 
 @decorators.validate(validator.validate_persist_simulation_configuration)
@@ -586,7 +567,7 @@ def persist_job_01(
         if submission_path:
             instance.submission_path = unicode(submission_path)
 
-    return _persist(_assign, types.Job, lambda: retrieve_job(job_uid))
+    return dao.persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 
 
 @decorators.validate(validator.validate_persist_job_02)
@@ -618,7 +599,7 @@ def persist_job_02(
         instance.job_uid = unicode(job_uid)
         instance.simulation_uid = unicode(simulation_uid)
 
-    return _persist(_assign, types.Job, lambda: retrieve_job(job_uid))
+    return dao.persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 
 
 @decorators.validate(validator.validate_update_active_simulation)

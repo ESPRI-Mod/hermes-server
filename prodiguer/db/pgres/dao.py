@@ -11,6 +11,8 @@
 """
 import random
 
+from sqlalchemy.exc import IntegrityError
+
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import validator
 from prodiguer.db.pgres import validator_dao as my_validator
@@ -231,3 +233,25 @@ def sort(etype, collection):
 
     """
     return [] if collection is None else etype.get_sorted(collection)
+
+
+def persist(hydrate, etype, retriever):
+    """Persists to db by either creating a new instance or
+       retrieving and updating an existing instance.
+
+    :param function hydrate: Function to populate an instance.
+    :param class etype: Type of entity to be persisted.
+    :param function retriever: Function to retrieve an instance.
+
+    """
+    try:
+        instance = etype()
+        hydrate(instance)
+        session.insert(instance)
+    except IntegrityError:
+        session.rollback()
+        instance = retriever()
+        hydrate(instance)
+        session.update(instance)
+
+    return instance

@@ -23,6 +23,7 @@ from prodiguer_jobs.mq import internal_cv
 from prodiguer_jobs.mq import internal_fe
 from prodiguer_jobs.mq import internal_smtp
 from prodiguer_jobs.mq import internal_smtp_realtime
+from prodiguer_jobs.mq import metrics_conso
 from prodiguer_jobs.mq import metrics_environment
 from prodiguer_jobs.mq import metrics_pcmdi
 from prodiguer_jobs.mq import monitoring_command_fail
@@ -69,6 +70,7 @@ _AGENT_HANDLERS = {
     'debug-3900': monitoring_command_fail,
     'debug-3999': monitoring_job_end,
     'debug-7000': metrics_environment,
+    'debug-7010': metrics_conso,
     'debug-7100': metrics_pcmdi,
     'debug-8000': supervisor_detect_late_job,
     'debug-8100': supervisor_format_script,
@@ -80,7 +82,7 @@ _AGENT_HANDLERS = {
     'debug-smtp-realtime': internal_smtp_realtime,
     'live-cv': internal_cv,
     'live-fe': internal_fe,
-    'live-metrics-env': metrics_environment,
+    'live-metrics': delegator,
     'live-metrics-pcmdi': metrics_pcmdi,
     'live-monitoring-compute': delegator,
     'live-monitoring-post-processing': delegator,
@@ -107,9 +109,10 @@ _AGENT_EXCHANGES = {
         'debug-3900',
         'debug-3999',
         'debug-7000',
+        'debug-7010',
         'debug-7100',
         'debug-8888',
-        'live-metrics-env',
+        'live-metrics',
         'live-metrics-pcmdi',
         'live-monitoring-compute',
         'live-monitoring-post-processing'

@@ -14,10 +14,9 @@ import datetime
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 
-from prodiguer.db.pgres.types_conso import ConsumptionByLogin
-from prodiguer.db.pgres.types_conso import ConsumptionByProject
+from prodiguer.db.pgres.types_conso import Allocation
+from prodiguer.db.pgres.types_conso import Consumption
 from prodiguer.db.pgres.types_conso import OccupationStore
-from prodiguer.db.pgres.types_conso import Project
 from prodiguer.db.pgres.types_cv import ControlledVocabularyTerm
 from prodiguer.db.pgres.types_monitoring import Command
 from prodiguer.db.pgres.types_monitoring import EnvironmentMetric
@@ -37,10 +36,9 @@ SCHEMAS = {'conso', 'cv', 'monitoring', 'mq', 'superviseur'}
 # Set of supported model types.
 SUPPORTED = TYPES = [
     # ... conso types
-    ConsumptionByLogin,
-    ConsumptionByProject,
+    Allocation,
+    Consumption,
     OccupationStore,
-    Project,
     # ... cv types
     ControlledVocabularyTerm,
     # ... monitoring types
