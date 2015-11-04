@@ -77,4 +77,4 @@ class OccupationStore(Entity):
     date = Column(DateTime, nullable=False)             # date considered
     login = Column(Unicode(127), nullable=False)        # login considered
     name = Column(Unicode(127), nullable=False)         # name of the storage space
-    size_gb = Column(Float, nullable=False)             # space used by the considered login GB)
+    size_gb = Column(Float, nullable=False)             # space (GB) used by the considered login
