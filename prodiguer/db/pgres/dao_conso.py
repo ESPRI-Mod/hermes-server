@@ -100,7 +100,7 @@ def persist_occupation_store(
     instance.date = arrow.get(date).datetime
     instance.login = unicode(login)
     instance.name = unicode(name)
-    instance.size = float(size)
+    instance.size_gb = float(size)
 
     return session.insert(instance)
 

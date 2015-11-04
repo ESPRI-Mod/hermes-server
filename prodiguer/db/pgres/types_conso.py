@@ -44,7 +44,7 @@ class Allocation(Entity):
     node_type = Column(Unicode(127), nullable=False)    # architecture on which there is a resource allocation
     project = Column(Unicode(127), nullable=False)      # name of associated project
     start_date = Column(DateTime, nullable=False)       # allocation start date
-    total_hrs = Column(Unicode(127), nullable=False)    # amount of the allocation (hours)
+    total_hrs = Column(Float, nullable=False)           # amount of the allocation (hours)
 
 
 class Consumption(Entity):
@@ -77,4 +77,4 @@ class OccupationStore(Entity):
     date = Column(DateTime, nullable=False)             # date considered
     login = Column(Unicode(127), nullable=False)        # login considered
     name = Column(Unicode(127), nullable=False)         # name of the storage space
-    size = Column(Float, nullable=False)                # space used by the considered login
+    size_gb = Column(Float, nullable=False)             # space used by the considered login GB)
