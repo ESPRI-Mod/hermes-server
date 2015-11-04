@@ -11,7 +11,7 @@
 
 
 """
-from prodiguer.db import dao_conso as dao
+from prodiguer.db.pgres import dao_conso as dao
 
 
 

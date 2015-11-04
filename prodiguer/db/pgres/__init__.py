@@ -16,6 +16,7 @@ from prodiguer.db.pgres.convertor import as_datetime_string
 from prodiguer.db.pgres.convertor import as_date_string
 from prodiguer.db.pgres import constants
 from prodiguer.db.pgres import dao
+from prodiguer.db.pgres import dao_conso
 from prodiguer.db.pgres import dao_cv
 from prodiguer.db.pgres import dao_monitoring
 from prodiguer.db.pgres import dao_mq
