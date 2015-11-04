@@ -132,4 +132,4 @@ def retrieve_allocation(
     qry = qry.filter(types.Allocation.project == unicode(project))
     qry = qry.filter(types.Allocation.start_date == arrow.get(start_date).datetime)
 
-    return dao.exec_query(types.Simulation, qry)
+    return qry.first()

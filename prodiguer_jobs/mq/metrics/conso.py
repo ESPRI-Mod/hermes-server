@@ -11,8 +11,7 @@
 
 
 """
-from prodiguer import mq
-from prodiguer.db import pgres as db
+from prodiguer.db import dao_conso as dao
 
 
 
@@ -20,37 +19,43 @@ def get_tasks():
     """Returns set of tasks to be executed when processing a message.
 
     """
-    return (
-      _unpack_content,
-      _persist_metric
-      )
+    return _persist_metrics
 
 
-class ProcessingContextInfo(mq.Message):
-    """Message processing context information.
+def _persist_metrics(ctx):
+    """Persists metrics info to db.
 
     """
-    def __init__(self, props, body, decode=True):
-        """Object constructor.
+    # Persist allocation info.
+    allocation = dao.persist_allocation(
+        ctx.content['projectCentre'],
+        ctx.content['projectEndDate'],
+        ctx.content['projectMachine'],
+        ctx.content['projectNodeType'],
+        ctx.content['projectName'],
+        ctx.content['projectStartDate'],
+        ctx.content['projectAllocation']
+        )
 
-        """
-        super(ProcessingContextInfo, self).__init__(
-            props, body, decode=decode)
+    # Persist occupation store info.
+    dao.persist_occupation_store(
+        ctx.content['occupationStoreDate'],
+        ctx.content['occupationStoreLogin'],
+        ctx.content['occupationStoreName'],
+        ctx.content['occupationStoreSize']
+        )
 
-        self.job_uid = None
-        self.simulation_uid = None
+    # Persist consumption by login info.
+    dao.persist_consumption(
+        allocation.id,
+        ctx.content['consumptionByLoginDate'],
+        ctx.content['consumptionByLoginLogin'],
+        ctx.content['consumptionByLoginTotal']
+        )
 
-
-def _unpack_content(ctx):
-    """Unpacks message being processed.
-
-    """
-    ctx.job_uid = ctx.content['jobuid']
-    ctx.simulation_uid = ctx.content['simuid']
-
-
-def _persist_metric(ctx):
-    """Persists metric info to db.
-
-    """
-    pass
+    # Persist consumption by project info.
+    dao.persist_consumption(
+        allocation.id,
+        ctx.content['consumptionByProjectDate'],
+        ctx.content['consumptionByProjectTotal']
+        )
