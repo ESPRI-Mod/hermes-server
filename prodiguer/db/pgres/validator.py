@@ -61,6 +61,19 @@ def validate_int(val, var):
         _raise_value_error(val, var, int)
 
 
+def validate_float(val, var):
+    """Validates a flaot.
+
+    """
+    if val is None:
+        raise ValueError('{0} is undefined'.format(var))
+
+    try:
+        float(val)
+    except ValueError:
+        _raise_value_error(val, var, float)
+
+
 def validate_date(val, var, date_format=None):
     """Validates a date.
 

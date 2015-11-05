@@ -94,13 +94,13 @@ def persist_occupation_store(
     date,
     login,
     name,
-    size
+    size_gb
     ):
     instance = types.OccupationStore()
     instance.date = arrow.get(date).datetime
     instance.login = unicode(login)
     instance.name = unicode(name)
-    instance.size_gb = float(size)
+    instance.size_gb = float(size_gb)
 
     return session.insert(instance)
 
