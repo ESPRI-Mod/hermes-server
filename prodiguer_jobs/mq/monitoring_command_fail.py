@@ -11,7 +11,6 @@
 
 
 """
-from prodiguer import mq
 from prodiguer.db.pgres import dao_monitoring as dao
 
 
@@ -20,35 +19,7 @@ def get_tasks():
     """Returns set of tasks to be executed when processing a message.
 
     """
-    return (
-        _unpack_content,
-        _persist,
-        )
-
-
-class ProcessingContextInfo(mq.Message):
-    """Message processing context information.
-
-    """
-    def __init__(self, props, body, decode=True):
-        """Object constructor.
-
-        """
-        super(ProcessingContextInfo, self).__init__(
-            props, body, decode=decode)
-
-        self.command = None
-        self.job_uid = None
-        self.simulation_uid = None
-
-
-def _unpack_content(ctx):
-    """Unpacks message being processed.
-
-    """
-    ctx.command = ctx.content['command']
-    ctx.job_uid = ctx.content['jobuid']
-    ctx.simulation_uid = ctx.content['simuid']
+    return _persist
 
 
 def _persist(ctx):
@@ -56,10 +27,10 @@ def _persist(ctx):
 
     """
     dao.persist_command(
-        ctx.simulation_uid,
-        ctx.job_uid,
+        ctx.content['simuid'],
+        ctx.content['jobuid'],
         ctx.msg.uid,
         ctx.msg.timestamp,
-        ctx.command,
+        ctx.content['command'],
         True
         )

@@ -11,7 +11,6 @@
 
 
 """
-from prodiguer import mq
 from prodiguer.db import pgres as db
 
 
@@ -20,59 +19,21 @@ def get_tasks():
     """Returns set of tasks to be executed when processing a message.
 
     """
-    return (
-      _unpack_content,
-      _persist_metric
-      )
+    return _persist
 
 
-class ProcessingContextInfo(mq.Message):
-    """Message processing context information.
-
-    """
-    def __init__(self, props, body, decode=True):
-        """Object constructor.
-
-        """
-        super(ProcessingContextInfo, self).__init__(
-            props, body, decode=decode)
-
-        self.action_name = None
-        self.dir_from = None
-        self.dir_to = None
-        self.duration_ms = None
-        self.job_uid = None
-        self.simulation_uid = None
-        self.size_mb = None
-        self.throughput_mb_s = None
-
-
-def _unpack_content(ctx):
-    """Unpacks message being processed.
-
-    """
-    ctx.action_name = ctx.content['actionName']
-    ctx.dir_from = ctx.content['dirFrom']
-    ctx.dir_to = ctx.content['dirTo']
-    ctx.duration_ms = ctx.content['duration_ms']
-    ctx.job_uid = ctx.content['jobuid']
-    ctx.simulation_uid = ctx.content['simuid']
-    ctx.size_mb = ctx.content['size_Mo']
-    ctx.throughput_mb_s = ctx.content['throughput_Mo_s']
-
-
-def _persist_metric(ctx):
-    """Persists metric info to db.
+def _persist(ctx):
+    """Persists information to db.
 
     """
     db.dao_monitoring.persist_environment_metric(
-        ctx.action_name,
+        ctx.content['actionName'],
         ctx.msg.timestamp,
-        ctx.dir_from,
-        ctx.dir_to,
-        ctx.duration_ms,
-        ctx.job_uid,
-        ctx.simulation_uid,
-        ctx.size_mb,
-        ctx.throughput_mb_s
+        ctx.content['dirFrom'],
+        ctx.content['dirTo'],
+        ctx.content['duration_ms'],
+        ctx.content['jobuid'],
+        ctx.content['simuid'],
+        ctx.content['size_Mo'],
+        ctx.content['throughput_Mo_s']
         )

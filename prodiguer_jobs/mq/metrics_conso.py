@@ -19,11 +19,11 @@ def get_tasks():
     """Returns set of tasks to be executed when processing a message.
 
     """
-    return _persist_metrics
+    return _persist
 
 
-def _persist_metrics(ctx):
-    """Persists metrics info to db.
+def _persist(ctx):
+    """Persists information to db.
 
     """
     # Persist allocation info.

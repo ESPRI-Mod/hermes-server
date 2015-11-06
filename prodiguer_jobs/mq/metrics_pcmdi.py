@@ -55,8 +55,6 @@ class ProcessingContextInfo(mq.Message):
         super(ProcessingContextInfo, self).__init__(
             props, body, decode=decode)
 
-        self.job_uid = None
-        self.simulation_uid = None
         self.metrics_base64 = None
         self.metrics_json = None
         self.metrics_fpath = "{}.json".format(uuid.uuid4())
@@ -69,8 +67,6 @@ def _unpack_content(ctx):
     """Unpacks message being processed.
 
     """
-    ctx.job_uid = ctx.content['jobuid']
-    ctx.simulation_uid = ctx.content['simuid']
     ctx.metrics_base64 = ctx.content['metrics']
     ctx.metrics_group_id = ctx.content.get('metricsGroupName', _DEFAULT_METRIC_GROUP_ID)
 
