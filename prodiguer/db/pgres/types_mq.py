@@ -15,6 +15,7 @@ import uuid
 from sqlalchemy import BigInteger
 from sqlalchemy import Column
 from sqlalchemy import DateTime
+from sqlalchemy import Integer
 from sqlalchemy import Text
 from sqlalchemy import Unicode
 
@@ -72,5 +73,6 @@ class MessageEmail(Entity):
 
     # Attributes.
     uid = Column(BigInteger, nullable=False, unique=True)
-
-
+    arrival_date = Column(DateTime)
+    dispatch_date = Column(DateTime)
+    dispatch_latency = Column(Integer)

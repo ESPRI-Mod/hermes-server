@@ -11,6 +11,7 @@
 
 
 """
+from prodiguer.db.pgres import validator
 from prodiguer.mq import validator as msg_validator
 
 
@@ -68,4 +69,20 @@ def validate_is_duplicate(uid):
 
     """
     msg_validator.validate_message_id(uid)
+
+
+def validate_retrieve_message_email(email_id):
+    """Function input validator: retrieve_message_email.
+
+    """
+    msg_validator.validate_email_id(email_id)
+
+
+def validate_update_message_email(email_id, arrival_date, dispatch_date):
+    """Function input validator: update_message_email.
+
+    """
+    msg_validator.validate_email_id(email_id)
+    validator.validate_date(arrival_date, 'Email arrival date')
+    validator.validate_date(dispatch_date, 'Email dispatch date')
 

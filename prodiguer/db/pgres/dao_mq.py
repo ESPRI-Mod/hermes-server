@@ -11,7 +11,6 @@
 
 
 """
-from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
 from prodiguer.db.pgres import validator_dao_mq as validator
@@ -89,9 +88,30 @@ def create_message(
     return session.add(instance)
 
 
+@decorators.validate(validator.validate_retrieve_message_email)
+def retrieve_message_email(email_id):
+    """Retrieves a message email record from db.
+
+    :param str email_id: Email identifier (assigned by SMTP server).
+
+    :returns: Message email instance.
+    :rtype: types.MessageEmail
+
+    """
+    qry = session.query(types.MessageEmail)
+    qry = qry.filter(types.MessageEmail.uid == unicode(email_id))
+
+    return qry.first()
+
+
 @decorators.validate(validator.validate_create_message_email)
 def create_message_email(email_id):
     """Creates a new message email record in db.
+
+    :param str email_id: Email identifier (assigned by SMTP server).
+
+    :returns: Message email instance.
+    :rtype: types.MessageEmail
 
     """
     instance = types.MessageEmail()
@@ -101,10 +121,34 @@ def create_message_email(email_id):
 
 
 @decorators.validate(validator.validate_is_duplicate)
-def is_duplicate(uid):
+def is_duplicate(email_id):
     """Returns true if a message with the same uid already exists in the db.
 
-    """
-    qfilter = types.Message.uid == unicode(uid)
+    :param str email_id: Email identifier (assigned by SMTP server).
 
-    return dao.get_by_facet(types.Message, qfilter=qfilter) is not None
+    :returns: Flag indicating whether email is a duplicate.
+    :rtype: bool
+
+    """
+    return retrieve_message_email(email_id) is not None
+
+
+@decorators.validate(validator.validate_update_message_email)
+def update_message_email(email_id, arrival_date, dispatch_date):
+    """Updates a message email with statistical information.
+
+    :param str email_id: Email identifier (assigned by SMTP server).
+    :param datetime.datetime arrival_date: Email arrival date.
+    :param datetime.datetime dispatch_date: Email dispatch date.
+
+    """
+    if arrival_date is None and dispatch_date is None:
+        return
+
+    email = retrieve_message_email(email_id)
+    email.arrival_date = arrival_date
+    email.dispatch_date = dispatch_date
+    if arrival_date is not None and dispatch_date is not None:
+        email.dispatch_latency = (arrival_date - dispatch_date).total_seconds()
+
+    session.update(email)

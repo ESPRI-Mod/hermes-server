@@ -14,6 +14,7 @@
 import email
 import imaplib
 
+import arrow
 import imapclient
 
 from prodiguer.utils.config import data as config
@@ -34,6 +35,9 @@ _SEARCH_FILTER_UNDELETED = ['NOT DELETED']
 
 # Size of chunks used to split email downloads.
 _CHUNK_SIZE = 50
+
+# Email date format.
+_DATE_FORMAT = "ddd, DD MMM YYYY HH:mm:ss ZZ"
 
 
 def connect():
@@ -219,3 +223,47 @@ def move_email(email_uid, folder=None, client=None):
     # Close imap proxy (if necessary).
     if not client:
         disconnect(proxy)
+
+
+def get_email_arrival_date(body):
+    """Returns email arrival date.
+
+    """
+    def _get_header():
+        """Returns email arrival header.
+
+        """
+        targets = []
+        for key, val in body.items():
+            if key.lower() == 'received':
+                targets.append(val)
+        targets.reverse()
+
+        return targets[-1]
+
+
+    def _get_date(val):
+        """Returns email arrival date.
+
+        """
+        val = val.split(";")[-1].split("(")[0].strip()
+        if val.find("\n") != -1:
+            x = val.split("\n")[0].strip()
+            y = val.split("\n")[1].strip()
+            val = "{} {}".format(x, y)
+
+        return arrow.get(val, _DATE_FORMAT)
+
+    return _get_date(_get_header())
+
+
+def get_email_dispatch_date(body):
+    """Returns email dispatch date.
+
+    :param dict body: Email body.
+
+    :return: Date of emil dispatch.
+    :rtype: arrow.date
+
+    """
+    return arrow.get(body['Date'], _DATE_FORMAT)

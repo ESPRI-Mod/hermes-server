@@ -19,6 +19,7 @@ import uuid
 from prodiguer import config
 from prodiguer import mail
 from prodiguer import mq
+from prodiguer.db import pgres as db
 from prodiguer.utils import logger
 
 
@@ -29,12 +30,14 @@ _ATTACHMENT_FIELD_MAP = {
     '7100': u'metrics'
 }
 
+
 def get_tasks():
     """Returns set of tasks to be executed when processing a message.
 
     """
     return (
         _set_email,
+        _persist_email_delivery_stats,
         _set_msg_b64,
         _set_msg_json,
         _set_msg_dict,
@@ -67,6 +70,9 @@ class ProcessingContextInfo(mq.Message):
 
         self.email = None
         self.email_attachments = None
+        self.email_body = None
+        self.email_arrival_date = None
+        self.email_dispatch_date = None
         self.email_uid = self.content['email_uid']
         self.imap_client = None
         self.msg_ampq = []
@@ -90,7 +96,34 @@ def _set_email(ctx):
     # Download & decode email.
     body, attachments = mail.get_email(ctx.email_uid, ctx.imap_client)
     ctx.email = body.get_payload(decode=True)
+    ctx.email_body = body
     ctx.email_attachments = [a.get_payload(decode=True) for a in attachments]
+
+
+def _persist_email_delivery_stats(ctx):
+    """Persists email delivery statistical information to database.
+
+    """
+    def _get_date(func):
+        """Returns a date field from the email headers.
+
+        """
+        # N.B. override errors as email headers can be inconsistent.
+        try:
+            return func(ctx.email_body).datetime
+        except:
+            return None
+
+    # Update message email table.
+    db.session.start()
+    try:
+        db.dao_mq.update_message_email(
+            ctx.email_uid,
+            _get_date(mail.get_email_arrival_date),
+            _get_date(mail.get_email_dispatch_date)
+            )
+    finally:
+        db.session.end()
 
 
 def _set_msg_b64(ctx):

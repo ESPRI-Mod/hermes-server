@@ -11,6 +11,7 @@
 
 
 """
+from prodiguer import mq
 from prodiguer import rt
 from prodiguer_jobs.mq import metrics_conso
 from prodiguer_jobs.mq import metrics_environment
@@ -57,6 +58,16 @@ def get_tasks():
     return _process
 
 
+def _get_agent_context_type(agent):
+    """Returns an agent handler's processing context type.
+
+    """
+    try:
+        return agent.ProcessingContextInfo
+    except AttributeError:
+        return mq.Message
+
+
 def _process(ctx):
     """Processes a simulation monitoring message pulled from message queue.
 
@@ -68,7 +79,8 @@ def _process(ctx):
     agent = _AGENTS[ctx.props.type]
 
     # Set sub-context.
-    sub_ctx = agent.ProcessingContextInfo(ctx.props, ctx.content, decode=False)
+    sub_ctx_type = _get_agent_context_type(agent)
+    sub_ctx = sub_ctx_type(ctx.props, ctx.content, decode=False)
     sub_ctx.msg = ctx.msg
 
     # Invoke tasks.
