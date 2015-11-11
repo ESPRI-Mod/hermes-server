@@ -11,7 +11,7 @@
 
 
 """
-from prodiguer.db.pgres import validator
+from prodiguer.utils import validation
 
 
 
@@ -23,8 +23,8 @@ def validate_create_supervision(simulation_uid, job_uid, trigger_code):
         """Validates trigger_code input parameter.
 
         """
-        validator.validate_unicode(trigger_code, "trigger_code")
+        validation.validate_unicode(trigger_code, "trigger_code")
 
-    validator.validate_job_uid(job_uid)
-    validator.validate_simulation_uid(simulation_uid)
+    validation.validate_uid(job_uid, "Job uid")
+    validation.validate_uid(simulation_uid, "Simulation uid")
     _validate_trigger_code()

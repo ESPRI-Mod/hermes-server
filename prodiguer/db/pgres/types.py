@@ -9,11 +9,6 @@
 
 
 """
-import datetime
-
-from sqlalchemy import Column
-from sqlalchemy import DateTime
-
 from prodiguer.db.pgres.types_conso import Allocation
 from prodiguer.db.pgres.types_conso import Consumption
 from prodiguer.db.pgres.types_conso import OccupationStore
@@ -53,10 +48,3 @@ SUPPORTED = TYPES = [
     # ... superviseur types
     Supervision
 ]
-
-# Extend type with other fields.
-for entity_type in SUPPORTED:
-    entity_type.row_create_date = \
-        Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
-    entity_type.row_update_date = \
-        Column(DateTime, onupdate=datetime.datetime.utcnow)

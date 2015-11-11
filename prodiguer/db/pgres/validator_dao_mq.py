@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.dao_mq_validator.py
+.. module:: prodiguer.db.dao_mq_validation.py
    :copyright: Copyright "Mar 21, 2015", IPSL
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: MQ data access operations validator.
+   :synopsis: MQ data access operations validation.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
-from prodiguer.db.pgres import validator
 from prodiguer.mq import validator as msg_validator
+from prodiguer.utils import validation
 
 
 
@@ -84,7 +84,7 @@ def validate_update_message_email(email_id, arrival_date, dispatch_date):
     """
     msg_validator.validate_email_id(email_id)
     if arrival_date:
-        validator.validate_date(arrival_date, 'Email arrival date')
+        validation.validate_date(arrival_date, 'Email arrival date')
     if dispatch_date:
-        validator.validate_date(dispatch_date, 'Email dispatch date')
+        validation.validate_date(dispatch_date, 'Email dispatch date')
 

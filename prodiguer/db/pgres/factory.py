@@ -18,7 +18,7 @@ from sqlalchemy import inspect
 
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
-from prodiguer.db.pgres import validator
+from prodiguer.utils import validation
 
 
 
@@ -91,7 +91,7 @@ def create(etype, force=False, commit=False):
     :rtype: A instance of a sub-class of db.Entity.
 
     """
-    validator.validate_entity_type(etype)
+    validation.validate_entity_type(etype)
 
     # Return cached if appropriate (prevents infinite recursion).
     if etype in _created:

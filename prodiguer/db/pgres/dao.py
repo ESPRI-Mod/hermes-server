@@ -14,14 +14,13 @@ import random
 from sqlalchemy.exc import IntegrityError
 
 from prodiguer.db.pgres import session
-from prodiguer.db.pgres import validator
-from prodiguer.db.pgres import validator_dao as my_validator
+from prodiguer.db.pgres import validator_dao as validator
 from prodiguer.utils import decorators
 
 
 
 
-@decorators.validate(my_validator.validate_delete)
+@decorators.validate(validator.validate_delete)
 def delete(entity):
     """Marks entity instance for deletion.
 
@@ -31,7 +30,7 @@ def delete(entity):
     session.delete(entity)
 
 
-@decorators.validate(my_validator.validate_delete_all)
+@decorators.validate(validator.validate_delete_all)
 def delete_all(etype):
     """Deletes all entities of passed type.
 
@@ -41,7 +40,7 @@ def delete_all(etype):
     delete_by_facet(etype)
 
 
-@decorators.validate(my_validator.validate_delete_by_facet)
+@decorators.validate(validator.validate_delete_by_facet)
 def delete_by_facet(etype, filter_expression=None):
     """Delete entity instance by id.
 
@@ -49,15 +48,13 @@ def delete_by_facet(etype, filter_expression=None):
     :param expression filter_expression: Facet filter expression.
 
     """
-    validator.validate_entity_type(etype)
-
     qry = session.query(etype)
     if filter_expression:
         qry = qry.filter(filter_expression)
     qry.delete()
 
 
-@decorators.validate(my_validator.validate_delete_by_id)
+@decorators.validate(validator.validate_delete_by_id)
 def delete_by_id(etype, entity_id):
     """Delete entity instance by id.
 
@@ -65,10 +62,10 @@ def delete_by_id(etype, entity_id):
     :param int entity_id: id of entity.
 
     """
-    delete_by_facet(etype, etype.id==entity_id)
+    delete_by_facet(etype, etype.id == entity_id)
 
 
-@decorators.validate(my_validator.validate_delete_by_name)
+@decorators.validate(validator.validate_delete_by_name)
 def delete_by_name(etype, entity_name):
     """Deletes an entity instance by it's name.
 
@@ -76,10 +73,10 @@ def delete_by_name(etype, entity_name):
     :param unicode entity_name: Name of entity.
 
     """
-    delete_by_facet(etype, etype.name==entity_name)
+    delete_by_facet(etype, etype.name == entity_name)
 
 
-@decorators.validate(my_validator.validate_exec_query)
+@decorators.validate(validator.validate_exec_query)
 def exec_query(etype, qry, get_iterable=False):
     """Executes a query and return result (sorted if is a collection).
 
@@ -94,7 +91,7 @@ def exec_query(etype, qry, get_iterable=False):
     return sort(etype, qry.all()) if get_iterable else qry.first()
 
 
-@decorators.validate(my_validator.validate_get_all)
+@decorators.validate(validator.validate_get_all)
 def get_all(etype):
     """Gets all instances of the entity.
 
@@ -107,7 +104,7 @@ def get_all(etype):
     return get_by_facet(etype, order_by=etype.id, get_iterable=True)
 
 
-@decorators.validate(my_validator.validate_get_by_facet)
+@decorators.validate(validator.validate_get_by_facet)
 def get_by_facet(etype, qfilter=None, order_by=None, get_iterable=False):
     """Gets entity instance by facet.
 
@@ -129,7 +126,7 @@ def get_by_facet(etype, qfilter=None, order_by=None, get_iterable=False):
     return exec_query(etype, qry, get_iterable)
 
 
-@decorators.validate(my_validator.validate_get_by_id)
+@decorators.validate(validator.validate_get_by_id)
 def get_by_id(etype, entity_id):
     """Gets entity instance by id.
 
@@ -143,7 +140,7 @@ def get_by_id(etype, entity_id):
     return get_by_facet(etype, qfilter=etype.id==entity_id)
 
 
-@decorators.validate(my_validator.validate_get_by_name)
+@decorators.validate(validator.validate_get_by_name)
 def get_by_name(etype, entity_name):
     """Gets an entity instance by it's name.
 
@@ -154,10 +151,10 @@ def get_by_name(etype, entity_name):
     :rtype: Sub-class of db.Entity
 
     """
-    return get_by_facet(etype, qfilter=etype.name==entity_name)
+    return get_by_facet(etype, qfilter=etype.name == entity_name)
 
 
-@decorators.validate(my_validator.validate_get_count)
+@decorators.validate(validator.validate_get_count)
 def get_count(etype, qfilter=None):
     """Gets count of entity instances.
 
@@ -177,7 +174,7 @@ def get_count(etype, qfilter=None):
     return qry.count()
 
 
-@decorators.validate(my_validator.validate_exec_query)
+@decorators.validate(validator.validate_get_random)
 def get_random(etype):
     """Returns a random instance.
 
@@ -192,7 +189,7 @@ def get_random(etype):
         return collection[random.randint(0, len(collection) - 1)]
 
 
-@decorators.validate(my_validator.validate_get_random_sample)
+@decorators.validate(validator.validate_get_random_sample)
 def get_random_sample(etype):
     """Returns a random instance sample.
 
@@ -209,7 +206,7 @@ def get_random_sample(etype):
     return []
 
 
-@decorators.validate(my_validator.validate_insert)
+@decorators.validate(validator.validate_insert)
 def insert(entity):
     """Adds a newly created model to the session.
 
@@ -221,18 +218,29 @@ def insert(entity):
     return entity
 
 
-@decorators.validate(my_validator.validate_sort)
-def sort(etype, collection):
+@decorators.validate(validator.validate_sort)
+def sort(etype, collection, sort_key=None):
     """Sorts collection via type sort key.
 
     :param class etype: A supported entity type.
     :param iterable collection: Collection of entities.
+    :param function sort_key: Key to use when sorting.
 
     :returns: Sorted collection.
     :rtype: list
 
     """
-    return [] if collection is None else etype.get_sorted(collection)
+    if sort_key is None:
+        if hasattr(etype, 'name'):
+            sort_key = lambda i: "" if i.name is None else i.name.upper()
+        elif hasattr(etype, 'ordinal_position'):
+            sort_key = lambda i: i.ordinal_position
+        elif hasattr(etype, 'code'):
+            sort_key = lambda i: "" if i.code is None else i.code.upper()
+        else:
+            sort_key = lambda i: i.id
+
+    return [] if collection is None else sorted(collection, key=sort_key)
 
 
 def persist(hydrate, etype, retriever):

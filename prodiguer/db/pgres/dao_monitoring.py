@@ -629,11 +629,7 @@ def delete_simulation(uid):
     """Deletes a simulation from database.
 
     """
-    for etype in [
-        types.Job,
-        types.SimulationConfiguration
-        ]:
-        dao.delete_by_facet(etype, etype.simulation_uid == uid)
+    dao.delete_by_facet(types.Job, types.Job.simulation_uid == uid)
+    dao.delete_by_facet(types.SimulationConfiguration, types.SimulationConfiguration.simulation_uid == uid)
     dao.delete_by_facet(types.Message, types.Message.correlation_id_1 == uid)
     dao.delete_by_facet(types.Simulation, types.Simulation.uid == uid)
-

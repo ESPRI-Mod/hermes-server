@@ -9,16 +9,20 @@
 
 
 """
+import datetime
 import random
 
 from sqlalchemy import Column
+from sqlalchemy import DateTime
 from sqlalchemy import Integer
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declarative_base
 
 from prodiguer.db.pgres import convertor
 from prodiguer.db.pgres import session
+from prodiguer.db.pgres import validator_dao as my_validator
 from prodiguer.db.pgres.meta import METADATA
+from prodiguer.utils import decorators
 
 
 
@@ -28,7 +32,8 @@ class _BaseEntity(object):
     """
     # Entity attributes.
     id = Column(Integer, primary_key=True)
-
+    row_create_date = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    row_update_date = Column(DateTime, onupdate=datetime.datetime.utcnow)
 
     def __init__(self):
         """Constructor.
@@ -53,40 +58,61 @@ class _BaseEntity(object):
 
 
     @classmethod
-    def get_default_sort_key(cls):
-        """Gets default sort key.
+    def _delete(cls, filter_expression=None):
+        """Deletes instances from the database.
 
         """
-        if hasattr(cls, 'name'):
-            return lambda x: "" if x.name is None else x.name.upper()
-        elif hasattr(cls, 'ordinal_position'):
-            return lambda x: x.ordinal_position
-        elif hasattr(cls, 'code'):
-            return lambda x: "" if x.code is None else x.code.upper()
-        else:
-            lambda x: x.id
+        qry = session.query(cls)
+        if filter_expression:
+            qry = qry.filter(filter_expression)
+
+        qry.delete()
 
 
     @classmethod
-    def get_sorted(cls, collection, sort_key=None):
-        """Gets sorted collection of instances.
+    def delete_all(cls):
+        """Deletes all instances from the database.
 
         """
-        if sort_key is None:
-            sort_key=cls.get_default_sort_key()
-
-        return sorted(collection, key=sort_key)
+        cls._delete()
 
 
     @classmethod
+    def delete_by_id(cls, entity_id):
+        """Deletes an instances from the database by id.
+
+        """
+        cls._delete(cls.id == entity_id)
+
+
+    @classmethod
+    def delete_by_name(cls, entity_name):
+        """Deletes an instances from the database by name.
+
+        """
+        cls._delete(cls.name == entity_name)
+
+
+    @classmethod
+    def _fetch(cls, filter_expression, fetch_iterable):
+        """Fetches instances from the database.
+
+        """
+        qry = session.query(cls)
+        if filter_expression:
+            qry = qry.filter(filter_expression)
+
+
+        return qry.all() if fetch_iterable else qry.first()
+
+
+    @classmethod
+    @decorators.validate(my_validator.validate_get_all)
     def fetch_all(cls):
         """Fetches all instances from the database.
 
         """
-        qry = session.query(cls)
-        qry = qry.order_by(cls.id)
-
-        return qry.all()
+        return cls._fetch(None, True)
 
 
     @classmethod
@@ -94,10 +120,7 @@ class _BaseEntity(object):
         """Fetches an instances from the database by its identifier.
 
         """
-        qry = session.query(cls)
-        qry = qry.filter(cls.id == entity_id)
-
-        return qry.first()
+        return cls._fetch(cls.id == entity_id, False)
 
 
     @classmethod
@@ -105,10 +128,7 @@ class _BaseEntity(object):
         """Fetches an instances from the database by its name.
 
         """
-        qry = session.query(cls)
-        qry = qry.filter(cls.name == entity_name)
-
-        return qry.first()
+        return cls._fetch(cls.name == entity_name, False)
 
 
     @classmethod
@@ -126,7 +146,7 @@ class _BaseEntity(object):
         """Fetches a random instance from the database for testing purposes.
 
         """
-        collection = cls.retrieve_all()
+        collection = cls.fetch_all()
         if len(collection):
             return collection[random.randint(0, len(collection) - 1)]
 
@@ -138,7 +158,7 @@ class _BaseEntity(object):
         """Fetches a random sample from the database for testing purposes.
 
         """
-        collection = cls.retrieve_all()
+        collection = cls.fetch_all()
         if len(collection):
             return random.sample(collection, random.randint(1, len(collection)))
 
