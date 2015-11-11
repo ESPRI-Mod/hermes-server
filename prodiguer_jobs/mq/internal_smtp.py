@@ -71,8 +71,6 @@ class ProcessingContextInfo(mq.Message):
         self.email = None
         self.email_attachments = None
         self.email_body = None
-        self.email_arrival_date = None
-        self.email_dispatch_date = None
         self.email_uid = self.content['email_uid']
         self.imap_client = None
         self.msg_ampq = []

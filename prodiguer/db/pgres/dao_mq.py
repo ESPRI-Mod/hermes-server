@@ -99,7 +99,7 @@ def retrieve_message_email(email_id):
 
     """
     qry = session.query(types.MessageEmail)
-    qry = qry.filter(types.MessageEmail.uid == unicode(email_id))
+    qry = qry.filter(types.MessageEmail.uid == int(email_id))
 
     return qry.first()
 
@@ -142,10 +142,15 @@ def update_message_email(email_id, arrival_date, dispatch_date):
     :param datetime.datetime dispatch_date: Email dispatch date.
 
     """
+    # Escape if email body did not contain relevant date fields.
     if arrival_date is None and dispatch_date is None:
         return
 
+    # Escape if email db entry is not yet written.
     email = retrieve_message_email(email_id)
+    if email is None:
+        return
+
     email.arrival_date = arrival_date
     email.dispatch_date = dispatch_date
     if arrival_date is not None and dispatch_date is not None:

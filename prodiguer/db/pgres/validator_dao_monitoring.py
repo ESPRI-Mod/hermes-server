@@ -71,7 +71,7 @@ def validate_persist_job_01(
         validation.validate_unicode(accounting_project, "Job accounting project")
     validation.validate_int(warning_delay, "Job warning delay")
     validation.validate_date(execution_start_date, 'Job execution start date')
-    cv.validation.validate_job_type(job_type)
+    cv.validator.validate_job_type(job_type)
     validation.validate_uid(job_uid, "Job uid")
     validation.validate_uid(simulation_uid, "Simulation uid")
     if post_processing_name is not None:
@@ -177,24 +177,31 @@ def validate_persist_simulation_01(
     """Function input validator: persist_simulation_01.
 
     """
-    cv.validation.validate_activity(activity)
-    cv.validation.validate_compute_node(compute_node)
-    cv.validation.validate_compute_node_login(compute_node_login)
-    cv.validation.validate_compute_node_machine(compute_node_machine)
-    cv.validation.validate_experiment(experiment)
-    cv.validation.validate_model(model)
-    cv.validation.validate_simulation_space(space)
+    cv.validator.validate_activity(activity)
+    cv.validator.validate_compute_node(compute_node)
+    cv.validator.validate_compute_node_login(compute_node_login)
+    cv.validator.validate_compute_node_machine(compute_node_machine)
+    cv.validator.validate_experiment(experiment)
+    cv.validator.validate_model(model)
+    cv.validator.validate_simulation_space(space)
     if accounting_project is not None:
         validation.validate_unicode(accounting_project, "Simulation accounting project")
     validation.validate_date(execution_start_date, 'Simulation execution start date')
 
-    validation.validate_unicode(activity_raw, 'Simulation activity (raw)')
-    validation.validate_unicode(compute_node_raw, 'Simulation compute node (raw)')
-    validation.validate_unicode(compute_node_login_raw, 'Simulation compute node login (raw)')
-    validation.validate_unicode(compute_node_machine_raw, 'Simulation compute node machine (raw)')
-    validation.validate_unicode(experiment_raw, 'Simulation experiment (raw)')
-    validation.validate_unicode(model_raw, 'Simulation model (raw)')
-    validation.validate_unicode(space_raw, 'Simulation space (raw)')
+    if activity_raw is not None:
+        validation.validate_unicode(activity_raw, 'Simulation activity (raw)')
+    if compute_node_raw is not None:
+        validation.validate_unicode(compute_node_raw, 'Simulation compute node (raw)')
+    if compute_node_login_raw is not None:
+        validation.validate_unicode(compute_node_login_raw, 'Simulation compute node login (raw)')
+    if compute_node_machine_raw is not None:
+        validation.validate_unicode(compute_node_machine_raw, 'Simulation compute node machine (raw)')
+    if experiment_raw is not None:
+        validation.validate_unicode(experiment_raw, 'Simulation experiment (raw)')
+    if model_raw is not None:
+        validation.validate_unicode(model_raw, 'Simulation model (raw)')
+    if space_raw is not None:
+        validation.validate_unicode(space_raw, 'Simulation space (raw)')
 
     validation.validate_unicode(name, "Simulation name")
     validation.validate_date(output_end_date, 'Output end date')
