@@ -9,13 +9,15 @@
 
 
 """
+import random
+
 from sqlalchemy import Column
 from sqlalchemy import Integer
-from sqlalchemy import MetaData
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declarative_base
 
-
 from prodiguer.db.pgres import convertor
+from prodiguer.db.pgres import session
 from prodiguer.db.pgres.meta import METADATA
 
 
@@ -74,6 +76,97 @@ class _BaseEntity(object):
             sort_key=cls.get_default_sort_key()
 
         return sorted(collection, key=sort_key)
+
+
+    @classmethod
+    def fetch_all(cls):
+        """Fetches all instances from the database.
+
+        """
+        qry = session.query(cls)
+        qry = qry.order_by(cls.id)
+
+        return qry.all()
+
+
+    @classmethod
+    def fetch_by_id(cls, entity_id):
+        """Fetches an instances from the database by its identifier.
+
+        """
+        qry = session.query(cls)
+        qry = qry.filter(cls.id == entity_id)
+
+        return qry.first()
+
+
+    @classmethod
+    def fetch_by_name(cls, entity_name):
+        """Fetches an instances from the database by its name.
+
+        """
+        qry = session.query(cls)
+        qry = qry.filter(cls.name == entity_name)
+
+        return qry.first()
+
+
+    @classmethod
+    def fetch_count(cls):
+        """Fetches count of all instances within the database.
+
+        """
+        qry = session.query(cls)
+
+        return qry.count()
+
+
+    @classmethod
+    def fetch_random(cls):
+        """Fetches a random instance from the database for testing purposes.
+
+        """
+        collection = cls.retrieve_all()
+        if len(collection):
+            return collection[random.randint(0, len(collection) - 1)]
+
+        return None
+
+
+    @classmethod
+    def fetch_random_sample(cls):
+        """Fetches a random sample from the database for testing purposes.
+
+        """
+        collection = cls.retrieve_all()
+        if len(collection):
+            return random.sample(collection, random.randint(1, len(collection)))
+
+        return []
+
+
+    @classmethod
+    def persist(cls, hydrator, retriever):
+        """Persists an instance to the database.
+
+        :param function hydrator: Pointer to a function that will hydrate an instance.
+        :param function retriever: Pointer to a function that will retrieve an instance.
+
+        :returns: An instance hydrated with values and persisted to the database.
+        :rtype: cls
+
+        """
+        instance = cls()
+        hydrator(instance)
+        try:
+            session.insert(instance)
+        except IntegrityError:
+            session.rollback()
+            instance = retriever()
+            hydrator(instance)
+            session.update(instance)
+
+        return instance
 
 
 # Mixin with sql alchemy.

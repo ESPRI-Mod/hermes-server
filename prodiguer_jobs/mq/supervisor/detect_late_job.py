@@ -60,7 +60,7 @@ def _verify_is_late(ctx):
 
     """
     job = db.dao_monitoring.retrieve_job(ctx.job_uid)
-    ctx.abort = job.execution_end_date is not None
+    ctx.abort = job is None or job.execution_end_date is not None
 
 
 def _persist_supervision(ctx):

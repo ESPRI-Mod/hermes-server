@@ -274,9 +274,10 @@ def retrieve_job(uid):
     :rtype: types.monitoring.Job
 
     """
-    qfilter = types.Job.job_uid == unicode(uid)
+    qry = session.query(types.Job)
+    qry = qry.filter(types.Job.job_uid == unicode(uid))
 
-    return dao.get_by_facet(types.Job, qfilter=qfilter)
+    return qry.first()
 
 
 @decorators.validate(validator.validate_retrieve_job_subset)

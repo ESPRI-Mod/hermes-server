@@ -83,6 +83,8 @@ def validate_update_message_email(email_id, arrival_date, dispatch_date):
 
     """
     msg_validator.validate_email_id(email_id)
-    validator.validate_date(arrival_date, 'Email arrival date')
-    validator.validate_date(dispatch_date, 'Email dispatch date')
+    if arrival_date:
+        validator.validate_date(arrival_date, 'Email arrival date')
+    if dispatch_date:
+        validator.validate_date(dispatch_date, 'Email dispatch date')
 
