@@ -12,12 +12,14 @@
 
 """
 import datetime
+import json
 import random
 import uuid
 
 import arrow
 
 from prodiguer import cv
+from prodiguer import mq
 from prodiguer.db import pgres as db
 from prodiguer.utils import config
 from prodiguer.utils import logger
@@ -25,13 +27,13 @@ from prodiguer.utils import logger
 
 
 # Number of days for which to create test simulations.
-_QUOTA_DAYS = 31
+_QUOTA_DAYS = 15
 
 # Number of simulations to create per day.
-_QUOTA_SIMS_PER_DAY = 90
+_QUOTA_SIMS_PER_DAY = 30
 
 # Number of jobs to create per simulation.
-_QUOTA_JOBS_PER_SIM = 8
+_QUOTA_JOBS_PER_SIM = 30
 
 # Set of accounting projects to be used.
 _ACCOUNTING_PROJECTS = [
@@ -140,8 +142,8 @@ def _create_simulation(start_date, end_date):
     instance.compute_node_login = _get_cv_term(cv.constants.TERM_TYPE_COMPUTE_NODE_LOGIN)
     instance.compute_node_machine = compute_node_machine
     instance.experiment = _get_cv_term(cv.constants.TERM_TYPE_EXPERIMENT)
-    is_error = False
-    is_obsolete = False
+    instance.is_error = False
+    instance.is_obsolete = False
     instance.execution_start_date = start_date
     instance.execution_end_date = end_date
     instance.model = _get_cv_term(cv.constants.TERM_TYPE_MODEL)
@@ -154,6 +156,51 @@ def _create_simulation(start_date, end_date):
     instance.hashid = instance.get_hashid()
 
     return db.session.insert(instance)
+
+
+
+def _create_job_message(simulation, job, message_type):
+    """Create test message related to a simulation job.
+
+    """
+    instance = db.types.Message()
+    instance.app_id = mq.constants.APP_MONITORING
+    instance.producer_id = mq.constants.PRODUCER_PRODIGUER
+    instance.producer_version = "x.x.x"
+    instance.type_id = message_type
+    instance.user_id = mq.constants.USER_PRODIGUER
+    instance.uid = unicode(uuid.uuid4())
+    instance.correlation_id_1 = simulation.uid
+    instance.correlation_id_2 = job.job_uid
+    instance.content = json.dumps({
+        "accountingProject": job.accounting_project,
+        "jobuid": job.job_uid,
+        "jobSchedulerID": job.scheduler_id,
+        "jobWarningDelay": job.warning_delay,
+        "jobSubmissionPath": job.submission_path,
+        "simuid": simulation.uid
+    })
+
+    return db.session.insert(instance)
+
+
+def _create_job_messages(simulation, job):
+    """Create test messages related to a simulation.
+
+    """
+    _create_job_message(simulation, job, mq.constants.MESSAGE_TYPE_1000)
+    _create_job_message(simulation, job, mq.constants.MESSAGE_TYPE_1100)
+
+
+def _create_messages(simulation, jobs):
+    """Create test messages related to a simulation.
+
+    """
+    # first_job = jobs[0]
+    # last_job = jobs[-1]
+
+    for job in jobs:
+        _create_job_messages(simulation, job)
 
 
 def _main():
@@ -171,8 +218,8 @@ def _main():
         end_date = start_date + datetime.timedelta(days=4)
         for _ in range(_QUOTA_SIMS_PER_DAY):
             simulation = _create_simulation(start_date, end_date)
-            for i in range(_QUOTA_JOBS_PER_SIM):
-                _create_job(simulation, i + 1)
+            jobs = [_create_job(simulation, i + 1) for i in range(_QUOTA_JOBS_PER_SIM)]
+            _create_messages(simulation, jobs)
 
     # Finalize.
     db.session.end()
