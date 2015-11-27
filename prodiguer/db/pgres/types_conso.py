@@ -58,7 +58,7 @@ class Consumption(Entity):
     )
 
     # Columns.
-    allocation_id = Column(Integer, ForeignKey('conso.tbl_allocation.id'))
+    allocation_id = Column(Integer, ForeignKey('conso.tbl_allocation.id'), nullable=False)
     date = Column(DateTime, nullable=False)             # date considered
     total_hrs = Column(Float, nullable=False)           # amount of resources (hours) used at date for considered allocation
     login = Column(Unicode(127), nullable=True)         # login considered
