@@ -70,7 +70,7 @@ def _yield_termset(partition):
 			yield _create_term(partition, cv_type, idx + 1, data)
 
 
-def _main():
+def execute():
 	"""Main entry point.
 
 	"""
@@ -87,4 +87,4 @@ def _main():
 
 # Main entry point.
 if __name__ == '__main__':
-    _main()
+    execute()
