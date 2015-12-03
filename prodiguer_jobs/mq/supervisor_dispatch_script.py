@@ -66,7 +66,7 @@ def _dispatch(ctx):
     """
     # Set dispatch parameters to be passed to dispatcher.
     # TODO verify exactly what information is required.
-    params = superviseur.DispatchParameters()
+    params = superviseur.DispatchParameters(ctx.simulation, ctx.job)
 
     # Dispatch script to HPC for execution.
     try:
