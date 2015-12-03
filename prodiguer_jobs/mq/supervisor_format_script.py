@@ -25,7 +25,8 @@ def get_tasks():
     return (
         _unpack_content,
         _set_data,
-        _format
+        _format,
+        _enqueue_script_dispatch,
         )
 
 
@@ -68,8 +69,7 @@ def _format(ctx):
 
     """
     # Set dispatch parameters to be passed to dispatcher.
-    # TODO verify exactly what information is required.
-    params = superviseur.FormatParameters()
+    params = superviseur.FormatParameters(ctx.simulation, ctx.job)
 
     # Format script to be dispatched to HPC for execution.
     try:
@@ -77,9 +77,15 @@ def _format(ctx):
     # ... handle formatting errors
     except superviseur.FormatException as err:
         # TODO define error strategy
-        pass
+        ctx.abort = True
     else:
         db.session.commit()
-        utils.enqueue(mq.constants.MESSAGE_TYPE_8200, {
-            "supervision_id": ctx.supervision_id
-        })
+
+
+def _enqueue_script_dispatch(ctx):
+    """Enqueues a script dispatch messages.
+
+    """
+    utils.enqueue(mq.constants.MESSAGE_TYPE_8200, {
+        "supervision_id": ctx.supervision_id
+    })
