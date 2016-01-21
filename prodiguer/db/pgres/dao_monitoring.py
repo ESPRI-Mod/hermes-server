@@ -11,8 +11,6 @@
 
 
 """
-from sqlalchemy import not_
-
 from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
@@ -230,7 +228,6 @@ def retrieve_simulation_message_count(uid):
     """
     qry = session.query(types.Message)
     qry = qry.filter(types.Message.correlation_id_1 == unicode(uid))
-    qry = qry.filter(not_(types.Message.type_id.in_({u'7000'})))
 
     return qry.count()
 

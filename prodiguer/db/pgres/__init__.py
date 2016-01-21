@@ -26,3 +26,8 @@ from prodiguer.db.pgres import session
 from prodiguer.db.pgres import setup
 from prodiguer.db.pgres import types
 from prodiguer.db.pgres.entity import Entity
+
+
+
+# Initialise logging levels.
+session.init_logging()
