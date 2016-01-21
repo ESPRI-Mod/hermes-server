@@ -12,7 +12,6 @@
 
 """
 from prodiguer.db import pgres as db
-from prodiguer.utils import config
 from prodiguer.utils import logger
 
 
@@ -23,20 +22,13 @@ def _main():
     """
     logger.log_db("Reset cv table begins")
 
-    # Start session.
-    db.session.start(config.db.pgres.main)
-
     # Delete existing terms.
-    db.dao.delete_all(db.types.ControlledVocabularyTerm)
-
-    # Commit deletions.
-    db.session.commit()
+    with db.session.create(commitable=True):
+        db.dao.delete_all(db.types.ControlledVocabularyTerm)
 
     # Reinitialise terms from cv files.
-    db.setup.init_cv_terms()
-
-    # End session.
-    db.session.end()
+    with db.session.create():
+        db.setup.init_cv_terms()
 
     logger.log_db("Reset cv table complete")
 

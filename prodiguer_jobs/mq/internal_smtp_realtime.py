@@ -43,8 +43,7 @@ def _get_emails():
 
     # Use db to exclude those which have already been processed.
     new_emails = []
-    try:
-        db.session.start()
+    with db.session.create():
         for uid in emails:
             try:
                 db.dao_mq.create_message_email(uid)
@@ -52,8 +51,6 @@ def _get_emails():
                 db.session.rollback()
             else:
                 new_emails.append(uid)
-    finally:
-        db.session.end()
 
     return new_emails
 

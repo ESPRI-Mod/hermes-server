@@ -210,19 +210,18 @@ def _main():
     # Initialize.
     then = arrow.now()
     cv.cache.load()
-    db.session.start()
 
-    # Create N simulations per day for the last M days.
-    for start_date in (_NOW - datetime.timedelta(days=x) for x in xrange(_QUOTA_DAYS, 1, -1)):
-        logger.log_db("creating {} simulations starting at: {}".format(_QUOTA_SIMS_PER_DAY, start_date))
-        end_date = start_date + datetime.timedelta(days=4)
-        for _ in range(_QUOTA_SIMS_PER_DAY):
-            simulation = _create_simulation(start_date, end_date)
-            jobs = [_create_job(simulation, i + 1) for i in range(_QUOTA_JOBS_PER_SIM)]
-            _create_messages(simulation, jobs)
+    with db.session.create():
+        # Create N simulations per day for the last M days.
+        for start_date in (_NOW - datetime.timedelta(days=x) for x in xrange(_QUOTA_DAYS, 1, -1)):
+            logger.log_db("creating {} simulations starting at: {}".format(_QUOTA_SIMS_PER_DAY, start_date))
+            end_date = start_date + datetime.timedelta(days=4)
+            for _ in range(_QUOTA_SIMS_PER_DAY):
+                simulation = _create_simulation(start_date, end_date)
+                jobs = [_create_job(simulation, i + 1) for i in range(_QUOTA_JOBS_PER_SIM)]
+                _create_messages(simulation, jobs)
 
     # Finalize.
-    db.session.end()
     msg = "created {} simulations in: {}"
     msg = msg.format(_QUOTA_DAYS * _QUOTA_SIMS_PER_DAY, arrow.now() - then)
     logger.log_db(msg)

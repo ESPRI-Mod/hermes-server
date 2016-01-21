@@ -59,13 +59,10 @@ class FetchRequestHandler(ProdiguerHTTPRequestHandler):
             """Sets response to be returned to client.
 
             """
-            db.session.start()
-            try:
+            with db.session.create():
                 self.output = {
                     'cvTerms': _get_terms()
                 }
-            finally:
-                db.session.end()
 
         # Invoke tasks.
         self.invoke(rv.validate_fetch, _set_output, write_raw_output=True)

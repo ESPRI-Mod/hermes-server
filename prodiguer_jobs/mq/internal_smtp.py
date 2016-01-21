@@ -113,15 +113,12 @@ def _persist_email_delivery_stats(ctx):
             return None
 
     # Update message email table.
-    db.session.start()
-    try:
+    with db.session.create():
         db.dao_mq.update_message_email(
             ctx.email_uid,
             _get_date(mail.get_email_arrival_date),
             _get_date(mail.get_email_dispatch_date)
             )
-    finally:
-        db.session.end()
 
 
 def _set_msg_b64(ctx):

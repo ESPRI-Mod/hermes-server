@@ -265,9 +265,8 @@ def exec_sqlalchmey(timeslice_delta, target):
     if timeslice_delta:
         timeslice_delta = timeslice_delta.datetime
     timeslice_factory = _SQLALCHEMY_FACTORIES[target]
-    db.session.start()
-    data = timeslice_factory(timeslice_delta)
-    db.session.end()
+    with db.session.create():
+        data = timeslice_factory(timeslice_delta)
 
     return data
 
@@ -277,9 +276,8 @@ def exec_sqlalchmey_direct(timeslice_delta, target):
     if timeslice_delta:
         timeslice_delta = timeslice_delta.datetime
     timeslice_factory = _SQLALCHEMY_FACTORIES_DIRECT[target]
-    db.session.start()
-    data = timeslice_factory(timeslice_delta)
-    db.session.end()
+    with db.session.create():
+        data = timeslice_factory(timeslice_delta)
 
     return data
 

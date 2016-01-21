@@ -29,14 +29,9 @@ def _main():
         """
         logger.log_db("Seeding begins : db = {0}".format(connection))
 
-        # Start session.
-        db.session.start(connection)
-
         # Setup db.
-        db.setup.execute()
-
-        # End session.
-        db.session.end()
+        with db.session.create(connection):
+            db.setup.execute()
 
         logger.log_db("Seeding ends : db = {0}".format(connection))
 

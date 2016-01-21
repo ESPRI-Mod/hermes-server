@@ -63,14 +63,11 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
             """Sets response to be returned to client.
 
             """
-            db.session.start()
-            try:
+            with db.session.create():
                 self.output = {
                     'jobList': dao.retrieve_active_jobs(self.start_date),
                     'simulationList': dao.retrieve_active_simulations(self.start_date)
                 }
-            finally:
-                db.session.end()
 
 
         # Invoke tasks.

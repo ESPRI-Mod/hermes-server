@@ -41,14 +41,11 @@ class FetchMessagesRequestHandler(ProdiguerHTTPRequestHandler):
             """Sets response to be returned to client.
 
             """
-            db.session.start()
-            try:
+            with db.session.create():
                 self.output = {
                     'message_history': dao.retrieve_simulation_messages(self.simulation_uid),
                     'simulation': dao.retrieve_simulation(self.simulation_uid)
                 }
-            finally:
-                db.session.end()
 
         # Invoke tasks.
         self.invoke(rv.validate_fetch_messages, [

@@ -112,10 +112,8 @@ class EventRequestHandler(tornado.web.RequestHandler):
         # Signal asynch.
         self.finish()
 
-        # Connect to db.
-        db.session.start()
-
-        try:
+        # Write web-socket event data.
+        with db.session.create():
             event = _EventManager(self)
             data = event.get_websocket_data()
             if data is not None:
@@ -124,7 +122,3 @@ class EventRequestHandler(tornado.web.RequestHandler):
                     'event_timestamp': datetime.datetime.now(),
                 })
                 websockets.on_write(_WS_KEY, data, _ws_client_filter)
-
-        # Close db session.
-        finally:
-            db.session.end()

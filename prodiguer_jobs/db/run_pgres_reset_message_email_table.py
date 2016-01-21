@@ -12,7 +12,6 @@
 
 """
 from prodiguer.db import pgres as db
-from prodiguer.utils import config
 from prodiguer.utils import logger
 
 
@@ -23,17 +22,9 @@ def _main():
     """
     logger.log_db("Reset email table begins")
 
-    # Start session.
-    db.session.start(config.db.pgres.main)
-
     # Delete all records in table.
-    db.dao.delete_all(db.types.MessageEmail)
-
-    # Commit deletions.
-    db.session.commit()
-
-    # End session.
-    db.session.end()
+    with db.session.create(commitable=True):
+        db.dao.delete_all(db.types.MessageEmail)
 
     logger.log_db("Reset email table complete")
 
