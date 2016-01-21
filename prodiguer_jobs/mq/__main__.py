@@ -202,10 +202,9 @@ def _execute_agent(agent_type, agent_limit, handler):
     """Executes a standard agent.
 
     """
-    # Start db session.
-    db.session.start()
+    # Initiate a db session.
+    with db.session.create():
 
-    try:
         # Initialise cv session.
         cv.session.init()
 
@@ -216,8 +215,6 @@ def _execute_agent(agent_type, agent_limit, handler):
                          consume_limit=agent_limit,
                          context_type=_get_handler_context_type(handler),
                          verbose=agent_limit > 0)
-    finally:
-        db.session.end()
 
 
 def _execute(agent_type, agent_limit):
