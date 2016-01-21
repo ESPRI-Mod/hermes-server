@@ -9,6 +9,7 @@
 
 
 """
+import contextlib
 import logging
 
 from sqlalchemy import create_engine
@@ -16,6 +17,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.engine import Engine
 
 from prodiguer.utils import config
+from prodiguer.utils import logger
 
 
 
@@ -26,16 +28,22 @@ sa_engine = None
 sa_session = None
 
 
-# Set sqlalchemy logging.
-loggers = [
+# Set of SQLAlchemy loggers.
+_SA_LOGGERS = [
     ('sqlalchemy.dialects', logging.NOTSET),
     ('sqlalchemy.engine', logging.NOTSET),
     ('sqlalchemy.orm', logging.NOTSET),
     ('sqlalchemy.pool', logging.NOTSET)
 ]
-logging.basicConfig()
-for logger, level in loggers:
-    logging.getLogger(logger).setLevel(level)
+
+
+def init_logging():
+    """Initialises sqlalchemy logging levels.
+
+    """
+    logging.basicConfig()
+    for sa_logger_type, level in _SA_LOGGERS:
+        logging.getLogger(sa_logger_type).setLevel(level)
 
 
 def assert_is_live():
@@ -45,6 +53,25 @@ def assert_is_live():
     msg = "ERROR :: You have not initialised the db session"
     assert sa_session is not None, msg
     assert sa_engine is not None, msg
+
+
+@contextlib.contextmanager
+def create(connection=None, commitable=False):
+    """Starts & manages a db session.
+
+    """
+    start(connection)
+    try:
+        yield
+    except Exception as err:
+
+        print "ZZZZ", err
+        raise err
+    else:
+        if commitable:
+            commit()
+    finally:
+        end()
 
 
 def start(connection=None):
