@@ -12,6 +12,7 @@
 """
 from prodiguer import mq
 from prodiguer.db.pgres import dao_monitoring as dao
+from prodiguer.db.pgres import dao_superviseur
 from prodiguer_jobs.mq import utils
 
 
@@ -21,6 +22,11 @@ _ERROR_MESSAGE_TYPES = {
     mq.constants.MESSAGE_TYPE_1999,     # Compute job fatal error
     mq.constants.MESSAGE_TYPE_2999,     # Post-processing job fatal error
     mq.constants.MESSAGE_TYPE_3999      # Post-processing-from-checker job fatal error
+}
+
+# Set of message types that require supervision.
+_SUPERVISION_MESSAGE_TYPES = {
+    mq.constants.MESSAGE_TYPE_1999,     # Compute job fatal error
 }
 
 # Set of message types that indicate a simulation end.
@@ -37,6 +43,7 @@ def get_tasks():
     return (
         _unpack_content,
         _persist,
+        _enqueue_supervisor_format,
         _enqueue_fe_notification_job,
         _enqueue_fe_notification_simulation
         )
@@ -55,6 +62,7 @@ class ProcessingContextInfo(mq.Message):
 
         self.is_compute_end = props.type == mq.constants.MESSAGE_TYPE_0100
         self.is_error = props.type in _ERROR_MESSAGE_TYPES
+        self.requires_supervision = props.type in _SUPERVISION_MESSAGE_TYPES
         self.job_uid = None
         self.simulation = None
         self.simulation_uid = None
@@ -88,6 +96,26 @@ def _persist(ctx):
             ctx.is_error,
             ctx.simulation_uid
             )
+
+    # Persist supervision info.
+    if ctx.requires_supervision:
+        ctx.supervision = dao_superviseur.create_supervision(
+            ctx.simulation_uid,
+            ctx.job_uid,
+            ctx.props.type
+            )
+
+
+def _enqueue_supervisor_format(ctx):
+    """Places a message upon the supervisor format queue.
+
+    """
+    if ctx.requires_supervision:
+        utils.enqueue(mq.constants.MESSAGE_TYPE_8100, {
+            "job_uid": ctx.job_uid,
+            "simulation_uid": ctx.simulation_uid,
+            "supervision_id": ctx.supervision.id
+        })
 
 
 def _enqueue_fe_notification_job(ctx):

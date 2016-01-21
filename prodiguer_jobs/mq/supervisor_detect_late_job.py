@@ -37,8 +37,7 @@ class ProcessingContextInfo(mq.Message):
         """Object constructor.
 
         """
-        super(ProcessingContextInfo, self).__init__(
-            props, body, decode=decode)
+        super(ProcessingContextInfo, self).__init__(props, body, decode=decode)
 
         self.job_uid = None
         self.simulation_uid = None
@@ -81,6 +80,5 @@ def _enqueue_supervisor_format(ctx):
     utils.enqueue(mq.constants.MESSAGE_TYPE_8100, {
         "job_uid": ctx.job_uid,
         "simulation_uid": ctx.simulation_uid,
-        "supervision_id": ctx.supervision.id,
-        "trigger_code": ctx.trigger_code
+        "supervision_id": ctx.supervision.id
     })
