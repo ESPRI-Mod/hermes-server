@@ -12,7 +12,7 @@
 
 """
 from prodiguer.db import pgres as db
-from prodiguer.db. pgres import dao
+from prodiguer.db.pgres import dao
 from prodiguer.web.request_validation import validator_cv as rv
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
@@ -32,7 +32,7 @@ _EXCLUDED_TERMSETS = {
     }
 
 
-def map_term(term):
+def _map_term(term):
     """Maps a term for output to client.
 
     """
@@ -47,21 +47,14 @@ class FetchRequestHandler(ProdiguerHTTPRequestHandler):
         """HTTP GET handler.
 
         """
-        def _get_terms():
-            """Returns sorted list of cv terms.
-
-            """
-            return [map_term(t) for t in dao.get_all(db.types.ControlledVocabularyTerm)
-                    if t.typeof not in _EXCLUDED_TERMSETS]
-
-
         def _set_output():
             """Sets response to be returned to client.
 
             """
             with db.session.create():
                 self.output = {
-                    'cvTerms': _get_terms()
+                    'cvTerms': [_map_term(t) for t in dao.get_all(db.types.ControlledVocabularyTerm)
+                                if t.typeof not in _EXCLUDED_TERMSETS]
                 }
 
         # Invoke tasks.

@@ -90,7 +90,7 @@ def get_synonyms(term):
         except AttributeError:
             pass
         synonyms = [n for n in synonyms if n and n.strip()]
-        synonyms = [n.strip().lower() for n in synonyms]
+        synonyms = [n.strip() for n in synonyms]
 
     return synonyms
 

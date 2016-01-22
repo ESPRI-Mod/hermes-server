@@ -48,3 +48,15 @@ def format_term_data(term_data):
 
     """
     return term_data or {}
+
+
+def format_synonyms(term_synonyms):
+    """Formats a set of controlled vocabulary synonyms.
+
+    :param list term_synonyms: Set of controlled vocabulary synonyms.
+
+    :returns: Formatted set of synonyms.
+    :rtype: list
+
+    """
+    return [unicode(s).strip().lower() for s in term_synonyms if s and len(s.strip())]

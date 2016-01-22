@@ -14,7 +14,7 @@
 from prodiguer.cv import accessor as ta
 from prodiguer.cv import cache
 from prodiguer.cv import constants
-from prodiguer.cv import formatter
+from prodiguer.cv import formatter as tf
 from prodiguer.cv import validator
 
 
@@ -30,7 +30,7 @@ def parse_term_type(term_type):
     """
     validator.validate_term_type(term_type)
 
-    return formatter.format_term_type(term_type)
+    return tf.format_term_type(term_type)
 
 
 def parse_term_name(term_type, term_name, must_exist=True):
@@ -48,11 +48,11 @@ def parse_term_name(term_type, term_name, must_exist=True):
     if must_exist:
         validator.validate_term_name(term_type, term_name)
 
-    term_name = formatter.format_term_name(term_name)
+    term_name = tf.format_term_name(term_name)
     for term in cache.get_termset(term_type):
         if term_name == ta.get_name(term):
             return term_name
-        elif term_name in ta.get_synonyms(term):
+        elif term_name in tf.format_synonyms(ta.get_synonyms(term)):
             return ta.get_name(term)
 
     return term_name
@@ -87,4 +87,4 @@ def parse_term_data(term_data):
     """
     validator.validate_term_data(term_data)
 
-    return formatter.format_term_data(term_data)
+    return tf.format_term_data(term_data)

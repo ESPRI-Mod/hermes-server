@@ -16,7 +16,7 @@ import uuid
 from prodiguer.cv import constants
 from prodiguer.cv import cache
 from prodiguer.cv import exceptions
-from prodiguer.cv import formatter
+from prodiguer.cv import formatter as tf
 from prodiguer.cv import accessor as ta
 
 
@@ -33,7 +33,7 @@ def _is_matching_synonym(term, term_name):
     """Returns a name by matching against a term's sysnonyms.
 
     """
-    return term_name in ta.get_synonyms(term)
+    return term_name in tf.format_synonyms(ta.get_synonyms(term))
 
 
 # Term name matching predicate functions.
@@ -51,11 +51,11 @@ def validate_term_name(term_type, term_name):
     cache.load()
 
     # Validate term set.
-    term_type = formatter.format_term_type(term_type)
+    term_type = tf.format_term_type(term_type)
     validate_term_type(term_type)
 
     # Match term either by name or synonyms.
-    term_name = formatter.format_term_name(term_name)
+    term_name = tf.format_term_name(term_name)
     for term in cache.get_termset(term_type):
         for is_matched in _NAME_MATCHING_PREDICATES:
             if is_matched(term, term_name):
@@ -72,7 +72,7 @@ def validate_term_type(term_type):
     # Ensure cache is loaded.
     cache.load()
 
-    term_type = formatter.format_term_type(term_type)
+    term_type = tf.format_term_type(term_type)
     if term_type not in constants.TERM_TYPESET:
         raise exceptions.TermTypeError(term_type)
 
@@ -99,7 +99,7 @@ def validate_term_data(term_data):
     """Validates data associated with a term.
 
     """
-    term_data = formatter.format_term_data(term_data)
+    term_data = tf.format_term_data(term_data)
     if not isinstance(term_data, dict) or 'meta' in term_data:
         raise exceptions.TermUserDataError()
 
