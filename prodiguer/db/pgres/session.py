@@ -25,7 +25,7 @@ from prodiguer.utils import logger
 sa_engine = None
 
 # SQLAlchemy session.
-sa_session = None
+_sa_session = None
 
 
 # Set of SQLAlchemy loggers.
@@ -46,15 +46,6 @@ def init_logging():
         logging.getLogger(sa_logger_type).setLevel(level)
 
 
-def assert_is_live():
-    """Ensures that session has been established.
-
-    """
-    msg = "ERROR :: You have not initialised the db session"
-    assert sa_session is not None, msg
-    assert sa_engine is not None, msg
-
-
 @contextlib.contextmanager
 def create(connection=None, commitable=False):
     """Starts & manages a db session.
@@ -64,8 +55,9 @@ def create(connection=None, commitable=False):
     try:
         yield
     except Exception as err:
-
-        print "ZZZZ", err
+        msg = "An unhandled exception occurred within context of a {} database connection: {}."
+        msg = msg.format("writeable" if commitable else "readonly", err)
+        logger.log_db(msg)
         raise err
     else:
         if commitable:
@@ -82,12 +74,9 @@ def start(connection=None):
 
     """
     global sa_engine
-    global sa_session
+    global _sa_session
 
-    # Implicit end.
-    end()
-
-    # Set connection if necessary.
+    # Set default connection (if necessary).
     if connection is None:
         connection = config.db.pgres.main
 
@@ -98,7 +87,7 @@ def start(connection=None):
         sa_engine = create_engine(unicode(connection), echo=False)
 
     # Set session.
-    sa_session = sessionmaker(bind=sa_engine)()
+    _sa_session = sessionmaker(bind=sa_engine)()
 
 
 def end():
@@ -106,29 +95,29 @@ def end():
 
     """
     global sa_engine
-    global sa_session
+    global _sa_session
 
     if sa_engine is not None:
         sa_engine = None
-    if sa_session is not None:
-        sa_session.close()
-        sa_session = None
+    if _sa_session is not None:
+        _sa_session.close()
+        _sa_session = None
 
 
 def commit():
     """Commits a session.
 
     """
-    if sa_session is not None:
-        sa_session.commit()
+    if _sa_session is not None:
+        _sa_session.commit()
 
 
 def rollback():
     """Rolls back a session.
 
     """
-    if sa_session is not None:
-        sa_session.rollback()
+    if _sa_session is not None:
+        _sa_session.rollback()
 
 
 def insert(instance, auto_commit=True):
@@ -138,8 +127,8 @@ def insert(instance, auto_commit=True):
     :param bool auto_commit: Flag indicating whether a commit is to be issued.
 
     """
-    if instance is not None and sa_session is not None:
-        sa_session.add(instance)
+    if instance is not None and _sa_session is not None:
+        _sa_session.add(instance)
         if auto_commit:
             commit()
 
@@ -166,8 +155,8 @@ def delete(instance, auto_commit=True):
     :type auto_commit: bool
 
     """
-    if instance is not None and sa_session is not None:
-        sa_session.delete(instance)
+    if instance is not None and _sa_session is not None:
+        _sa_session.delete(instance)
         if auto_commit:
             commit()
 
@@ -179,7 +168,7 @@ def update(instance, auto_commit=True):
     :param bool auto_commit: Flag indicating whether a commit is to be issued.
 
     """
-    if instance is not None and sa_session is not None:
+    if instance is not None and _sa_session is not None:
         if auto_commit:
             commit()
 
@@ -190,10 +179,19 @@ def query(*etypes):
     """Begins a query operation against a session.
 
     """
-    if len(etypes) == 0 or sa_session is None:
+    if len(etypes) == 0 or _sa_session is None:
         return None
 
     q = None
     for etype in etypes:
-        q = sa_session.query(etype) if q is None else q.join(etype)
+        q = _sa_session.query(etype) if q is None else q.join(etype)
     return q
+
+
+def raw_query(*args):
+    """Initiates a raw query operation against a SQLAlchemy session.
+
+    Avoids having to expose directly the underlying SQLAlchemy session.
+
+    """
+    return _sa_session.query(*args)

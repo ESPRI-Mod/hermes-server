@@ -133,7 +133,7 @@ def retrieve_active_simulations_direct(start_date=None):
     """
 
     s = db.types.Simulation
-    qry = db.session.sa_session.query(
+    qry = db.session.raw_query(
         s.accounting_project,
         s.activity,
         s.activity_raw,
@@ -184,7 +184,7 @@ def retrieve_active_jobs_direct(start_date=None):
     """
     j = db.types.Job
     s = db.types.Simulation
-    qry = db.session.sa_session.query(
+    qry = db.session.raw_query(
         j.execution_end_date,
         j.execution_start_date,
         j.is_compute_end,

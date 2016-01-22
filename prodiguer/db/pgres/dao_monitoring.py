@@ -34,7 +34,7 @@ def retrieve_active_jobs(start_date=None):
     j = types.Job
     s = types.Simulation
 
-    qry = session.sa_session.query(
+    qry = session.raw_query(
         as_datetime_string(j.execution_end_date),
         as_datetime_string(j.execution_start_date),
         j.is_compute_end,
@@ -84,7 +84,7 @@ def retrieve_active_simulations(start_date=None):
     """
     s = types.Simulation
 
-    qry = session.sa_session.query(
+    qry = session.raw_query(
         s.activity,
         s.activity_raw,
         s.compute_node_login,
@@ -191,7 +191,7 @@ def retrieve_simulation_jobs(uid):
     """
     j = types.Job
 
-    qry = session.sa_session.query(
+    qry = session.raw_query(
         as_datetime_string(j.execution_end_date),
         as_datetime_string(j.execution_start_date),
         j.is_compute_end,
@@ -244,7 +244,7 @@ def retrieve_simulation_messages(uid):
     """
     m = types.Message
 
-    qry = session.sa_session.query(
+    qry = session.raw_query(
         m.content,
         m.email_id,
         m.correlation_id_2,
@@ -289,7 +289,7 @@ def retrieve_job_subset(uid):
     """
     j = types.Job
 
-    qry = session.sa_session.query(
+    qry = session.raw_query(
         as_datetime_string(j.execution_end_date),
         as_datetime_string(j.execution_start_date),
         j.is_compute_end,

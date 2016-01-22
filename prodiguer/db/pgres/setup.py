@@ -97,8 +97,6 @@ def execute():
     """Sets up a database.
 
     """
-    db_session.assert_is_live()
-
     # Initialize schemas.
     db_session.sa_engine.execute(DropSchema('public'))
     for schema in SCHEMAS:
