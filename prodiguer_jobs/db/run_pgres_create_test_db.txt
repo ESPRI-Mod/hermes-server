@@ -1,0 +1,114 @@
+#
+# This is config.card file for restart with an NEW libIGCM simulation tree.
+#
+#====================================================================================
+#D-- Compatibility -
+[Compatibility]
+libIGCM=1.0
+
+#========================================================================
+#D-- UserChoices -
+[UserChoices]
+#============================
+#-- Output will be stored in IGCM_OUT/TagName/SpaceName/ExperimentName/JobName
+JobName=TRIPSLHISTCO2A3H1
+LongName="test on Africa"
+TagName=OL2
+#------ SpaceName = DEVT/TEST/PROD
+SpaceName=PROD
+#----- ExperimentName : Short Name of Experiment
+ExperimentName=secsto
+#============================
+#-- leap, noleap, 360d
+CalendarType=noleap
+#-- Start and End of Job
+#-- "YYYY-MM-DD"
+DateBegin=1991-01-01
+DateEnd=2080-12-31
+CyclicBegin=1991
+CyclicEnd=2005
+#============================
+#-- 1Y, 1M, 5D, 1D
+PeriodLength=1Y
+#========================================================================
+#D-- ListOfComponents -
+[ListOfComponents]
+#D- For each component, Name of component, Tag of component
+SRF= (sechiba, orchidee)
+SBG= (stomate, orchidee)
+OOL= (orchidee_ol, orchidee)
+
+#========================================================================
+#D-- Executable -
+[Executable]
+#D- For each component, Real name of executable, Name of executable during run
+SRF= ("", "")
+SBG= ("", "")
+OOL= (orchidee_ol, orchidee_ol, 8MPI)
+
+#========================================================================
+#D-- Restarts -
+[Restarts]
+#D- If you want a GENERAL RULE FOR RESTARTS, put this flag to 'y'
+OverRule=n
+#D- Last day of the experience used as restart
+RestartDate=1981-12-31
+#D- Define restart simulation name (=> JOB_OS)
+RestartJobName=CD1
+#D- Path Server Group Login (=> PSGL)
+RestartPath=${ARCHIVE}/IGCM_OUT/OL2
+# Attention login depend de la machine
+
+#========================================================================
+#D-- Post -
+[Post]
+#D- Do we archive the output text files and restart files?
+#D- frequency to create the archives (by default RebuildFrequency)
+PackFrequency=5Y
+#D- Frequency of rebuild submission
+RebuildFrequency=5Y
+#D- Optimization of rebuid
+RebuildFromArchive=NONE
+#D- If you want to produce time series, this flag determines
+#D- frequency of post-processing submission
+TimeSeriesFrequency=NONE
+#D- If you want to produce seasonal average, this flag determines
+#D- the period of this average
+SeasonalFrequency=NONE
+#D- Offset for seasonal average first start dates ; same unit as SeasonalFrequency
+#D- Usefull if you do not want to consider the first X simulation's years
+SeasonalFrequencyOffset= 0
+
+#========================================================================
+#D-- SRF - SECHIBA
+[SRF]
+WriteFrequency="1M"
+Restart=n
+#-- Last day of the experience used as restart
+RestartDate=1982-01-01
+# Define restart simulation name
+RestartJobName=HISTO2_
+RestartPath=${ARCHIVE}/IGCM_OUT/OL2
+#========================================================================
+#D-- SRF - STOMATE
+[SBG]
+WriteFrequency="1M"
+Restart=n
+#-- Last day of the experience used as restart
+RestartDate=1982-01-01
+# Define restart simulation name
+RestartJobName=HISTO2_
+RestartPath=${ARCHIVE}/IGCM_OUT/OL2
+#========================================================================
+#D-- OOL -
+[OOL]
+WriteFrequency="1M"
+Restart=n
+#-- Last day of the experience used as restart
+RestartDate=1982-01-01
+# Define restart simulation name
+RestartJobName=2L18
+RestartPath=${ARCHIVE}/${LOGIN}/SORTIES_CPL_IPSL
+#========================================================================
+
+            

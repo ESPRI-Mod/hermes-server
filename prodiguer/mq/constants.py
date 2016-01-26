@@ -123,8 +123,8 @@ QUEUES = {
 	}
 
 # Message producers.
-PRODUCER_IGCM = "libigcm"
-PRODUCER_PRODIGUER = "prodiguer"
+PRODUCER_IGCM = u"libigcm"
+PRODUCER_PRODIGUER = u"prodiguer"
 
 # All producers.
 PRODUCERS = {
@@ -133,8 +133,8 @@ PRODUCERS = {
 	}
 
 # Message server users.
-USER_PRODIGUER = "prodiguer-mq-user"
-USER_PRODIGUER_ADMIN = "prodiguer-mq-admin"
+USER_PRODIGUER = u"prodiguer-mq-user"
+USER_PRODIGUER_ADMIN = u"prodiguer-mq-admin"
 
 # All users.
 USERS = {
@@ -143,10 +143,10 @@ USERS = {
 	}
 
 # Message application identifiers.
-APP_INTERNAL = "internal"
-APP_MONITORING = "monitoring"
-APP_METRICS = "metrics"
-APP_SUPERVISEUR = "superviseur"
+APP_INTERNAL = u"internal"
+APP_MONITORING = u"monitoring"
+APP_METRICS = u"metrics"
+APP_SUPERVISEUR = u"superviseur"
 
 # All apps.
 APPS = {
@@ -158,30 +158,30 @@ APPS = {
 
 # Message types:
 # ... general message types.
-MESSAGE_TYPE_0000 = "0000"		# Monitoring - simulation initialiation
-MESSAGE_TYPE_0100 = "0100"		# Monitoring - simulation ends
-MESSAGE_TYPE_1000 = "1000"		# Monitoring - computing job begins
-MESSAGE_TYPE_1100 = "1100"		# Monitoring - computing job ends
-MESSAGE_TYPE_1900 = "1900"		# Monitoring - computing job command failure
-MESSAGE_TYPE_1999 = "1999"		# Monitoring - computing job fails - FATAL simulation has been stopped due to an error
-MESSAGE_TYPE_2000 = "2000"		# Monitoring - post-processing job begins
-MESSAGE_TYPE_2100 = "2100"		# Monitoring - post-processing job ends
-MESSAGE_TYPE_2900 = "2900"		# Monitoring - post-processing command failure
-MESSAGE_TYPE_2999 = "2999"		# Monitoring - post-processing job fails - FATAL post-processing has been stopped due to an error
-MESSAGE_TYPE_3000 = "3000"		# Monitoring - post-processing job from checker begins
-MESSAGE_TYPE_3100 = "3100"		# Monitoring - post-processing job from checker ends
-MESSAGE_TYPE_3900 = "3900"		# Monitoring - post-processing job from checker fails
-MESSAGE_TYPE_3999 = "3999"		# Monitoring - post-processing-from0checker job fails - FATAL post-processing from checker has been stopped due to an error
-MESSAGE_TYPE_7000 = "7000"		# Metrics - environment
-MESSAGE_TYPE_7010 = "7010"		# Metrics - conso
-MESSAGE_TYPE_7100 = "7100"		# Metrics - pcmdi
-MESSAGE_TYPE_8000 = "8000"		# Supervisor - detect
-MESSAGE_TYPE_8100 = "8100"		# Supervisor - format
-MESSAGE_TYPE_8200 = "8200"		# Supervisor - dispatch
-MESSAGE_TYPE_8888 = "8888"		# Misc - cleanup
-MESSAGE_TYPE_CV = "-1000"		# Internal - controlled vocabulary
-MESSAGE_TYPE_FE = "-2000"		# Internal - front end notifications
-MESSAGE_TYPE_SMTP = "-3000"		# Internal - smtp inputs
+MESSAGE_TYPE_0000 = u"0000"		# Monitoring - simulation initialiation
+MESSAGE_TYPE_0100 = u"0100"		# Monitoring - simulation ends
+MESSAGE_TYPE_1000 = u"1000"		# Monitoring - computing job begins
+MESSAGE_TYPE_1100 = u"1100"		# Monitoring - computing job ends
+MESSAGE_TYPE_1900 = u"1900"		# Monitoring - computing job command failure
+MESSAGE_TYPE_1999 = u"1999"		# Monitoring - computing job fails - FATAL simulation has been stopped due to an error
+MESSAGE_TYPE_2000 = u"2000"		# Monitoring - post-processing job begins
+MESSAGE_TYPE_2100 = u"2100"		# Monitoring - post-processing job ends
+MESSAGE_TYPE_2900 = u"2900"		# Monitoring - post-processing command failure
+MESSAGE_TYPE_2999 = u"2999"		# Monitoring - post-processing job fails - FATAL post-processing has been stopped due to an error
+MESSAGE_TYPE_3000 = u"3000"		# Monitoring - post-processing job from checker begins
+MESSAGE_TYPE_3100 = u"3100"		# Monitoring - post-processing job from checker ends
+MESSAGE_TYPE_3900 = u"3900"		# Monitoring - post-processing job from checker fails
+MESSAGE_TYPE_3999 = u"3999"		# Monitoring - post-processing-from0checker job fails - FATAL post-processing from checker has been stopped due to an error
+MESSAGE_TYPE_7000 = u"7000"		# Metrics - environment
+MESSAGE_TYPE_7010 = u"7010"		# Metrics - conso
+MESSAGE_TYPE_7100 = u"7100"		# Metrics - pcmdi
+MESSAGE_TYPE_8000 = u"8000"		# Supervisor - detect
+MESSAGE_TYPE_8100 = u"8100"		# Supervisor - format
+MESSAGE_TYPE_8200 = u"8200"		# Supervisor - dispatch
+MESSAGE_TYPE_8888 = u"8888"		# Misc - cleanup
+MESSAGE_TYPE_CV = u"-1000"		# Internal - controlled vocabulary
+MESSAGE_TYPE_FE = u"-2000"		# Internal - front end notifications
+MESSAGE_TYPE_SMTP = u"-3000"		# Internal - smtp inputs
 
 
 # All types.
@@ -293,8 +293,8 @@ MESSAGE_TYPE_EXCHANGE = {
 	}
 
 # Timestamp precision types.
-TIMESTAMP_PRECISION_NS = 'ns'
-TIMESTAMP_PRECISION_MS = 'ms'
+TIMESTAMP_PRECISION_NS = u"ns"
+TIMESTAMP_PRECISION_MS = u"ms"
 
 # All timestamp precision types.
 TIMESTAMP_PRECISIONS = {

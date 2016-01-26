@@ -192,10 +192,10 @@ def _process(agent_type, handler, ctx):
     """Processes a message.
 
     """
-    tasks = _get_handler_tasks(handler)
-    error_tasks = _get_handler_error_tasks(handler)
-
-    rt.invoke_mq(agent_type, tasks, error_tasks, ctx)
+    rt.invoke_mq(agent_type,
+                 _get_handler_tasks(handler),
+                 _get_handler_error_tasks(handler),
+                 ctx)
 
 
 def _execute_agent(agent_type, agent_limit, handler):

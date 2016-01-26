@@ -11,8 +11,10 @@
 
 
 """
+import base64
 import datetime
 import json
+import os
 import random
 import uuid
 
@@ -27,7 +29,7 @@ from prodiguer.utils import logger
 
 
 # Number of days for which to create test simulations.
-_QUOTA_DAYS = 15
+_QUOTA_DAYS = 60
 
 # Number of simulations to create per day.
 _QUOTA_SIMS_PER_DAY = 30
@@ -71,6 +73,8 @@ _JOB_TYPESET = [
     # "post-processing-from-checker",
 ]
 
+# Simulation configuration card.
+_CONFIG_CARD = None
 
 # Set of job types.
 _POST_PROCESSING_JOB_NAMES = [
@@ -83,6 +87,7 @@ _POST_PROCESSING_JOB_NAMES = [
     unicode(uuid.uuid4())[0:15],
     unicode(uuid.uuid4())[0:15],
 ]
+
 
 def _get_cv_term(term_type):
     """Get a test cv term.
@@ -128,6 +133,25 @@ def _create_job(simulation, job_index):
     return db.session.insert(instance)
 
 
+def _create_simulation_configuration(simulation):
+    """Create a test simulation configuration card.
+
+    """
+    global _CONFIG_CARD
+
+    if _CONFIG_CARD is None:
+        fpath = os.path.abspath(__file__).replace('.py', '.txt')
+        with open(fpath, 'r') as f:
+            _CONFIG_CARD = f.read()
+            _CONFIG_CARD = base64.encodestring(_CONFIG_CARD)
+
+    instance = db.types.SimulationConfiguration()
+    instance.simulation_uid = simulation.uid
+    instance.card = _CONFIG_CARD
+
+    return db.session.insert(instance)
+
+
 def _create_simulation(start_date, end_date):
     """Create a test simulation.
 
@@ -158,15 +182,14 @@ def _create_simulation(start_date, end_date):
     return db.session.insert(instance)
 
 
-
 def _create_job_message(simulation, job, message_type):
     """Create test message related to a simulation job.
 
     """
     instance = db.types.Message()
-    instance.app_id = mq.constants.APP_MONITORING
-    instance.producer_id = mq.constants.PRODUCER_PRODIGUER
-    instance.producer_version = "x.x.x"
+    instance.app_id = unicode(mq.constants.APP_MONITORING)
+    instance.producer_id = unicode(mq.constants.PRODUCER_PRODIGUER)
+    instance.producer_version = u"x.x.x"
     instance.type_id = message_type
     instance.user_id = mq.constants.USER_PRODIGUER
     instance.uid = unicode(uuid.uuid4())
@@ -192,17 +215,6 @@ def _create_job_messages(simulation, job):
     _create_job_message(simulation, job, mq.constants.MESSAGE_TYPE_1100)
 
 
-def _create_messages(simulation, jobs):
-    """Create test messages related to a simulation.
-
-    """
-    # first_job = jobs[0]
-    # last_job = jobs[-1]
-
-    for job in jobs:
-        _create_job_messages(simulation, job)
-
-
 def _main():
     """Main entry point.
 
@@ -218,8 +230,10 @@ def _main():
             end_date = start_date + datetime.timedelta(days=4)
             for _ in range(_QUOTA_SIMS_PER_DAY):
                 simulation = _create_simulation(start_date, end_date)
+                _create_simulation_configuration(simulation)
                 jobs = [_create_job(simulation, i + 1) for i in range(_QUOTA_JOBS_PER_SIM)]
-                _create_messages(simulation, jobs)
+                for job in jobs:
+                    _create_job_messages(simulation, job)
 
     # Finalize.
     msg = "created {} simulations in: {}"

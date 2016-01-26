@@ -24,13 +24,6 @@ from prodiguer.utils import logger
 
 
 
-# Map of message types to attachment fields.
-_ATTACHMENT_FIELD_MAP = {
-    '0000': u'configuration',
-    '7100': u'metrics'
-}
-
-
 def get_tasks():
     """Returns set of tasks to be executed when processing a message.
 
@@ -113,12 +106,11 @@ def _persist_email_delivery_stats(ctx):
             return None
 
     # Update message email table.
-    with db.session.create():
-        db.dao_mq.update_message_email(
-            ctx.email_uid,
-            _get_date(mail.get_email_arrival_date),
-            _get_date(mail.get_email_dispatch_date)
-            )
+    db.dao_mq.update_message_email(
+        ctx.email_uid,
+        _get_date(mail.get_email_arrival_date),
+        _get_date(mail.get_email_dispatch_date)
+        )
 
 
 def _set_msg_b64(ctx):
