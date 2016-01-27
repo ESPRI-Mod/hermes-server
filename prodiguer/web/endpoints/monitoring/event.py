@@ -96,7 +96,6 @@ def _ws_client_filter(client, data):
     if simulation_uid is None:
         return True
     else:
-        print "DSDS", data
         return data['simulation_uid'] == simulation_uid
 
 
