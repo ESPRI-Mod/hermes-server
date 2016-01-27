@@ -17,6 +17,7 @@ import arrow
 
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
+from prodiguer.utils import logger
 from prodiguer.web.request_validation import validator_monitoring as rv
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
@@ -59,19 +60,32 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
                 self.start_date = self.start_date.datetime
 
 
+        def _set_data():
+            """Pulls data from db.
+
+            """
+            with db.session.create():
+                logger.log_web("[{}]: executing db query 1: jobs timeslice".format(id(self)))
+                self.jobs = dao.retrieve_active_jobs(self.start_date)
+
+                logger.log_web("[{}]: executing db query 2: simulations timeslice".format(id(self)))
+                self.simulations = dao.retrieve_active_simulations(self.start_date)
+
+
         def _set_output():
             """Sets response to be returned to client.
 
             """
             with db.session.create():
                 self.output = {
-                    'jobList': dao.retrieve_active_jobs(self.start_date),
-                    'simulationList': dao.retrieve_active_simulations(self.start_date)
+                    'jobList': self.jobs,
+                    'simulationList': self.simulations
                 }
 
 
         # Invoke tasks.
         self.invoke(rv.validate_fetch_timeslice, [
             _decode_request,
+            _set_data,
             _set_output,
             ], write_raw_output=True)
