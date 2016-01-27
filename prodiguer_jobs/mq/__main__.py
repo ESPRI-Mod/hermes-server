@@ -22,6 +22,7 @@ from prodiguer_jobs.mq import delegator
 from prodiguer_jobs.mq import internal_cv
 from prodiguer_jobs.mq import internal_fe
 from prodiguer_jobs.mq import internal_smtp
+from prodiguer_jobs.mq import internal_smtp_checker
 from prodiguer_jobs.mq import internal_smtp_realtime
 from prodiguer_jobs.mq import metrics_conso
 from prodiguer_jobs.mq import metrics_environment
@@ -79,6 +80,7 @@ _AGENT_HANDLERS = {
     'debug-cv': internal_cv,
     'debug-fe': internal_fe,
     'debug-smtp': internal_smtp,
+    'debug-smtp-checker': internal_smtp_checker,
     'debug-smtp-realtime': internal_smtp_realtime,
     'live-cv': internal_cv,
     'live-fe': internal_fe,
@@ -87,6 +89,7 @@ _AGENT_HANDLERS = {
     'live-monitoring-compute': delegator,
     'live-monitoring-post-processing': delegator,
     'live-smtp': internal_smtp,
+    'live-smtp-checker': internal_smtp_checker,
     'live-smtp-realtime': internal_smtp_realtime,
     'live-superviseur': delegator
 }
@@ -123,11 +126,9 @@ _AGENT_EXCHANGES = {
         'debug-cv',
         'debug-fe',
         'debug-smtp',
-        'debug-smtp-realtime',
         'live-cv',
         'live-fe',
         'live-smtp',
-        'live-smtp-realtime',
         'live-superviseur'
     },
     mq.constants.EXCHANGE_PRODIGUER_SECONDARY_DELAYED: {

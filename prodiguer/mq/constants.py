@@ -49,6 +49,7 @@ EXCHANGES = {
 	}
 
 # Live message queues.
+QUEUE_LIVE_ALERT = 'live-alert'
 QUEUE_LIVE_CV = 'live-cv'
 QUEUE_LIVE_FE = 'live-fe'
 QUEUE_LIVE_METRICS = 'live-metrics'
@@ -80,6 +81,7 @@ QUEUE_DEBUG_8000 = 'debug-8000'
 QUEUE_DEBUG_8100 = 'debug-8100'
 QUEUE_DEBUG_8200 = 'debug-8200'
 QUEUE_DEBUG_8888 = 'debug-8888'
+QUEUE_DEBUG_ALERT = 'debug-alert'
 QUEUE_DEBUG_CV = 'debug-cv'
 QUEUE_DEBUG_FE = 'debug-fe'
 QUEUE_DEBUG_SMTP = 'debug-smtp'
@@ -87,6 +89,7 @@ QUEUE_DEBUG_SMTP = 'debug-smtp'
 # All queues.
 QUEUES = {
 	# Live queues.
+	QUEUE_LIVE_ALERT,
 	QUEUE_LIVE_CV,
 	QUEUE_LIVE_FE,
 	QUEUE_LIVE_METRICS,
@@ -117,6 +120,7 @@ QUEUES = {
 	QUEUE_DEBUG_8100,
 	QUEUE_DEBUG_8200,
 	QUEUE_DEBUG_8888,
+	QUEUE_DEBUG_ALERT,
 	QUEUE_DEBUG_CV,
 	QUEUE_DEBUG_FE,
 	QUEUE_DEBUG_SMTP
@@ -181,7 +185,8 @@ MESSAGE_TYPE_8200 = u"8200"		# Supervisor - dispatch
 MESSAGE_TYPE_8888 = u"8888"		# Misc - cleanup
 MESSAGE_TYPE_CV = u"-1000"		# Internal - controlled vocabulary
 MESSAGE_TYPE_FE = u"-2000"		# Internal - front end notifications
-MESSAGE_TYPE_SMTP = u"-3000"		# Internal - smtp inputs
+MESSAGE_TYPE_SMTP = u"-3000"	# Internal - smtp inputs
+MESSAGE_TYPE_ALERT = u"-4000"	# Internal - operator alerts
 
 
 # All types.
@@ -217,7 +222,8 @@ TYPES = {
 	# ... internal
 	MESSAGE_TYPE_FE,
 	MESSAGE_TYPE_CV,
-	MESSAGE_TYPE_SMTP
+	MESSAGE_TYPE_SMTP,
+	MESSAGE_TYPE_ALERT
 	}
 
 # Map of applications to message types.
@@ -253,7 +259,8 @@ MESSAGE_TYPE_APPLICATION = {
 	# ... other
 	MESSAGE_TYPE_FE: APP_INTERNAL,
 	MESSAGE_TYPE_CV: APP_INTERNAL,
-	MESSAGE_TYPE_SMTP: APP_INTERNAL
+	MESSAGE_TYPE_SMTP: APP_INTERNAL,
+	MESSAGE_TYPE_ALERT: APP_INTERNAL
 	}
 
 # Map of exchanges to message types.
@@ -289,7 +296,8 @@ MESSAGE_TYPE_EXCHANGE = {
 	# ... other
 	MESSAGE_TYPE_FE: EXCHANGE_PRODIGUER_SECONDARY,
 	MESSAGE_TYPE_CV: EXCHANGE_PRODIGUER_SECONDARY,
-	MESSAGE_TYPE_SMTP: EXCHANGE_PRODIGUER_SECONDARY
+	MESSAGE_TYPE_SMTP: EXCHANGE_PRODIGUER_SECONDARY,
+	MESSAGE_TYPE_ALERT: EXCHANGE_PRODIGUER_SECONDARY
 	}
 
 # Timestamp precision types.
