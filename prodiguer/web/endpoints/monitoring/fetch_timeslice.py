@@ -65,10 +65,10 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
 
             """
             with db.session.create():
-                logger.log_web("[{}]: executing db query 1: jobs timeslice".format(id(self)))
+                logger.log_web("[{}]: executing db query: retrieve_active_jobs".format(id(self)))
                 self.jobs = dao.retrieve_active_jobs(self.start_date)
 
-                logger.log_web("[{}]: executing db query 2: simulations timeslice".format(id(self)))
+                logger.log_web("[{}]: executing db query: retrieve_active_simulations".format(id(self)))
                 self.simulations = dao.retrieve_active_simulations(self.start_date)
 
 
@@ -76,11 +76,10 @@ class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
             """Sets response to be returned to client.
 
             """
-            with db.session.create():
-                self.output = {
-                    'jobList': self.jobs,
-                    'simulationList': self.simulations
-                }
+            self.output = {
+                'jobList': self.jobs,
+                'simulationList': self.simulations
+            }
 
 
         # Invoke tasks.

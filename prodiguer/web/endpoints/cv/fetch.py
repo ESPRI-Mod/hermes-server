@@ -13,6 +13,7 @@
 """
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao
+from prodiguer.utils import logger
 from prodiguer.web.request_validation import validator_cv as rv
 from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
@@ -47,15 +48,27 @@ class FetchRequestHandler(ProdiguerHTTPRequestHandler):
         """HTTP GET handler.
 
         """
+        def _set_data():
+            """Pulls data from db.
+
+            """
+            with db.session.create():
+                logger.log_web("[{}]: executing db query: retrieve_cv_terms".format(id(self)))
+                self.cv_terms = [_map_term(t) for t in dao.get_all(db.types.ControlledVocabularyTerm)
+                                if t.typeof not in _EXCLUDED_TERMSETS]
+
+
         def _set_output():
             """Sets response to be returned to client.
 
             """
-            with db.session.create():
-                self.output = {
-                    'cvTerms': [_map_term(t) for t in dao.get_all(db.types.ControlledVocabularyTerm)
-                                if t.typeof not in _EXCLUDED_TERMSETS]
-                }
+            self.output = {
+                'cvTerms': self.cv_terms
+            }
+
 
         # Invoke tasks.
-        self.invoke(rv.validate_fetch, _set_output, write_raw_output=True)
+        self.invoke(rv.validate_fetch, [
+            _set_data,
+            _set_output
+        ], write_raw_output=True)

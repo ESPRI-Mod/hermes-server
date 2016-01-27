@@ -46,19 +46,17 @@ class FetchDetailRequestHandler(ProdiguerHTTPRequestHandler):
 
             """
             with db.session.create():
-                logger.log_web("[{}]: executing db query 1: simulation info".format(id(self)))
+                logger.log_web("[{}]: executing db query: retrieve_simulation_try".format(id(self)))
                 self.simulation = dao.retrieve_simulation_try(self.hashid, self.try_id)
 
-                logger.log_web("[{}]: executing db query 2: simulation jobs".format(id(self)))
+                logger.log_web("[{}]: executing db query: retrieve_simulation_jobs".format(id(self)))
                 self.job_list = dao.retrieve_simulation_jobs(self.simulation.uid)
 
-                logger.log_web("[{}]: executing db query 3: simulation configuration".format(id(self)))
+                logger.log_web("[{}]: executing db query: retrieve_simulation_configuration".format(id(self)))
                 self.configuration = dao.retrieve_simulation_configuration(self.simulation.uid)
 
-                logger.log_web("[{}]: executing db query 4: simulation message count".format(id(self)))
+                logger.log_web("[{}]: executing db query: retrieve_simulation_message_count".format(id(self)))
                 self.message_count = dao.retrieve_simulation_message_count(self.simulation.uid)
-
-                logger.log_web("[{}]: retrieved simulation data".format(id(self)))
 
 
         def _set_output():
@@ -71,6 +69,7 @@ class FetchDetailRequestHandler(ProdiguerHTTPRequestHandler):
                 'message_count': self.message_count,
                 'simulation': self.simulation
             }
+
 
         # Invoke tasks.
         self.invoke(rv.validate_fetch_one, [

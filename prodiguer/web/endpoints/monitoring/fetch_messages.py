@@ -43,10 +43,10 @@ class FetchMessagesRequestHandler(ProdiguerHTTPRequestHandler):
 
             """
             with db.session.create():
-                logger.log_web("[{}]: executing db query 1: simulation info".format(id(self)))
+                logger.log_web("[{}]: executing db query: retrieve_simulation".format(id(self)))
                 self.simulation = dao.retrieve_simulation(self.simulation_uid)
 
-                logger.log_web("[{}]: executing db query 2: simulation message history".format(id(self)))
+                logger.log_web("[{}]: executing db query: retrieve_simulation_messages".format(id(self)))
                 self.message_history = dao.retrieve_simulation_messages(self.simulation_uid)
 
 
@@ -58,6 +58,7 @@ class FetchMessagesRequestHandler(ProdiguerHTTPRequestHandler):
                 'message_history': self.message_history,
                 'simulation': self.simulation
             }
+
 
         # Invoke tasks.
         self.invoke(rv.validate_fetch_messages, [

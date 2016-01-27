@@ -48,18 +48,6 @@ _ACCOUNTING_PROJECTS = [
 # The global now.
 _NOW = datetime.datetime.now()
 
-# Set of timeslices to test.
-_TIMESLICES = [
-    "1W",
-    "2W",
-    "1M",
-    "2M",
-    "3M",
-    "6M",
-    "12M",
-    "18M"
-]
-
 # Set of output end/start data to be used.
 _OUTPUT_DATES = [datetime.datetime(1880 + (i * 10), 1, 1) for i in range(15)]
 
@@ -223,17 +211,16 @@ def _main():
     then = arrow.now()
     cv.cache.load()
 
-    with db.session.create():
-        # Create N simulations per day for the last M days.
-        for start_date in (_NOW - datetime.timedelta(days=x) for x in xrange(_QUOTA_DAYS, 1, -1)):
-            logger.log_db("creating {} simulations starting at: {}".format(_QUOTA_SIMS_PER_DAY, start_date))
-            end_date = start_date + datetime.timedelta(days=4)
-            for _ in range(_QUOTA_SIMS_PER_DAY):
-                simulation = _create_simulation(start_date, end_date)
-                _create_simulation_configuration(simulation)
-                jobs = [_create_job(simulation, i + 1) for i in range(_QUOTA_JOBS_PER_SIM)]
-                for job in jobs:
-                    _create_job_messages(simulation, job)
+    # Create N simulations per day for the last M days.
+    for start_date in (_NOW - datetime.timedelta(days=x) for x in xrange(_QUOTA_DAYS, 1, -1)):
+        logger.log_db("creating {} simulations starting at: {}".format(_QUOTA_SIMS_PER_DAY, start_date))
+        end_date = start_date + datetime.timedelta(days=4)
+        for _ in range(_QUOTA_SIMS_PER_DAY):
+            simulation = _create_simulation(start_date, end_date)
+            _create_simulation_configuration(simulation)
+            jobs = [_create_job(simulation, i + 1) for i in range(_QUOTA_JOBS_PER_SIM)]
+            for job in jobs:
+                _create_job_messages(simulation, job)
 
     # Finalize.
     msg = "created {} simulations in: {}"
@@ -241,4 +228,5 @@ def _main():
     logger.log_db(msg)
 
 if __name__ == '__main__':
-    _main()
+    with db.session.create():
+        _main()

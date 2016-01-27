@@ -50,8 +50,13 @@ def init_logging():
 def create(connection=None, commitable=False):
     """Starts & manages a db session.
 
+    :param connection: DB connection information.
+    :type connection: str | sqlalchemy.Engine
+    :param bool commitable: Flag indicating whether to auto-commit.
+
     """
-    start(connection)
+    _start(connection)
+    logger.log_db("db connection opened")
     try:
         yield
     except Exception as err:
@@ -62,11 +67,12 @@ def create(connection=None, commitable=False):
     else:
         if commitable:
             commit()
+        logger.log_db("db connection closed")
     finally:
-        end()
+        _end()
 
 
-def start(connection=None):
+def _start(connection=None):
     """Starts a db session.
 
     :param connection: Either a db connection string or a SQLAlchemy db engine.
@@ -90,7 +96,7 @@ def start(connection=None):
     _sa_session = sessionmaker(bind=sa_engine)()
 
 
-def end():
+def _end():
     """Ends a session.
 
     """
