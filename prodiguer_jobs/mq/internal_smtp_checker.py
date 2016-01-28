@@ -26,6 +26,9 @@ from prodiguer_jobs.mq.utils import enqueue
 # Maximum number of emails allowed to reside in mailbox before triggering operator warning.
 _MAX_UNPROCESSED = config.mq.mail.checker.maxUnprocessedCount
 
+# Maximum number of seconds between email dispatch & email arrival before triggering operator warning.
+_MAX_LATENCY = config.mq.mail.checker.maxLatencyInSeconds
+
 # Delay in seconds between checks.
 _RETRY_DELAY = config.mq.mail.checker.retryDelayInSeconds
 
@@ -74,9 +77,22 @@ def _check_email_latency():
     if not emails:
         return
 
-    # TODO algorithm to detect latency issues
-    # for email in emails:
-    #     print "AA", email.arrival_date, email.dispatch_date, email.dispatch_latency
+    # Set late emails.
+    late = []
+    if not late:
+        return
+
+    # Log.
+    msg = "{} emails have latencies that exceed the limit {} seconds."
+    msg = msg.format(len(late), _MAX_LATENCY)
+    _log(msg, logger.LOG_LEVEL_WARNING)
+
+    # Alert operator.
+    enqueue(mq.constants.MESSAGE_TYPE_ALERT, {
+        "trigger": u"smtp-checker-latency",
+        "max_latency": _MAX_LATENCY,
+        "number_of_late_emails": len(late)
+        })
 
 
 def _do(func):
