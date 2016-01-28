@@ -110,7 +110,7 @@ def execute(throttle=0):
 
     """
     while True:
+        time.sleep(_RETRY_DELAY)
         _log("checking smtp state ...")
         _do(_check_email_count)
         _do(_check_email_latency)
-        time.sleep(_RETRY_DELAY)
