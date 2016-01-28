@@ -267,3 +267,14 @@ def get_email_dispatch_date(body):
 
     """
     return arrow.get(body['Date'], _DATE_FORMAT)
+
+
+def send_email(addresses_to, subject, body):
+    """Dispatches email to Prodiguer email server.
+
+    :param list addresses_to: List of email addresses to which email will be delivered.
+    :param str subject: Subject of email to be dispatched.
+    :param str body: Body of email to be dispatched.
+
+    """
+    print "TODO: send email", addresses_to, subject, body
