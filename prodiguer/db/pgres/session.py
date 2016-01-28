@@ -9,13 +9,11 @@
 
 
 """
-import collections
 import contextlib
 import logging
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.engine import Engine
 
 from prodiguer.utils import config
 from prodiguer.utils import logger
@@ -60,7 +58,8 @@ def create(connection=None, commitable=False):
 
     """
     _start(connection)
-    logger.log_db("db connection opened")
+    logger.log_db("db connection [{}] opened".format(id(_sa_session)))
+
     try:
         yield
     except Exception as err:
@@ -71,7 +70,7 @@ def create(connection=None, commitable=False):
     else:
         if commitable:
             commit()
-        logger.log_db("db connection closed")
+        logger.log_db("db connection [{}] closed".format(id(_sa_session)))
     finally:
         _end()
 
@@ -105,7 +104,6 @@ def _end():
     """Ends a session.
 
     """
-    # global sa_engine
     global _sa_session
 
     if _sa_session is not None:

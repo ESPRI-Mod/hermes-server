@@ -23,7 +23,7 @@ def get_tasks():
     """
     return (
         _unpack_content,
-        _verify_is_late,
+        _verify,
         _persist_supervision,
         _enqueue_supervisor_format
         )
@@ -54,12 +54,12 @@ def _unpack_content(ctx):
     ctx.trigger_code = ctx.content['trigger_code']
 
 
-def _verify_is_late(ctx):
-    """Verifies that the job is late.
+def _verify(ctx):
+    """Verifies that the late job detection is valid.
 
     """
     job = db.dao_monitoring.retrieve_job(ctx.job_uid)
-    ctx.abort = job.execution_end_date is not None
+    ctx.abort = job is None or job.execution_end_date is not None
 
 
 def _persist_supervision(ctx):

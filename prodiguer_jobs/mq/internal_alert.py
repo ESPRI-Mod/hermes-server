@@ -38,8 +38,8 @@ _EMAIL_SUBJECT = u"PRODIGUER OPS :: WARNING :: {}"
 
 # Map of email subjects to trigger types.
 _EMAIL_SUBJECT_MAP = {
-    _TRIGGER_SMTP_CHECKER_COUNT: u"",
-    _TRIGGER_SMTP_CHECKER_LATENCY: u""
+    _TRIGGER_SMTP_CHECKER_COUNT: u"Too many unprocessed emails",
+    _TRIGGER_SMTP_CHECKER_LATENCY: u"Emails taking too long to arrive from HPC"
 }
 
 # Operator email body template.

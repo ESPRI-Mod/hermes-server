@@ -168,6 +168,31 @@ def produce(
         producer.stop()
 
 
+def _process_message(ctx, callback):
+    """Processes a message being consumed from MQ server.
+
+    """
+    with db.session.create():
+        # Persist message.
+        try:
+            ctx.msg = persist(ctx.properties, ctx.content_raw)
+
+        # Skip duplicate messages.
+        except sqlalchemy.exc.IntegrityError:
+            msg = "Duplicate message skipped: TYPE={1};  UID={0}"
+            msg = msg.format(ctx.properties.message_id, ctx.properties.type)
+            logger.log_mq_warning(msg)
+            db.session.rollback()
+
+        # Log persistence errors (should never happen).
+        except Exception as err:
+            logger.log_mq_error(err)
+
+        # Invoke message processing callback.
+        else:
+            callback(ctx)
+
+
 def consume(
     exchange,
     queue,
@@ -188,32 +213,10 @@ def consume(
     :param bool verbose: Flag indicating whether logging level is verbose.
 
     """
-    def msg_handler(ctx):
-        """Handles message being consumed.
-
-        """
-        # Persist message.
-        try:
-            ctx.msg = persist(ctx.properties, ctx.content_raw)
-        # Skip duplicate messages.
-        except sqlalchemy.exc.IntegrityError:
-            msg = "Duplicate message skipped: TYPE={1};  UID={0}"
-            msg = msg.format(ctx.properties.message_id, ctx.properties.type)
-            logger.log_mq_warning(msg)
-            db.session.rollback()
-
-        # Log persistence errors.
-        except Exception as err:
-            logger.log_mq_error(err)
-
-        # Invoke message processing callback.
-        else:
-            callback(ctx)
-
     # Instantiate consumer.
     consumer = Consumer(exchange,
                         queue,
-                        msg_handler,
+                        lambda ctx: _process_message(ctx, callback),
                         connection_url=connection_url,
                         consume_limit=consume_limit,
                         context_type=context_type,

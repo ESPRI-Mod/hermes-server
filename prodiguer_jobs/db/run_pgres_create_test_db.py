@@ -29,7 +29,7 @@ from prodiguer.utils import logger
 
 
 # Number of days for which to create test simulations.
-_QUOTA_DAYS = 60
+_QUOTA_DAYS = 180
 
 # Number of simulations to create per day.
 _QUOTA_SIMS_PER_DAY = 30

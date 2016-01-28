@@ -17,7 +17,6 @@ from prodiguer import cv
 from prodiguer import mq
 from prodiguer.utils import logger
 from prodiguer.utils import rt
-from prodiguer.db import pgres as db
 from prodiguer_jobs.mq import delegator
 from prodiguer_jobs.mq import internal_alert
 from prodiguer_jobs.mq import internal_cv
@@ -208,19 +207,16 @@ def _execute_agent(agent_type, agent_limit, handler):
     """Executes a standard agent.
 
     """
-    # Initiate a db session.
-    with db.session.create():
+    # Initialise cv session.
+    cv.session.init()
 
-        # Initialise cv session.
-        cv.session.init()
-
-        # Consume messages.
-        mq.utils.consume(_get_exchange(agent_type),
-                         _get_queue(agent_type),
-                         lambda ctx: _process(agent_type, handler, ctx),
-                         consume_limit=agent_limit,
-                         context_type=_get_handler_context_type(handler),
-                         verbose=agent_limit > 0)
+    # Consume messages.
+    mq.utils.consume(_get_exchange(agent_type),
+                     _get_queue(agent_type),
+                     lambda ctx: _process(agent_type, handler, ctx),
+                     consume_limit=agent_limit,
+                     context_type=_get_handler_context_type(handler),
+                     verbose=agent_limit > 0)
 
 
 def _execute(agent_type, agent_limit):
