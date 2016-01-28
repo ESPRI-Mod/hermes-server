@@ -11,14 +11,15 @@
 
 
 """
+import datetime
 import time
 
-from prodiguer import __version__ as PRODIGUER_VERSION
 from prodiguer import config
 from prodiguer import mail
 from prodiguer import mq
+from prodiguer.db import pgres as db
 from prodiguer.utils import logger
-from prodiguer_jobs.mq import utils as mq_utils
+from prodiguer_jobs.mq.utils import enqueue
 
 
 
@@ -44,8 +45,6 @@ def _check_email_count():
     """Verifies that number of emails awaiting processing does not exceed a configurable limit.
 
     """
-    _log("checking unprocessed email count ...")
-
     # Escape if number of unprocessed email is less than max allowed.
     emails = mail.get_email_uid_list()
     if len(emails) < _MAX_UNPROCESSED:
@@ -57,7 +56,7 @@ def _check_email_count():
     _log(msg, logger.LOG_LEVEL_WARNING)
 
     # Alert operator.
-    mq_utils.enqueue(mq.constants.MESSAGE_TYPE_ALERT, {
+    enqueue(mq.constants.MESSAGE_TYPE_ALERT, {
         "trigger": u"smtp-checker-count",
         "unprocessed_email_count": len(emails),
         "unprocessed_email_limit": _MAX_UNPROCESSED
@@ -68,7 +67,16 @@ def _check_email_latency():
     """Verifies that average email arrival latency does not exceed a configurable period.
 
     """
-    _log("checking received email latency")
+    # Retrieve all emails that have been queued for processing since last check.
+    arrival_date = datetime.datetime.now() - datetime.timedelta(seconds=_RETRY_DELAY)
+    with db.session.create():
+        emails = db.dao_mq.retrieve_message_emails(arrival_date)
+    if not emails:
+        return
+
+    # TODO algorithm to detect latency issues
+    # for email in emails:
+    #     print "AA", email.arrival_date, email.dispatch_date, email.dispatch_latency
 
 
 def _do(func):
@@ -86,6 +94,7 @@ def execute(throttle=0):
 
     """
     while True:
-        time.sleep(_RETRY_DELAY)
+        _log("checking smtp state ...")
         _do(_check_email_count)
         _do(_check_email_latency)
+        time.sleep(_RETRY_DELAY)

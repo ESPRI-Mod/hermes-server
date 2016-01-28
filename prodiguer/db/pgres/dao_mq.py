@@ -104,6 +104,22 @@ def retrieve_message_email(email_id):
     return qry.first()
 
 
+@decorators.validate(validator.validate_retrieve_message_emails)
+def retrieve_message_emails(arrival_date):
+    """Retrieves a collection of message email records from db.
+
+    :param datetime arrival_date: Date from which emails will be retrieved.
+
+    :returns: Sequence of message email instances.
+    :rtype: list
+
+    """
+    qry = session.query(types.MessageEmail)
+    qry = qry.filter(types.MessageEmail.row_create_date >= arrival_date)
+
+    return qry.all()
+
+
 @decorators.validate(validator.validate_create_message_email)
 def create_message_email(email_id):
     """Creates a new message email record in db.

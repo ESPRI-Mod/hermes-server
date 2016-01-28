@@ -9,6 +9,7 @@
 
 
 """
+import collections
 import contextlib
 import logging
 
@@ -23,6 +24,9 @@ from prodiguer.utils import logger
 
 # SQLAlchemy engine.
 sa_engine = None
+
+# DB connection string used to create SQLAlchemy engine.
+_sa_connection = None
 
 # SQLAlchemy session.
 _sa_session = None
@@ -81,16 +85,17 @@ def _start(connection=None):
     """
     global sa_engine
     global _sa_session
+    global _sa_connection
 
-    # Set default connection (if necessary).
+    # Set default connection.
     if connection is None:
         connection = config.db.pgres.main
 
     # Set engine.
-    if isinstance(connection, Engine):
-        sa_engine = connection
-    else:
-        sa_engine = create_engine(unicode(connection), echo=False)
+    if _sa_connection != connection:
+        _sa_connection = connection
+        sa_engine = create_engine(connection, echo=False)
+        logger.log_db("db engine instantiated: {}".format(id(sa_engine)))
 
     # Set session.
     _sa_session = sessionmaker(bind=sa_engine)()
@@ -100,11 +105,9 @@ def _end():
     """Ends a session.
 
     """
-    global sa_engine
+    # global sa_engine
     global _sa_session
 
-    if sa_engine is not None:
-        sa_engine = None
     if _sa_session is not None:
         _sa_session.close()
         _sa_session = None

@@ -78,6 +78,13 @@ def validate_retrieve_message_email(email_id):
     msg_validator.validate_email_id(email_id)
 
 
+def validate_retrieve_message_emails(arrival_date):
+    """Function input validator: retrieve_message_emails.
+
+    """
+    pass
+
+
 def validate_update_message_email(email_id, arrival_date, dispatch_date):
     """Function input validator: update_message_email.
 
