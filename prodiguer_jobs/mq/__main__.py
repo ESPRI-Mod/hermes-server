@@ -19,6 +19,7 @@ from prodiguer.utils import logger
 from prodiguer.utils import rt
 from prodiguer.db import pgres as db
 from prodiguer_jobs.mq import delegator
+from prodiguer_jobs.mq import internal_alert
 from prodiguer_jobs.mq import internal_cv
 from prodiguer_jobs.mq import internal_fe
 from prodiguer_jobs.mq import internal_smtp
@@ -77,11 +78,13 @@ _AGENT_HANDLERS = {
     'debug-8100': supervisor_format_script,
     'debug-8200': supervisor_dispatch_script,
     'debug-8888': None,
+    'debug-alert': internal_alert,
     'debug-cv': internal_cv,
     'debug-fe': internal_fe,
     'debug-smtp': internal_smtp,
     'debug-smtp-checker': internal_smtp_checker,
     'debug-smtp-realtime': internal_smtp_realtime,
+    'live-alert': internal_alert,
     'live-cv': internal_cv,
     'live-fe': internal_fe,
     'live-metrics': delegator,
@@ -123,9 +126,11 @@ _AGENT_EXCHANGES = {
     mq.constants.EXCHANGE_PRODIGUER_SECONDARY: {
         'debug-8100',
         'debug-8200',
+        'debug-alert',
         'debug-cv',
         'debug-fe',
         'debug-smtp',
+        'live-alert',
         'live-cv',
         'live-fe',
         'live-smtp',
