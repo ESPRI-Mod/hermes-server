@@ -22,10 +22,6 @@ def _main():
     """
     logger.log_db("Reset cv table begins")
 
-    # Delete existing terms.
-    with db.session.create(commitable=True):
-        db.dao.delete_all(db.types.ControlledVocabularyTerm)
-
     # Reinitialise terms from cv files.
     with db.session.create():
         db.setup.init_cv_terms()
