@@ -25,7 +25,7 @@ from prodiguer.utils import logger
 
 
 # Mail server config.
-_CONFIG = config.mq.mail
+_CONFIG = config.mq
 
 
 def get_tasks():
@@ -159,7 +159,7 @@ def _drop_excluded_messages(ctx):
 
         """
         return 'msgProducerVersion' not in msg or \
-               msg['msgCode'] in _CONFIG.smtpConsumer.excludedTypes
+               msg['msgCode'] in _CONFIG.excludedTypes
 
     ctx.msg_dict_excluded = [m for m in ctx.msg_dict if _is_excluded(m)]
     ctx.msg_dict = [m for m in ctx.msg_dict if m not in ctx.msg_dict_excluded]
@@ -279,7 +279,7 @@ def _dequeue_email(ctx):
     """Removes email from mailbox after processing.
 
     """
-    if _CONFIG.deleteProcessed:
+    if _CONFIG.mail.deleteProcessed:
         mail.delete_email(ctx.email_uid, client=ctx.imap_client)
     else:
         mail.move_email(ctx.email_uid, client=ctx.imap_client)
