@@ -23,14 +23,17 @@ from prodiguer_jobs.mq.utils import enqueue
 
 
 
+# Mail server config.
+_CONFIG = config.mq.mail.checker
+
 # Maximum number of emails allowed to reside in mailbox before triggering operator warning.
-_MAX_UNPROCESSED = config.mq.mail.checker.maxUnprocessedCount
+_MAX_UNPROCESSED = _CONFIG.maxUnprocessedCount
 
 # Maximum number of seconds between email dispatch & email arrival before triggering operator warning.
-_MAX_LATENCY = config.mq.mail.checker.maxLatencyInSeconds
+_MAX_LATENCY = _CONFIG.maxLatencyInSeconds
 
 # Delay in seconds between checks.
-_RETRY_DELAY = config.mq.mail.checker.retryDelayInSeconds
+_RETRY_DELAY = _CONFIG.retryDelayInSeconds
 
 
 def _log(msg, level=logger.LOG_LEVEL_INFO):

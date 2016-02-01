@@ -24,8 +24,8 @@ from prodiguer.utils.config import data as config
 
 
 
-# IMAP config.
-_CONFIG = config.mq.mail.imap
+# Mail server config.
+_CONFIG = config.mq.mail
 
 # Email format identifier.
 _RFC822 = u'RFC822'
@@ -289,10 +289,10 @@ def send_email(address_from, address_to, subject, body):
     msg['Subject'] = subject
     msg.attach(MIMEText(body))
 
-    mailserver = smtplib.SMTP(config.mq.mail.imap.host)
+    mailserver = smtplib.SMTP(_CONFIG.host)
     mailserver.ehlo()
     mailserver.starttls()
     mailserver.ehlo()
-    mailserver.login(config.mq.mail.imap.username,
-                     config.mq.mail.imap.password)
+    mailserver.login(_CONFIG.username,
+                     _CONFIG.password)
     mailserver.sendmail("prodiguer-ops@ipsl.jussieu.fr", address_to, msg.as_string())

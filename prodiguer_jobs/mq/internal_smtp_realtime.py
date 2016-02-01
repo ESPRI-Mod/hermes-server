@@ -24,6 +24,10 @@ from prodiguer.db import pgres as db
 
 
 
+# Mail server config.
+_CONFIG = config.mq.mail
+
+
 def _log(msg):
     """Helper function: logs a message.
 
@@ -180,4 +184,4 @@ def execute(throttle=0):
             _execute()
         except Exception as err:
             _log(err)
-            time.sleep(config.mq.mail.idleFaultRetryDelayInSeconds)
+            time.sleep(_CONFIG.idleFaultRetryDelayInSeconds)
