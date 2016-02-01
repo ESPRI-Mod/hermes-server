@@ -13,6 +13,9 @@
 """
 import email
 import imaplib
+import smtplib
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
 
 import arrow
 import imapclient
@@ -269,12 +272,27 @@ def get_email_dispatch_date(body):
     return arrow.get(body['Date'], _DATE_FORMAT)
 
 
-def send_email(addresses_to, subject, body):
+def send_email(address_from, address_to, subject, body):
     """Dispatches email to Prodiguer email server.
 
-    :param list addresses_to: List of email addresses to which email will be delivered.
+    :param str address_from: Email address to use as sender's address.
+    :param str address_to: Email address to which email will be delivered.
     :param str subject: Subject of email to be dispatched.
     :param str body: Body of email to be dispatched.
 
     """
-    print "TODO: send email", addresses_to, subject, body
+    print "SENDING EMAIL TO PLATFORM OPERATOR"
+
+    msg = MIMEMultipart()
+    msg['From'] = "prodiguer-ops@ipsl.jussieu.fr"
+    msg['To'] = address_to
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body))
+
+    mailserver = smtplib.SMTP(config.mq.mail.imap.host)
+    mailserver.ehlo()
+    mailserver.starttls()
+    mailserver.ehlo()
+    mailserver.login(config.mq.mail.imap.username,
+                     config.mq.mail.imap.password)
+    mailserver.sendmail("prodiguer-ops@ipsl.jussieu.fr", address_to, msg.as_string())
