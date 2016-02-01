@@ -30,33 +30,28 @@ _TRIGGERS = {
     _TRIGGER_SMTP_CHECKER_LATENCY
 }
 
-# Target email address to which emails will be sent.
-_EMAIL_ADDRESSES = [i.strip() for i in config.operator.emailAddress.split(",")]
-
 # Operator email subject template.
-_EMAIL_SUBJECT = u"PRODIGUER OPS :: WARNING :: {}"
-
-# Map of email subjects to trigger types.
-_EMAIL_SUBJECT_MAP = {
-    _TRIGGER_SMTP_CHECKER_COUNT: u"Too many unprocessed emails",
-    _TRIGGER_SMTP_CHECKER_LATENCY: u"Emails taking too long to arrive from HPC"
-}
+_EMAIL_SUBJECT = u"PRODIGUER-OPS :: WARNING :: {}"
 
 # Operator email body template.
 _EMAIL_BODY = u"""Dear Prodiguer platform operator,
 
-A platform fault has occurrred which may require your attention.
-
-{}.
+{}
 
 Regards,
 
 The Prodiguer Platform"""
 
-# Map of email body text to trigger types.
-_EMAIL_BODY_MAP = {
-    _TRIGGER_SMTP_CHECKER_COUNT: u"The count of unprocessed emails ({}) exceeds the configured limit {}.",
-    _TRIGGER_SMTP_CHECKER_LATENCY: u"The arrival latency of emails is excessive.  There may be an issue with the SMTP server(s)."
+# Map of email content to triggers.
+_EMAIL_MAP = {
+    _TRIGGER_SMTP_CHECKER_COUNT: {
+        "body": u"The count of unprocessed emails ({}) exceeds the configured limit {}.",
+        "subject": u"Too many unprocessed emails"
+    },
+    _TRIGGER_SMTP_CHECKER_LATENCY: {
+        "body": u"The arrival latency of emails is excessive.  There may be an issue with the SMTP server(s).",
+        "subject": u"Emails taking too long to arrive from HPC"
+    }
 }
 
 
@@ -99,15 +94,12 @@ def _dispatch_operator_email(ctx):
 
     """
     # Escape if trigger type out of scope.
-    if ctx.trigger not in [
-        _TRIGGER_SMTP_CHECKER_COUNT,
-        _TRIGGER_SMTP_CHECKER_LATENCY
-        ]:
+    if ctx.trigger not in _EMAIL_MAP:
         return
 
     # Initialise email content.
-    subject = _EMAIL_SUBJECT.format(_EMAIL_SUBJECT_MAP[ctx.trigger])
-    body = _EMAIL_BODY.format(_EMAIL_BODY_MAP[ctx.trigger])
+    subject = _EMAIL_SUBJECT.format(_EMAIL_MAP[ctx.trigger]['subject'])
+    body = _EMAIL_BODY.format(_EMAIL_MAP[ctx.trigger]['body'])
 
     # Enhance email content (when appropriate).
     if ctx.trigger == _TRIGGER_SMTP_CHECKER_COUNT:
@@ -115,4 +107,7 @@ def _dispatch_operator_email(ctx):
                            ctx.content.get('unprocessed_email_limit'))
 
     # Send email.
-    mail.send_email(_EMAIL_ADDRESSES, subject, body)
+    mail.send_email(config.alerts.emailAddressFrom,
+                    config.alerts.emailAddressTo,
+                    subject,
+                    body)

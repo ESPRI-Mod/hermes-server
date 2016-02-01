@@ -70,6 +70,8 @@ def _check_email_latency():
     """Verifies that average email arrival latency does not exceed a configurable period.
 
     """
+    return
+
     # Retrieve all emails that have been queued for processing since last check.
     arrival_date = datetime.datetime.now() - datetime.timedelta(seconds=_RETRY_DELAY)
     with db.session.create():
@@ -111,6 +113,6 @@ def execute(throttle=0):
     """
     while True:
         time.sleep(_RETRY_DELAY)
-        _log("checking smtp state ...")
+        _log("checking SMTP server ...")
         _do(_check_email_count)
         _do(_check_email_latency)
