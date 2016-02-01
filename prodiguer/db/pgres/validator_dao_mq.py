@@ -71,6 +71,22 @@ def validate_is_duplicate(uid):
     msg_validator.validate_message_id(uid)
 
 
+def validate_retrieve_messages(uid=None):
+    """Function input validator: retrieve_messages.
+
+    """
+    if uid is not None:
+        validation.validate_uid(uid, "Simulation uid")
+
+
+def validate_retrieve_message_count(uid=None):
+    """Function input validator: retrieve_message_count.
+
+    """
+    if uid is not None:
+        validation.validate_uid(uid, "Simulation uid")
+
+
 def validate_retrieve_message_email(email_id):
     """Function input validator: retrieve_message_email.
 

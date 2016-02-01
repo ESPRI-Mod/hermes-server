@@ -14,6 +14,7 @@
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
 from prodiguer.db.pgres import validator_dao_mq as validator
+from prodiguer.db.pgres.convertor import as_datetime_string
 from prodiguer.utils import decorators
 
 
@@ -86,6 +87,54 @@ def create_message(
         instance.timestamp_raw = unicode(timestamp_raw)
 
     return session.add(instance)
+
+
+@decorators.validate(validator.validate_retrieve_message_count)
+def retrieve_message_count(uid=None):
+    """Retrieves count of simulation messages from db.
+
+    :param str uid: UID of simulation.
+
+    :returns: Count of message associated with a simulation.
+    :rtype: int
+
+    """
+    qry = session.query(types.Message)
+    if uid is not None:
+        qry = qry.filter(types.Message.correlation_id_1 == unicode(uid))
+        qry = qry.filter(types.Message.type_id != u'7000')
+
+    return qry.count()
+
+
+@decorators.validate(validator.validate_retrieve_messages)
+def retrieve_messages(uid=None):
+    """Retrieves message details from db.
+
+    :param str uid: Correlation UID.
+
+    :returns: List of message associated with a simulation.
+    :rtype: list
+
+    """
+    m = types.Message
+
+    qry = session.raw_query(
+        m.content,
+        m.email_id,
+        m.correlation_id_2,
+        as_datetime_string(m.row_create_date),
+        m.producer_version,
+        as_datetime_string(m.timestamp),
+        m.type_id,
+        m.uid
+        )
+    if uid is not None:
+        qry = qry.filter(m.correlation_id_1 == uid)
+        qry = qry.filter(m.type_id != u'7000')
+    qry = qry.order_by(m.timestamp)
+
+    return qry.all()
 
 
 @decorators.validate(validator.validate_retrieve_message_email)

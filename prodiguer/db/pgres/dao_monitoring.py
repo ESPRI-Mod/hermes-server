@@ -216,51 +216,6 @@ def retrieve_simulation_jobs(uid):
     return qry.all()
 
 
-@decorators.validate(validator.validate_retrieve_simulation_message_count)
-def retrieve_simulation_message_count(uid):
-    """Retrieves count of simulation messages from db.
-
-    :param str uid: UID of simulation.
-
-    :returns: Count of message associated with a simulation.
-    :rtype: int
-
-    """
-    qry = session.query(types.Message)
-    qry = qry.filter(types.Message.correlation_id_1 == unicode(uid))
-
-    return qry.count()
-
-
-@decorators.validate(validator.validate_retrieve_simulation_messages)
-def retrieve_simulation_messages(uid):
-    """Retrieves message details from db.
-
-    :param str uid: UID of simulation.
-
-    :returns: List of message associated with a simulation.
-    :rtype: list
-
-    """
-    m = types.Message
-
-    qry = session.raw_query(
-        m.content,
-        m.email_id,
-        m.correlation_id_2,
-        as_datetime_string(m.row_create_date),
-        m.producer_version,
-        as_datetime_string(m.timestamp),
-        m.type_id,
-        m.uid
-        )
-    qry = qry.filter(m.correlation_id_1 == uid)
-    qry = qry.filter(m.type_id != u'7000')
-    qry = qry.order_by(m.timestamp)
-
-    return qry.all()
-
-
 @decorators.validate(validator.validate_retrieve_job)
 def retrieve_job(uid):
     """Retrieves job details from db.

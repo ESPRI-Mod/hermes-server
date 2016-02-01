@@ -76,7 +76,7 @@ def on_connect(key, client):
     """
     if client not in _WS_CLIENTS[key]:
         _WS_CLIENTS[key].append(client)
-        logger.log_web("WS {0} :: connection opened :: clients = {1}.".format(key, len(_WS_CLIENTS[key])))
+        logger.log_web("web-socket connection opended :: clients = {}.".format(len(_WS_CLIENTS[key])))
 
 
 def on_disconnect(key, client):
@@ -88,7 +88,7 @@ def on_disconnect(key, client):
     """
     if client in _WS_CLIENTS[key]:
         _WS_CLIENTS[key].remove(client)
-        logger.log_web("WS {0} :: connection closed :: clients = {1}.".format(key, len(_WS_CLIENTS[key])))
+        logger.log_web("web-socket connection closed :: clients = {}.".format(len(_WS_CLIENTS[key])))
 
 
 def clear_cache(key=None):

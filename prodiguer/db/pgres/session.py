@@ -58,7 +58,7 @@ def create(connection=None, commitable=False):
 
     """
     _start(connection)
-    logger.log_db("db connection [{}] opened".format(id(_sa_session)))
+    # logger.log_db("db connection [{}] opened".format(id(_sa_session)))
 
     try:
         yield
@@ -70,7 +70,7 @@ def create(connection=None, commitable=False):
     else:
         if commitable:
             commit()
-        logger.log_db("db connection [{}] closed".format(id(_sa_session)))
+        # logger.log_db("db connection [{}] closed".format(id(_sa_session)))
     finally:
         _end()
 
