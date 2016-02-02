@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: internal_alert.py
+.. module:: alert.py
    :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
@@ -111,3 +111,5 @@ def _dispatch_operator_email(ctx):
                     config.alerts.emailAddressTo,
                     subject,
                     body)
+
+    logger.log_mq("Email dispatched to operator :: trigger code = ({}).".format(ctx.trigger))

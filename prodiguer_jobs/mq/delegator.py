@@ -12,42 +12,37 @@
 
 """
 from prodiguer import mq
-from prodiguer import rt
-from prodiguer_jobs.mq import metrics_conso
-from prodiguer_jobs.mq import metrics_environment
-from prodiguer_jobs.mq import monitoring_command_fail
-from prodiguer_jobs.mq import monitoring_job_end
-from prodiguer_jobs.mq import monitoring_job_start
-from prodiguer_jobs.mq import supervisor_detect_late_job
-from prodiguer_jobs.mq import supervisor_dispatch_script
-from prodiguer_jobs.mq import supervisor_format_script
+from prodiguer.utils.runtime import invoke_mq as invoke_handler
+from prodiguer_jobs.mq import metrics
+from prodiguer_jobs.mq import monitoring
+from prodiguer_jobs.mq import supervision
 
 
 
 # Map of message type to agents.
 _AGENTS = {
     # ... monitoring handlers
-    '0000': monitoring_job_start,
-    '0100': monitoring_job_end,
-    '1999': monitoring_job_end,
-    '1000': monitoring_job_start,
-    '1100': monitoring_job_end,
-    '1900': monitoring_command_fail,
-    '2000': monitoring_job_start,
-    '2100': monitoring_job_end,
-    '2900': monitoring_command_fail,
-    '2999': monitoring_job_end,
-    '3000': monitoring_job_start,
-    '3100': monitoring_job_end,
-    '3900': monitoring_command_fail,
-    '3999': monitoring_job_end,
+    '0000': monitoring.job_start,
+    '0100': monitoring.job_end,
+    '1000': monitoring.job_start,
+    '1100': monitoring.job_end,
+    '1900': monitoring.command_fail,
+    '1999': monitoring.job_end,
+    '2000': monitoring.job_start,
+    '2100': monitoring.job_end,
+    '2900': monitoring.command_fail,
+    '2999': monitoring.job_end,
+    '3000': monitoring.job_start,
+    '3100': monitoring.job_end,
+    '3900': monitoring.command_fail,
+    '3999': monitoring.job_end,
     # ... metrics handlers
-    '7000': metrics_environment,
-    '7010': metrics_conso,
+    '7000': metrics.environment,
+    '7010': metrics.conso,
     # ... supervisor handlers
-    '8000': supervisor_detect_late_job,
-    '8100': supervisor_format_script,
-    '8200': supervisor_dispatch_script
+    '8000': supervision.detect_late_job,
+    '8100': supervision.format_script,
+    '8200': supervision.dispatch_script
 }
 
 
@@ -72,7 +67,7 @@ def _process(ctx):
     """Processes a simulation monitoring message pulled from message queue.
 
     """
-    # Decode message content.
+    # Ensure message content is decoded.
     ctx.decode()
 
     # Set sub-agent.
@@ -84,7 +79,7 @@ def _process(ctx):
     sub_ctx.msg = ctx.msg
 
     # Invoke tasks.
-    rt.invoke_mq(ctx.props.type,
-                 agent.get_tasks(),
-                 agent.get_error_tasks() if hasattr(agent, "get_error_tasks") else [],
-                 sub_ctx)
+    invoke_handler(ctx.props.type,
+                   agent.get_tasks(),
+                   agent.get_error_tasks() if hasattr(agent, "get_error_tasks") else [],
+                   sub_ctx)

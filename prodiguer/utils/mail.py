@@ -281,8 +281,6 @@ def send_email(address_from, address_to, subject, body):
     :param str body: Body of email to be dispatched.
 
     """
-    print "SENDING EMAIL TO PLATFORM OPERATOR"
-
     msg = MIMEMultipart()
     msg['From'] = "prodiguer-ops@ipsl.jussieu.fr"
     msg['To'] = address_to
@@ -293,6 +291,6 @@ def send_email(address_from, address_to, subject, body):
     mailserver.ehlo()
     mailserver.starttls()
     mailserver.ehlo()
-    mailserver.login(_CONFIG.username,
-                     _CONFIG.password)
+    mailserver.login(_CONFIG.username, _CONFIG.password)
+
     mailserver.sendmail("prodiguer-ops@ipsl.jussieu.fr", address_to, msg.as_string())

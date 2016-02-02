@@ -13,29 +13,18 @@
 """
 import logging
 
+from tornado.options import define
+from tornado.options import options
+
 from prodiguer import cv
 from prodiguer import mq
 from prodiguer.utils import logger
-from prodiguer.utils import rt
+from prodiguer.utils.runtime import invoke_mq as invoke_handler
 from prodiguer_jobs.mq import delegator
-from prodiguer_jobs.mq import internal_alert
-from prodiguer_jobs.mq import internal_cv
-from prodiguer_jobs.mq import internal_fe
-from prodiguer_jobs.mq import internal_smtp
-from prodiguer_jobs.mq import internal_smtp_checker
-from prodiguer_jobs.mq import internal_smtp_realtime
-from prodiguer_jobs.mq import metrics_conso
-from prodiguer_jobs.mq import metrics_environment
-from prodiguer_jobs.mq import metrics_pcmdi
-from prodiguer_jobs.mq import monitoring_command_fail
-from prodiguer_jobs.mq import monitoring_job_end
-from prodiguer_jobs.mq import monitoring_job_start
-from prodiguer_jobs.mq import supervisor_detect_late_job
-from prodiguer_jobs.mq import supervisor_dispatch_script
-from prodiguer_jobs.mq import supervisor_format_script
-
-from tornado.options import define
-from tornado.options import options
+from prodiguer_jobs.mq import internal
+from prodiguer_jobs.mq import metrics
+from prodiguer_jobs.mq import monitoring
+from prodiguer_jobs.mq import supervision
 
 
 
@@ -56,43 +45,43 @@ logging.getLogger("requests").setLevel(logging.ERROR)
 
 # Map of MQ agents to MQ handlers.
 _AGENT_HANDLERS = {
-    'debug-0000': monitoring_job_start,
-    'debug-0100': monitoring_job_end,
-    'debug-1000': monitoring_job_start,
-    'debug-1100': monitoring_job_end,
-    'debug-1900': monitoring_command_fail,
-    'debug-1999': monitoring_job_end,
-    'debug-2000': monitoring_job_start,
-    'debug-2100': monitoring_job_end,
-    'debug-2900': monitoring_command_fail,
-    'debug-2999': monitoring_job_end,
-    'debug-3000': monitoring_job_start,
-    'debug-3100': monitoring_job_end,
-    'debug-3900': monitoring_command_fail,
-    'debug-3999': monitoring_job_end,
-    'debug-7000': metrics_environment,
-    'debug-7010': metrics_conso,
-    'debug-7100': metrics_pcmdi,
-    'debug-8000': supervisor_detect_late_job,
-    'debug-8100': supervisor_format_script,
-    'debug-8200': supervisor_dispatch_script,
+    'debug-0000': monitoring.job_start,
+    'debug-0100': monitoring.job_end,
+    'debug-1000': monitoring.job_start,
+    'debug-1100': monitoring.job_end,
+    'debug-1900': monitoring.command_fail,
+    'debug-1999': monitoring.job_end,
+    'debug-2000': monitoring.job_start,
+    'debug-2100': monitoring.job_end,
+    'debug-2900': monitoring.command_fail,
+    'debug-2999': monitoring.job_end,
+    'debug-3000': monitoring.job_start,
+    'debug-3100': monitoring.job_end,
+    'debug-3900': monitoring.command_fail,
+    'debug-3999': monitoring.job_end,
+    'debug-7000': metrics.environment,
+    'debug-7010': metrics.conso,
+    'debug-7100': metrics.pcmdi,
+    'debug-8000': supervision.detect_late_job,
+    'debug-8100': supervision.format_script,
+    'debug-8200': supervision.dispatch_script,
     'debug-8888': None,
-    'debug-alert': internal_alert,
-    'debug-cv': internal_cv,
-    'debug-fe': internal_fe,
-    'debug-smtp': internal_smtp,
-    'debug-smtp-checker': internal_smtp_checker,
-    'debug-smtp-realtime': internal_smtp_realtime,
-    'live-alert': internal_alert,
-    'live-cv': internal_cv,
-    'live-fe': internal_fe,
+    'debug-alert': internal.alert,
+    'debug-cv': internal.cv,
+    'debug-fe': internal.fe,
+    'debug-smtp': internal.smtp,
+    'debug-smtp-checker': internal.smtp_checker,
+    'debug-smtp-realtime': internal.smtp_realtime,
+    'live-alert': internal.alert,
+    'live-cv': internal.cv,
+    'live-fe': internal.fe,
     'live-metrics': delegator,
-    'live-metrics-pcmdi': metrics_pcmdi,
+    'live-metrics-pcmdi': metrics.pcmdi,
     'live-monitoring-compute': delegator,
     'live-monitoring-post-processing': delegator,
-    'live-smtp': internal_smtp,
-    'live-smtp-checker': internal_smtp_checker,
-    'live-smtp-realtime': internal_smtp_realtime,
+    'live-smtp': internal.smtp,
+    'live-smtp-checker': internal.smtp_checker,
+    'live-smtp-realtime': internal.smtp_realtime,
     'live-superviseur': delegator
 }
 
@@ -193,16 +182,6 @@ def _get_handler_error_tasks(handler):
         return task_factory()
 
 
-def _process(agent_type, handler, ctx):
-    """Processes a message.
-
-    """
-    rt.invoke_mq(agent_type,
-                 _get_handler_tasks(handler),
-                 _get_handler_error_tasks(handler),
-                 ctx)
-
-
 def _execute_agent(agent_type, agent_limit, handler):
     """Executes a standard agent.
 
@@ -213,7 +192,10 @@ def _execute_agent(agent_type, agent_limit, handler):
     # Consume messages.
     mq.utils.consume(_get_exchange(agent_type),
                      _get_queue(agent_type),
-                     lambda ctx: _process(agent_type, handler, ctx),
+                     lambda ctx: invoke_handler(agent_type,
+                                                _get_handler_tasks(handler),
+                                                _get_handler_error_tasks(handler),
+                                                ctx),
                      consume_limit=agent_limit,
                      context_type=_get_handler_context_type(handler),
                      verbose=agent_limit > 0)
