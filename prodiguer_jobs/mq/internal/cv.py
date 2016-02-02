@@ -11,7 +11,7 @@
 
 
 """
-from prodiguer_jobs.mq import utils
+from prodiguer.utils import shell
 
 
 
@@ -30,4 +30,4 @@ def _push_to_remote_repo(ctx):
     """Invokes API endpoint.
 
     """
-    utils.exec_shell_command(_SHELL_CMD)
+    shell.exec_command(_SHELL_CMD)

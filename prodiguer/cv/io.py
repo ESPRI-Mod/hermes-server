@@ -16,7 +16,7 @@ import os
 
 from prodiguer.cv import accessor as ta
 from prodiguer.utils import logger
-from prodiguer.utils import rt
+from prodiguer.utils import shell
 
 
 
@@ -24,7 +24,7 @@ def _get_path_to_archive():
     """Return path to CV data archive.
 
     """
-    return rt.get_path_to_repo(['prodiguer-cv', 'data'])
+    return shell.get_repo_path(['prodiguer-cv', 'data'])
 
 
 def _get_path_to_term(term):

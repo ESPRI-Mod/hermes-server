@@ -24,7 +24,7 @@ from prodiguer.web.endpoints import sim_metrics
 from prodiguer.web.utils import websockets
 from prodiguer.utils import config
 from prodiguer.utils import logger
-from prodiguer.utils import rt
+from prodiguer.utils import shell
 
 
 
@@ -36,7 +36,7 @@ def _get_path_to_front_end():
     """Return path to the front end javascript application.
 
     """
-    dir_fe = rt.get_path_to_repo(['prodiguer-fe', 'src'])
+    dir_fe = shell.get_repo_path(['prodiguer-fe', 'src'])
     logger.log_web("Front-end static files @ {0}".format(dir_fe))
 
     return dir_fe

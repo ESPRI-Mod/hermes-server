@@ -11,12 +11,10 @@
 
 
 """
-import os
-import subprocess
-
 import arrow
 
 from prodiguer import mq
+from prodiguer.utils import logger
 from prodiguer import __version__ as PRODIGUER_VERSION
 
 
@@ -82,16 +80,63 @@ def get_timestamp(timestamp):
         return arrow.get(timestamp).to('UTC').datetime
 
 
-def exec_shell_command(cmd):
-    """Executes a prodiguer-shell command.
+def invoke(agent_type, tasks, error_tasks, ctx):
+    """Invokes a set of message queue tasks and handles errors.
 
-    :param str cmd: Prodiguer shell command to be executed.
+    :param str: MQ agent type.
+    :param list tasks: A set of tasks.
+    :param list error_tasks: A set of error tasks.
+    :param object ctx: Task processing context object.
 
     """
-    cmd_type = cmd.split("-")[0]
-    cmd_name = "_".join(cmd.split("-")[1:])
-    script = os.getenv("PRODIGUER_HOME")
-    script = os.path.join(script, "bash")
-    script = os.path.join(script, cmd_type)
-    script = os.path.join(script, "{}.sh".format(cmd_name))
-    subprocess.call(script, shell=True)
+    def  _get(taskset):
+        """Gets formatted tasks in readiness for execution.
+
+        """
+        if taskset is None:
+            return []
+        else:
+            try:
+                iter(taskset)
+            except TypeError:
+                return [taskset]
+            else:
+                return taskset
+
+
+    def _invoke(task, err=None):
+        """Invokes an individual task.
+
+        """
+        if ctx and err:
+            task(ctx, err)
+        elif ctx:
+            task(ctx)
+        elif err:
+            task(err)
+        else:
+            task()
+
+    # Execute tasks.
+    for task in _get(tasks):
+        try:
+            _invoke(task)
+        # ... error tasks.
+        except Exception as err:
+            err_msg = "{0} :: {1} :: {2} :: {3}.".format(agent_type, task, type(err), err)
+            logger.log_mq_error(err_msg)
+            try:
+                for error_task in _get(error_tasks):
+                    print agent_type, "ERROR TASK", error_task
+                    _invoke(error_task, err)
+            except:
+                pass
+            # Escape out of main loop.
+            break
+        # ... abort tasks.
+        else:
+            try:
+                if ctx.abort == True:
+                    break
+            except AttributeError:
+                pass

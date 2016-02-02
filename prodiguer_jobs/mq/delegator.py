@@ -12,10 +12,10 @@
 
 """
 from prodiguer import mq
-from prodiguer.utils.runtime import invoke_mq as invoke_handler
 from prodiguer_jobs.mq import metrics
 from prodiguer_jobs.mq import monitoring
 from prodiguer_jobs.mq import supervision
+from prodiguer_jobs.mq.utils import invoke as invoke_handler
 
 
 
