@@ -69,14 +69,14 @@ def _format(ctx):
 
     """
     # Set dispatch parameters to be passed to dispatcher.
-    params = superviseur.FormatParameters(ctx.simulation, ctx.job)
+    params = superviseur.FormatParameters(ctx.simulation, ctx.job, ctx.supervision)
 
     # Format script to be dispatched to HPC for execution.
     try:
         ctx.supervision.script = superviseur.format_script(params)
     # ... handle formatting errors
-    except superviseur.FormatException as err:
-        # TODO define error strategy
+    # TODO define error strategy
+    except:
         ctx.abort = True
     else:
         db.session.commit()
