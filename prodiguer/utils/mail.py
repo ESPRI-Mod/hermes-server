@@ -282,7 +282,7 @@ def send_email(address_from, address_to, subject, body):
 
     """
     msg = MIMEMultipart()
-    msg['From'] = "prodiguer-ops@ipsl.jussieu.fr"
+    msg['From'] = address_from
     msg['To'] = address_to
     msg['Subject'] = subject
     msg.attach(MIMEText(body))
@@ -293,4 +293,4 @@ def send_email(address_from, address_to, subject, body):
     mailserver.ehlo()
     mailserver.login(_CONFIG.username, _CONFIG.password)
 
-    mailserver.sendmail("prodiguer-ops@ipsl.jussieu.fr", address_to, msg.as_string())
+    mailserver.sendmail(address_from, address_to, msg.as_string())

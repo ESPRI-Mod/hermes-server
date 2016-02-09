@@ -105,7 +105,6 @@ def _dispatch_operator_email(ctx):
     if ctx.trigger == _TRIGGER_SMTP_CHECKER_COUNT:
         body = body.format(ctx.content.get('unprocessed_email_count'),
                            ctx.content.get('unprocessed_email_limit'))
-
     # Send email.
     mail.send_email(config.alerts.emailAddressFrom,
                     config.alerts.emailAddressTo,
