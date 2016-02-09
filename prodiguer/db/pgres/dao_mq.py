@@ -131,6 +131,7 @@ def retrieve_messages(uid=None):
     if uid is not None:
         qry = qry.filter(m.correlation_id_1 == uid)
         qry = qry.filter(m.type_id != u'7000')
+        qry = qry.filter(m.type_id != u'1900')
     qry = qry.order_by(m.timestamp)
 
     return qry.all()
