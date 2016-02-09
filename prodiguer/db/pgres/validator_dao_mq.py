@@ -79,12 +79,11 @@ def validate_retrieve_messages(uid=None):
         validation.validate_uid(uid, "Simulation uid")
 
 
-def validate_retrieve_message_count(uid=None):
-    """Function input validator: retrieve_message_count.
+def validate_has_messages(uid):
+    """Function input validator: has_messages.
 
     """
-    if uid is not None:
-        validation.validate_uid(uid, "Simulation uid")
+    validation.validate_uid(uid, "Simulation uid")
 
 
 def validate_retrieve_message_email(email_id):

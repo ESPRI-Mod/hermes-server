@@ -133,3 +133,13 @@ def retrieve_allocation(
     qry = qry.filter(types.Allocation.start_date == arrow.get(start_date).datetime)
 
     return qry.first()
+
+
+
+def retrieve_jobs_by_project():
+    raise NotImplemented()
+
+
+
+def retrieve_mails_by_project():
+    raise NotImplemented()

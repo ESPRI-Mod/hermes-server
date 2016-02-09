@@ -57,7 +57,7 @@ class FetchDetailRequestHandler(ProdiguerHTTPRequestHandler):
                 self.configuration = dao_monitoring.retrieve_simulation_configuration(self.simulation.uid)
 
                 logger.log_web("[{}]: executing db query: retrieve_message_count".format(id(self)))
-                self.message_count = dao_mq.retrieve_message_count(self.simulation.uid)
+                self.has_messages = dao_mq.has_messages(self.simulation.uid)
 
 
         def _set_output():
@@ -66,8 +66,8 @@ class FetchDetailRequestHandler(ProdiguerHTTPRequestHandler):
             """
             self.output = {
                 'config_card': self.configuration.card if self.configuration else None,
+                'has_messages': self.has_messages,
                 'job_list': self.job_list,
-                'message_count': self.message_count,
                 'simulation': self.simulation
             }
 

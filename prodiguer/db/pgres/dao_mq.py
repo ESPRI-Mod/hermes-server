@@ -89,22 +89,21 @@ def create_message(
     return session.add(instance)
 
 
-@decorators.validate(validator.validate_retrieve_message_count)
-def retrieve_message_count(uid=None):
-    """Retrieves count of simulation messages from db.
+@decorators.validate(validator.validate_has_messages)
+def has_messages(uid):
+    """Retrieves boolean indicating whether a simulation has at least one messages in the db.
 
     :param str uid: UID of simulation.
 
-    :returns: Count of message associated with a simulation.
-    :rtype: int
+    :returns: True if simulation has >= 1 message, false otherwise.
+    :rtype: bool
 
     """
     qry = session.query(types.Message)
-    if uid is not None:
-        qry = qry.filter(types.Message.correlation_id_1 == unicode(uid))
-        qry = qry.filter(types.Message.type_id != u'7000')
+    qry = qry.filter(types.Message.correlation_id_1 == unicode(uid))
+    qry = qry.filter(types.Message.type_id != u'7000')
 
-    return qry.count()
+    return qry.first() is not None
 
 
 @decorators.validate(validator.validate_retrieve_messages)
