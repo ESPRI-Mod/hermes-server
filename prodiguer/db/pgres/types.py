@@ -11,6 +11,7 @@
 """
 from prodiguer.db.pgres.types_conso import Allocation
 from prodiguer.db.pgres.types_conso import Consumption
+from prodiguer.db.pgres.types_conso import CPUState
 from prodiguer.db.pgres.types_conso import OccupationStore
 from prodiguer.db.pgres.types_cv import ControlledVocabularyTerm
 from prodiguer.db.pgres.types_monitoring import Command
@@ -33,6 +34,7 @@ SUPPORTED = TYPES = [
     # ... conso types
     Allocation,
     Consumption,
+    CPUState,
     OccupationStore,
     # ... cv types
     ControlledVocabularyTerm,
