@@ -26,7 +26,8 @@ def get_tasks():
     return (
       _unpack_content,
       _set_data,
-      _dispatch
+      _dispatch,
+      _process_dispatch_error
       )
 
 
@@ -65,14 +66,13 @@ def _dispatch(ctx):
 
     """
     # Set dispatch parameters to be passed to dispatcher.
-    # TODO verify exactly what information is required.
-    params = superviseur.DispatchParameters(ctx.simulation, ctx.job)
+    params = superviseur.DispatchParameters(ctx.simulation, ctx.job, ctx.supervision)
 
     # Dispatch script to HPC for execution.
     try:
         superviseur.dispatch_script(params)
     # ... handle dispatch errors
-    except superviseur.DispatchException as err:
+    except Exception as err:
         ctx.supervision.dispatch_error = unicode(err)
     else:
         ctx.supervision.dispatch_error = None
@@ -82,7 +82,7 @@ def _dispatch(ctx):
         db.session.commit()
 
 
-def _process_dispatch_error():
+def _process_dispatch_error(ctx):
     """Processes a dispatch error.
 
     """
