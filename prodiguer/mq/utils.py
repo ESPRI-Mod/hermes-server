@@ -25,7 +25,12 @@ from prodiguer.mq.consumer import Consumer
 from prodiguer.mq.producer import Producer
 from prodiguer.mq.timestamp import Timestamp
 from prodiguer.utils import logger
+from prodiguer.utils.config import data as config
 
+
+
+# Configuration used by the module.
+_CONFIG = config.mq
 
 
 def create_ampq_message_properties(
@@ -179,8 +184,8 @@ def _process_message(ctx, callback):
 
         # Skip duplicate messages.
         except sqlalchemy.exc.IntegrityError:
-            msg = "Duplicate message skipped: TYPE={1};  UID={0}"
-            msg = msg.format(ctx.properties.message_id, ctx.properties.type)
+            msg = "Duplicate message skipped: TYPE={};  UID={}"
+            msg = msg.format(ctx.properties.type, ctx.properties.message_id)
             logger.log_mq_warning(msg)
             db.session.rollback()
 
@@ -191,6 +196,10 @@ def _process_message(ctx, callback):
         # Invoke message processing callback.
         else:
             callback(ctx)
+            if ctx.properties.type in _CONFIG.deletableTypes:
+                msg = "TODO :: auto-=delete message : TYPE={};  UID={}"
+                msg = msg.format(ctx.properties.type, ctx.properties.message_id)
+                logger.log_mq_warning(msg)
 
 
 def consume(

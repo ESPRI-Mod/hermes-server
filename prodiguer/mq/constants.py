@@ -226,38 +226,6 @@ TYPES = {
 	MESSAGE_TYPE_ALERT
 	}
 
-# Set of message types whose content is retained rather than deleted upon successfully being processed.
-MESSAGE_TYPE_PRETAINED = {
-	# ... monitoring - simulation
-	MESSAGE_TYPE_0000,
-	MESSAGE_TYPE_0100,
-	# ... monitoring - compute jobs
-	MESSAGE_TYPE_1000,
-	MESSAGE_TYPE_1100,
-	MESSAGE_TYPE_1999,
-	# ... monitoring - post-processing jobs
-	MESSAGE_TYPE_2000,
-	MESSAGE_TYPE_2100,
-	MESSAGE_TYPE_2999,
-	# ... monitoring - post-processing from checker jobs
-	MESSAGE_TYPE_3000,
-	MESSAGE_TYPE_3100,
-	MESSAGE_TYPE_3999,
-	# ... metrics
-	MESSAGE_TYPE_7010,
-	MESSAGE_TYPE_7100,
-	# ... supervisor
-	MESSAGE_TYPE_8000,
-	MESSAGE_TYPE_8100,
-	MESSAGE_TYPE_8200,
-	# ... misc
-	MESSAGE_TYPE_8888,
-	# ... internal
-	MESSAGE_TYPE_FE,
-	MESSAGE_TYPE_SMTP,
-	MESSAGE_TYPE_ALERT
-}
-
 # Map of applications to message types.
 MESSAGE_TYPE_APPLICATION = {
 	# ... monitoring - simulation

@@ -11,6 +11,8 @@
 
 
 """
+from sqlalchemy import distinct
+
 from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
@@ -230,6 +232,23 @@ def retrieve_job(uid):
     qry = qry.filter(types.Job.job_uid == unicode(uid))
 
     return qry.first()
+
+
+def retrieve_jobs_by_interval(interval_start, interval_end):
+    """Retrieves collection of jobs filtered by start datae interval.
+
+    :param datetime interval_start: Interval start date.
+    :param datetime interval_end: Interval end date.
+
+    :returns: Job details.
+    :rtype: list
+
+    """
+    qry = session.query(types.Job)
+    qry = qry.filter(types.Job.execution_start_date >= interval_start)
+    qry = qry.filter(types.Job.execution_start_date < interval_end)
+
+    return qry.all()
 
 
 @decorators.validate(validator.validate_retrieve_job_subset)
@@ -585,3 +604,16 @@ def delete_simulation(uid):
     dao.delete_by_facet(types.SimulationConfiguration, types.SimulationConfiguration.simulation_uid == uid)
     dao.delete_by_facet(types.Message, types.Message.correlation_id_1 == uid)
     dao.delete_by_facet(types.Simulation, types.Simulation.uid == uid)
+
+
+def get_accounting_projects():
+    """Retrieves disinct set of accounting projects.
+
+    """
+    j = types.Job
+
+    qry = session.raw_query(
+        distinct(j.accounting_project)
+        )
+
+    return set(sorted([ap[0] for ap in qry.all()]))
