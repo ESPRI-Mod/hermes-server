@@ -287,7 +287,7 @@ def send_email(address_from, address_to, subject, body):
     msg['Subject'] = subject
     msg.attach(MIMEText(body))
 
-    mailserver = smtplib.SMTP(_CONFIG.host)
+    mailserver = smtplib.SMTP(_CONFIG.host, port=_CONFIG.smtpPort)
     mailserver.ehlo()
     mailserver.starttls()
     mailserver.ehlo()

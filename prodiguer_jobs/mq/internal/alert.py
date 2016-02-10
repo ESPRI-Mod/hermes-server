@@ -45,7 +45,7 @@ The Prodiguer Platform"""
 # Map of email content to triggers.
 _EMAIL_MAP = {
     _TRIGGER_SMTP_CHECKER_COUNT: {
-        "body": u"The count of unprocessed emails ({}) exceeds the configured limit {}.",
+        "body": u"The count of unprocessed emails ({}) exceeds the configured limit ({}).  The smtp-realtime daemon may be down.",
         "subject": u"Too many unprocessed emails"
     },
     _TRIGGER_SMTP_CHECKER_LATENCY: {
