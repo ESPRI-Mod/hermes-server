@@ -293,33 +293,30 @@ def persist_message_email_stats(
     :param int outgoing_7100: Count of messages (type=7100) dispateched to RabbitMQ server.
 
     """
-    # Escape if email db entry is not yet written.
-    email = retrieve_message_email(email_id)
-    if email is None:
-        return
+    instance = types.MessageEmailStats()
+    instance.email_id = email_id
+    instance.incoming = incoming
+    instance.errors_decoding_base64 = errors_decoding_base64
+    instance.errors_decoding_json = errors_decoding_json
+    instance.errors_encoding_ampq = errors_encoding_ampq
+    instance.excluded = excluded
+    instance.outgoing = outgoing
+    instance.outgoing_0000 = outgoing_0000
+    instance.outgoing_0100 = outgoing_0100
+    instance.outgoing_1000 = outgoing_1000
+    instance.outgoing_1100 = outgoing_1100
+    instance.outgoing_1900 = outgoing_1900
+    instance.outgoing_1999 = outgoing_1999
+    instance.outgoing_2000 = outgoing_2000
+    instance.outgoing_2100 = outgoing_2100
+    instance.outgoing_2900 = outgoing_2900
+    instance.outgoing_2999 = outgoing_2999
+    instance.outgoing_3000 = outgoing_3000
+    instance.outgoing_3100 = outgoing_3100
+    instance.outgoing_3900 = outgoing_3900
+    instance.outgoing_3999 = outgoing_3999
+    instance.outgoing_7000 = outgoing_7000
+    instance.outgoing_7010 = outgoing_7010
+    instance.outgoing_7100 = outgoing_7100
 
-    email.incoming = incoming
-    email.errors_decoding_base64 = errors_decoding_base64
-    email.errors_decoding_json = errors_decoding_json
-    email.errors_encoding_ampq = errors_encoding_ampq
-    email.excluded = excluded
-    email.outgoing = outgoing
-    email.outgoing_0000 = outgoing_0000
-    email.outgoing_0100 = outgoing_0100
-    email.outgoing_1000 = outgoing_1000
-    email.outgoing_1100 = outgoing_1100
-    email.outgoing_1900 = outgoing_1900
-    email.outgoing_1999 = outgoing_1999
-    email.outgoing_2000 = outgoing_2000
-    email.outgoing_2100 = outgoing_2100
-    email.outgoing_2900 = outgoing_2900
-    email.outgoing_2999 = outgoing_2999
-    email.outgoing_3000 = outgoing_3000
-    email.outgoing_3100 = outgoing_3100
-    email.outgoing_3900 = outgoing_3900
-    email.outgoing_3999 = outgoing_3999
-    email.outgoing_7000 = outgoing_7000
-    email.outgoing_7010 = outgoing_7010
-    email.outgoing_7100 = outgoing_7100
-
-    session.update(email)
+    return session.add(instance)

@@ -21,6 +21,7 @@ from prodiguer.db.pgres.types_monitoring import Simulation
 from prodiguer.db.pgres.types_monitoring import SimulationConfiguration
 from prodiguer.db.pgres.types_mq import Message
 from prodiguer.db.pgres.types_mq import MessageEmail
+from prodiguer.db.pgres.types_mq import MessageEmailStats
 from prodiguer.db.pgres.types_superviseur import Supervision
 
 
@@ -47,6 +48,7 @@ SUPPORTED = TYPES = [
     # ... mq types
     Message,
     MessageEmail,
+    MessageEmailStats,
     # ... superviseur types
     Supervision
 ]

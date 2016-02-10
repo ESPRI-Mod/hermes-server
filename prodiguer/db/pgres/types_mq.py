@@ -78,13 +78,25 @@ class MessageEmail(Entity):
     dispatch_date = Column(DateTime)
     dispatch_latency = Column(Integer)
 
+
+class MessageEmailStats(Entity):
+    """Represents statisitics regarding an email received from a computing centre.
+
+    """
+    # SQLAlchemy directives.
+    __tablename__ = 'tbl_message_email_stats'
+    __table_args__ = (
+        {'schema':SCHEMA}
+    )
+
+    # Attributes.
+    email_id = Column(BigInteger, nullable=False)
     incoming = Column(Integer)
     errors_decoding_base64 = Column(Integer)
     errors_decoding_json = Column(Integer)
     errors_encoding_ampq = Column(Integer)
     excluded = Column(Integer)
     outgoing = Column(Integer)
-
     outgoing_0000 = Column(Integer)
     outgoing_0100 = Column(Integer)
     outgoing_1000 = Column(Integer)
