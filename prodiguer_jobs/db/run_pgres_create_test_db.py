@@ -29,7 +29,7 @@ from prodiguer.utils import logger
 
 
 # Number of days for which to create test simulations.
-_QUOTA_DAYS = 180
+_QUOTA_DAYS = 360
 
 # Number of simulations to create per day.
 _QUOTA_SIMS_PER_DAY = 30
@@ -37,12 +37,23 @@ _QUOTA_SIMS_PER_DAY = 30
 # Number of jobs to create per simulation.
 _QUOTA_JOBS_PER_SIM = 30
 
+# Number of simulations to create per day.
+_QUOTA_MSG_PER_JOB = 10
+
 # Set of accounting projects to be used.
 _ACCOUNTING_PROJECTS = [
     u"ipsl",
     u"lmd",
     u"gencmip6",
-    u"gen6328"
+    u"gen1000",
+    u"gen2000",
+    u"gen3000",
+    u"gen4000",
+    u"gen5000",
+    u"gen6000",
+    u"gen7000",
+    u"gen8000",
+    u"gen9000",
 ]
 
 # The global now.
@@ -199,8 +210,9 @@ def _create_job_messages(simulation, job):
     """Create test messages related to a simulation.
 
     """
-    _create_job_message(simulation, job, mq.constants.MESSAGE_TYPE_1000)
-    _create_job_message(simulation, job, mq.constants.MESSAGE_TYPE_1100)
+    for _ in range(_QUOTA_MSG_PER_JOB):
+        _create_job_message(simulation, job, mq.constants.MESSAGE_TYPE_1000)
+        _create_job_message(simulation, job, mq.constants.MESSAGE_TYPE_1100)
 
 
 def _main():
