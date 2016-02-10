@@ -73,6 +73,32 @@ class MessageEmail(Entity):
 
     # Attributes.
     uid = Column(BigInteger, nullable=False, unique=True)
+
     arrival_date = Column(DateTime)
     dispatch_date = Column(DateTime)
     dispatch_latency = Column(Integer)
+
+    incoming = Column(Integer)
+    errors_decoding_base64 = Column(Integer)
+    errors_decoding_json = Column(Integer)
+    errors_encoding_ampq = Column(Integer)
+    excluded = Column(Integer)
+    outgoing = Column(Integer)
+
+    outgoing_0000 = Column(Integer)
+    outgoing_0100 = Column(Integer)
+    outgoing_1000 = Column(Integer)
+    outgoing_1100 = Column(Integer)
+    outgoing_1900 = Column(Integer)
+    outgoing_1999 = Column(Integer)
+    outgoing_2000 = Column(Integer)
+    outgoing_2100 = Column(Integer)
+    outgoing_2900 = Column(Integer)
+    outgoing_2999 = Column(Integer)
+    outgoing_3000 = Column(Integer)
+    outgoing_3100 = Column(Integer)
+    outgoing_3900 = Column(Integer)
+    outgoing_3999 = Column(Integer)
+    outgoing_7000 = Column(Integer)
+    outgoing_7010 = Column(Integer)
+    outgoing_7100 = Column(Integer)

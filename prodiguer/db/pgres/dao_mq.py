@@ -235,3 +235,91 @@ def update_message_email(email_id, arrival_date, dispatch_date):
         email.dispatch_latency = (arrival_date - dispatch_date).total_seconds()
 
     session.update(email)
+
+
+@decorators.validate(validator.validate_persist_message_email_stats)
+def persist_message_email_stats(
+    email_id,
+    incoming=0,
+    errors_decoding_base64=0,
+    errors_decoding_json=0,
+    errors_encoding_ampq=0,
+    excluded=0,
+    outgoing=0,
+    outgoing_0000=0,
+    outgoing_0100=0,
+    outgoing_1000=0,
+    outgoing_1100=0,
+    outgoing_1900=0,
+    outgoing_1999=0,
+    outgoing_2000=0,
+    outgoing_2100=0,
+    outgoing_2900=0,
+    outgoing_2999=0,
+    outgoing_3000=0,
+    outgoing_3100=0,
+    outgoing_3900=0,
+    outgoing_3999=0,
+    outgoing_7000=0,
+    outgoing_7010=0,
+    outgoing_7011=0,
+    outgoing_7100=0
+    ):
+    """Updates a message email with statistical information.
+
+    :param str email_id: Email identifier (assigned by SMTP server).
+    :param int incoming: Count of incoming messages.
+    :param int errors_decoding_base64: Count of base64 decoding errors.
+    :param int errors_decoding_json: Count of json decoding errors.
+    :param int errors_encoding_ampq: Count of ampq encoding errors.
+    :param int excluded: Count of excluded messages.
+    :param int outgoing: Count of messages dispateched to RabbitMQ server.
+    :param int outgoing_0000: Count of messages (type=0000) dispateched to RabbitMQ server.
+    :param int outgoing_0100: Count of messages (type=0100) dispateched to RabbitMQ server.
+    :param int outgoing_1000: Count of messages (type=1000) dispateched to RabbitMQ server.
+    :param int outgoing_1100: Count of messages (type=1100) dispateched to RabbitMQ server.
+    :param int outgoing_1900: Count of messages (type=1900) dispateched to RabbitMQ server.
+    :param int outgoing_1999: Count of messages (type=1999) dispateched to RabbitMQ server.
+    :param int outgoing_2000: Count of messages (type=2000) dispateched to RabbitMQ server.
+    :param int outgoing_2100: Count of messages (type=2100) dispateched to RabbitMQ server.
+    :param int outgoing_2900: Count of messages (type=2900) dispateched to RabbitMQ server.
+    :param int outgoing_2999: Count of messages (type=2999) dispateched to RabbitMQ server.
+    :param int outgoing_3000: Count of messages (type=3000) dispateched to RabbitMQ server.
+    :param int outgoing_3100: Count of messages (type=3100) dispateched to RabbitMQ server.
+    :param int outgoing_3900: Count of messages (type=3900) dispateched to RabbitMQ server.
+    :param int outgoing_3999: Count of messages (type=3999) dispateched to RabbitMQ server.
+    :param int outgoing_7000: Count of messages (type=7000) dispateched to RabbitMQ server.
+    :param int outgoing_7010: Count of messages (type=7010) dispateched to RabbitMQ server.
+    :param int outgoing_7100: Count of messages (type=7100) dispateched to RabbitMQ server.
+
+    """
+    # Escape if email db entry is not yet written.
+    email = retrieve_message_email(email_id)
+    if email is None:
+        return
+
+    email.incoming = incoming
+    email.errors_decoding_base64 = errors_decoding_base64
+    email.errors_decoding_json = errors_decoding_json
+    email.errors_encoding_ampq = errors_encoding_ampq
+    email.excluded = excluded
+    email.outgoing = outgoing
+    email.outgoing_0000 = outgoing_0000
+    email.outgoing_0100 = outgoing_0100
+    email.outgoing_1000 = outgoing_1000
+    email.outgoing_1100 = outgoing_1100
+    email.outgoing_1900 = outgoing_1900
+    email.outgoing_1999 = outgoing_1999
+    email.outgoing_2000 = outgoing_2000
+    email.outgoing_2100 = outgoing_2100
+    email.outgoing_2900 = outgoing_2900
+    email.outgoing_2999 = outgoing_2999
+    email.outgoing_3000 = outgoing_3000
+    email.outgoing_3100 = outgoing_3100
+    email.outgoing_3900 = outgoing_3900
+    email.outgoing_3999 = outgoing_3999
+    email.outgoing_7000 = outgoing_7000
+    email.outgoing_7010 = outgoing_7010
+    email.outgoing_7100 = outgoing_7100
+
+    session.update(email)

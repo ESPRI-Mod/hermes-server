@@ -43,6 +43,7 @@ def get_tasks():
         _set_msg_ampq,
         _enqueue_messages,
         _log_stats,
+        _persist_stats,
         _dequeue_email,
         _close_imap_client
         )
@@ -78,7 +79,6 @@ class ProcessingContextInfo(mq.Message):
         self.msg_dict = []
         self.msg_dict_error = []
         self.msg_dict_excluded = []
-        self.msg_dict_obsolete = []
 
 
 def _set_email(ctx):
@@ -309,8 +309,38 @@ def _log_stats(ctx):
         msg += "AMPQ encoding errors: {};  ".format(len(ctx.msg_ampq_error))
     if ctx.msg_dict_excluded:
         msg += "Type Exclusions: {};  ".format(len(ctx.msg_dict_excluded))
-    if ctx.msg_dict_obsolete:
-        msg += "Obsoletes: {};  ".format(len(ctx.msg_dict_obsolete))
     msg += "Outgoing: {}.".format(len(ctx.msg_ampq))
 
     logger.log_mq(msg)
+
+
+def _persist_stats(ctx):
+    """Persists processing statistics.
+
+    """
+    db.dao_mq.persist_message_email_stats(
+        ctx.email_uid,
+        incoming=len(ctx.msg_b64),
+        errors_decoding_base64=len(ctx.msg_json_error),
+        errors_decoding_json=len(ctx.msg_dict_error),
+        errors_encoding_ampq=len(ctx.msg_ampq_error),
+        excluded=len(ctx.msg_dict_excluded),
+        outgoing=len(ctx.msg_ampq),
+        outgoing_0000=len([m for m in ctx.msg_ampq if m.props.type == mq.constants.MESSAGE_TYPE_0000]),
+        outgoing_0100=len([m for m in ctx.msg_ampq if m.props.type == mq.constants.MESSAGE_TYPE_0100]),
+        outgoing_1000=len([m for m in ctx.msg_ampq if m.props.type == mq.constants.MESSAGE_TYPE_1000]),
+        outgoing_1100=len([m for m in ctx.msg_ampq if m.props.type == mq.constants.MESSAGE_TYPE_1100]),
+        outgoing_1900=len([m for m in ctx.msg_ampq if m.props.type == mq.constants.MESSAGE_TYPE_1900]),
+        outgoing_1999=len([m for m in ctx.msg_ampq if m.props.type == mq.constants.MESSAGE_TYPE_1999]),
+        outgoing_2000=len([m for m in ctx.msg_ampq if m.props.type == mq.constants.MESSAGE_TYPE_2000]),
+        outgoing_2100=len([m for m in ctx.msg_ampq if m.props.type == mq.constants.MESSAGE_TYPE_2100]),
+        outgoing_2900=len([m for m in ctx.msg_ampq if m.props.type == mq.constants.MESSAGE_TYPE_2900]),
+        outgoing_2999=len([m for m in ctx.msg_ampq if m.props.type == mq.constants.MESSAGE_TYPE_2999]),
+        outgoing_3000=len([m for m in ctx.msg_ampq if m.props.type == mq.constants.MESSAGE_TYPE_3000]),
+        outgoing_3100=len([m for m in ctx.msg_ampq if m.props.type == mq.constants.MESSAGE_TYPE_3100]),
+        outgoing_3900=len([m for m in ctx.msg_ampq if m.props.type == mq.constants.MESSAGE_TYPE_3900]),
+        outgoing_3999=len([m for m in ctx.msg_ampq if m.props.type == mq.constants.MESSAGE_TYPE_3999]),
+        outgoing_7000=len([m for m in ctx.msg_ampq if m.props.type == mq.constants.MESSAGE_TYPE_7000]),
+        outgoing_7010=len([m for m in ctx.msg_ampq if m.props.type == mq.constants.MESSAGE_TYPE_7010]),
+        outgoing_7100=len([m for m in ctx.msg_ampq if m.props.type == mq.constants.MESSAGE_TYPE_7100])
+        )

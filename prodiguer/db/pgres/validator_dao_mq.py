@@ -118,3 +118,57 @@ def validate_update_message_email(email_id, arrival_date, dispatch_date):
     if dispatch_date:
         validation.validate_date(dispatch_date, 'Email dispatch date')
 
+
+def validate_persist_message_email_stats(
+    email_id,
+    incoming=0,
+    errors_decoding_base64=0,
+    errors_decoding_json=0,
+    errors_encoding_ampq=0,
+    excluded=0,
+    outgoing=0,
+    outgoing_0000=0,
+    outgoing_0100=0,
+    outgoing_1000=0,
+    outgoing_1100=0,
+    outgoing_1900=0,
+    outgoing_1999=0,
+    outgoing_2000=0,
+    outgoing_2100=0,
+    outgoing_2900=0,
+    outgoing_2999=0,
+    outgoing_3000=0,
+    outgoing_3100=0,
+    outgoing_3900=0,
+    outgoing_3999=0,
+    outgoing_7000=0,
+    outgoing_7010=0,
+    outgoing_7100=0
+    ):
+    """Function input validator: update_message_email_stats.
+
+    """
+    msg_validator.validate_email_id(email_id)
+    validation.validate_int(incoming, "incoming")
+    validation.validate_int(errors_decoding_base64, "errors_decoding_base64")
+    validation.validate_int(errors_decoding_json, "errors_decoding_json")
+    validation.validate_int(errors_encoding_ampq, "errors_encoding_ampq")
+    validation.validate_int(excluded, "excluded")
+    validation.validate_int(outgoing, "outgoing")
+    validation.validate_int(outgoing_0000, "outgoing_0000")
+    validation.validate_int(outgoing_0100, "outgoing_0100")
+    validation.validate_int(outgoing_1000, "outgoing_1000")
+    validation.validate_int(outgoing_1100, "outgoing_1100")
+    validation.validate_int(outgoing_1900, "outgoing_1900")
+    validation.validate_int(outgoing_1999, "outgoing_1999")
+    validation.validate_int(outgoing_2000, "outgoing_2000")
+    validation.validate_int(outgoing_2100, "outgoing_2100")
+    validation.validate_int(outgoing_2900, "outgoing_2900")
+    validation.validate_int(outgoing_2999, "outgoing_2999")
+    validation.validate_int(outgoing_3000, "outgoing_3000")
+    validation.validate_int(outgoing_3100, "outgoing_3100")
+    validation.validate_int(outgoing_3900, "outgoing_3900")
+    validation.validate_int(outgoing_3999, "outgoing_3999")
+    validation.validate_int(outgoing_7000, "outgoing_7000")
+    validation.validate_int(outgoing_7010, "outgoing_7010")
+    validation.validate_int(outgoing_7100, "outgoing_7100")
