@@ -39,8 +39,8 @@ _parser.add_argument(
     )
 
 
-def _get_accounting_projects():
-    """Gets set of accouting projects from db.
+def _get_initial_stats():
+    """Gets initial stats prior to querying jobs table.
 
     """
     with db.session.create():
@@ -86,7 +86,7 @@ def _main(args):
 
     """
     # Initialise stats.
-    stats = _get_accounting_projects()
+    stats = _get_initial_stats()
 
     # Set job counts.
     for start, end in _get_intervals(args.days):
