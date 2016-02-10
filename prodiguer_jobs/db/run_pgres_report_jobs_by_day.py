@@ -1,8 +1,20 @@
+# -*- coding: utf-8 -*-
+
+"""
+.. module:: run_pgres_report_jobs_by_day.py
+   :copyright: Copyright "Feb 10, 2016", Institute Pierre Simon Laplace
+   :license: GPL/CeCIL
+   :platform: Unix
+   :synopsis: Generates a database report of the number of jobs by day by accounting project.
+
+.. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
+
+
+"""
 import argparse
 import datetime
 import json
 import os
-import sys
 
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring
@@ -14,7 +26,7 @@ from prodiguer.db.pgres import dao_monitoring
 _parser = argparse.ArgumentParser("Generates accounting project related report.")
 _parser.add_argument(
     "-dest", "--dest",
-    help="Directory intow hich report will be written",
+    help="Directory into which report will be written",
     dest="dest",
     type=str
     )
