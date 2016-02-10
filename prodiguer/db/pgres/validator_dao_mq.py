@@ -57,6 +57,14 @@ def validate_create_message(
         msg_validator.validate_email_id(email_id)
 
 
+
+def validate_delete_message(uid):
+    """Function input validator: delete_message.
+
+    """
+    msg_validator.validate_message_id(uid)
+
+
 def validate_create_message_email(email_id):
     """Function input validator: create_message_email.
 

@@ -89,6 +89,19 @@ def create_message(
     return session.add(instance)
 
 
+@decorators.validate(validator.validate_delete_message)
+def delete_message(uid):
+    """Deletes a message from message table.
+
+    :param str uid: UID of message.
+
+    """
+    qry = session.query(types.Message)
+    qry = qry.filter(types.Message.uid == unicode(uid))
+
+    qry.delete()
+
+
 @decorators.validate(validator.validate_has_messages)
 def has_messages(uid):
     """Retrieves boolean indicating whether a simulation has at least one messages in the db.
