@@ -108,19 +108,10 @@ def validate_retrieve_message_emails(arrival_date):
     pass
 
 
-def validate_update_message_email(email_id, arrival_date, dispatch_date):
-    """Function input validator: update_message_email.
-
-    """
-    msg_validator.validate_email_id(email_id)
-    if arrival_date:
-        validation.validate_date(arrival_date, 'Email arrival date')
-    if dispatch_date:
-        validation.validate_date(dispatch_date, 'Email dispatch date')
-
-
 def validate_persist_message_email_stats(
     email_id,
+    arrival_date=None,
+    dispatch_date=None,
     incoming=0,
     errors_decoding_base64=0,
     errors_decoding_json=0,
@@ -149,6 +140,10 @@ def validate_persist_message_email_stats(
 
     """
     msg_validator.validate_email_id(email_id)
+    if arrival_date:
+        validation.validate_date(arrival_date, 'Email arrival date')
+    if dispatch_date:
+        validation.validate_date(dispatch_date, 'Email dispatch date')
     validation.validate_int(incoming, "incoming")
     validation.validate_int(errors_decoding_base64, "errors_decoding_base64")
     validation.validate_int(errors_decoding_json, "errors_decoding_json")

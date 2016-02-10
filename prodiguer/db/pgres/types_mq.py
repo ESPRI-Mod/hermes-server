@@ -74,10 +74,6 @@ class MessageEmail(Entity):
     # Attributes.
     uid = Column(BigInteger, nullable=False, unique=True)
 
-    arrival_date = Column(DateTime)
-    dispatch_date = Column(DateTime)
-    dispatch_latency = Column(Integer)
-
 
 class MessageEmailStats(Entity):
     """Represents statisitics regarding an email received from a computing centre.
@@ -91,6 +87,9 @@ class MessageEmailStats(Entity):
 
     # Attributes.
     email_id = Column(BigInteger, nullable=False)
+    arrival_date = Column(DateTime)
+    dispatch_date = Column(DateTime)
+    dispatch_latency = Column(Integer)
     incoming = Column(Integer)
     errors_decoding_base64 = Column(Integer)
     errors_decoding_json = Column(Integer)

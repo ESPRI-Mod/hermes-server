@@ -211,35 +211,11 @@ def is_duplicate(email_id):
     return retrieve_message_email(email_id) is not None
 
 
-@decorators.validate(validator.validate_update_message_email)
-def update_message_email(email_id, arrival_date, dispatch_date):
-    """Updates a message email with statistical information.
-
-    :param str email_id: Email identifier (assigned by SMTP server).
-    :param datetime.datetime arrival_date: Email arrival date.
-    :param datetime.datetime dispatch_date: Email dispatch date.
-
-    """
-    # Escape if email body did not contain relevant date fields.
-    if arrival_date is None and dispatch_date is None:
-        return
-
-    # Escape if email db entry is not yet written.
-    email = retrieve_message_email(email_id)
-    if email is None:
-        return
-
-    email.arrival_date = arrival_date
-    email.dispatch_date = dispatch_date
-    if arrival_date is not None and dispatch_date is not None:
-        email.dispatch_latency = (arrival_date - dispatch_date).total_seconds()
-
-    session.update(email)
-
-
 @decorators.validate(validator.validate_persist_message_email_stats)
 def persist_message_email_stats(
     email_id,
+    arrival_date=None,
+    dispatch_date=None,
     incoming=0,
     errors_decoding_base64=0,
     errors_decoding_json=0,
@@ -295,6 +271,10 @@ def persist_message_email_stats(
     """
     instance = types.MessageEmailStats()
     instance.email_id = email_id
+    instance.arrival_date = arrival_date
+    instance.dispatch_date = dispatch_date
+    if arrival_date is not None and dispatch_date is not None:
+        instance.dispatch_latency = (arrival_date - dispatch_date).total_seconds()
     instance.incoming = incoming
     instance.errors_decoding_base64 = errors_decoding_base64
     instance.errors_decoding_json = errors_decoding_json

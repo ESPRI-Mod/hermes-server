@@ -34,7 +34,6 @@ def get_tasks():
     """
     return (
         _set_email,
-        _persist_email_delivery_stats,
         _set_msg_b64,
         _set_msg_json,
         _set_msg_dict,
@@ -93,28 +92,6 @@ def _set_email(ctx):
     ctx.email = body.get_payload(decode=True)
     ctx.email_body = body
     ctx.email_attachments = [a.get_payload(decode=True) for a in attachments]
-
-
-def _persist_email_delivery_stats(ctx):
-    """Persists email delivery statistical information to database.
-
-    """
-    def _get_date(func):
-        """Returns a date field from the email headers.
-
-        """
-        # N.B. override errors as email headers can be inconsistent.
-        try:
-            return func(ctx.email_body).datetime
-        except:
-            return None
-
-    # Update message email table.
-    db.dao_mq.update_message_email(
-        ctx.email_uid,
-        _get_date(mail.get_email_arrival_date),
-        _get_date(mail.get_email_dispatch_date)
-        )
 
 
 def _set_msg_b64(ctx):
@@ -318,6 +295,17 @@ def _persist_stats(ctx):
     """Persists processing statistics.
 
     """
+    def _get_date(func):
+        """Returns a date field from the email headers.
+
+        """
+        # N.B. override errors as email headers can be inconsistent.
+        try:
+            return func(ctx.email_body).datetime
+        except:
+            return None
+
+
     def _get_outgoing_message_count(type_id):
         """Returns count of messages dispatched to MQ server.
 
@@ -327,6 +315,8 @@ def _persist_stats(ctx):
 
     db.dao_mq.persist_message_email_stats(
         ctx.email_uid,
+        arrival_date=_get_date(mail.get_email_arrival_date),
+        dispatch_date=_get_date(mail.get_email_dispatch_date),
         incoming=len(ctx.msg_b64),
         errors_decoding_base64=len(ctx.msg_json_error),
         errors_decoding_json=len(ctx.msg_dict_error),
