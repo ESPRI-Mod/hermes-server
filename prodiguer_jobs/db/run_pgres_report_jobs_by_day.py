@@ -57,11 +57,18 @@ def _get_intervals(days):
     """Gets set of time intervals over which to query jobs.
 
     """
-    today = datetime.datetime.now().date()
-    today = datetime.datetime(today.year, today.month, today.day)
+    with db.session.create():
+        earliest_job = dao_monitoring.get_earliest_job()
 
-    return [(today + datetime.timedelta(days=0 - i),
-             today + datetime.timedelta(days=1 - i)) for i in range(days + 1)[1:]]
+    start = earliest_job.execution_start_date.date()
+    start = datetime.datetime(start.year, start.month, start.day)
+
+    end = datetime.datetime.now() - datetime.timedelta(days=1)
+    end = datetime.datetime(end.year, end.month, end.day)
+
+    return [(start + datetime.timedelta(days=0 + i),
+             start + datetime.timedelta(days=1 + i))
+            for i in range((end - start).days)]
 
 
 def _get_job_set(start, end):
@@ -76,9 +83,27 @@ def _write_report(stats, dest):
     """Writes stats to file system.
 
     """
-    fpath = os.path.join(dest, "prodiguer-report-jobs-by-day.json")
+    def _format_line(f1, f2, f3, f4, f5):
+        """Returns a formatted line.
+
+        """
+        return "{}\t{}\t{}\t{}\t{}\n".format(
+            f1.rjust(15), f2.rjust(5), f3.rjust(5), f4.rjust(5), f5)
+
+    lines = [_format_line("Acc. Project", "Min", "Max", "Avg", "Time Series"), "\n"]
+
+    for s in sorted(stats, key=lambda s: s['name']):
+        lines.append(_format_line(s['name'], repr(s['min']), repr(s['max']), repr(s['avg']), s['counts']))
+
+    # stats = ["{}\t{}\t{}\t{}\t{}\n".format(s['name'].rjust(10),
+    #                            repr(s['max']).rjust(5),
+    #                            repr(s['min']).rjust(5),
+    #                            repr(s['avg']).rjust(5),
+    #                            repr(s['counts']).rjust(5)) for s in stats]
+    fpath = os.path.join(dest, "prodiguer-report-jobs-by-day.txt")
     with open(fpath, 'w') as f:
-        f.write(json.dumps(stats, indent=4))
+        f.writelines(lines)
+        # f.write(json.dumps(stats, indent=4))
 
 
 def _main(args):

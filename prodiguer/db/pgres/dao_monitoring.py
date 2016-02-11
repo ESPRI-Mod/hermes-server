@@ -617,3 +617,16 @@ def get_accounting_projects():
         )
 
     return set(sorted([ap[0] for ap in qry.all()]))
+
+
+def get_earliest_job():
+    """Retrieves earliest job in database.
+
+    """
+    j = types.Job
+
+    qry = session.query(types.Job)
+    qry = qry.filter(types.Job.execution_start_date is not None)
+    qry = qry.order_by(types.Job.execution_start_date)
+
+    return qry.first()
