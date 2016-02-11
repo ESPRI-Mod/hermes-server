@@ -88,7 +88,7 @@ def _write_report(stats, dest):
         lines.append(_format_line(s['name'], repr(s['min']), repr(s['max']), repr(s['avg']), s['counts']))
 
     # Write report to file system.
-    fpath = os.path.join(dest, "prodiguer-report-mails-per-hour.txt")
+    fpath = os.path.join(dest, "mails-per-hour-summary.txt")
     with open(fpath, 'w') as f:
         f.writelines(lines)
 
