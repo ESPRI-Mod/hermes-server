@@ -71,32 +71,39 @@ def _get_job_set(start, end):
         return dao_monitoring.retrieve_jobs_by_interval(start, end)
 
 
+def _get_report_header(start, end):
+    """Returns report header.
+
+    """
+    header = []
+    header.append("Report Title:     Summary of simulation jobs per day per accounting project\n")
+    header.append("Report Date:      {}\n".format(datetime.datetime.now().date()))
+    header.append("Report Interval:  {} - {} ({} days)\n".format(start.date(), end.date(), (end - start).days))
+    header.append("\n")
+    header.append("{:>15}{:>10}{:>10}{:>10}\n".format("Acc. Project", "Min", "Max", "Avg"))
+    header.append("\n")
+
+    return header
+
+
+def _get_report_body(stats):
+    """Returns report body.
+
+    """
+    body = []
+    for s in sorted(stats, key=lambda s: s['name']):
+        body.append("{:>15}{:>10}{:>10}{:>10.2f}\n".format(s['name'], s['min'], s['max'], s['avg']))
+
+    return body
+
+
 def _write_report(stats, start, end, dest):
     """Writes stats to file system.
 
     """
-    def _format_line(f1, f2, f3, f4, f5):
-        """Returns a formatted line.
-
-        """
-        return "{}\t{}\t{}\t{}\n".format(
-            f1.rjust(15), f2.rjust(5), f3.rjust(5), f4.rjust(5))
-
-    # Transform stats into report lines.
-    lines = []
-    lines.append("Report Title:     Summary of simulation jobs per day per accounting project\n")
-    lines.append("Report Date:      {}\n".format(datetime.datetime.now().date()))
-    lines.append("Report Interval:  {} - {} ({} days)\n".format(start.date(), end.date(), (end - start).days))
-    lines.append("\n")
-    lines.append(_format_line("Acc. Project", "Min", "Max", "Avg", "Time Series"))
-    lines.append("\n")
-    for s in sorted(stats, key=lambda s: s['name']):
-        lines.append(_format_line(s['name'], repr(s['min']), repr(s['max']), repr(s['avg']), repr(s['counts'])))
-
-    # Write report to file system.
     fpath = os.path.join(dest, "jobs-per-day-summary.txt")
     with open(fpath, 'w') as f:
-        f.writelines(lines)
+        f.writelines(_get_report_header(start, end) + _get_report_body(stats))
 
 
 def _main(args):
@@ -117,7 +124,7 @@ def _main(args):
     for ap in stats:
         ap['min'] = min(ap['counts'])
         ap['max'] = max(ap['counts'])
-        ap['avg'] = sum(ap['counts']) / len(ap['counts'])
+        ap['avg'] = sum(ap['counts']) / float(len(ap['counts']))
 
     # Write report to file system.
     _write_report(stats, intervals[0][0], intervals[-1][1], args.dest)

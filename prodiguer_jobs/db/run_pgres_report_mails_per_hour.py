@@ -31,6 +31,10 @@ _parser.add_argument(
     )
 
 
+# Map of simulation identifiers to accounting projects.
+_SIMULATION_ACCOUNTING_PROJECT_MAP = {}
+
+
 def _get_initial_stats():
     """Gets initial stats prior to querying jobs table.
 
@@ -49,48 +53,94 @@ def _get_intervals():
     """Gets set of time intervals over which to query jobs.
 
     """
+    # Start from arrival date of earliest email.
     with db.session.create():
-        earliest_job = dao_monitoring.get_earliest_job()
-
-    start = earliest_job.execution_start_date.date()
+        earliest_mail = dao_mq.get_earliest_mail()
+    start = earliest_mail.arrival_date.date()
     start = datetime.datetime(start.year, start.month, start.day)
 
+    # End yesterday.
     end = datetime.datetime.now() - datetime.timedelta(days=1)
     end = datetime.datetime(end.year, end.month, end.day)
 
+    # Return hourly segments.
     return [(start + datetime.timedelta(hours=0 + i),
              start + datetime.timedelta(hours=1 + i))
             for i in range(((end - start).days * 24))]
 
 
-def _get_mail_set(start, end):
-    """Returns a set of mails for a time interval.
+def _get_report_header(start, end):
+    """Returns report header.
 
     """
-    with db.session.create():
-        return dao_mq.retrieve_mails_by_interval(start, end)
+    header = []
+    header.append("Report Title:     Summary of incoming mails per hour per accounting project\n")
+    header.append("Report Date:      {}\n".format(datetime.datetime.now().date()))
+    header.append("Report Interval:  {} - {} ({} days)\n".format(start.date(), end.date(), (end - start).days))
+    header.append("\n")
+    header.append("{:>15}{:>10}{:>10}{:>10}\n".format("Acc. Project", "Min", "Max", "Avg"))
+    header.append("\n")
+
+    return header
 
 
-def _write_report(stats, dest):
+def _get_report_body(stats):
+    """Returns report body.
+
+    """
+    body = []
+    for s in sorted(stats, key=lambda s: s['name']):
+        body.append("{:>15}{:>10}{:>10}{:>10.2f}\n".format(s['name'], s['min'], s['max'], s['avg']))
+
+    return body
+
+
+def _write_report(stats, start, end, dest):
     """Writes stats to file system.
 
     """
-    def _format_line(f1, f2, f3, f4, f5):
-        """Returns a formatted line.
-
-        """
-        return "{}\t{}\t{}\t{}\n".format(
-            f1.rjust(15), f2.rjust(5), f3.rjust(5), f4.rjust(5))
-
-    # Transform stats into report lines.
-    lines = [_format_line("Acc. Project", "Min", "Max", "Avg", "Time Series"), "\n"]
-    for s in sorted(stats, key=lambda s: s['name']):
-        lines.append(_format_line(s['name'], repr(s['min']), repr(s['max']), repr(s['avg']), s['counts']))
-
-    # Write report to file system.
     fpath = os.path.join(dest, "mails-per-hour-summary.txt")
     with open(fpath, 'w') as f:
-        f.writelines(lines)
+        f.writelines(_get_report_header(start, end) + _get_report_body(stats))
+
+
+
+def _get_simulation_accounting_project(uid):
+    """Returns a simulation's accounting project inspecting local cache prior to hitting db if necessary.
+
+    """
+    if uid not in _SIMULATION_ACCOUNTING_PROJECT_MAP:
+        _SIMULATION_ACCOUNTING_PROJECT_MAP[uid] = dao_monitoring.get_simulation_accounting_project(uid)
+
+    return _SIMULATION_ACCOUNTING_PROJECT_MAP[uid]
+
+
+def _get_interval_stats(start, end):
+    """Returns statistics for a single interval.
+
+    """
+    with db.session.create():
+        # Get set of emails that arrived during time interval.
+        data = dao_mq.retrieve_mail_identifiers_by_interval(start, end)
+        if not data:
+            return []
+        print "Interval email count: ", len(data)
+
+        # Map each email to a simulation identifier.
+        data = [(i, dao_mq.get_mail_simulation_uid(i)) for i in data]
+        print "Interval email to simulation count: ", data
+        data = [i for i in data if i[1] is not None]
+        if not data:
+            return []
+        print "Interval email to simulation count: ", len(data)
+
+        # Map each email to an accounting project.
+        data = [(i[0], _get_simulation_accounting_project(i[1])) for i in data]
+        data = [(i[0], i[1][0]) for i in data if i[1] is not None]
+        if not data:
+            return []
+
+    return data
 
 
 def _main(args):
@@ -99,23 +149,28 @@ def _main(args):
     """
     # Initialise stats.
     stats = _get_initial_stats()
+    email_count = 0
 
-    # Set job counts.
-    for start, end in _get_intervals():
-        mail_set = _get_mail_set(start, end)
-        print mail_set
+    # Set interval stats.
+    intervals = _get_intervals()
+    for start, end in intervals:
+        interval_stats = _get_interval_stats(start, end)
+        email_count += len(interval_stats)
         for ap in stats:
-            ap['counts'].append(0)
-            # ap['counts'].append(len([j for j in job_set if j.accounting_project == ap['name']]))
+            ap['counts'].append(len([s for s in interval_stats if s[1] == ap['name']]))
+            if ap['counts'][-1] > 0:
+                print start, end, ap['name'], ap['counts'][-1]
 
     # Set derived stats.
     for ap in stats:
         ap['min'] = min(ap['counts'])
         ap['max'] = max(ap['counts'])
-        ap['avg'] = sum(ap['counts']) / len(ap['counts'])
+        ap['avg'] = sum(ap['counts']) / float(len(ap['counts']))
 
     # Write report to file system.
-    _write_report(stats, args.dest)
+    _write_report(stats, intervals[0][0], intervals[-1][1], args.dest)
+
+    print "EMail cint", email_count
 
 
 # Main entry point.

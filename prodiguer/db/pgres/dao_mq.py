@@ -11,6 +11,8 @@
 
 
 """
+from sqlalchemy import distinct
+
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
 from prodiguer.db.pgres import validator_dao_mq as validator
@@ -211,6 +213,31 @@ def is_duplicate(email_id):
     return retrieve_message_email(email_id) is not None
 
 
+def _update_message_email(email_id, arrival_date, dispatch_date):
+    """Updates a message email with simple statistical information.
+
+    :param str email_id: Email identifier (assigned by SMTP server).
+    :param datetime.datetime arrival_date: Email arrival date.
+    :param datetime.datetime dispatch_date: Email dispatch date.
+
+    """
+    # Escape if email body did not contain relevant date fields.
+    if arrival_date is None and dispatch_date is None:
+        return
+
+    # Escape if email db entry is not yet written.
+    email = retrieve_message_email(email_id)
+    if email is None:
+        return
+
+    email.arrival_date = arrival_date
+    email.dispatch_date = dispatch_date
+    if arrival_date is not None and dispatch_date is not None:
+        email.dispatch_latency = (arrival_date - dispatch_date).total_seconds()
+
+    session.update(email)
+
+
 @decorators.validate(validator.validate_persist_message_email_stats)
 def persist_message_email_stats(
     email_id,
@@ -269,6 +296,8 @@ def persist_message_email_stats(
     :param int outgoing_7100: Count of messages (type=7100) dispateched to RabbitMQ server.
 
     """
+    _update_message_email(email_id, arrival_date, dispatch_date)
+
     instance = types.MessageEmailStats()
     instance.email_id = email_id
     instance.arrival_date = arrival_date
@@ -302,13 +331,8 @@ def persist_message_email_stats(
     return session.add(instance)
 
 
-def retrieve_mails_by_interval(start, end):
-    pass
-
-
-
-def retrieve_mails_by_interval(interval_start, interval_end):
-    """Retrieves collection of mails filtered by creation interval.
+def retrieve_mail_identifiers_by_interval(interval_start, interval_end):
+    """Retrieves set of mail identifiers filtered by creation interval.
 
     :param datetime interval_start: Interval start date.
     :param datetime interval_end: Interval end date.
@@ -317,8 +341,38 @@ def retrieve_mails_by_interval(interval_start, interval_end):
     :rtype: list
 
     """
-    qry = session.query(types.MessageEmail)
-    qry = qry.filter(types.Job.row_create_date >= interval_start)
-    qry = qry.filter(types.Job.row_create_date < interval_end)
+    me = types.MessageEmail
+    qry = session.raw_query(
+        me.uid
+        )
+    qry = qry.filter(types.MessageEmail.arrival_date >= interval_start)
+    qry = qry.filter(types.MessageEmail.arrival_date < interval_end)
 
-    return qry.all()
+    return set([m[0] for m in qry.all()])
+
+
+def get_mail_simulation_uid(email_id):
+    """Returns a set of message correlation fields that correspond to an email.
+
+    """
+    m = types.Message
+    qry = session.raw_query(
+        m.correlation_id_1
+        )
+    qry = qry.filter(m.email_id == email_id)
+
+    return qry.first()
+
+
+
+def get_earliest_mail():
+    """Retrieves earliest job in database.
+
+    """
+    m = types.MessageEmail
+
+    qry = session.query(m)
+    qry = qry.filter(m.arrival_date is not None)
+    qry = qry.order_by(m.arrival_date)
+
+    return qry.first()

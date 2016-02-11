@@ -630,3 +630,16 @@ def get_earliest_job():
     qry = qry.order_by(types.Job.execution_start_date)
 
     return qry.first()
+
+
+def get_simulation_accounting_project(uid):
+    """Retrieves disinct set of accounting projects for the passed simulation set.
+
+    """
+    s = types.Simulation
+    qry = session.raw_query(
+        s.accounting_project
+        )
+    qry = qry.filter(s.uid == uid)
+
+    return qry.first()

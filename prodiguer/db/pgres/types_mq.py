@@ -73,6 +73,9 @@ class MessageEmail(Entity):
 
     # Attributes.
     uid = Column(BigInteger, nullable=False, unique=True)
+    arrival_date = Column(DateTime)
+    dispatch_date = Column(DateTime)
+    dispatch_latency = Column(Integer)
 
 
 class MessageEmailStats(Entity):
