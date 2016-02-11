@@ -124,15 +124,12 @@ def _get_interval_stats(start, end):
         data = dao_mq.retrieve_mail_identifiers_by_interval(start, end)
         if not data:
             return []
-        print "Interval email count: ", len(data)
 
         # Map each email to a simulation identifier.
         data = [(i, dao_mq.get_mail_simulation_uid(i)) for i in data]
-        print "Interval email to simulation count: ", data
         data = [i for i in data if i[1] is not None]
         if not data:
             return []
-        print "Interval email to simulation count: ", len(data)
 
         # Map each email to an accounting project.
         data = [(i[0], _get_simulation_accounting_project(i[1])) for i in data]
@@ -158,8 +155,6 @@ def _main(args):
         email_count += len(interval_stats)
         for ap in stats:
             ap['counts'].append(len([s for s in interval_stats if s[1] == ap['name']]))
-            if ap['counts'][-1] > 0:
-                print start, end, ap['name'], ap['counts'][-1]
 
     # Set derived stats.
     for ap in stats:
@@ -169,8 +164,6 @@ def _main(args):
 
     # Write report to file system.
     _write_report(stats, intervals[0][0], intervals[-1][1], args.dest)
-
-    print "EMail cint", email_count
 
 
 # Main entry point.
