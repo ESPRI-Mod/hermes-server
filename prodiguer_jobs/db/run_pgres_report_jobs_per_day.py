@@ -42,7 +42,7 @@ def _get_initial_stats():
             "max": None,
             "min": None,
             "avg": None
-        } for ap in dao_monitoring.get_accounting_projects()]
+        } for ap in dao_monitoring.get_accounting_projects() if ap is not None and len(ap)]
 
 
 def _get_intervals():
@@ -79,8 +79,8 @@ def _write_report(stats, dest):
         """Returns a formatted line.
 
         """
-        return "{}\t{}\t{}\t{}\t\t{}\n".format(
-            f1.rjust(15), f2.rjust(5), f3.rjust(5), f4.rjust(5), f5)
+        return "{}\t{}\t{}\t{}\n".format(
+            f1.rjust(15), f2.rjust(5), f3.rjust(5), f4.rjust(5))
 
     # Transform stats into report lines.
     lines = [_format_line("Acc. Project", "Min", "Max", "Avg", "Time Series"), "\n"]
