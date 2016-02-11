@@ -31,31 +31,44 @@ _parser.add_argument(
     )
 
 
-# Map of simulation identifiers to accounting projects.
-_SIMULATION_ACCOUNTING_PROJECT_MAP = {}
-
-
-def _get_initial_stats():
-    """Gets initial stats prior to querying jobs table.
+class _ProcessingContextInfo(object):
+    """Encapsulates information used during processing.
 
     """
-    with db.session.create():
-        return [{
-            "name": ap,
-            "counts": [],
-            "max": None,
-            "min": None,
-            "avg": None
-        } for ap in dao_monitoring.get_accounting_projects()]
+    def __init__(self, io_dir):
+        if not os.path.exists(io_dir):
+            raise ValueError("Report output directory is invalid.")
+
+        self.mail_to_sim_map = {}
+        self.sim_to_project_map = {}
+        self.stats = {}
+        self.io_dir = io_dir
 
 
-def _get_intervals():
-    """Gets set of time intervals over which to query jobs.
+def _init_maps(ctx):
+    """Initialises maps that simplify processing.
 
     """
+    ctx.mail_to_sim_map = {i[1]: i[0] for i in dao_mq.retrieve_mail_simulation_identifiers()}
+    ctx.sim_to_project_map = {i[0]: i[1] for i in dao_monitoring.get_simulation_accounting_projects()}
+
+
+def _init_stats(ctx):
+    """Initialises set of stats to be emitted.
+
+    """
+    ctx.stats = [{
+        "name": ap,
+        "counts": [],
+        "max": None,
+        "min": None,
+        "avg": None
+    } for ap in dao_monitoring.get_accounting_projects()]
+
+
+def _init_intervals(ctx):
     # Start from arrival date of earliest email.
-    with db.session.create():
-        earliest_mail = dao_mq.get_earliest_mail()
+    earliest_mail = dao_mq.get_earliest_mail()
     start = earliest_mail.arrival_date.date()
     start = datetime.datetime(start.year, start.month, start.day)
 
@@ -63,16 +76,59 @@ def _get_intervals():
     end = datetime.datetime.now() - datetime.timedelta(days=1)
     end = datetime.datetime(end.year, end.month, end.day)
 
-    # Return hourly segments.
-    return [(start + datetime.timedelta(hours=0 + i),
-             start + datetime.timedelta(hours=1 + i))
-            for i in range(((end - start).days * 24))]
+    # Set hourly timeslices.
+    ctx.intervals = [(start + datetime.timedelta(hours=0 + i),
+                      start + datetime.timedelta(hours=1 + i))
+                      for i in range(((end - start).days * 24))]
 
 
-def _get_report_header(start, end):
+def _get_interval_stats(ctx, start, end):
+    """Returns statistics for a single interval.
+
+    """
+    # Get interval email set.
+    with db.session.create():
+        data = dao_mq.retrieve_mail_identifiers_by_interval(start, end)
+
+    # Exclude those not mapped to a simulation.
+    data = [i for i in data if i in ctx.mail_to_sim_map]
+
+    # Map emails to accounting projects.
+    data = [(i, ctx.sim_to_project_map[ctx.mail_to_sim_map[i]]) for i in data]
+
+    # Exclude those not mapped to an accounting project.
+    data = [i for i in data if i[1] is not None]
+
+    return data
+
+
+def _set_interval_stats(ctx):
+    """Sets stats for a timeslice.
+
+    """
+    for start, end in ctx.intervals:
+        interval_stats = _get_interval_stats(ctx, start, end)
+        for ap in ctx.stats:
+            ap['counts'].append(len([s for s in interval_stats if s[1] == ap['name']]))
+
+
+def _set_summary_stats(ctx):
+    """Set summary statistics.
+
+    """
+    for ap in ctx.stats:
+        ap['min'] = min(ap['counts'])
+        ap['max'] = max(ap['counts'])
+        ap['avg'] = sum(ap['counts']) / float(len(ap['counts']))
+
+
+def _get_report_header(ctx):
     """Returns report header.
 
     """
+    start = ctx.intervals[0][0]
+    end = ctx.intervals[-1][1]
+
     header = []
     header.append("Report Title:     Summary of incoming mails per hour per accounting project\n")
     header.append("Report Date:      {}\n".format(datetime.datetime.now().date()))
@@ -84,94 +140,49 @@ def _get_report_header(start, end):
     return header
 
 
-def _get_report_body(stats):
+def _get_report_body(ctx):
     """Returns report body.
 
     """
     body = []
-    for s in sorted(stats, key=lambda s: s['name']):
+    for s in sorted(ctx.stats, key=lambda s: s['name']):
         body.append("{:>15}{:>10}{:>10}{:>10.2f}\n".format(s['name'], s['min'], s['max'], s['avg']))
 
     return body
 
 
-def _write_report(stats, start, end, dest):
+def _write_report(ctx):
     """Writes stats to file system.
 
     """
-    fpath = os.path.join(dest, "mails-per-hour-summary.txt")
+    fpath = os.path.join(ctx.io_dir, "mails-per-hour-summary.txt")
     with open(fpath, 'w') as f:
-        f.writelines(_get_report_header(start, end) + _get_report_body(stats))
-
-
-
-def _get_simulation_accounting_project(uid):
-    """Returns a simulation's accounting project inspecting local cache prior to hitting db if necessary.
-
-    """
-    if uid not in _SIMULATION_ACCOUNTING_PROJECT_MAP:
-        _SIMULATION_ACCOUNTING_PROJECT_MAP[uid] = dao_monitoring.get_simulation_accounting_project(uid)
-
-    return _SIMULATION_ACCOUNTING_PROJECT_MAP[uid]
-
-
-def _get_interval_stats(start, end):
-    """Returns statistics for a single interval.
-
-    """
-    with db.session.create():
-        # Get set of emails that arrived during time interval.
-        data = dao_mq.retrieve_mail_identifiers_by_interval(start, end)
-        if not data:
-            return []
-
-        # Map each email to a simulation identifier.
-        data = [(i, dao_mq.get_mail_simulation_uid(i)) for i in data]
-        data = [i for i in data if i[1] is not None]
-        if not data:
-            return []
-
-        # Map each email to an accounting project.
-        data = [(i[0], _get_simulation_accounting_project(i[1])) for i in data]
-        data = [(i[0], i[1][0]) for i in data if i[1] is not None]
-        if not data:
-            return []
-
-    return data
+        f.writelines(_get_report_header(ctx) + _get_report_body(ctx))
 
 
 def _main(args):
     """Main entry point.
 
     """
-    # Initialise stats.
-    stats = _get_initial_stats()
-    email_count = 0
+    ctx = _ProcessingContextInfo(args.dest)
+
+    # Pull as much data from db as possibile upfront.
+    with db.session.create():
+        _init_maps(ctx)
+        _init_stats(ctx)
+        _init_intervals(ctx)
 
     # Set interval stats.
-    intervals = _get_intervals()
-    for start, end in intervals:
-        interval_stats = _get_interval_stats(start, end)
-        email_count += len(interval_stats)
-        for ap in stats:
-            ap['counts'].append(len([s for s in interval_stats if s[1] == ap['name']]))
+    _set_interval_stats(ctx)
 
-    # Set derived stats.
-    for ap in stats:
-        ap['min'] = min(ap['counts'])
-        ap['max'] = max(ap['counts'])
-        ap['avg'] = sum(ap['counts']) / float(len(ap['counts']))
+    # Set summary stats.
+    _set_summary_stats(ctx)
 
-    # Write report to file system.
-    _write_report(stats, intervals[0][0], intervals[-1][1], args.dest)
+    # Write report.
+    _write_report(ctx)
 
 
 # Main entry point.
 if __name__ == '__main__':
-    # Validate args.
-    args = _parser.parse_args()
-    if not os.path.exists(args.dest):
-        raise ValueError("Report output directory is invalid.")
-
     # Invoke entry point.
-    _main(args)
+    _main(_parser.parse_args())

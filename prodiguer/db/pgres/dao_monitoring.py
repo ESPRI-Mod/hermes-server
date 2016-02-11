@@ -626,7 +626,7 @@ def get_earliest_job():
     j = types.Job
 
     qry = session.query(types.Job)
-    qry = qry.filter(types.Job.execution_start_date is not None)
+    qry = qry.filter(types.Job.execution_start_date != None)
     qry = qry.order_by(types.Job.execution_start_date)
 
     return qry.first()
@@ -643,3 +643,17 @@ def get_simulation_accounting_project(uid):
     qry = qry.filter(s.uid == uid)
 
     return qry.first()
+
+
+
+def get_simulation_accounting_projects():
+    """Retrieves map of simulation id's and accounting projects.
+
+    """
+    s = types.Simulation
+    qry = session.raw_query(
+        s.uid,
+        s.accounting_project
+        )
+
+    return qry.all()

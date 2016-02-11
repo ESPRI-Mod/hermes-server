@@ -372,7 +372,25 @@ def get_earliest_mail():
     m = types.MessageEmail
 
     qry = session.query(m)
-    qry = qry.filter(m.arrival_date is not None)
+    qry = qry.filter(m.arrival_date != None)
     qry = qry.order_by(m.arrival_date)
 
     return qry.first()
+
+
+
+def retrieve_mail_simulation_identifiers():
+    """Retrieves set of simulation identifiers for each email recieved.
+
+    """
+    m = types.Message
+
+    qry = session.raw_query(
+        m.correlation_id_1,
+        m.email_id
+        )
+    qry = qry.filter(m.correlation_id_1 != None)
+    qry = qry.filter(m.email_id != None)
+    qry = qry.distinct(m.email_id)
+
+    return qry.all()
