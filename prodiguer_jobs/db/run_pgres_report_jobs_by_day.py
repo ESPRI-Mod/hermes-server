@@ -13,7 +13,6 @@
 """
 import argparse
 import datetime
-import json
 import os
 
 from prodiguer.db import pgres as db
@@ -90,20 +89,15 @@ def _write_report(stats, dest):
         return "{}\t{}\t{}\t{}\t{}\n".format(
             f1.rjust(15), f2.rjust(5), f3.rjust(5), f4.rjust(5), f5)
 
+    # Transform stats into report lines.
     lines = [_format_line("Acc. Project", "Min", "Max", "Avg", "Time Series"), "\n"]
-
     for s in sorted(stats, key=lambda s: s['name']):
         lines.append(_format_line(s['name'], repr(s['min']), repr(s['max']), repr(s['avg']), s['counts']))
 
-    # stats = ["{}\t{}\t{}\t{}\t{}\n".format(s['name'].rjust(10),
-    #                            repr(s['max']).rjust(5),
-    #                            repr(s['min']).rjust(5),
-    #                            repr(s['avg']).rjust(5),
-    #                            repr(s['counts']).rjust(5)) for s in stats]
+    # Write report to file system.
     fpath = os.path.join(dest, "prodiguer-report-jobs-by-day.txt")
     with open(fpath, 'w') as f:
         f.writelines(lines)
-        # f.write(json.dumps(stats, indent=4))
 
 
 def _main(args):
@@ -131,4 +125,10 @@ def _main(args):
 
 # Main entry point.
 if __name__ == '__main__':
-    _main(_parser.parse_args())
+    # Validate args.
+    args = _parser.parse_args()
+    if not os.path.exists(args.dest):
+        raise ValueError("Report output directory is invalid.")
+
+    # Invoke entry point.
+    _main(args)
