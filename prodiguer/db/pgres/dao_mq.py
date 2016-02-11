@@ -300,3 +300,25 @@ def persist_message_email_stats(
     instance.outgoing_7100 = outgoing_7100
 
     return session.add(instance)
+
+
+def retrieve_mails_by_interval(start, end):
+    pass
+
+
+
+def retrieve_mails_by_interval(interval_start, interval_end):
+    """Retrieves collection of mails filtered by creation interval.
+
+    :param datetime interval_start: Interval start date.
+    :param datetime interval_end: Interval end date.
+
+    :returns: Job details.
+    :rtype: list
+
+    """
+    qry = session.query(types.MessageEmail)
+    qry = qry.filter(types.Job.row_create_date >= interval_start)
+    qry = qry.filter(types.Job.row_create_date < interval_end)
+
+    return qry.all()
