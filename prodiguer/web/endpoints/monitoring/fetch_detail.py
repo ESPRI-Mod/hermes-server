@@ -54,8 +54,8 @@ class FetchDetailRequestHandler(ProdiguerHTTPRequestHandler):
                 logger.log_web("[{}]: executing db query: retrieve_simulation_configuration".format(id(self)))
                 self.configuration = dao_monitoring.retrieve_simulation_configuration(self.simulation.uid)
 
-                logger.log_web("[{}]: executing db query: has_messages".format(id(self)))
                 self.has_messages = True
+                # logger.log_web("[{}]: executing db query: has_messages".format(id(self)))
                 # self.has_messages = dao_mq.has_messages(self.simulation.uid)
 
                 if self.simulation.try_id == 1:
