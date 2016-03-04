@@ -151,6 +151,28 @@ def retrieve_simulation_try(hashid, try_id):
     return dao.exec_query(types.Simulation, qry)
 
 
+@decorators.validate(validator.validate_retrieve_simulation_previous_tries)
+def retrieve_simulation_previous_tries(hashid, try_id):
+    """Retrieves simulation details from db.
+
+    :param str hashid: Simulation hash identifier.
+    :param int try_id: Simulation try identifier.
+
+    :returns: List of try identifiers and simulation uid's.
+    :rtype: types.monitoring.Simulation
+
+    """
+    s = types.Simulation
+    qry = session.raw_query(
+        s.try_id,
+        s.uid
+        )
+    qry = qry.filter(types.Simulation.hashid == unicode(hashid))
+    qry = qry.filter(types.Simulation.try_id < int(try_id))
+
+    return qry.all()
+
+
 @decorators.validate(validator.validate_exists)
 def exists(uid):
     """Returns a flag indicating whether simulation already exists.

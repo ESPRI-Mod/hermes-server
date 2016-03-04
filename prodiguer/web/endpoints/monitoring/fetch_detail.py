@@ -57,6 +57,13 @@ class FetchDetailRequestHandler(ProdiguerHTTPRequestHandler):
                 logger.log_web("[{}]: executing db query: retrieve_message_count".format(id(self)))
                 self.has_messages = dao_mq.has_messages(self.simulation.uid)
 
+                if self.simulation.try_id == 1:
+                    self.previous_tries = []
+                else:
+                    logger.log_web("[{}]: executing db query: retrieve_previous_tries".format(id(self)))
+                    self.previous_tries = dao_monitoring.retrieve_simulation_previous_tries(self.simulation.hashid,
+                                                                                            self.simulation.try_id)
+
 
         def _set_output():
             """Sets response to be returned to client.
@@ -66,6 +73,7 @@ class FetchDetailRequestHandler(ProdiguerHTTPRequestHandler):
                 'config_card': self.configuration.card if self.configuration else None,
                 'has_messages': self.has_messages,
                 'job_list': self.job_list,
+                'previous_tries': self.previous_tries,
                 'simulation': self.simulation
             }
 

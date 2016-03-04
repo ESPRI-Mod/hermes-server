@@ -293,6 +293,14 @@ def validate_retrieve_simulation_try(hashid, try_id):
     validation.validate_int(try_id, "Simulation try id")
 
 
+def validate_retrieve_simulation_previous_tries(hashid, try_id):
+    """Function input validator: retrieve_simulation_previous_tries.
+
+    """
+    validation.validate_unicode(hashid, "Simulation hash identifier")
+    validation.validate_int(try_id, "Simulation try id")
+
+
 def validate_update_active_simulation(hashid):
     """Function input validator: update_active_simulation.
 
