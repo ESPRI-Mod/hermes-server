@@ -293,6 +293,7 @@ def persist_message_email_stats(
     :param int outgoing_3999: Count of messages (type=3999) dispateched to RabbitMQ server.
     :param int outgoing_7000: Count of messages (type=7000) dispateched to RabbitMQ server.
     :param int outgoing_7010: Count of messages (type=7010) dispateched to RabbitMQ server.
+    :param int outgoing_7011: Count of messages (type=7011) dispateched to RabbitMQ server.
     :param int outgoing_7100: Count of messages (type=7100) dispateched to RabbitMQ server.
 
     """
@@ -326,6 +327,7 @@ def persist_message_email_stats(
     instance.outgoing_3999 = outgoing_3999
     instance.outgoing_7000 = outgoing_7000
     instance.outgoing_7010 = outgoing_7010
+    instance.outgoing_7011 = outgoing_7011
     instance.outgoing_7100 = outgoing_7100
 
     return session.add(instance)

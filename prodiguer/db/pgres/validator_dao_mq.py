@@ -134,6 +134,7 @@ def validate_persist_message_email_stats(
     outgoing_3999=0,
     outgoing_7000=0,
     outgoing_7010=0,
+    outgoing_7011=0,
     outgoing_7100=0
     ):
     """Function input validator: update_message_email_stats.
@@ -166,4 +167,5 @@ def validate_persist_message_email_stats(
     validation.validate_int(outgoing_3999, "outgoing_3999")
     validation.validate_int(outgoing_7000, "outgoing_7000")
     validation.validate_int(outgoing_7010, "outgoing_7010")
+    validation.validate_int(outgoing_7011, "outgoing_7011")
     validation.validate_int(outgoing_7100, "outgoing_7100")

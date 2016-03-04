@@ -178,6 +178,7 @@ MESSAGE_TYPE_3900 = u"3900"		# Monitoring - post-processing job from checker fai
 MESSAGE_TYPE_3999 = u"3999"		# Monitoring - post-processing-from0checker job fails - FATAL post-processing from checker has been stopped due to an error
 MESSAGE_TYPE_7000 = u"7000"		# Metrics - environment
 MESSAGE_TYPE_7010 = u"7010"		# Metrics - conso
+MESSAGE_TYPE_7011 = u"7010"		# Metrics - conso
 MESSAGE_TYPE_7100 = u"7100"		# Metrics - pcmdi
 MESSAGE_TYPE_8000 = u"8000"		# Supervisor - detect
 MESSAGE_TYPE_8100 = u"8100"		# Supervisor - format
@@ -212,6 +213,7 @@ TYPES = {
 	# ... metrics
 	MESSAGE_TYPE_7000,
 	MESSAGE_TYPE_7010,
+	MESSAGE_TYPE_7011,
 	MESSAGE_TYPE_7100,
 	# ... supervisor
 	MESSAGE_TYPE_8000,
@@ -249,6 +251,7 @@ MESSAGE_TYPE_APPLICATION = {
 	# ... metrics
 	MESSAGE_TYPE_7000: APP_METRICS,
 	MESSAGE_TYPE_7010: APP_METRICS,
+	MESSAGE_TYPE_7011: APP_METRICS,
 	MESSAGE_TYPE_7100: APP_METRICS,
 	# ... supervisor
 	MESSAGE_TYPE_8000: APP_SUPERVISEUR,
@@ -286,6 +289,7 @@ MESSAGE_TYPE_EXCHANGE = {
 	# ... metrics
 	MESSAGE_TYPE_7000: EXCHANGE_PRODIGUER_PRIMARY,
 	MESSAGE_TYPE_7010: EXCHANGE_PRODIGUER_PRIMARY,
+	MESSAGE_TYPE_7011: EXCHANGE_PRODIGUER_PRIMARY,
 	MESSAGE_TYPE_7100: EXCHANGE_PRODIGUER_PRIMARY,
 	# ... supervisor
 	MESSAGE_TYPE_8000: EXCHANGE_PRODIGUER_SECONDARY_DELAYED,

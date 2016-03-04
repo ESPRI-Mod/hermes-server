@@ -115,4 +115,5 @@ class MessageEmailStats(Entity):
     outgoing_3999 = Column(Integer)
     outgoing_7000 = Column(Integer)
     outgoing_7010 = Column(Integer)
+    outgoing_7011 = Column(Integer)
     outgoing_7100 = Column(Integer)

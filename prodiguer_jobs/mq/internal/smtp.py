@@ -339,5 +339,6 @@ def _persist_stats(ctx):
         outgoing_3999=_get_outgoing_message_count(mq.constants.MESSAGE_TYPE_3999),
         outgoing_7000=_get_outgoing_message_count(mq.constants.MESSAGE_TYPE_7000),
         outgoing_7010=_get_outgoing_message_count(mq.constants.MESSAGE_TYPE_7010),
+        outgoing_7011=_get_outgoing_message_count(mq.constants.MESSAGE_TYPE_7011),
         outgoing_7100=_get_outgoing_message_count(mq.constants.MESSAGE_TYPE_7100)
         )
