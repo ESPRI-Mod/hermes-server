@@ -93,10 +93,9 @@ def _ws_client_filter(client, data):
 
     """
     simulation_uid = client.get_argument("simulationUID", None)
-    if simulation_uid is None:
-        return True
-    else:
-        return data['simulation_uid'] == simulation_uid
+
+    return simulation_uid is None or \
+           simulation_uid == data['simulation_uid']
 
 
 class EventRequestHandler(tornado.web.RequestHandler):
