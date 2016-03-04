@@ -116,7 +116,7 @@ def has_messages(uid):
     """
     qry = session.query(types.Message)
     qry = qry.filter(types.Message.correlation_id_1 == unicode(uid))
-    qry = qry.filter(types.Message.type_id != u'7000')
+    # qry = qry.filter(types.Message.type_id != u'7000')
 
     return qry.first() is not None
 
