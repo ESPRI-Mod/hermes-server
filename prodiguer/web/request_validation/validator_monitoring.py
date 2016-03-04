@@ -94,8 +94,7 @@ def validate_fetch_one(handler):
 
         """
         rv.validate_data(handler.request.query_arguments, {
-            Required(_PARAM_HASHID): All(rv.Sequence(str)),
-            Required(_PARAM_TRYID): All(rv.Sequence(int))
+            Required(_PARAM_UID): All(rv.Sequence(uuid.UUID))
             })
 
     rv.validate(handler, query_validator=_query_validator)

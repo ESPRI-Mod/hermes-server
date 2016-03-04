@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: conso.py
+.. module:: conso_project.py
    :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
@@ -12,6 +12,7 @@
 
 """
 from prodiguer.db.pgres import dao_conso as dao
+from prodiguer.utils import logger
 
 
 
@@ -26,6 +27,9 @@ def _persist(ctx):
     """Persists information to db.
 
     """
+    logger.log_mq("TODO persist conso project metrics")
+    return
+
     # Persist allocation info.
     allocation = dao.persist_allocation(
         ctx.content['projectCentre'],

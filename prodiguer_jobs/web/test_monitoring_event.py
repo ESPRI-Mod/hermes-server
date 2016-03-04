@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: send_monitoring_event.py
+.. module:: test_monitoring_event.py
    :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix

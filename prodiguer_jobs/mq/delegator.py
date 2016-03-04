@@ -38,7 +38,8 @@ _AGENTS = {
     '3999': monitoring.job_end,
     # ... metrics handlers
     '7000': metrics.environment,
-    '7010': metrics.conso,
+    '7010': metrics.conso_project,
+    '7011': metrics.conso_jobs,
     # ... supervisor handlers
     '8000': supervision.detect_late_job,
     '8100': supervision.format_script,

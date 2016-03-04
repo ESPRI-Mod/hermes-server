@@ -55,6 +55,11 @@ class Consumption(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_consumption'
     __table_args__ = (
+        UniqueConstraint('allocation_id', 'sub_project', 'login', 'date'),
+        {'schema':SCHEMA}
+    )
+
+    __table_args__ = (
         {'schema':SCHEMA}
     )
 

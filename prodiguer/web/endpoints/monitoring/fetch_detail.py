@@ -21,8 +21,7 @@ from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
 
 # Query parameter names.
-_PARAM_HASHID = 'hashid'
-_PARAM_TRYID = 'tryID'
+_PARAM_UID = 'uid'
 
 
 
@@ -38,8 +37,7 @@ class FetchDetailRequestHandler(ProdiguerHTTPRequestHandler):
             """Decodes request.
 
             """
-            self.hashid = self.get_argument(_PARAM_HASHID)
-            self.try_id = self.get_argument(_PARAM_TRYID)
+            self.uid = self.get_argument(_PARAM_UID)
 
 
         def _set_data():
@@ -48,7 +46,7 @@ class FetchDetailRequestHandler(ProdiguerHTTPRequestHandler):
             """
             with db.session.create():
                 logger.log_web("[{}]: executing db query: retrieve_simulation_try".format(id(self)))
-                self.simulation = dao_monitoring.retrieve_simulation_try(self.hashid, self.try_id)
+                self.simulation = dao_monitoring.retrieve_simulation(self.uid)
 
                 logger.log_web("[{}]: executing db query: retrieve_simulation_jobs".format(id(self)))
                 self.job_list = dao_monitoring.retrieve_simulation_jobs(self.simulation.uid)
