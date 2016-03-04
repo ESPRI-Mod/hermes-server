@@ -73,6 +73,7 @@ def _check_email_latency():
     """Verifies that average email arrival latency does not exceed a configurable period.
 
     """
+    # TODO :: switched off pending further testing.
     return
 
     # Retrieve all emails that have been queued for processing since last check.

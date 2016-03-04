@@ -59,10 +59,6 @@ class Consumption(Entity):
         {'schema':SCHEMA}
     )
 
-    __table_args__ = (
-        {'schema':SCHEMA}
-    )
-
     # Columns.
     allocation_id = Column(Integer, ForeignKey('conso.tbl_allocation.id'), nullable=False)
     sub_project = Column(Unicode(127), nullable=True)   # name of associated sub-project
