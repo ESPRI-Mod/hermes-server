@@ -12,29 +12,32 @@
 
 
 """
-from prodiguer.utils import validation
+from prodiguer.utils import validation as v
 
 
 
 def validate_persist_allocation(
     centre,
-    end_date,
+    project,
+    sub_project,
     machine,
     node_type,
-    project,
     start_date,
+    end_date,
     total_hrs
     ):
     """Function input validator: persist_project.
 
     """
-    validation.validate_unicode(centre, 'Allocation computing centre')
-    validation.validate_date(end_date, 'Allocation end date')
-    validation.validate_unicode(machine, 'Allocation machine')
-    validation.validate_unicode(node_type, 'Allocation node type')
-    validation.validate_unicode(project, 'Allocation project')
-    validation.validate_date(start_date, 'Allocation start date')
-    validation.validate_float(total_hrs, 'Allocation total (hours)')
+    v.validate_unicode(centre, 'Allocation computing centre')
+    v.validate_unicode(machine, 'Allocation machine')
+    v.validate_unicode(node_type, 'Allocation node type')
+    v.validate_unicode(project, 'Allocation project')
+    if sub_project:
+        v.validate_unicode(sub_project, 'Allocation sub-project')
+    v.validate_date(start_date, 'Allocation start date')
+    v.validate_date(end_date, 'Allocation end date')
+    v.validate_float(total_hrs, 'Allocation total (hours)')
 
 
 def validate_persist_consumption(
@@ -46,11 +49,11 @@ def validate_persist_consumption(
     """Function input validator: persist_consumption_by_login.
 
     """
-    validation.validate_int(allocation_id, 'Allocation identifier')
-    validation.validate_date(date, 'Consumption date')
-    validation.validate_float(total_hrs, 'Consumption total (hours)')
+    v.validate_int(allocation_id, 'Allocation identifier')
+    v.validate_date(date, 'Consumption date')
+    v.validate_float(total_hrs, 'Consumption total (hours)')
     if login is not None:
-        validation.validate_unicode(login, 'Consumption login')
+        v.validate_unicode(login, 'Consumption login')
 
 
 def validate_persist_occupation_store(
@@ -62,24 +65,24 @@ def validate_persist_occupation_store(
     """Function input validator: persist_occupation_store.
 
     """
-    validation.validate_date(date, 'Occupation store date')
-    validation.validate_unicode(login, 'Occupation store login')
-    validation.validate_unicode(name, 'Occupation name')
-    validation.validate_float(size_gb, 'Occupation size (GB)')
+    v.validate_date(date, 'Occupation store date')
+    v.validate_unicode(login, 'Occupation store login')
+    v.validate_unicode(name, 'Occupation name')
+    v.validate_float(size_gb, 'Occupation size (GB)')
 
 
 def validate_retrieve_allocation(
     centre,
+    project,
     machine,
     node_type,
-    project,
     start_date
     ):
     """Function input validator: retrieve_allocation.
 
     """
-    validation.validate_unicode(centre, 'Allocation computing centre')
-    validation.validate_unicode(machine, 'Allocation machine')
-    validation.validate_unicode(node_type, 'Allocation node type')
-    validation.validate_unicode(project, 'Allocation project')
-    validation.validate_date(start_date, 'Allocation start date')
+    v.validate_unicode(centre, 'Allocation computing centre')
+    v.validate_unicode(project, 'Allocation project')
+    v.validate_unicode(machine, 'Allocation machine')
+    v.validate_unicode(node_type, 'Allocation node type')
+    v.validate_date(start_date, 'Allocation start date')

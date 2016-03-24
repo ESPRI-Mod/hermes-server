@@ -96,16 +96,18 @@ def create_ampq_message_properties(
     validator.validate_user_id(user_id)
 
     # Set timestamps.
-    # ... if provided then use.
+    # ... if not provided then create one.
     if timestamp is None:
         timestamp = arrow.utcnow()
         headers['timestamp'] = unicode(timestamp)
         headers['timestamp_precision'] = 'ms'
         timestamp = int(repr(timestamp.float_timestamp).replace(".", ""))
+
     # ... if timestamp not in header then inject.
     if 'timestamp' not in headers:
         headers['timestamp'] = unicode(arrow.utcnow())
         headers['timestamp_precision'] = 'ms'
+
     # ... if precision not in header then inject.
     if 'timestamp_precision' not in headers:
         headers['timestamp_precision'] = 'ms'

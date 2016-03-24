@@ -60,7 +60,8 @@ class Consumption(Entity):
     )
 
     # Columns.
-    allocation_id = Column(Integer, ForeignKey('conso.tbl_allocation.id'), nullable=False)
+    allocation_id = Column(
+        Integer, ForeignKey('conso.tbl_allocation.id'), nullable=False)
     sub_project = Column(Unicode(127), nullable=True)   # name of associated sub-project
     login = Column(Unicode(127), nullable=True)         # login considered
     date = Column(DateTime, nullable=False)             # date considered
@@ -78,7 +79,8 @@ class CPUState(Entity):
     )
 
     # Columns.
-    allocation_id = Column(Integer, ForeignKey('conso.tbl_allocation.id'), nullable=False)
+    allocation_id = Column(
+        Integer, ForeignKey('conso.tbl_allocation.id'), nullable=False)
     date = Column(DateTime, nullable=False)             # date considered
     total_running = Column(Integer, nullable=False)     # number of cpu's in running state
     total_pending = Column(Integer, nullable=False)     # number of cpu's in pending state

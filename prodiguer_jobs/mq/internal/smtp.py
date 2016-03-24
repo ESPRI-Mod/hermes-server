@@ -150,6 +150,16 @@ def _process_attachments_0000(ctx):
     msg['configuration'] = ctx.email_attachments[0]
 
 
+def _process_attachments_7010(ctx):
+    """Processes email attachments for message type 7010.
+
+    """
+    data = ctx.email_attachments[0]
+    data = base64.encodestring(data)
+    msg = ctx.msg_dict[0]
+    msg['data'] = data
+
+
 def _process_attachments_7100(ctx):
     """Processes email attachments for message type 7100.
 
@@ -166,6 +176,7 @@ def _process_attachments_7100(ctx):
 # Map of attachment handlers to message types.
 _ATTACHMENT_HANDLERS = {
     '0000': _process_attachments_0000,
+    '7010': _process_attachments_7010,
     '7100': _process_attachments_7100
 }
 

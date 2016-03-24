@@ -24,22 +24,24 @@ from prodiguer.utils import decorators
 @decorators.validate(validator.validate_persist_allocation)
 def persist_allocation(
     centre,
-    end_date,
+    project,
+    sub_project,
     machine,
     node_type,
-    project,
     start_date,
-    total_hrs,
+    end_date,
+    total_hrs
     ):
     """Persists allocation information to db.
 
-    :param str centre: Name of associated accounting project.
-    :param datetime end_date: Name of activity, e.g. IPSL.
-    :param str machine: Name of activity before CV reformatting.
-    :param str node_type: Name of compute node, e.g. TGCC.
-    :param str project: Name of compute node before CV reformatting.
-    :param datetime start_date: Name of compute node login, e.g. dcugnet.
-    :param float total_hrs: Name of compute node login before CV reformatting.
+    :param str centre: HPC, e.g. TGCC.
+    :param str project: Accounting project, e.g. ra2641.
+    :param str sub_project: Accounting sub-project, e.g. ???.
+    :param str machine: HPC machine, e.g. curie.
+    :param str node_type: HPC node type, e.g. thin/standard.
+    :param datetime start_date: Allocation start date.
+    :param datetime end_date: Allocation end date.
+    :param float total_hrs: Total allocated compute time.
 
     :returns: Either a new or an updated allocation instance.
     :rtype: types.Allocation
@@ -50,11 +52,12 @@ def persist_allocation(
 
         """
         instance.centre = unicode(centre)
-        instance.end_date = arrow.get(end_date).datetime
+        instance.project = unicode(project)
+        instance.sub_project = unicode(sub_project) if sub_project else None
         instance.machine = unicode(machine)
         instance.node_type = unicode(node_type)
-        instance.project = unicode(project)
-        instance.start_date = arrow.get(start_date).datetime
+        instance.start_date = start_date
+        instance.end_date = end_date
         instance.total_hrs = float(total_hrs)
 
     def _retrieve():
@@ -63,13 +66,45 @@ def persist_allocation(
         """
         return retrieve_allocation(
             centre,
+            project,
             machine,
             node_type,
-            project,
             start_date
             )
 
     return dao.persist(_assign, types.Allocation, _retrieve)
+
+
+@decorators.validate(validator.validate_retrieve_allocation)
+def retrieve_allocation(
+    centre,
+    project,
+    machine,
+    node_type,
+    start_date
+    ):
+    """Retrieves allocation information from db.
+
+    :param str centre: HPC, e.g. TGCC.
+    :param str project: Accounting project, e.g. ra2641.
+    :param str machine: HPC machine, e.g. curie.
+    :param str node_type: HPC node type, e.g. thin/standard.
+    :param datetime start_date: Allocation start date.
+
+    :returns: An allocation instance if found else None.
+    :rtype: types.Allocation | None
+
+    """
+    a = types.Allocation
+
+    qry = session.query(a)
+    qry = qry.filter(a.centre == unicode(centre))
+    qry = qry.filter(a.project == unicode(project))
+    qry = qry.filter(a.machine == unicode(machine))
+    qry = qry.filter(a.node_type == unicode(node_type))
+    qry = qry.filter(a.start_date == start_date)
+
+    return qry.first()
 
 
 @decorators.validate(validator.validate_persist_consumption)
@@ -103,43 +138,3 @@ def persist_occupation_store(
     instance.size_gb = float(size_gb)
 
     return session.insert(instance)
-
-
-@decorators.validate(validator.validate_retrieve_allocation)
-def retrieve_allocation(
-    centre,
-    machine,
-    node_type,
-    project,
-    start_date
-    ):
-    """Retrieves allocation information from db.
-
-    :param str centre: Name of associated accounting project.
-    :param str machine: Name of activity before CV reformatting.
-    :param str node_type: Name of compute node, e.g. TGCC.
-    :param str project: Name of compute node before CV reformatting.
-    :param datetime start_date: Name of compute node login, e.g. dcugnet.
-
-    :returns: An allocation instance if found else None.
-    :rtype: types.Allocation | None
-
-    """
-    qry = session.query(types.Allocation)
-    qry = qry.filter(types.Allocation.centre == unicode(centre))
-    qry = qry.filter(types.Allocation.machine == unicode(machine))
-    qry = qry.filter(types.Allocation.node_type == unicode(node_type))
-    qry = qry.filter(types.Allocation.project == unicode(project))
-    qry = qry.filter(types.Allocation.start_date == arrow.get(start_date).datetime)
-
-    return qry.first()
-
-
-
-def retrieve_jobs_by_project():
-    raise NotImplemented()
-
-
-
-def retrieve_mails_by_project():
-    raise NotImplemented()

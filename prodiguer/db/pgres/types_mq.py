@@ -48,7 +48,7 @@ class Message(Entity):
                  nullable=False,
                  unique=True,
                  default=unicode(uuid.uuid4()))
-    correlation_id_1 = Column(Unicode(63), nullable=True)
+    correlation_id_1 = Column(Unicode(63), nullable=True, index=True)
     correlation_id_2 = Column(Unicode(63), nullable=True)
     correlation_id_3 = Column(Unicode(63), nullable=True)
     timestamp = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)

@@ -1,0 +1,85 @@
+{
+    "projects": [
+        {
+            "alloc": 5000000,
+            "centre": "tgcc",
+            "end": "2015-06-30 23:59:59",
+            "machine": "curie",
+            "name": "gencmip6",
+            "node": "thin/standard",
+            "start": "2015-01-01 00:00:00"
+        },
+        {
+            "alloc": 10000000,
+            "centre": "tgcc",
+            "end": "2015-12-31 23:59:59",
+            "machine": "curie",
+            "name": "gencmip6",
+            "node": "thin/standard",
+            "start": "2015-07-01 00:00:00"
+        },
+        {
+            "alloc": 25000000,
+            "centre": "tgcc",
+            "end": "2016-06-30 23:59:59",
+            "machine": "curie",
+            "name": "gencmip6",
+            "node": "thin/standard",
+            "start": "2016-01-01 00:00:00"
+        },
+        {
+            "alloc": 50000000,
+            "centre": "tgcc",
+            "end": "2016-12-31 23:59:59",
+            "machine": "curie",
+            "name": "gencmip6",
+            "node": "thin/standard",
+            "start": "2016-07-01 00:00:00"
+        },
+        {
+            "alloc": 2000000,
+            "centre": "idris",
+            "end": "2015-12-31 23:59:59",
+            "machine": "ada",
+            "name": "rgzi",
+            "node": "standard",
+            "start": "2015-01-01 00:00:00"
+        },
+        {
+            "alloc": 4000000,
+            "centre": "idris",
+            "end": "2016-12-31 23:59:59",
+            "machine": "ada",
+            "name": "rgzi",
+            "node": "standard",
+            "start": "2016-01-01 00:00:00"
+        },
+        {
+            "alloc": 114000,
+            "centre": "tgcc",
+            "end": "2015-12-31 23:59:59",
+            "machine": "curie",
+            "name": "gen0826",
+            "node": "fat/large",
+            "start": "2015-01-01 00:00:00"
+        },
+        {
+            "alloc": 25000,
+            "centre": "tgcc",
+            "end": "2015-12-31 23:59:59",
+            "machine": "curie",
+            "name": "gen0826",
+            "node": "hybrid",
+            "start": "2015-01-01 00:00:00"
+        },
+        {
+            "alloc": 114000,
+            "centre": "tgcc",
+            "end": "2015-12-31 23:59:59",
+            "machine": "curie",
+            "name": "gen0826",
+            "node": "thin/standard",
+            "start": "2015-01-01 00:00:00"
+        }
+    ]
+}

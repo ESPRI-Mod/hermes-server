@@ -165,8 +165,6 @@ def get_count(etype, qfilter=None):
     :rtype: int
 
     """
-    validator.validate_entity_type(etype)
-
     qry = session.query(etype)
     if qfilter is not None:
         qry = qry.filter(qfilter)
