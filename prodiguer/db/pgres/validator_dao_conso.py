@@ -40,6 +40,40 @@ def validate_persist_allocation(
     v.validate_float(total_hrs, 'Allocation total (hours)')
 
 
+def validate_retrieve_allocation(
+    centre,
+    project,
+    machine,
+    node_type,
+    start_date
+    ):
+    """Function input validator: retrieve_allocation.
+
+    """
+    v.validate_unicode(centre, 'Allocation computing centre')
+    v.validate_unicode(project, 'Allocation project')
+    v.validate_unicode(machine, 'Allocation machine')
+    v.validate_unicode(node_type, 'Allocation node type')
+    v.validate_date(start_date, 'Allocation start date')
+
+
+def validate_retrieve_consumption_allocation(
+    centre,
+    project,
+    machine,
+    node_type,
+    consumption_date
+    ):
+    """Function input validator: retrieve_consumption_allocation.
+
+    """
+    v.validate_unicode(centre, 'Allocation computing centre')
+    v.validate_unicode(project, 'Allocation project')
+    v.validate_unicode(machine, 'Allocation machine')
+    v.validate_unicode(node_type, 'Allocation node type')
+    v.validate_date(consumption_date, 'Resource consumption date')
+
+
 def validate_persist_consumption(
     allocation_id,
     date,
@@ -71,18 +105,3 @@ def validate_persist_occupation_store(
     v.validate_float(size_gb, 'Occupation size (GB)')
 
 
-def validate_retrieve_allocation(
-    centre,
-    project,
-    machine,
-    node_type,
-    start_date
-    ):
-    """Function input validator: retrieve_allocation.
-
-    """
-    v.validate_unicode(centre, 'Allocation computing centre')
-    v.validate_unicode(project, 'Allocation project')
-    v.validate_unicode(machine, 'Allocation machine')
-    v.validate_unicode(node_type, 'Allocation node type')
-    v.validate_date(start_date, 'Allocation start date')

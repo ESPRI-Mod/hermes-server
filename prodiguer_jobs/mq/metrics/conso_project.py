@@ -32,8 +32,8 @@ def get_tasks():
     return (
       _unpack_content,
       _reformat_raw_metrics,
-      _unpack_metrics_tgcc,
-      _unpack_metrics_idris,
+      _unpack_blocks_tgcc,
+      _unpack_blocks_idris,
       _persist,
       )
 
@@ -49,8 +49,8 @@ class ProcessingContextInfo(mq.Message):
         super(ProcessingContextInfo, self).__init__(
             props, body, decode=decode)
 
-        self.accounting_project = None
-        self.metrics = []
+        self.project = None
+        self.blocks = []
         self.centre = None
         self.data = None
 
@@ -60,8 +60,8 @@ def _unpack_content(ctx):
 
     """
     ctx.data = base64.decodestring(ctx.content['data'])
-    ctx.centre = ctx.content['centre']
-    ctx.accounting_project = ctx.content['accountingProject']
+    ctx.centre = ctx.content['centre'].lower()
+    ctx.project = ctx.content['accountingProject'].lower()
 
 
 def _reformat_raw_metrics(ctx):
@@ -71,23 +71,23 @@ def _reformat_raw_metrics(ctx):
     ctx.data = [l.lower() for l in ctx.data.split('/n') if l]
 
 
-def _unpack_metrics_idris(ctx):
-    """Unpacks IDRIS HPC conso metrics from data.
+def _unpack_blocks_idris(ctx):
+    """Unpacks blocks of IDRIS HPC conso metrics from data.
 
     """
     # Escape if not processing IDRIS metrics.
-    if ctx.centre.lower() != _HPC_IDRIS:
+    if ctx.centre != _HPC_IDRIS:
         return
 
     # TODO
 
 
-def _unpack_metrics_tgcc(ctx):
-    """Unpacks TGCC HPC conso metrics from data.
+def _unpack_blocks_tgcc(ctx):
+    """Unpacks blocks of TGCC HPC conso metrics from data.
 
     """
     # Escape if not processing TGCC metrics.
-    if ctx.centre.lower() != _HPC_TGCC:
+    if ctx.centre != _HPC_TGCC:
         return
 
     # Set metric block start end positions.
@@ -96,15 +96,15 @@ def _unpack_metrics_tgcc(ctx):
         [i for i, v in enumerate(ctx.data) if v.startswith('project')]
         )
 
-    # Set metrics to be persisted.
+    # Set blocks of metrics to be persisted.
     for start, end in indexes:
-        ctx.metrics.append({
+        ctx.blocks.append({
             'project': ctx.data[start].split()[3].lower(),
             'machine': ctx.data[start].split()[5].lower(),
             'node': ctx.data[start].split()[6].lower(),
-            'compute_date': dt.datetime.strptime(
+            'consumption_date': dt.datetime.strptime(
                 "{} 23:59:59".format(ctx.data[start].split()[-1]), "%Y-%m-%d %H:%M:%S"),
-            'logins': [(n, float(t)) for n, t in [l.split() for l in ctx.data[start + 2: end - 4]]],
+            'consumption': [(n, float(t)) for n, t in [l.split() for l in ctx.data[start + 2: end - 4]]],
             'total': float(ctx.data[end - 4].split()[-1]),
             'allocated': float(ctx.data[end - 3].split()[-1]),
             'project_end_date': dt.datetime.strptime(ctx.data[end].split()[-1], "%Y-%m-%d"),
@@ -115,13 +115,26 @@ def _persist(ctx):
     """Persists information to db.
 
     """
-    for metric in ctx.metric:
-        print metric
+    for block in ctx.blocks:
+        # Get related allocation.
+        allocation = dao.retrieve_consumption_allocation(
+            ctx.centre,
+            block['project'],
+            block['machine'],
+            block['node'],
+            block['consumption_date']
+            )
 
-    logger.log_mq("TODO persist conso project metrics")
+        # Skip blocks that cannot be mapped to an allocation.
+        if allocation is None:
+            logger.log_mq_warning("Conso metrics block could not be mapped to an allocation")
+            continue
 
-    # Get allocation id.
-    pass
-
-    # Insert login metrics.
-    pass
+        # Persist consumption by login.
+        for login, total_hours in block['consumption']:
+            dao.persist_consumption(
+                allocation.id,
+                block['consumption_date'],
+                total_hours,
+                login
+                )
