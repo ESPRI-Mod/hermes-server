@@ -122,10 +122,11 @@ def has_messages(uid):
 
 
 @decorators.validate(validator.validate_retrieve_messages)
-def retrieve_messages(uid=None):
+def retrieve_messages(uid=None, exclude_excessive=True):
     """Retrieves message details from db.
 
     :param str uid: Correlation UID.
+    :param bool exclude_excessive: Flag indicating whether excessive message types are to be excluded from results.
 
     :returns: List of message associated with a simulation.
     :rtype: list
@@ -145,7 +146,8 @@ def retrieve_messages(uid=None):
         )
     if uid is not None:
         qry = qry.filter(m.correlation_id_1 == uid)
-        for msg_type  in {u'7000', u'1900'}:
+    if exclude_excessive:
+        for msg_type  in {u'7000', u'1900', u'2900', u'3900'}:
             qry = qry.filter(m.type_id != msg_type)
     qry = qry.order_by(m.timestamp)
 
