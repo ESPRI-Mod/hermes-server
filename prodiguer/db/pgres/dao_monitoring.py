@@ -87,6 +87,7 @@ def retrieve_active_simulations(start_date=None):
     s = types.Simulation
 
     qry = session.raw_query(
+        s.accounting_project,
         s.activity,
         s.activity_raw,
         s.compute_node_login,
