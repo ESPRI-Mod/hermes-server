@@ -32,6 +32,7 @@ TERM_GOVERNANCE_STATESET = [
     ]
 
 # Term types.
+TERM_TYPE_ACCOUNTING_PROJECT = u"accounting_project"
 TERM_TYPE_ACTIVITY = u"activity"
 TERM_TYPE_INSTITUTE = u"institute"
 TERM_TYPE_COMPUTE_NODE = u"compute_node"
@@ -51,6 +52,7 @@ TERM_TYPE_SIMULATION_STATE = u"simulation_state"
 
 # Term typeset.
 TERM_TYPESET = [
+    TERM_TYPE_ACCOUNTING_PROJECT,
     TERM_TYPE_ACTIVITY,
     TERM_TYPE_INSTITUTE,
     TERM_TYPE_COMPUTE_NODE,

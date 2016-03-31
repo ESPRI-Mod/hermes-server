@@ -27,12 +27,21 @@ def _get_path_to_archive():
     return shell.get_repo_path(['prodiguer-cv', 'data'])
 
 
-def _get_path_to_term(term):
-    """Return path to CV term.
+def _get_path_to_term_type(term):
+    """Return path to CV term type.
 
     """
     term_fpath = _get_path_to_archive()
     term_fpath = os.path.join(term_fpath, ta.get_type(term))
+
+    return term_fpath
+
+
+def _get_path_to_term(term):
+    """Return path to CV term.
+
+    """
+    term_fpath = _get_path_to_term_type(term)
     term_fpath = os.path.join(term_fpath, ta.get_name(term))
     term_fpath += ".json"
 
@@ -79,6 +88,10 @@ def write(term):
     :param dict term: Term to be written to file system.
 
     """
+    term_type_dir = _get_path_to_term_type(term)
+    if not os.path.exists(term_type_dir):
+        os.makedirs(term_type_dir)
+
     term_filepath = _get_path_to_term(term)
     with open(term_filepath, 'w') as cv_file:
         cv_file.write(json.dumps(term, indent=4))
