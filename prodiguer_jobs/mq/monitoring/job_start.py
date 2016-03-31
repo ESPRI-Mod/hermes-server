@@ -31,6 +31,7 @@ from prodiguer_jobs.mq import utils as mq_utils
 
 # Set of CV related simulation fields.
 _SIMULATION_CV_TERM_FIELDS = {
+    'accounting_project',
     'activity',
     'compute_node',
     'compute_node_login',
@@ -90,6 +91,7 @@ class ProcessingContextInfo(mq.Message):
         self.cv_terms_new = []
         self.cv_terms_persisted_to_db = []
 
+        self.accounting_project = None
         self.activity = self.activity_raw = None
         self.compute_node = self.compute_node_raw = None
         self.compute_node_login = self.compute_node_login_raw = None
@@ -110,6 +112,7 @@ def _unpack_content(ctx):
     """Unpacks message content.
 
     """
+    ctx.accounting_project = ctx.get_field('accountingProject')
     ctx.job_uid = ctx.content['jobuid']
     ctx.job_warning_delay = ctx.get_field(
         'jobWarningDelay', config.apps.monitoring.defaultJobWarningDelayInSeconds)
@@ -204,7 +207,7 @@ def _persist_job(ctx):
     """
     # Persist job.
     dao.persist_job_01(
-        ctx.get_field('accountingProject'),
+        ctx.accounting_project,
         ctx.job_warning_delay,
         ctx.msg.timestamp,
         ctx.job_type,
@@ -238,7 +241,7 @@ def _persist_simulation(ctx):
 
     # Persist simulation.
     simulation = dao.persist_simulation_01(
-        ctx.get_field('accountingProject'),
+        ctx.accounting_project,
         ctx.activity,
         ctx.activity_raw,
         ctx.compute_node,
