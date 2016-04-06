@@ -24,7 +24,7 @@ from prodiguer.db.pgres.entity import Entity
 
 
 # Database schema.
-SCHEMA = 'mq'
+_SCHEMA = 'mq'
 
 
 class Message(Entity):
@@ -34,7 +34,7 @@ class Message(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_message'
     __table_args__ = (
-        {'schema':SCHEMA}
+        {'schema':_SCHEMA}
     )
 
     # Attributes.
@@ -68,7 +68,7 @@ class MessageEmail(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_message_email'
     __table_args__ = (
-        {'schema':SCHEMA}
+        {'schema':_SCHEMA}
     )
 
     # Attributes.
@@ -85,7 +85,7 @@ class MessageEmailStats(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_message_email_stats'
     __table_args__ = (
-        {'schema':SCHEMA}
+        {'schema':_SCHEMA}
     )
 
     # Attributes.

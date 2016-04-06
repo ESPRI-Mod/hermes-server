@@ -13,7 +13,6 @@
 """
 import arrow
 
-from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
 from prodiguer.db.pgres import validator_dao_conso as validator
@@ -47,68 +46,21 @@ def persist_allocation(
     :rtype: types.Allocation
 
     """
-    def _assign(instance):
-        """Assigns instance values from input parameters.
+    instance = types.Allocation()
+    instance.centre = unicode(centre)
+    instance.project = unicode(project)
+    instance.sub_project = unicode(sub_project) if sub_project else None
+    instance.machine = unicode(machine)
+    instance.node_type = unicode(node_type)
+    instance.start_date = start_date
+    instance.end_date = end_date
+    instance.total_hrs = float(total_hrs)
 
-        """
-        instance.centre = unicode(centre)
-        instance.project = unicode(project)
-        instance.sub_project = unicode(sub_project) if sub_project else None
-        instance.machine = unicode(machine)
-        instance.node_type = unicode(node_type)
-        instance.start_date = start_date
-        instance.end_date = end_date
-        instance.total_hrs = float(total_hrs)
-
-    def _retrieve():
-        """Returns instance from input parameters.
-
-        """
-        return retrieve_allocation(
-            centre,
-            project,
-            machine,
-            node_type,
-            start_date
-            )
-
-    return dao.persist(_assign, types.Allocation, _retrieve)
+    return session.insert(instance)
 
 
 @decorators.validate(validator.validate_retrieve_allocation)
 def retrieve_allocation(
-    centre,
-    project,
-    machine,
-    node_type,
-    start_date
-    ):
-    """Retrieves allocation information from db.
-
-    :param str centre: HPC, e.g. TGCC.
-    :param str project: Accounting project, e.g. ra2641.
-    :param str machine: HPC machine, e.g. curie.
-    :param str node_type: HPC node type, e.g. thin/standard.
-    :param datetime start_date: Allocation start date.
-
-    :returns: An allocation instance if found else None.
-    :rtype: types.Allocation | None
-
-    """
-    a = types.Allocation
-
-    qry = session.query(a)
-    qry = qry.filter(a.centre == unicode(centre))
-    qry = qry.filter(a.project == unicode(project))
-    qry = qry.filter(a.machine == unicode(machine))
-    qry = qry.filter(a.node_type == unicode(node_type))
-    qry = qry.filter(a.start_date == start_date)
-
-    return qry.first()
-
-
-@decorators.validate(validator.validate_retrieve_consumption_allocation)
-def retrieve_consumption_allocation(
     centre,
     project,
     machine,
@@ -145,7 +97,8 @@ def persist_consumption(
     allocation_id,
     date,
     total_hrs,
-    login=None
+    login=None,
+    batch_date=None
     ):
     instance = types.Consumption()
     instance.allocation_id = allocation_id
@@ -153,6 +106,8 @@ def persist_consumption(
     instance.total_hrs = float(total_hrs)
     if login is not None:
         instance.login = unicode(login)
+    if batch_date is not None:
+        instance.row_create_date = batch_date
 
     return session.insert(instance)
 

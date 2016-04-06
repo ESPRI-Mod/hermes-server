@@ -22,7 +22,7 @@ from prodiguer.db.pgres.entity import Entity
 
 
 # Database schema.
-SCHEMA = 'superviseur'
+_SCHEMA = 'superviseur'
 
 
 class Supervision(Entity):
@@ -32,7 +32,7 @@ class Supervision(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_supervision'
     __table_args__ = (
-        {'schema':SCHEMA}
+        {'schema':_SCHEMA}
     )
 
     # Attributes.

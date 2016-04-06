@@ -64,6 +64,24 @@
             "start": "2015-01-01 00:00:00"
         },
         {
+            "alloc": 114000,
+            "centre": "tgcc",
+            "end": "2016-12-31 23:59:59",
+            "machine": "curie",
+            "name": "gen0826",
+            "node": "fat/large",
+            "start": "2016-01-01 00:00:00"
+        },
+        {
+            "alloc": 114000,
+            "centre": "tgcc",
+            "end": "2016-12-31 23:59:59",
+            "machine": "curie",
+            "name": "gencmip6",
+            "node": "fat/large",
+            "start": "2016-01-01 00:00:00"
+        },
+        {
             "alloc": 25000,
             "centre": "tgcc",
             "end": "2015-12-31 23:59:59",
@@ -71,6 +89,15 @@
             "name": "gen0826",
             "node": "hybrid",
             "start": "2015-01-01 00:00:00"
+        },
+        {
+            "alloc": 25000,
+            "centre": "tgcc",
+            "end": "2016-12-31 23:59:59",
+            "machine": "curie",
+            "name": "gencmip6",
+            "node": "hybrid",
+            "start": "2016-01-01 00:00:00"
         },
         {
             "alloc": 114000,

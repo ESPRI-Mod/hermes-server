@@ -24,7 +24,7 @@ from prodiguer.db.pgres.entity import Entity
 
 
 # Database schema.
-SCHEMA = 'monitoring'
+_SCHEMA = 'monitoring'
 
 
 class Command(Entity):
@@ -34,7 +34,7 @@ class Command(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_command'
     __table_args__ = (
-        {'schema':SCHEMA}
+        {'schema':_SCHEMA}
     )
 
     # Attributes.
@@ -53,7 +53,7 @@ class Job(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_job'
     __table_args__ = (
-        {'schema':SCHEMA}
+        {'schema':_SCHEMA}
     )
 
     # Attributes.
@@ -82,7 +82,7 @@ class Simulation(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_simulation'
     __table_args__ = (
-        {'schema':SCHEMA}
+        {'schema':_SCHEMA}
     )
 
     # Attributes.
@@ -148,7 +148,7 @@ class SimulationConfiguration(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_simulation_configuration'
     __table_args__ = (
-        {'schema':SCHEMA}
+        {'schema':_SCHEMA}
     )
 
     # Attributes.
@@ -167,7 +167,7 @@ class EnvironmentMetric(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_environment_metric'
     __table_args__ = (
-        {'schema':SCHEMA}
+        {'schema':_SCHEMA}
     )
 
     # Attributes.

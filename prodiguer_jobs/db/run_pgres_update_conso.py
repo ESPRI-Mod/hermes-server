@@ -14,6 +14,8 @@
 import datetime as dt
 import json
 
+from sqlalchemy.exc import IntegrityError
+
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_conso as dao
 
@@ -28,6 +30,25 @@ def _get_initialisation_data():
         return json.loads(data.read())
 
 
+def _persist_allocation(row):
+    """Persists resource allocation information to the database.
+
+    """
+    try:
+        dao.persist_allocation(
+            row['centre'],
+            row['name'],
+            None,               # sub-project
+            row['machine'],
+            row['node'],
+            dt.datetime.strptime(row['start'], "%Y-%m-%d %H:%M:%S"),
+            dt.datetime.strptime(row['end'], "%Y-%m-%d %H:%M:%S"),
+            row['alloc']
+            )
+    except IntegrityError:
+        db.session.rollback()
+
+
 def _main():
     """Main entry point.
 
@@ -35,16 +56,8 @@ def _main():
     data = _get_initialisation_data()
     with db.session.create():
         for row in data['projects']:
-            dao.persist_allocation(
-                row['centre'],
-                row['name'],
-                None,
-                row['machine'],
-                row['node'],
-                dt.datetime.strptime(row['start'], "%Y-%m-%d %H:%M:%S"),
-                dt.datetime.strptime(row['end'], "%Y-%m-%d %H:%M:%S"),
-                row['alloc']
-                )
+            _persist_allocation(row)
+
 
 
 if __name__ == '__main__':

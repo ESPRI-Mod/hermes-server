@@ -68,7 +68,7 @@ def _reformat_raw_metrics(ctx):
     """Reformats raw metrics prior to further processing.
 
     """
-    ctx.data = [l.lower() for l in ctx.data.split('/n') if l]
+    ctx.data = [l.strip().lower() for l in ctx.data.split('\n') if l.strip()]
 
 
 def _unpack_blocks_idris(ctx):
@@ -79,7 +79,31 @@ def _unpack_blocks_idris(ctx):
     if ctx.centre != _HPC_IDRIS:
         return
 
-    # TODO
+    # Set metric block start end positions.
+    indexes = zip(
+        [i for i, v in enumerate(ctx.data) if v.find('mise a jour') > -1],
+        [i for i, v in enumerate(ctx.data) if v.find('totaux') > -1 and
+                                              len(v.split()) == 4]
+        )
+
+    # Set blocks of metrics to be persisted.
+    for start, end in indexes:
+        ctx.blocks.append({
+            # 'sub_project': ctx.data[start].split()[3].lower(),
+            'sub_project': None,
+            'machine': ctx.data[start + 1].split()[-1][:-1],
+            'node': 'standard',
+            'consumption_date': dt.datetime.strptime(
+                "{} {}".format(ctx.data[start].split()[-2:][0],
+                               ctx.data[start].split()[-2:][1]),
+                               "%d/%m/%Y %H:%M"
+            ),
+            'consumption': [(l[-5], float() if l[-3] == '-' else float(l[-3]))
+                            for l in [l.split() for l in ctx.data[start + 7: end - 1]]],
+            'total': float(ctx.data[end].split()[1]),
+            'allocated': float(ctx.data[start + 3].split()[-1]),
+            'project_end_date': None,
+            })
 
 
 def _unpack_blocks_tgcc(ctx):
@@ -99,12 +123,13 @@ def _unpack_blocks_tgcc(ctx):
     # Set blocks of metrics to be persisted.
     for start, end in indexes:
         ctx.blocks.append({
-            'project': ctx.data[start].split()[3].lower(),
+            'sub_project': ctx.data[start].split()[3].lower(),
             'machine': ctx.data[start].split()[5].lower(),
             'node': ctx.data[start].split()[6].lower(),
             'consumption_date': dt.datetime.strptime(
                 "{} 23:59:59".format(ctx.data[start].split()[-1]), "%Y-%m-%d %H:%M:%S"),
-            'consumption': [(n, float(t)) for n, t in [l.split() for l in ctx.data[start + 2: end - 4]]],
+            'consumption': [(n, float(t)) for n, t in
+                            [l.split() for l in ctx.data[start + 2: end - 4]]],
             'total': float(ctx.data[end - 4].split()[-1]),
             'allocated': float(ctx.data[end - 3].split()[-1]),
             'project_end_date': dt.datetime.strptime(ctx.data[end].split()[-1], "%Y-%m-%d"),
@@ -117,9 +142,9 @@ def _persist(ctx):
     """
     for block in ctx.blocks:
         # Get related allocation.
-        allocation = dao.retrieve_consumption_allocation(
+        allocation = dao.retrieve_allocation(
             ctx.centre,
-            block['project'],
+            ctx.project,
             block['machine'],
             block['node'],
             block['consumption_date']
@@ -130,11 +155,19 @@ def _persist(ctx):
             logger.log_mq_warning("Conso metrics block could not be mapped to an allocation")
             continue
 
-        # Persist consumption by login.
+        # Persist batch total.
+        batch = dao.persist_consumption(
+            allocation.id,
+            block['consumption_date'],
+            block['total']
+            )
+
+        # Persist batch items.
         for login, total_hours in block['consumption']:
             dao.persist_consumption(
                 allocation.id,
                 block['consumption_date'],
                 total_hours,
-                login
+                login=login,
+                batch_date=batch.row_create_date
                 )

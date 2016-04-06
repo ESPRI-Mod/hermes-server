@@ -45,26 +45,9 @@ def validate_retrieve_allocation(
     project,
     machine,
     node_type,
-    start_date
-    ):
-    """Function input validator: retrieve_allocation.
-
-    """
-    v.validate_unicode(centre, 'Allocation computing centre')
-    v.validate_unicode(project, 'Allocation project')
-    v.validate_unicode(machine, 'Allocation machine')
-    v.validate_unicode(node_type, 'Allocation node type')
-    v.validate_date(start_date, 'Allocation start date')
-
-
-def validate_retrieve_consumption_allocation(
-    centre,
-    project,
-    machine,
-    node_type,
     consumption_date
     ):
-    """Function input validator: retrieve_consumption_allocation.
+    """Function input validator: retrieve_allocation.
 
     """
     v.validate_unicode(centre, 'Allocation computing centre')
@@ -78,7 +61,8 @@ def validate_persist_consumption(
     allocation_id,
     date,
     total_hrs,
-    login=None
+    login=None,
+    batch_date=None
     ):
     """Function input validator: persist_consumption_by_login.
 
@@ -88,6 +72,8 @@ def validate_persist_consumption(
     v.validate_float(total_hrs, 'Consumption total (hours)')
     if login is not None:
         v.validate_unicode(login, 'Consumption login')
+    if batch_date is not None:
+        v.validate_date(batch_date, 'Consumption batch date')
 
 
 def validate_persist_occupation_store(

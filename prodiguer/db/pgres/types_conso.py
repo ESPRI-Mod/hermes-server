@@ -22,7 +22,7 @@ from prodiguer.db.pgres.entity import Entity
 
 
 # Database schema.
-SCHEMA = 'conso'
+_SCHEMA = 'conso'
 
 
 
@@ -34,7 +34,7 @@ class Allocation(Entity):
     __tablename__ = 'tbl_allocation'
     __table_args__ = (
         UniqueConstraint('centre', 'machine', 'node_type', 'project', 'start_date'),
-        {'schema':SCHEMA}
+        {'schema':_SCHEMA}
     )
 
     # Columns.
@@ -56,12 +56,13 @@ class Consumption(Entity):
     __tablename__ = 'tbl_consumption'
     __table_args__ = (
         UniqueConstraint('allocation_id', 'sub_project', 'login', 'date'),
-        {'schema':SCHEMA}
+        {'schema':_SCHEMA}
     )
 
     # Columns.
-    allocation_id = Column(
-        Integer, ForeignKey('conso.tbl_allocation.id'), nullable=False)
+    allocation_id = Column(Integer,                     # ID of associated allocation
+        ForeignKey('conso.tbl_allocation.id'),
+        nullable=False)
     sub_project = Column(Unicode(127), nullable=True)   # name of associated sub-project
     login = Column(Unicode(127), nullable=True)         # login considered
     date = Column(DateTime, nullable=False)             # date considered
@@ -75,12 +76,13 @@ class CPUState(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_cpu_state'
     __table_args__ = (
-        {'schema':SCHEMA}
+        {'schema':_SCHEMA}
     )
 
     # Columns.
-    allocation_id = Column(
-        Integer, ForeignKey('conso.tbl_allocation.id'), nullable=False)
+    allocation_id = Column(Integer,                     # ID of associated allocation
+        ForeignKey('conso.tbl_allocation.id'),
+        nullable=False)
     date = Column(DateTime, nullable=False)             # date considered
     total_running = Column(Integer, nullable=False)     # number of cpu's in running state
     total_pending = Column(Integer, nullable=False)     # number of cpu's in pending state
@@ -93,7 +95,7 @@ class OccupationStore(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_occupation_store'
     __table_args__ = (
-        {'schema':SCHEMA}
+        {'schema':_SCHEMA}
     )
 
     centre = Column(Unicode(127), nullable=False)       # centre on which the project is active

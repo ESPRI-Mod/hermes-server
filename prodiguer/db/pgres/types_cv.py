@@ -18,7 +18,7 @@ from prodiguer.db.pgres.entity import Entity
 
 
 # Database schema.
-SCHEMA = 'cv'
+_SCHEMA = 'cv'
 
 
 class ControlledVocabularyTerm(Entity):
@@ -29,7 +29,7 @@ class ControlledVocabularyTerm(Entity):
     __tablename__ = 'tbl_cv_term'
     __table_args__ = (
         UniqueConstraint('typeof' ,'name'),
-        {'schema':SCHEMA}
+        {'schema':_SCHEMA}
     )
 
     # Attributes.
