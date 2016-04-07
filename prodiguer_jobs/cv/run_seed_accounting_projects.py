@@ -29,8 +29,8 @@ def _main():
     """Main entry point.
 
     """
-    cv.session.insert([cv.create('accounting_project', ap)
-                       for ap in _get_accounting_projects()])
+    cv.session.insert([cv.create('accounting_project', ap.strip())
+                       for ap in _get_accounting_projects() if ap and ap.strip()])
     cv.session.commit()
 
 
