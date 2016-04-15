@@ -12,7 +12,7 @@
         {
             "alloc": 10000000,
             "centre": "tgcc",
-            "end": "2015-12-31 23:59:59",
+            "end": "2016-01-04 23:59:59",
             "machine": "curie",
             "name": "gencmip6",
             "node": "thin/standard",
@@ -30,7 +30,7 @@
         {
             "alloc": 50000000,
             "centre": "tgcc",
-            "end": "2016-12-31 23:59:59",
+            "end": "2017-01-03 23:59:59",
             "machine": "curie",
             "name": "gencmip6",
             "node": "thin/standard",
@@ -57,56 +57,56 @@
         {
             "alloc": 114000,
             "centre": "tgcc",
-            "end": "2015-12-31 23:59:59",
+            "end": "2016-01-04 23:59:59",
             "machine": "curie",
             "name": "gen0826",
             "node": "fat/large",
             "start": "2015-01-01 00:00:00"
         },
         {
-            "alloc": 114000,
-            "centre": "tgcc",
-            "end": "2016-12-31 23:59:59",
-            "machine": "curie",
-            "name": "gen0826",
-            "node": "fat/large",
-            "start": "2016-01-01 00:00:00"
-        },
-        {
-            "alloc": 114000,
-            "centre": "tgcc",
-            "end": "2016-12-31 23:59:59",
-            "machine": "curie",
-            "name": "gencmip6",
-            "node": "fat/large",
-            "start": "2016-01-01 00:00:00"
-        },
-        {
             "alloc": 25000,
             "centre": "tgcc",
-            "end": "2015-12-31 23:59:59",
+            "end": "2016-01-04 23:59:59",
             "machine": "curie",
             "name": "gen0826",
             "node": "hybrid",
             "start": "2015-01-01 00:00:00"
         },
         {
-            "alloc": 25000,
+            "alloc": 150000,
             "centre": "tgcc",
-            "end": "2016-12-31 23:59:59",
-            "machine": "curie",
-            "name": "gencmip6",
-            "node": "hybrid",
-            "start": "2016-01-01 00:00:00"
-        },
-        {
-            "alloc": 114000,
-            "centre": "tgcc",
-            "end": "2015-12-31 23:59:59",
+            "end": "2016-01-04 23:59:59",
             "machine": "curie",
             "name": "gen0826",
             "node": "thin/standard",
             "start": "2015-01-01 00:00:00"
+        },
+        {
+            "alloc": 114000,
+            "centre": "tgcc",
+            "end": "2016-04-01 23:59:59",
+            "machine": "curie",
+            "name": "gen0826",
+            "node": "fat/large",
+            "start": "2016-01-01 00:00:00"
+        },
+        {
+            "alloc": 25000,
+            "centre": "tgcc",
+            "end": "2016-04-01 23:59:59",
+            "machine": "curie",
+            "name": "gen0826",
+            "node": "hybrid",
+            "start": "2016-01-01 00:00:00"
+        },
+        {
+            "alloc": 34000,
+            "centre": "tgcc",
+            "end": "2017-01-03 23:59:59",
+            "machine": "curie",
+            "name": "gen0826",
+            "node": "thin/standard",
+            "start": "2016-01-01 00:00:00"
         }
     ]
 }
