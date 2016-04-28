@@ -43,7 +43,9 @@ def _persist_allocation(row):
             row['node'],
             dt.datetime.strptime(row['start'], "%Y-%m-%d %H:%M:%S"),
             dt.datetime.strptime(row['end'], "%Y-%m-%d %H:%M:%S"),
-            row['alloc']
+            row['alloc'],
+            True,
+            True
             )
     except IntegrityError:
         db.session.rollback()

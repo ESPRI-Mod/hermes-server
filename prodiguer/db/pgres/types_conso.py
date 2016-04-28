@@ -9,6 +9,7 @@
 
 
 """
+from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import Float
@@ -46,6 +47,8 @@ class Allocation(Entity):
     start_date = Column(DateTime, nullable=False)       # allocation start date
     end_date = Column(DateTime, nullable=False)         # allocation end date
     total_hrs = Column(Float, nullable=False)           # amount of the allocation (hours)
+    is_active = Column(Boolean, nullable=False, default=True)    # flag indicating whether allocation is considered to be active
+    is_reviewed = Column(Boolean, nullable=False, default=True)    # flag indicating whether allocation has been reviewed
 
 
 class Consumption(Entity):

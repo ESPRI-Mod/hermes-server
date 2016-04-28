@@ -17,6 +17,7 @@ import datetime as dt
 from prodiguer import mq
 from prodiguer.db.pgres import dao_conso as dao
 from prodiguer.utils import logger
+from prodiguer_jobs.mq.utils import enqueue
 
 
 
@@ -34,6 +35,7 @@ def get_tasks():
       _reformat_raw_metrics,
       _unpack_blocks_tgcc,
       _unpack_blocks_idris,
+      _set_block_allocation,
       _persist,
       )
 
@@ -59,16 +61,17 @@ def _unpack_content(ctx):
     """Unpacks message content.
 
     """
-    ctx.data = base64.decodestring(ctx.content['data'])
+    ctx.cpt = base64.decodestring(ctx.content['data'])
     ctx.centre = ctx.content['centre'].lower()
     ctx.project = ctx.content['accountingProject'].lower()
+    ctx.year = dt.datetime.utcnow().year
 
 
 def _reformat_raw_metrics(ctx):
     """Reformats raw metrics prior to further processing.
 
     """
-    ctx.data = [l.strip().lower() for l in ctx.data.split('\n') if l.strip()]
+    ctx.cpt = [l.strip().lower() for l in ctx.cpt.split('\n') if l.strip()]
 
 
 def _unpack_blocks_idris(ctx):
@@ -81,28 +84,29 @@ def _unpack_blocks_idris(ctx):
 
     # Set metric block start end positions.
     indexes = zip(
-        [i for i, v in enumerate(ctx.data) if v.find('mise a jour') > -1],
-        [i for i, v in enumerate(ctx.data) if v.find('totaux') > -1 and
+        [i for i, v in enumerate(ctx.cpt) if v.find('mise a jour') > -1],
+        [i for i, v in enumerate(ctx.cpt) if v.find('totaux') > -1 and
                                               len(v.split()) == 4]
         )
 
     # Set blocks of metrics to be persisted.
     for start, end in indexes:
         ctx.blocks.append({
-            # 'sub_project': ctx.data[start].split()[3].lower(),
+            'project': ctx.project,
             'sub_project': None,
-            'machine': ctx.data[start + 1].split()[-1][:-1],
+            'machine': ctx.cpt[start + 1].split()[-1][:-1],
             'node': 'standard',
             'consumption_date': dt.datetime.strptime(
-                "{} {}".format(ctx.data[start].split()[-2:][0],
-                               ctx.data[start].split()[-2:][1]),
+                "{} {}".format(ctx.cpt[start].split()[-2:][0],
+                               ctx.cpt[start].split()[-2:][1]),
                                "%d/%m/%Y %H:%M"
             ),
             'consumption': [(l[-5], float() if l[-3] == '-' else float(l[-3]))
-                            for l in [l.split() for l in ctx.data[start + 7: end - 1]]],
-            'total': float(ctx.data[end].split()[1]),
-            'allocated': float(ctx.data[start + 3].split()[-1]),
-            'project_end_date': None,
+                            for l in [l.split() for l in ctx.cpt[start + 7: end - 1]]],
+            'total': float(ctx.cpt[end].split()[1]),
+            'project_allocation': float(ctx.cpt[start + 3].split()[-1]),
+            'project_end_date': dt.datetime(ctx.year, 12, 31, 23, 59, 59),
+            'project_start_date': dt.datetime(ctx.year, 01, 01)
             })
 
 
@@ -116,24 +120,109 @@ def _unpack_blocks_tgcc(ctx):
 
     # Set metric block start end positions.
     indexes = zip(
-        [i for i, v in enumerate(ctx.data) if v.startswith('accounting')],
-        [i for i, v in enumerate(ctx.data) if v.startswith('project')]
+        [i for i, v in enumerate(ctx.cpt) if v.startswith('accounting')],
+        [i for i, v in enumerate(ctx.cpt) if v.startswith('project')]
         )
 
     # Set blocks of metrics to be persisted.
     for start, end in indexes:
         ctx.blocks.append({
-            'sub_project': ctx.data[start].split()[3].lower(),
-            'machine': ctx.data[start].split()[5].lower(),
-            'node': ctx.data[start].split()[6].lower(),
+            'allocation': None,
+            'project': ctx.cpt[start].split()[3].lower(),
+            'sub_project': None,
+            'machine': ctx.cpt[start].split()[5].lower(),
+            'node': ctx.cpt[start].split()[6].lower(),
             'consumption_date': dt.datetime.strptime(
-                "{} 23:59:59".format(ctx.data[start].split()[-1]), "%Y-%m-%d %H:%M:%S"),
+                "{} 23:59:59".format(ctx.cpt[start].split()[-1]), "%Y-%m-%d %H:%M:%S"),
             'consumption': [(n, float(t)) for n, t in
-                            [l.split() for l in ctx.data[start + 2: end - 4]]],
-            'total': float(ctx.data[end - 4].split()[-1]),
-            'allocated': float(ctx.data[end - 3].split()[-1]),
-            'project_end_date': dt.datetime.strptime(ctx.data[end].split()[-1], "%Y-%m-%d"),
+                            [l.split() for l in ctx.cpt[start + 2: end - 4]]],
+            'total': float(ctx.cpt[end - 4].split()[-1]),
+            'project_allocation': float(ctx.cpt[end - 3].split()[-1]),
+            'project_end_date': dt.datetime.strptime(ctx.cpt[end].split()[-1], "%Y-%m-%d"),
+            'project_start_date': dt.datetime(ctx.year, 01, 01)
             })
+
+
+def _log_block_warning(msg, block):
+    """Write a block warning to log file.
+
+    """
+    msg = "CONSO: block {}: {} :: {} :: {} :: {} :: {}".format(
+        msg,
+        ctx.centre,
+        block['project'],
+        block['machine'],
+        block['node'],
+        block['consumption_date']
+        )
+    logger.log_mq_warning(msg)
+
+
+def _on_block_allocation_not_found(ctx, block):
+    """Event handler invoked when a block allocation is not found.
+
+    """
+    # Log.
+    _log_block_warning("allocation not found", block)
+
+    # Persist.
+    block['allocation'] = dao.persist_allocation(
+        ctx.centre,
+        block['project'],
+        None,  # sub-project
+        block['machine'],
+        block['node'],
+        block['project_start_date'],
+        block['project_end_date'],
+        block['project_allocation'],
+        True,       # is_active
+        False       # is_reviewed
+        )
+
+    # Alert operator.
+    enqueue(mq.constants.MESSAGE_TYPE_ALERT, {
+        "trigger": u"conso-new-allocation",
+        "allocation_id": block['allocation'].id
+        })
+
+
+def _on_block_allocation_inactive(ctx, block)):
+    """Event handler invoked when a block allocation is inactive.
+
+    """
+    # TODO: escape if date is not 01/01 ?
+
+    # Log.
+    _log_block_warning("allocation is inactive", block)
+
+    # Alert operator.
+    enqueue(mq.constants.MESSAGE_TYPE_ALERT, {
+        "trigger": u"conso-inactive-allocation",
+        "allocation_id": block['allocation'].id
+        })
+
+
+def _set_block_allocation(ctx):
+    """Assigns an allocation to each block.
+
+    """
+    for block in ctx.blocks:
+        # Get block allocation.
+        block['allocation'] = dao.retrieve_allocation(
+            ctx.centre,
+            block['project'],
+            block['machine'],
+            block['node'],
+            block['consumption_date']
+            )
+
+        # Block allocation not found.
+        if block['allocation'] is None:
+            _on_block_allocation_not_found(ctx, block)
+
+        # Block allocation is inactive.
+        if block['allocation'].status == 'inactive':
+            _on_block_allocation_inactive(ctx, block)
 
 
 def _persist(ctx):
@@ -141,33 +230,19 @@ def _persist(ctx):
 
     """
     for block in ctx.blocks:
-        # Get related allocation.
-        allocation = dao.retrieve_allocation(
-            ctx.centre,
-            ctx.project,
-            block['machine'],
-            block['node'],
-            block['consumption_date']
-            )
-
-        # Skip blocks that cannot be mapped to an allocation.
-        if allocation is None:
-            logger.log_mq_warning("Conso metrics block could not be mapped to an allocation")
-            continue
-
-        # Persist batch total.
-        batch = dao.persist_consumption(
-            allocation.id,
+        # Persist project consumption.
+        project_conso = dao.persist_consumption(
+            block['allocation'].id
             block['consumption_date'],
             block['total']
             )
 
-        # Persist batch items.
+        # Persist login consumptions.
         for login, total_hours in block['consumption']:
             dao.persist_consumption(
-                allocation.id,
+                block['allocation'].id
                 block['consumption_date'],
                 total_hours,
                 login=login,
-                batch_date=batch.row_create_date
+                batch_date=project_conso.row_create_date
                 )

@@ -29,7 +29,9 @@ def persist_allocation(
     node_type,
     start_date,
     end_date,
-    total_hrs
+    total_hrs,
+    is_active,
+    is_reviewed
     ):
     """Persists allocation information to db.
 
@@ -41,6 +43,8 @@ def persist_allocation(
     :param datetime start_date: Allocation start date.
     :param datetime end_date: Allocation end date.
     :param float total_hrs: Total allocated compute time.
+    :param boolean is_active: Flag indicating whether the allocation is active or not.
+    :param boolean is_reviewed: Flag indicating whether the allocation is reviewed or not.
 
     :returns: Either a new or an updated allocation instance.
     :rtype: types.Allocation
@@ -55,6 +59,8 @@ def persist_allocation(
     instance.start_date = start_date
     instance.end_date = end_date
     instance.total_hrs = float(total_hrs)
+    instance.is_active = bool(is_active)
+    instance.is_reviewed = bool(is_reviewed)
 
     return session.insert(instance)
 
