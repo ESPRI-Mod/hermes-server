@@ -24,10 +24,18 @@ _TRIGGER_SMTP_CHECKER_COUNT = u"smtp-checker-count"
 # Alert trigger: SMTP email latency > time period.
 _TRIGGER_SMTP_CHECKER_LATENCY = u"smtp-checker-latency"
 
+# Alert trigger: Conso inactive allocation.
+_TRIGGER_CONSO_INACTIVE_ALLOCATION = u"conso-inactive-allocation"
+
+# Alert trigger: Conso new allocation.
+_TRIGGER_CONSO_NEW_ALLOCATION = u"conso-new-allocation"
+
 # Set of supported alert triggers.
 _TRIGGERS = {
     _TRIGGER_SMTP_CHECKER_COUNT,
-    _TRIGGER_SMTP_CHECKER_LATENCY
+    _TRIGGER_SMTP_CHECKER_LATENCY,
+    _TRIGGER_CONSO_INACTIVE_ALLOCATION,
+    _TRIGGER_CONSO_NEW_ALLOCATION
 }
 
 # Operator email subject template.
@@ -51,6 +59,14 @@ _EMAIL_MAP = {
     _TRIGGER_SMTP_CHECKER_LATENCY: {
         "body": u"The arrival latency of emails is excessive.  There may be an issue with the SMTP server(s).",
         "subject": u"Emails taking too long to arrive from HPC"
+    },
+    _TRIGGER_CONSO_INACTIVE_ALLOCATION: {
+        "body": u"{} CPT data was mapped to an inactive allocation [{}].",
+        "subject": u"CONSO :: {} :: Allocation is inactive."
+    },
+    _TRIGGER_CONSO_NEW_ALLOCATION: {
+        "body": u"{} CPT data could not be mapped to an existing allocation, a new allocation [{}] was therefore created.",
+        "subject": u"CONSO :: {} :: New allocation."
     }
 }
 
@@ -105,6 +121,17 @@ def _dispatch_operator_email(ctx):
     if ctx.trigger == _TRIGGER_SMTP_CHECKER_COUNT:
         body = body.format(ctx.content.get('unprocessed_email_count'),
                            ctx.content.get('unprocessed_email_limit'))
+
+    elif ctx.trigger == _TRIGGER_CONSO_INACTIVE_ALLOCATION:
+        body = body.format(ctx.content.get('centre').upper(),
+                           ctx.content.get('allocation_id'))
+        subject = subject.format(ctx.content.get('centre').upper())
+
+    elif ctx.trigger == _TRIGGER_CONSO_NEW_ALLOCATION:
+        body = body.format(ctx.content.get('centre').upper(),
+                           ctx.content.get('allocation_id'))
+        subject = subject.format(ctx.content.get('centre').upper())
+
     # Send email.
     mail.send_email(config.alerts.emailAddressFrom,
                     config.alerts.emailAddressTo,

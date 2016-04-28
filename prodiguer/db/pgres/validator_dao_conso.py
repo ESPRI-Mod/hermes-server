@@ -24,7 +24,9 @@ def validate_persist_allocation(
     node_type,
     start_date,
     end_date,
-    total_hrs
+    total_hrs,
+    is_active,
+    is_reviewed
     ):
     """Function input validator: persist_project.
 
@@ -38,6 +40,8 @@ def validate_persist_allocation(
     v.validate_date(start_date, 'Allocation start date')
     v.validate_date(end_date, 'Allocation end date')
     v.validate_float(total_hrs, 'Allocation total (hours)')
+    v.validate_bool(is_active, 'Allocation is-active flag')
+    v.validate_bool(is_reviewed, 'Allocation is-reviewed flag')
 
 
 def validate_retrieve_allocation(
@@ -89,5 +93,3 @@ def validate_persist_occupation_store(
     v.validate_unicode(login, 'Occupation store login')
     v.validate_unicode(name, 'Occupation name')
     v.validate_float(size_gb, 'Occupation size (GB)')
-
-
