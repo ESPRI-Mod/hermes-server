@@ -73,7 +73,7 @@ def _set_blocks(ctx):
     ctx.blocks = parser.get_blocks(ctx.centre, ctx.cpt, ctx.project)
 
 
-def _log_block_warning(msg, block):
+def _log_block_warning(ctx, msg, block):
     """Write a block warning to log file.
 
     """
@@ -93,7 +93,7 @@ def _on_block_allocation_not_found(ctx, block):
 
     """
     # Log.
-    _log_block_warning("allocation not found", block)
+    _log_block_warning(ctx, "allocation not found", block)
 
     # Persist.
     block['allocation'] = dao.persist_allocation(
@@ -121,10 +121,8 @@ def _on_block_allocation_inactive(ctx, block):
     """Event handler invoked when a block allocation is inactive.
 
     """
-    # TODO: escape if date is not 01/01 ?
-
     # Log.
-    _log_block_warning("allocation is inactive", block)
+    _log_block_warning(ctx, "allocation is inactive", block)
 
     # Alert operator.
     enqueue(mq.constants.MESSAGE_TYPE_ALERT, {
@@ -153,8 +151,10 @@ def _set_block_allocation(ctx):
             _on_block_allocation_not_found(ctx, block)
 
         # Block allocation is inactive.
-        if block['allocation'].status == 'inactive':
+        if not block['allocation'].is_active:
+            print "EEE"
             _on_block_allocation_inactive(ctx, block)
+            print "FFF"
 
 
 def _persist(ctx):
