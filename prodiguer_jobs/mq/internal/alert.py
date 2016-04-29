@@ -39,7 +39,7 @@ _TRIGGERS = {
 }
 
 # Operator email subject template.
-_EMAIL_SUBJECT = u"PRODIGUER-OPS :: MQ PLATFORM :: WARNING :: {}"
+_EMAIL_SUBJECT = u"PRODIGUER-OPS :: WARNING :: {} :: {}"
 
 # Operator email body template.
 _EMAIL_BODY = u"""Dear Prodiguer platform operator,
@@ -53,20 +53,24 @@ The Prodiguer Platform"""
 # Map of email content to triggers.
 _EMAIL_MAP = {
     _TRIGGER_SMTP_CHECKER_COUNT: {
+        "app": "MQ PLATFORM",
         "body": u"The count of unprocessed emails ({}) exceeds the configured limit ({}).  Either the smtp-realtime daemon is down or the platform is being restarted after a maintenance period.",
         "subject": u"Too many unprocessed emails"
     },
     _TRIGGER_SMTP_CHECKER_LATENCY: {
+        "app": "MQ PLATFORM",
         "body": u"The arrival latency of emails is excessive.  There may be an issue with the SMTP server(s).",
         "subject": u"Emails taking too long to arrive from HPC"
     },
     _TRIGGER_CONSO_INACTIVE_ALLOCATION: {
+        "app": "CONSO",
         "body": u"{} CPT data was mapped to an inactive allocation [{}].",
-        "subject": u"CONSO :: {} :: Allocation is inactive."
+        "subject": u"{} :: Allocation is inactive."
     },
     _TRIGGER_CONSO_NEW_ALLOCATION: {
+        "app": "CONSO",
         "body": u"{} CPT data could not be mapped to an existing allocation, a new allocation [{}] was therefore created.",
-        "subject": u"CONSO :: {} :: New allocation."
+        "subject": u"{} :: New allocation."
     }
 }
 
@@ -114,7 +118,8 @@ def _dispatch_operator_email(ctx):
         return
 
     # Initialise email content.
-    subject = _EMAIL_SUBJECT.format(_EMAIL_MAP[ctx.trigger]['subject'])
+    subject = _EMAIL_SUBJECT.format(
+        _EMAIL_MAP[ctx.trigger]['app'], _EMAIL_MAP[ctx.trigger]['subject'])
     body = _EMAIL_BODY.format(_EMAIL_MAP[ctx.trigger]['body'])
 
     # Enhance email content (when appropriate).
