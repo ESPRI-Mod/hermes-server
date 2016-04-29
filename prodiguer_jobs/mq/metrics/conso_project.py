@@ -152,9 +152,7 @@ def _set_block_allocation(ctx):
 
         # Block allocation is inactive.
         if not block['allocation'].is_active:
-            print "EEE"
             _on_block_allocation_inactive(ctx, block)
-            print "FFF"
 
 
 def _persist(ctx):
