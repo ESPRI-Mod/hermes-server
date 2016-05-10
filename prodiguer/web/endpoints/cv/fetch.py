@@ -21,6 +21,7 @@ from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 
 # Set of termsets not required for front-end.
 _EXCLUDED_TERMSETS = {
+    'compute_node',
     'execution_state',
     'experiment_group',
     'institute',
