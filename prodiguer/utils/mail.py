@@ -272,13 +272,14 @@ def get_email_dispatch_date(body):
     return arrow.get(body['Date'], _DATE_FORMAT)
 
 
-def send_email(address_from, address_to, subject, body):
+def send_email(address_from, address_to, subject, body, attachment=None):
     """Dispatches email to Prodiguer email server.
 
     :param str address_from: Email address to use as sender's address.
     :param str address_to: Email address to which email will be delivered.
     :param str subject: Subject of email to be dispatched.
     :param str body: Body of email to be dispatched.
+    :param str attachment: Email attachment.
 
     """
     msg = MIMEMultipart()
