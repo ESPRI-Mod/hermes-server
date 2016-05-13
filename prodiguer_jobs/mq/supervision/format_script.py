@@ -13,6 +13,7 @@
 """
 from prodiguer import mq
 from prodiguer.db import pgres as db
+from prodiguer.utils import logger
 from prodiguer_jobs.mq import utils
 import superviseur
 
@@ -25,6 +26,7 @@ def get_tasks():
     return (
         _unpack_content,
         _set_data,
+        _authorize,
         _format,
         _enqueue_script_dispatch,
         )
@@ -46,6 +48,7 @@ class ProcessingContextInfo(mq.Message):
         self.supervision = None
         self.supervision_id = None
         self.script = None
+        self.user = None
 
 
 def _unpack_content(ctx):
@@ -64,12 +67,24 @@ def _set_data(ctx):
     ctx.job = db.dao_monitoring.retrieve_job(ctx.supervision.job_uid)
 
 
+def _authorize(ctx):
+    """Verifies that the user has authorized supervision.
+
+    """
+    try:
+        ctx.user = superviseur.authorize(ctx.simulation.compute_node_login)
+    except UserWarning as err:
+        logger.log_mq_warning("Supervision dispatch unauthorized: {}".format(err))
+        ctx.abort = True
+
+
 def _format(ctx):
     """Formats the script for the job to be executed at the compute node.
 
     """
     # Set dispatch parameters to be passed to dispatcher.
-    params = superviseur.FormatParameters(ctx.simulation, ctx.job, ctx.supervision)
+    params = superviseur.FormatParameters(
+        ctx.simulation, ctx.job, ctx.supervision, ctx.user)
 
     # Format script to be dispatched to HPC for execution.
     try:

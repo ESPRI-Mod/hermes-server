@@ -15,6 +15,7 @@ import datetime
 
 from prodiguer import mq
 from prodiguer.db import pgres as db
+from prodiguer.utils import logger
 import superviseur
 
 
@@ -26,6 +27,7 @@ def get_tasks():
     return (
       _unpack_content,
       _set_data,
+      _authorize,
       _dispatch,
       _process_dispatch_error
       )
@@ -42,7 +44,11 @@ class ProcessingContextInfo(mq.Message):
         super(ProcessingContextInfo, self).__init__(
             props, body, decode=decode)
 
+        self.job = None
+        self.simulation = None
+        self.supervision = None
         self.supervision_id = None
+        self.user = None
 
 
 def _unpack_content(ctx):
@@ -61,12 +67,24 @@ def _set_data(ctx):
     ctx.job = db.dao_monitoring.retrieve_job(ctx.supervision.job_uid)
 
 
+def _authorize(ctx):
+    """Verifies that the user has authorized supervision.
+
+    """
+    try:
+        ctx.user = superviseur.authorize(ctx.simulation.compute_node_login)
+    except UserWarning as err:
+        logger.log_mq_warning("Supervision dispatch unauthorized: {}".format(err))
+        ctx.abort = True
+
+
 def _dispatch(ctx):
     """Dispatches script for execution at HPC.
 
     """
     # Set dispatch parameters to be passed to dispatcher.
-    params = superviseur.DispatchParameters(ctx.simulation, ctx.job, ctx.supervision)
+    params = superviseur.DispatchParameters(
+        ctx.simulation, ctx.job, ctx.supervision, ctx.user)
 
     # Dispatch script to HPC for execution.
     try:
