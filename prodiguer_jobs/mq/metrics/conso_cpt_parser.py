@@ -23,6 +23,12 @@ _HPC_IDRIS = 'idris'
 # Year constant.
 _YEAR = dt.datetime.utcnow().year
 
+# CMIP6 project code.
+_CMIP6 = 'cmip6'
+
+# Primary CMIP6 accounting project code @ TGCC.
+_GENCMIP6 = 'gencmip6'
+
 
 def get_blocks(centre, cpt, project=None):
     """Returns conso blocks from contents of a cpt file.
@@ -95,8 +101,8 @@ def _get_blocks_tgcc(cpt):
         project = cpt[start].split()[3].lower()
         if len(conso[0]) == 3:
             return project, conso[0][1]
-        elif project.endswith('cmip6'):
-            return 'gencmip6', project
+        elif project.endswith(_CMIP6) and project != _GENCMIP6:
+            return _GENCMIP6, project
         else:
             return project, None
 
