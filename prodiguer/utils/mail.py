@@ -16,6 +16,8 @@ import imaplib
 import smtplib
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
+from email.mime.application import MIMEApplication
+from email.utils import formatdate
 
 import arrow
 import imapclient
@@ -272,7 +274,14 @@ def get_email_dispatch_date(body):
     return arrow.get(body['Date'], _DATE_FORMAT)
 
 
-def send_email(address_from, address_to, subject, body, attachment=None):
+def send_email(
+    address_from,
+    address_to,
+    subject,
+    body,
+    attachment=None,
+    attachment_name=None
+    ):
     """Dispatches email to Prodiguer email server.
 
     :param str address_from: Email address to use as sender's address.
@@ -280,18 +289,30 @@ def send_email(address_from, address_to, subject, body, attachment=None):
     :param str subject: Subject of email to be dispatched.
     :param str body: Body of email to be dispatched.
     :param str attachment: Email attachment.
+    :param str attachment_name: Name to be associated with the email attachment.
 
     """
+    # Initalise email.
     msg = MIMEMultipart()
+    msg['Subject'] = subject
     msg['From'] = address_from
     msg['To'] = address_to
-    msg['Subject'] = subject
-    msg.attach(MIMEText(body))
+    msg['Date'] = formatdate(localtime=True)
 
+    # Set email body.
+    msg.attach(MIMEText(body + "\n\n\n"))
+
+    # Append attachment.
+    if attachment:
+        attachment_name = attachment_name or "unknown"
+        msg.attach(MIMEApplication(attachment, Name=attachment_name))
+
+    # Connect to mail server.
     mailserver = smtplib.SMTP(_CONFIG.host, port=_CONFIG.smtpPort)
     mailserver.ehlo()
     mailserver.starttls()
     mailserver.ehlo()
     mailserver.login(_CONFIG.username, _CONFIG.password)
 
+    # Dispatch email.
     mailserver.sendmail(address_from, address_to, msg.as_string())
