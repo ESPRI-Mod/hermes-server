@@ -27,5 +27,3 @@ def _persist(ctx):
 
     """
     logger.log_mq("TODO persist conso job status metrics")
-    return
-

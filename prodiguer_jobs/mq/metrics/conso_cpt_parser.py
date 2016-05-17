@@ -88,6 +88,18 @@ def _get_blocks_tgcc(cpt):
     """Returns conso blocks from a TGCC cpt file.
 
     """
+    def _get_project_info(conso, start):
+        """Returns project associated with a block.
+
+        """
+        project = cpt[start].split()[3].lower()
+        if len(conso[0]) == 3:
+            return project, conso[0][1]
+        elif project.endswith('cmip6'):
+            return 'gencmip6', project
+        else:
+            return project, None
+
     # Set metric block start end positions.
     indexes = zip(
         [i for i, v in enumerate(cpt) if v.startswith('accounting')],
@@ -97,16 +109,17 @@ def _get_blocks_tgcc(cpt):
     # Set metric blocks.
     blocks = []
     for start, end in indexes:
+        conso = [l.split() for l in cpt[start + 2: end - 4]]
+        project, sub_project = _get_project_info(conso, start)
         blocks.append({
             'allocation': None,
-            'project': cpt[start].split()[3].lower(),
-            'sub_project': None,
+            'project': project,
+            'sub_project': sub_project,
             'machine': cpt[start].split()[5].lower(),
             'node': cpt[start].split()[6].lower(),
             'consumption_date': dt.datetime.strptime(
                 "{} 23:59:59".format(cpt[start].split()[-1]), "%Y-%m-%d %H:%M:%S"),
-            'consumption': [(n, float(t)) for n, t in
-                            [l.split() for l in cpt[start + 2: end - 4]]],
+            'consumption': [(l[0], float(l[-1])) for l in conso],
             'total': float(cpt[end - 4].split()[-1]),
             'project_allocation': float(cpt[end - 3].split()[-1]),
             'project_end_date': dt.datetime.strptime(cpt[end].split()[-1], "%Y-%m-%d"),
@@ -114,3 +127,4 @@ def _get_blocks_tgcc(cpt):
             })
 
     return blocks
+
