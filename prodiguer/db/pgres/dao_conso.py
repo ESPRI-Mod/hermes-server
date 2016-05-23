@@ -36,8 +36,8 @@ def persist_allocation(
     """Persists allocation information to db.
 
     :param str centre: HPC, e.g. TGCC.
-    :param str project: Accounting project, e.g. ra2641.
-    :param str sub_project: Accounting sub-project, e.g. ???.
+    :param str project: Accounting project, e.g. gencmip6.
+    :param str sub_project: Accounting sub-project, e.g. devcmip6.
     :param str machine: HPC machine, e.g. curie.
     :param str node_type: HPC node type, e.g. thin/standard.
     :param datetime start_date: Allocation start date.
