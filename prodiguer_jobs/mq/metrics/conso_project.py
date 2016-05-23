@@ -14,7 +14,10 @@
 import base64
 import datetime as dt
 
+from sqlalchemy.exc import IntegrityError
+
 from prodiguer import mq
+from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_conso as dao
 from prodiguer.utils import logger
 from prodiguer_jobs.mq.utils import enqueue
@@ -163,16 +166,31 @@ def _persist(ctx):
         # Persist project consumption.
         header = dao.persist_consumption(
             block['allocation'].id,
+            block['sub_project'],
             block['consumption_date'],
             block['total']
             )
 
         # Persist login consumptions.
         for login, total_hours in block['consumption']:
-            dao.persist_consumption(
-                block['allocation'].id,
-                block['consumption_date'],
-                total_hours,
-                login=login,
-                batch_date=header.row_create_date
-                )
+            try:
+                dao.persist_consumption(
+                    block['allocation'].id,
+                    block['sub_project'],
+                    block['consumption_date'],
+                    total_hours,
+                    login=login,
+                    batch_date=header.row_create_date
+                    )
+            except IntegrityError:
+                db.session.rollback()
+                msg = "CONSO: duplicate consumption :: {} :: {} :: {} :: {} :: {} :: {} :: {}".format(
+                    ctx.centre,
+                    block['project'],
+                    block['sub_project'],
+                    block['machine'],
+                    block['node'],
+                    block['consumption_date'],
+                    login
+                    )
+                logger.log_mq_warning(msg)

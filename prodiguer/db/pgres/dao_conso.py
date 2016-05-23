@@ -101,6 +101,7 @@ def retrieve_allocation(
 @decorators.validate(validator.validate_persist_consumption)
 def persist_consumption(
     allocation_id,
+    sub_project,
     date,
     total_hrs,
     login=None,
@@ -108,6 +109,7 @@ def persist_consumption(
     ):
     instance = types.Consumption()
     instance.allocation_id = allocation_id
+    instance.sub_project = sub_project
     instance.date = arrow.get(date).datetime
     instance.total_hrs = float(total_hrs)
     if login is not None:

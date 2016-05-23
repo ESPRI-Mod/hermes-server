@@ -63,15 +63,18 @@ def validate_retrieve_allocation(
 
 def validate_persist_consumption(
     allocation_id,
+    sub_project,
     date,
     total_hrs,
     login=None,
     batch_date=None
     ):
-    """Function input validator: persist_consumption_by_login.
+    """Function input validator: persist_consumption.
 
     """
     v.validate_int(allocation_id, 'Allocation identifier')
+    if sub_project is not None:
+        v.validate_unicode(sub_project, 'Consumption sub project')
     v.validate_date(date, 'Consumption date')
     v.validate_float(total_hrs, 'Consumption total (hours)')
     if login is not None:
