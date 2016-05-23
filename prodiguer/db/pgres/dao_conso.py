@@ -46,7 +46,7 @@ def persist_allocation(
     :param boolean is_active: Flag indicating whether the allocation is active or not.
     :param boolean is_reviewed: Flag indicating whether the allocation is reviewed or not.
 
-    :returns: Either a new or an updated allocation instance.
+    :returns: A new allocation instance.
     :rtype: types.Allocation
 
     """
@@ -107,17 +107,62 @@ def persist_consumption(
     login=None,
     batch_date=None
     ):
+    """Persists consumption into db.
+
+    :param int allocation_id: ID of associated allocation.
+    :param str sub_project: Accounting sub-project, e.g. devcmip6.
+    :param datetime date: Comsumption date.
+    :param float total_hours: Consumption total hours.
+    :param str login: User login.
+    :param datetime batch_date: Date upon which associated consumption batch was persisted.
+
+    :returns: A new consumption instance.
+    :rtype: types.Consumption
+
+    """
     instance = types.Consumption()
     instance.allocation_id = allocation_id
-    instance.sub_project = sub_project
     instance.date = arrow.get(date).datetime
     instance.total_hrs = float(total_hrs)
+    if sub_project is not None:
+        instance.sub_project = sub_project
     if login is not None:
         instance.login = unicode(login)
     if batch_date is not None:
         instance.row_create_date = batch_date
 
     return session.insert(instance)
+
+
+@decorators.validate(validator.validate_retrieve_consumption)
+def retrieve_consumption(
+    allocation_id,
+    sub_project,
+    date,
+    login=None
+    ):
+    """Retrieves consumption from db.
+
+    :param int allocation_id: ID of associated allocation.
+    :param str sub_project: Accounting sub-project, e.g. devcmip6.
+    :param datetime date: Comsumption date.
+    :param str login: User login.
+
+    :returns: A consumption instance if found else None.
+    :rtype: types.Consumption | None
+
+    """
+    c = types.Consumption
+
+    qry = session.query(c)
+    qry = qry.filter(c.allocation_id == allocation_id)
+    qry = qry.filter(c.date == date)
+    if sub_project is not None:
+        qry = qry.filter(c.sub_project == unicode(sub_project))
+    if login is not None:
+        qry = qry.filter(c.login == unicode(login))
+
+    return qry.first()
 
 
 @decorators.validate(validator.validate_persist_occupation_store)

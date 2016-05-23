@@ -83,6 +83,23 @@ def validate_persist_consumption(
         v.validate_date(batch_date, 'Consumption batch date')
 
 
+def validate_retrieve_consumption(
+    allocation_id,
+    sub_project,
+    date,
+    login=None
+    ):
+    """Function input validator: retrieve_consumption.
+
+    """
+    v.validate_int(allocation_id, 'Allocation identifier')
+    if sub_project is not None:
+        v.validate_unicode(sub_project, 'Consumption sub project')
+    v.validate_date(date, 'Consumption date')
+    if login is not None:
+        v.validate_unicode(login, 'Consumption login')
+
+
 def validate_persist_occupation_store(
     date,
     login,

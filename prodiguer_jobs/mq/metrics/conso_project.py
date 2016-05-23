@@ -164,12 +164,30 @@ def _persist(ctx):
     """
     for block in ctx.blocks:
         # Persist project consumption.
-        header = dao.persist_consumption(
-            block['allocation'].id,
-            block['sub_project'],
-            block['consumption_date'],
-            block['total']
-            )
+        try:
+            header = dao.persist_consumption(
+                block['allocation'].id,
+                block['sub_project'],
+                block['consumption_date'],
+                block['total']
+                )
+        except IntegrityError:
+            db.session.rollback()
+            header = dao.retrieve_consumption(
+                block['allocation'].id,
+                block['sub_project'],
+                block['consumption_date']
+                )
+            if header is None:
+                msg = "CONSO: block already persisted :: {} :: {} :: {} :: {} :: {}".format(
+                    ctx.centre,
+                    block['project'],
+                    block['machine'],
+                    block['node'],
+                    block['consumption_date']
+                    )
+                logger.log_mq_warning(msg)
+                continue
 
         # Persist login consumptions.
         for login, total_hours in block['consumption']:
@@ -184,13 +202,3 @@ def _persist(ctx):
                     )
             except IntegrityError:
                 db.session.rollback()
-                msg = "CONSO: duplicate consumption :: {} :: {} :: {} :: {} :: {} :: {} :: {}".format(
-                    ctx.centre,
-                    block['project'],
-                    block['sub_project'],
-                    block['machine'],
-                    block['node'],
-                    block['consumption_date'],
-                    login
-                    )
-                logger.log_mq_warning(msg)
