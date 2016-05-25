@@ -291,8 +291,8 @@ def exec_psycopg2(timeslice_delta, target):
     conn = psycopg2.connect(
         database=db.constants.PRODIGUER_DB_NAME,
         user=db.constants.PRODIGUER_DB_USER,
-        host=os.getenv("PRODIGUER_DB_PGRES_HOST").split(":")[0],
-        password=os.getenv("PRODIGUER_DB_PGRES_USER_PASSWORD")
+        host=os.getenv("HERMES_DB_PGRES_HOST").split(":")[0],
+        password=os.getenv("HERMES_DB_PGRES_USER_PASSWORD")
         )
     cur = conn.cursor()
     sql = _PSYCOPG2_FACTORIES[target].format(timeslice_delta)
@@ -345,7 +345,7 @@ def _main():
 
     """
     fname = "{}_server_pgres_performance_metrics_{}.csv".format(
-        os.getenv("PRODIGUER_MACHINE_TYPE"), _NOW.format('YYYY-MM-DD'))
+        os.getenv("HERMES_MACHINE_TYPE"), _NOW.format('YYYY-MM-DD'))
     fpath = os.path.join(os.getenv("HERMES_HOME"), "tmp")
     fpath = os.path.join(fpath, fname)
     with open(fpath, 'wb') as output_file:

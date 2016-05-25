@@ -22,35 +22,35 @@ from prodiguer.utils.convert import json_to_namedtuple
 _ENV_VARS = {
 	# ... general variables
 	"HERMES_HOME": "/opt/prodiguer",
-	"PRODIGUER_DEPLOYMENT_MODE": "test",
-	"PRODIGUER_CLIENT_WEB_URL": "https://prodiguer-test-web.ipsl.fr",
+	"HERMES_DEPLOYMENT_MODE": "test",
+	"HERMES_CLIENT_WEB_URL": "https://prodiguer-test-web.ipsl.fr",
 
 	# ... db server variables
-	"PRODIGUER_DB_MONGO_HOST": "localhost:27017",
-	"PRODIGUER_DB_MONGO_USER_PASSWORD": None,
-	"PRODIGUER_DB_PGRES_HOST": "localhost:5432",
-	"PRODIGUER_DB_PGRES_USER_PASSWORD": None,
+	"HERMES_DB_MONGO_HOST": "localhost:27017",
+	"HERMES_DB_MONGO_USER_PASSWORD": None,
+	"HERMES_DB_PGRES_HOST": "localhost:5432",
+	"HERMES_DB_PGRES_USER_PASSWORD": None,
 
 	# ... mq server variables
-	"PRODIGUER_MQ_RABBIT_HOST": "localhost:5672",
-	"PRODIGUER_MQ_RABBIT_PROTOCOL": "ampq",
-	"PRODIGUER_MQ_RABBIT_USER_PASSWORD": None,
-	"PRODIGUER_MQ_RABBIT_SSL_CLIENT_CERT": None,
-	"PRODIGUER_MQ_RABBIT_SSL_CLIENT_KEY": None,
-	"PRODIGUER_MQ_IMAP_MAILBOX": "AMPQ-TEST",
-	"PRODIGUER_MQ_IMAP_PASSWORD": None,
-	"PRODIGUER_MQ_SMTP_PASSWORD": None,
+	"HERMES_MQ_RABBIT_HOST": "localhost:5672",
+	"HERMES_MQ_RABBIT_PROTOCOL": "ampq",
+	"HERMES_MQ_RABBIT_USER_PASSWORD": None,
+	"HERMES_MQ_RABBIT_SSL_CLIENT_CERT": None,
+	"HERMES_MQ_RABBIT_SSL_CLIENT_KEY": None,
+	"HERMES_MQ_IMAP_MAILBOX": "AMPQ-TEST",
+	"HERMES_MQ_IMAP_PASSWORD": None,
+	"HERMES_MQ_SMTP_PASSWORD": None,
 
 	# ... web server variables
-	"PRODIGUER_WEB_API_COOKIE_SECRET": None,
-	"PRODIGUER_WEB_PORT": "8888",
-	"PRODIGUER_WEB_URL": "https://prodiguer-test-web.ipsl.fr"
+	"HERMES_WEB_COOKIE_SECRET": None,
+	"HERMES_WEB_PORT": "8888",
+	"HERMES_WEB_URL": "https://prodiguer-test-web.ipsl.fr"
 }
 
 # Set of environment variables to be url encoded.
 _ENV_VARS_URL_ENCODE = {
-	"PRODIGUER_DB_MONGO_USER_PASSWORD",
-	"PRODIGUER_DB_PGRES_USER_PASSWORD"
+	"HERMES_DB_MONGO_USER_PASSWORD",
+	"HERMES_DB_PGRES_USER_PASSWORD"
 }
 
 
@@ -71,18 +71,18 @@ def _set_mq_ssl_options():
 
 	"""
 	# Initialise.
-	_ENV_VARS['PRODIGUER_MQ_RABBIT_SSL_OPTIONS'] = unicode()
+	_ENV_VARS['HERMES_MQ_RABBIT_SSL_OPTIONS'] = unicode()
 
 	# Exit if cert/key undefined.
-	if not _ENV_VARS['PRODIGUER_MQ_RABBIT_SSL_CLIENT_CERT'] or \
-	   not _ENV_VARS['PRODIGUER_MQ_RABBIT_SSL_CLIENT_KEY']:
+	if not _ENV_VARS['HERMES_MQ_RABBIT_SSL_CLIENT_CERT'] or \
+	   not _ENV_VARS['HERMES_MQ_RABBIT_SSL_CLIENT_KEY']:
 	   return
 
 	# Set options.
-	_ENV_VARS['PRODIGUER_MQ_RABBIT_SSL_OPTIONS'] = urllib.urlencode({
+	_ENV_VARS['HERMES_MQ_RABBIT_SSL_OPTIONS'] = urllib.urlencode({
 		'ssl_options': {
-			'certfile': _ENV_VARS['PRODIGUER_MQ_RABBIT_SSL_CLIENT_CERT'],
-			'keyfile': _ENV_VARS['PRODIGUER_MQ_RABBIT_SSL_CLIENT_KEY']
+			'certfile': _ENV_VARS['HERMES_MQ_RABBIT_SSL_CLIENT_CERT'],
+			'keyfile': _ENV_VARS['HERMES_MQ_RABBIT_SSL_CLIENT_KEY']
 			}
 		})
 
@@ -106,7 +106,7 @@ def _get_config_file_content():
 	path = _ENV_VARS["HERMES_HOME"]
 	path = os.path.join(path, "ops")
 	path = os.path.join(path, "config")
-	path = os.path.join(path, "prodiguer.json")
+	path = os.path.join(path, "hermes.json")
 	if not os.path.exists(path):
 	    msg = "PRODIGUER configuration file does not exist :: {}"
 	    raise RuntimeError(msg.format(path))
