@@ -187,10 +187,10 @@ def _create_job_message(simulation, job, message_type):
     """
     instance = db.types.Message()
     instance.app_id = unicode(mq.constants.APP_MONITORING)
-    instance.producer_id = unicode(mq.constants.PRODUCER_PRODIGUER)
+    instance.producer_id = unicode(mq.constants.PRODUCER_HERMES)
     instance.producer_version = u"x.x.x"
     instance.type_id = message_type
-    instance.user_id = mq.constants.USER_PRODIGUER
+    instance.user_id = mq.constants.USER_HERMES
     instance.uid = unicode(uuid.uuid4())
     instance.correlation_id_1 = simulation.uid
     instance.correlation_id_2 = job.job_uid

@@ -15,17 +15,17 @@ import arrow
 
 from prodiguer import mq
 from prodiguer.utils import logger
-from prodiguer import __version__ as PRODIGUER_VERSION
+from prodiguer import __version__ as HERMES_VERSION
 
 
 
 def enqueue(
     message_type,
     payload=None,
-    user_id=mq.constants.USER_PRODIGUER,
-    producer_id = mq.constants.PRODUCER_PRODIGUER,
-    producer_version = PRODIGUER_VERSION,
-    exchange=mq.constants.EXCHANGE_PRODIGUER_SECONDARY,
+    user_id=mq.constants.USER_HERMES,
+    producer_id = mq.constants.PRODUCER_HERMES,
+    producer_version = HERMES_VERSION,
+    exchange=mq.constants.EXCHANGE_HERMES_SECONDARY,
     delay_in_ms=None
     ):
     """Enqueues a message upon MQ server.

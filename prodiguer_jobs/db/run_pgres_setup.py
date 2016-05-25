@@ -37,8 +37,8 @@ def _main():
 
     # Setup target db.
     try:
-        setup(config.db.pgres.main.replace(db.constants.PRODIGUER_DB_USER,
-                                           db.constants.PRODIGUER_DB_ADMIN_USER))
+        setup(config.db.pgres.main.replace(db.constants.HERMES_DB_USER,
+                                           db.constants.HERMES_DB_ADMIN_USER))
     except sqlalchemy.exc.ProgrammingError as err:
         print err
         logger.log_db_error("SETUP ERROR : are db connections still open ?")

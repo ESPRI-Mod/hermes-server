@@ -216,7 +216,7 @@ def _set_msg_ampq(ctx):
         timestamp = mq.Timestamp.from_ns(data['msgTimestamp'])
 
         return mq.utils.create_ampq_message_properties(
-            user_id=mq.constants.USER_PRODIGUER,
+            user_id=mq.constants.USER_HERMES,
             producer_id=data['msgProducer'],
             producer_version=data['msgProducerVersion'],
             message_id=data['msgUID'],

@@ -88,7 +88,7 @@ _AGENT_HANDLERS = {
 
 # Map of MQ exchanges to MQ agents.
 _AGENT_EXCHANGES = {
-    mq.constants.EXCHANGE_PRODIGUER_PRIMARY: {
+    mq.constants.EXCHANGE_HERMES_PRIMARY: {
         'debug-0000',
         'debug-0100',
         'debug-1000',
@@ -112,7 +112,7 @@ _AGENT_EXCHANGES = {
         'live-monitoring-compute',
         'live-monitoring-post-processing'
     },
-    mq.constants.EXCHANGE_PRODIGUER_SECONDARY: {
+    mq.constants.EXCHANGE_HERMES_SECONDARY: {
         'debug-8100',
         'debug-8200',
         'debug-alert',
@@ -125,7 +125,7 @@ _AGENT_EXCHANGES = {
         'live-smtp',
         'live-superviseur'
     },
-    mq.constants.EXCHANGE_PRODIGUER_SECONDARY_DELAYED: {
+    mq.constants.EXCHANGE_HERMES_SECONDARY_DELAYED: {
         'debug-8000',
     }
 }

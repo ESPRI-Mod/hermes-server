@@ -108,7 +108,7 @@ def _get_config_file_content():
 	path = os.path.join(path, "config")
 	path = os.path.join(path, "hermes.json")
 	if not os.path.exists(path):
-	    msg = "PRODIGUER configuration file does not exist :: {}"
+	    msg = "HERMES configuration file does not exist :: {}"
 	    raise RuntimeError(msg.format(path))
 
 	with open(path, 'r') as data:

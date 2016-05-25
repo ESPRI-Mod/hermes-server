@@ -78,7 +78,7 @@ def execute():
 	partition = pyessv.create_partition(
 	    prodiguer.VOCAB_DOMAIN,
 	    prodiguer.VOCAB_SUBDOMAIN,
-	    os.getenv("PRODIGUER_PYESSV_HOME")
+	    os.getenv("HERMES_PYESSV_HOME")
 	)
 
 	# Save set of CV terms.

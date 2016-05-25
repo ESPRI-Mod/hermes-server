@@ -15,7 +15,7 @@ import time
 
 import sqlalchemy
 
-from prodiguer import __version__ as PRODIGUER_VERSION
+from prodiguer import __version__ as HERMES_VERSION
 from prodiguer import config
 from prodiguer import mail
 from prodiguer import mq
@@ -68,9 +68,9 @@ def _get_message(uid):
 
         """
         return mq.create_ampq_message_properties(
-            user_id=mq.constants.USER_PRODIGUER,
-            producer_id=mq.constants.PRODUCER_PRODIGUER,
-            producer_version=PRODIGUER_VERSION,
+            user_id=mq.constants.USER_HERMES,
+            producer_id=mq.constants.PRODUCER_HERMES,
+            producer_version=HERMES_VERSION,
             message_type=mq.constants.MESSAGE_TYPE_SMTP
             )
 

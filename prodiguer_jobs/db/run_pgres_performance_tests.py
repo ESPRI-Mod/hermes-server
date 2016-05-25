@@ -289,8 +289,8 @@ def exec_psycopg2(timeslice_delta, target):
     else:
         timeslice_delta = ""
     conn = psycopg2.connect(
-        database=db.constants.PRODIGUER_DB_NAME,
-        user=db.constants.PRODIGUER_DB_USER,
+        database=db.constants.HERMES_DB_NAME,
+        user=db.constants.HERMES_DB_USER,
         host=os.getenv("HERMES_DB_PGRES_HOST").split(":")[0],
         password=os.getenv("HERMES_DB_PGRES_USER_PASSWORD")
         )

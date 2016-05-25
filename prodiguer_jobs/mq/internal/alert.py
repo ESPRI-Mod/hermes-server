@@ -39,7 +39,7 @@ _TRIGGERS = {
 }
 
 # Operator email subject template.
-_EMAIL_SUBJECT = u"PRODIGUER-OPS :: WARNING :: {} :: {}"
+_EMAIL_SUBJECT = u"HERMES-OPS :: WARNING :: {} :: {}"
 
 # Operator email body template.
 _EMAIL_BODY = u"""Dear Prodiguer platform operator,
