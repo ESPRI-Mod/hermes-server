@@ -3,7 +3,7 @@
 """
 .. module:: prodiguer.db.types_superviseur.py
    :platform: Unix
-   :synopsis: Prodiguer superviseur database tables.
+   :synopsis: Hermes superviseur database tables.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 

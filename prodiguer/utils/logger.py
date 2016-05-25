@@ -77,7 +77,7 @@ def log_error(
     ):
     """Logs a runtime error.
 
-    :param ProdiguerClientException err: Error to be written to log.
+    :param HermesClientException err: Error to be written to log.
     :param str module: Module emitting log message (e.g. MQ).
     :param str level: Message level (e.g. INFO).
     :param str app: Application emitting log message (e.g. libIGCM).

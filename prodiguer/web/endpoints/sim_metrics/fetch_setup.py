@@ -14,7 +14,7 @@ import tornado
 
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.web.request_validation import validator_sim_metrics as rv
-from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
+from prodiguer.web.utils.http import HermesHTTPRequestHandler
 
 
 
@@ -25,7 +25,7 @@ _CONTENT_TYPE_JSON = ["application/json", "application/json; charset=UTF-8"]
 _PARAM_GROUP = 'group'
 
 
-class FetchSetupRequestHandler(ProdiguerHTTPRequestHandler):
+class FetchSetupRequestHandler(HermesHTTPRequestHandler):
     """Simulation metric group fetch setup method request handler.
 
     """

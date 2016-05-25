@@ -3,7 +3,7 @@
 """
 .. module:: prodiguer.mq.constants.py
    :platform: Unix
-   :synopsis: Prodiguer mq constants.
+   :synopsis: Hermes mq constants.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 

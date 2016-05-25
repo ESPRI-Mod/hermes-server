@@ -14,11 +14,11 @@ import tornado
 
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.web.request_validation import validator_sim_metrics as rv
-from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
+from prodiguer.web.utils.http import HermesHTTPRequestHandler
 
 
 
-class FetchListRequestHandler(ProdiguerHTTPRequestHandler):
+class FetchListRequestHandler(HermesHTTPRequestHandler):
     """Simulation list metric request handler.
 
     """

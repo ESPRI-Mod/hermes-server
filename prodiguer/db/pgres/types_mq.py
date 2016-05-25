@@ -3,7 +3,7 @@
 """
 .. module:: prodiguer.db.types.py
    :platform: Unix
-   :synopsis: Prodiguer message queue database tables.
+   :synopsis: Hermes message queue database tables.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 

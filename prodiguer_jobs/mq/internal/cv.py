@@ -15,7 +15,7 @@ from prodiguer.utils import shell
 
 
 
-# Prodiguer shell command to be executed.
+# Hermes shell command to be executed.
 _SHELL_CMD = 'cv-git-push'
 
 

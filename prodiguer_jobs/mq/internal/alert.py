@@ -42,13 +42,13 @@ _TRIGGERS = {
 _EMAIL_SUBJECT = u"HERMES-OPS :: WARNING :: {} :: {}"
 
 # Operator email body template.
-_EMAIL_BODY = u"""Dear Prodiguer platform operator,
+_EMAIL_BODY = u"""Dear Hermes platform operator,
 
 {}
 
 Regards,
 
-The Prodiguer Platform"""
+The Hermes Platform"""
 
 # Map of email content to triggers.
 _EMAIL_MAP = {

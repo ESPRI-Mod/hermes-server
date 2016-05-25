@@ -13,11 +13,11 @@
 """
 import json
 
-from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
+from prodiguer.web.utils.http import HermesHTTPRequestHandler
 
 
 
-class FindRequestHandler(ProdiguerHTTPRequestHandler):
+class FindRequestHandler(HermesHTTPRequestHandler):
     """Simulation monitoring event request handler.
 
     """

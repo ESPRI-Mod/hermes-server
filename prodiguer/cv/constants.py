@@ -11,10 +11,10 @@
 
 
 """
-# Prodiguer cv domain.
+# Hermes cv domain.
 VOCAB_DOMAIN = u"earth-system.modelling"
 
-# Prodiguer cv sub-domain.
+# Hermes cv sub-domain.
 VOCAB_SUBDOMAIN = 'ipsl.prodiguer'
 
 # Term governance states.

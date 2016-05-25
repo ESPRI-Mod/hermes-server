@@ -15,7 +15,7 @@ import tornado
 
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.web.request_validation import validator_sim_metrics as rv
-from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
+from prodiguer.web.utils.http import HermesHTTPRequestHandler
 
 
 
@@ -23,7 +23,7 @@ from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 _PARAM_GROUP = 'group'
 
 
-class DeleteRequestHandler(ProdiguerHTTPRequestHandler):
+class DeleteRequestHandler(HermesHTTPRequestHandler):
     """Simulation metric group delete method request handler.
 
     """

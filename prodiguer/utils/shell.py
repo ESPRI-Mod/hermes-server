@@ -19,7 +19,7 @@ import subprocess
 def exec_command(cmd):
     """Executes a prodiguer-shell command.
 
-    :param str cmd: Prodiguer shell command to be executed.
+    :param str cmd: Hermes shell command to be executed.
 
     """
     cmd_type = cmd.split("-")[0]
@@ -32,7 +32,7 @@ def exec_command(cmd):
 
 
 def get_repo_path(subpaths):
-    """Returns path to Prodiguer source code repositories.
+    """Returns path to Hermes source code repositories.
 
     :param list subpaths: List of subpath to append to repository path.
 

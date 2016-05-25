@@ -15,7 +15,7 @@ from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao
 from prodiguer.utils import logger
 from prodiguer.web.request_validation import validator_cv as rv
-from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
+from prodiguer.web.utils.http import HermesHTTPRequestHandler
 
 
 
@@ -41,7 +41,7 @@ def _map_term(term):
     return (term.display_name, term.name, term.sort_key, term.synonyms or [], term.typeof, term.uid)
 
 
-class FetchRequestHandler(ProdiguerHTTPRequestHandler):
+class FetchRequestHandler(HermesHTTPRequestHandler):
     """Fetch controlled vocabulary setup request handler.
 
     """

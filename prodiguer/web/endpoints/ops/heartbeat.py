@@ -13,12 +13,12 @@
 """
 import tornado
 
-from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
+from prodiguer.web.utils.http import HermesHTTPRequestHandler
 from prodiguer.web.request_validation import validator as rv
 
 
 
-class HeartbeatRequestHandler(ProdiguerHTTPRequestHandler):
+class HeartbeatRequestHandler(HermesHTTPRequestHandler):
     """Operations heartbeat request handler.
 
     """
@@ -31,7 +31,7 @@ class HeartbeatRequestHandler(ProdiguerHTTPRequestHandler):
 
             """
             self.output = {
-                "message": "Prodiguer web service is running",
+                "message": "Hermes web service is running",
                 "status": 0
             }
 

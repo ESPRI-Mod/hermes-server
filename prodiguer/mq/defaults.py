@@ -3,7 +3,7 @@
 """
 .. module:: prodiguer.mq.default.py
    :platform: Unix
-   :synopsis: Prodiguer mq defaults.
+   :synopsis: Hermes mq defaults.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 

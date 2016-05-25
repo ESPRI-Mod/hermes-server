@@ -16,7 +16,7 @@ from prodiguer.db.pgres import dao_monitoring
 from prodiguer.db.pgres import dao_mq
 from prodiguer.utils import logger
 from prodiguer.web.request_validation import validator_monitoring as rv
-from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
+from prodiguer.web.utils.http import HermesHTTPRequestHandler
 
 
 
@@ -25,7 +25,7 @@ _PARAM_UID = 'uid'
 
 
 
-class FetchDetailRequestHandler(ProdiguerHTTPRequestHandler):
+class FetchDetailRequestHandler(HermesHTTPRequestHandler):
     """Simulation monitor front end setup request handler.
 
     """

@@ -3,7 +3,7 @@
 """
 .. module:: prodiguer.db.types.py
    :platform: Unix
-   :synopsis: Prodiguer monitoring database tables.
+   :synopsis: Hermes monitoring database tables.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 

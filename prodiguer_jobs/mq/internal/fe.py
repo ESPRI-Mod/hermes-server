@@ -5,7 +5,7 @@
    :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: Sends event notifications to Prodiguer front-end.
+   :synopsis: Sends event notifications to Hermes front-end.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 

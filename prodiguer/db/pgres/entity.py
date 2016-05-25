@@ -22,7 +22,7 @@ from prodiguer.db.pgres.meta import METADATA
 
 
 class _BaseEntity(object):
-    """Base entity sub-classed from all Prodiguer db types.
+    """Base entity sub-classed from all Hermes db types.
 
     """
     # Entity attributes.

@@ -282,7 +282,7 @@ def send_email(
     attachment=None,
     attachment_name=None
     ):
-    """Dispatches email to Prodiguer email server.
+    """Dispatches email to Hermes email server.
 
     :param str address_from: Email address to use as sender's address.
     :param str address_to: Email address to which email will be delivered.

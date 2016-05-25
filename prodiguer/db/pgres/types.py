@@ -3,7 +3,7 @@
 """
 .. module:: prodiguer.db.types.py
    :platform: Unix
-   :synopsis: Prodiguer db types.
+   :synopsis: Hermes db types.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 

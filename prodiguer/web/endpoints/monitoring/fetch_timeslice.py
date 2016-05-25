@@ -19,7 +19,7 @@ from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
 from prodiguer.utils import logger
 from prodiguer.web.request_validation import validator_monitoring as rv
-from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
+from prodiguer.web.utils.http import HermesHTTPRequestHandler
 
 
 
@@ -27,7 +27,7 @@ from prodiguer.web.utils.http import ProdiguerHTTPRequestHandler
 _PARAM_TIMESLICE = 'timeslice'
 
 
-class FetchTimeSliceRequestHandler(ProdiguerHTTPRequestHandler):
+class FetchTimeSliceRequestHandler(HermesHTTPRequestHandler):
     """Fetches a time slice of simulations.
 
     """

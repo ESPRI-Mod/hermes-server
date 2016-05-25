@@ -27,7 +27,7 @@ _HTTP_RESPONSE_BAD_REQUEST = 400
 _HTTP_RESPONSE_SERVER_ERROR = 500
 
 
-class ProdiguerHTTPRequestHandler(tornado.web.RequestHandler):
+class HermesHTTPRequestHandler(tornado.web.RequestHandler):
     """A web service request handler.
 
     """
