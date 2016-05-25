@@ -36,7 +36,7 @@ def _get_path_to_front_end():
     """Return path to the front end javascript application.
 
     """
-    dir_fe = shell.get_repo_path(['prodiguer-fe', 'src'])
+    dir_fe = shell.get_repo_path(['hermes-fe', 'src'])
     logger.log_web("Front-end static files @ {0}".format(dir_fe))
 
     return dir_fe

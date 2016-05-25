@@ -32,7 +32,7 @@ def enqueue(
 
     :param str message_type: Message type, e.g. 0000.
     :param dict payload: Message payload.
-    :param str user_id: MQ user id, e.g. prodiguer-mq-user.
+    :param str user_id: MQ user id, e.g. hermes-mq-user.
     :param str producer_id: MQ producer identifier, e.g. libIGCM.
     :param str producer_version: MQ server producer version, e.g. 2.7.
     :param str exchange: MQ exchange, e.g. x-secondary.

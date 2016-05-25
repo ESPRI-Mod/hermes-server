@@ -23,7 +23,7 @@ _ENV_VARS = {
 	# ... general variables
 	"HERMES_HOME": "/opt/prodiguer",
 	"HERMES_DEPLOYMENT_MODE": "test",
-	"HERMES_CLIENT_WEB_URL": "https://prodiguer-test-web.ipsl.fr",
+	"HERMES_CLIENT_WEB_URL": "https://hermes-test-web.ipsl.fr",
 
 	# ... db server variables
 	"HERMES_DB_MONGO_HOST": "localhost:27017",
@@ -44,7 +44,7 @@ _ENV_VARS = {
 	# ... web server variables
 	"HERMES_WEB_COOKIE_SECRET": None,
 	"HERMES_WEB_PORT": "8888",
-	"HERMES_WEB_URL": "https://prodiguer-test-web.ipsl.fr"
+	"HERMES_WEB_URL": "https://hermes-test-web.ipsl.fr"
 }
 
 # Set of environment variables to be url encoded.

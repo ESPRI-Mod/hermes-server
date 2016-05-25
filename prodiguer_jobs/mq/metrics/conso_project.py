@@ -20,8 +20,8 @@ from prodiguer import mq
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_conso as dao
 from prodiguer.utils import logger
-from prodiguer_jobs.mq.utils import enqueue
-from prodiguer_jobs.mq.metrics import conso_cpt_parser as parser
+from hermes_jobs.mq.utils import enqueue
+from hermes_jobs.mq.metrics import conso_cpt_parser as parser
 
 
 

@@ -13,7 +13,7 @@
 from prodiguer import mq
 from prodiguer.db.pgres import dao_monitoring as dao
 from prodiguer.db.pgres import dao_superviseur
-from prodiguer_jobs.mq import utils
+from hermes_jobs.mq import utils
 
 
 

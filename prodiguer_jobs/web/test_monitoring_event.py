@@ -32,7 +32,6 @@ _parser.add_argument(
     help="Web service endpoint",
     dest="endpoint",
     type=str,
-    # default=r'https://prodiguer-test-web.ipsl.fr/api/1/simulation/monitoring/event'
     default=r'http://localhost:8888/api/1/simulation/monitoring/event'
     )
 _parser.add_argument(

@@ -5,7 +5,7 @@
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
-   :synopsis: Utility functions for interacting with prodiguer-shell.
+   :synopsis: Utility functions for interacting with hermes-shell.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
@@ -17,7 +17,7 @@ import subprocess
 
 
 def exec_command(cmd):
-    """Executes a prodiguer-shell command.
+    """Executes a hermes-shell command.
 
     :param str cmd: Hermes shell command to be executed.
 

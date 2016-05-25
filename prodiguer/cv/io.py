@@ -24,7 +24,7 @@ def _get_path_to_archive():
     """Return path to CV data archive.
 
     """
-    return shell.get_repo_path(['prodiguer-cv', 'data'])
+    return shell.get_repo_path(['hermes-cv', 'data'])
 
 
 def _get_path_to_term_type(term):

@@ -137,8 +137,8 @@ PRODUCERS = {
 	}
 
 # Message server users.
-USER_HERMES = u"prodiguer-mq-user"
-USER_HERMES_ADMIN = u"prodiguer-mq-admin"
+USER_HERMES = u"hermes-mq-user"
+USER_HERMES_ADMIN = u"hermes-mq-admin"
 
 # All users.
 USERS = {

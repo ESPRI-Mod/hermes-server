@@ -12,10 +12,10 @@
 
 """
 from prodiguer import mq
-from prodiguer_jobs.mq import metrics
-from prodiguer_jobs.mq import monitoring
-from prodiguer_jobs.mq import supervision
-from prodiguer_jobs.mq.utils import invoke as invoke_handler
+from hermes_jobs.mq import metrics
+from hermes_jobs.mq import monitoring
+from hermes_jobs.mq import supervision
+from hermes_jobs.mq.utils import invoke as invoke_handler
 
 
 

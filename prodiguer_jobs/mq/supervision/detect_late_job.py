@@ -13,7 +13,7 @@
 """
 from prodiguer import mq
 from prodiguer.db import pgres as db
-from prodiguer_jobs.mq import utils
+from hermes_jobs.mq import utils
 
 
 

@@ -19,12 +19,12 @@ from tornado.options import options
 from prodiguer import cv
 from prodiguer import mq
 from prodiguer.utils import logger
-from prodiguer_jobs.mq import delegator
-from prodiguer_jobs.mq import internal
-from prodiguer_jobs.mq import metrics
-from prodiguer_jobs.mq import monitoring
-from prodiguer_jobs.mq import supervision
-from prodiguer_jobs.mq.utils import invoke as invoke_handler
+from hermes_jobs.mq import delegator
+from hermes_jobs.mq import internal
+from hermes_jobs.mq import metrics
+from hermes_jobs.mq import monitoring
+from hermes_jobs.mq import supervision
+from hermes_jobs.mq.utils import invoke as invoke_handler
 
 
 

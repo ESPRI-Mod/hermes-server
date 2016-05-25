@@ -25,7 +25,7 @@ from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
 from prodiguer.utils import config
 from prodiguer.utils import logger
-from prodiguer_jobs.mq import utils as mq_utils
+from hermes_jobs.mq import utils as mq_utils
 
 
 
