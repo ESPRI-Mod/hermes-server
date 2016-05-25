@@ -1,10 +1,10 @@
-prodiguer-server
+hermes-server
 ================
 
 Synopsis
 --------------------------------------
 
-prodiguer-server is a python library designed to be run upon prodiguer servers.  It is installed either on either the prodiguer web server, the prodiguer message queue server, or the prodiguer database server.
+hermes-server is a python library designed to be run upon HERMES servers.  It is installed either on either the HERMES web server, the HERMES message queue server, or the HERMES database server.
 
 Documentation
 --------------------------------------
