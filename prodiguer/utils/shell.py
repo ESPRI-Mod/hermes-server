@@ -24,7 +24,7 @@ def exec_command(cmd):
     """
     cmd_type = cmd.split("-")[0]
     cmd_name = "_".join(cmd.split("-")[1:])
-    script = os.getenv("PRODIGUER_HOME")
+    script = os.getenv("HERMES_HOME")
     script = os.path.join(script, "bash")
     script = os.path.join(script, cmd_type)
     script = os.path.join(script, "{}.sh".format(cmd_name))
@@ -37,7 +37,7 @@ def get_repo_path(subpaths):
     :param list subpaths: List of subpath to append to repository path.
 
     """
-    dir_repo = os.path.join(os.getenv("PRODIGUER_HOME"), "repos")
+    dir_repo = os.path.join(os.getenv("HERMES_HOME"), "repos")
     for subpath in subpaths:
         dir_repo = os.path.join(dir_repo, subpath)
 

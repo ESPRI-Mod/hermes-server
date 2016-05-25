@@ -346,7 +346,7 @@ def _main():
     """
     fname = "{}_server_pgres_performance_metrics_{}.csv".format(
         os.getenv("PRODIGUER_MACHINE_TYPE"), _NOW.format('YYYY-MM-DD'))
-    fpath = os.path.join(os.getenv("PRODIGUER_HOME"), "tmp")
+    fpath = os.path.join(os.getenv("HERMES_HOME"), "tmp")
     fpath = os.path.join(fpath, fname)
     with open(fpath, 'wb') as output_file:
         writer = csv.writer(output_file)

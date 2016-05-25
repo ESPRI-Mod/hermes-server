@@ -29,7 +29,7 @@ def _get_configuration():
     """Load configuration file content from file system.
 
     """
-    path = os.getenv("PRODIGUER_HOME")
+    path = os.getenv("HERMES_HOME")
     path = os.path.join(path, "ops")
     path = os.path.join(path, "config")
     path = os.path.join(path, "hermes-users.json")

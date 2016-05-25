@@ -21,7 +21,7 @@ from prodiguer.utils.convert import json_to_namedtuple
 # Environment variables to be injected into config.
 _ENV_VARS = {
 	# ... general variables
-	"PRODIGUER_HOME": "/opt/prodiguer",
+	"HERMES_HOME": "/opt/prodiguer",
 	"PRODIGUER_DEPLOYMENT_MODE": "test",
 	"PRODIGUER_CLIENT_WEB_URL": "https://prodiguer-test-web.ipsl.fr",
 
@@ -103,7 +103,7 @@ def _get_config_file_content():
 	"""Load configuration file content from file system.
 
 	"""
-	path = _ENV_VARS["PRODIGUER_HOME"]
+	path = _ENV_VARS["HERMES_HOME"]
 	path = os.path.join(path, "ops")
 	path = os.path.join(path, "config")
 	path = os.path.join(path, "prodiguer.json")
