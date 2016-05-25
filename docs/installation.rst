@@ -1,3 +1,3 @@
 ===================================
-Prodiguer Server - Installation
+HERMES Server - Installation
 ===================================

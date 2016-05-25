@@ -1,3 +1,3 @@
 ===================================
-Prodiguer Server - Configuration
+HERMES Server - Configuration
 ===================================

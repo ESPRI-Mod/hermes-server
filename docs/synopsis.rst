@@ -1,3 +1,3 @@
 ===================================
-Prodiguer Server - Synopsis
+HERMES Server - Synopsis
 ===================================

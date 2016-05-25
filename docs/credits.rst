@@ -1,5 +1,5 @@
 ===================================
-Prodiguer Server - Credits
+HERMES Server - Credits
 ===================================
 
 Developer/Author
