@@ -128,7 +128,7 @@ QUEUES = {
 
 # Message producers.
 PRODUCER_IGCM = u"libigcm"
-PRODUCER_HERMES = u"prodiguer"
+PRODUCER_HERMES = u"hermes"
 
 # All producers.
 PRODUCERS = {
