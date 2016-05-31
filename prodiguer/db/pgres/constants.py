@@ -15,7 +15,7 @@
 HERMES_DB_NAME = "prodiguer"
 
 # User name of standard db user.
-HERMES_DB_USER = "prodiguer_db_user"
+HERMES_DB_USER = "hermes_db_user"
 
 # User name of admin db user.
-HERMES_DB_ADMIN_USER = "prodiguer_db_admin"
+HERMES_DB_ADMIN_USER = "hermes_db_admin"
