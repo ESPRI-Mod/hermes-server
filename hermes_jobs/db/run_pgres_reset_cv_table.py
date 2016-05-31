@@ -5,7 +5,7 @@
    :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: Resets prodiguer postgres database tables after manual cv updates.
+   :synopsis: Resets HERMES postgres database tables after manual cv updates.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 

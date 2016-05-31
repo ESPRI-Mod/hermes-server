@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.utils_types.py
+.. module:: hermes.db.utils_types.py
    :platform: Unix
    :synopsis: Domain model utility classes and functions.
 

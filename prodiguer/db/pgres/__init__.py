@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.pgres.__init__.py
+.. module:: hermes.db.pgres.__init__.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows

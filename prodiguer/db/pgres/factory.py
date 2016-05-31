@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.factory.py
+.. module:: hermes.db.factory.py
    :platform: Unix
    :synopsis: Database type factory used in unit testing.
 

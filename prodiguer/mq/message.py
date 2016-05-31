@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.mq.message.py
+.. module:: hermes.mq.message.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows

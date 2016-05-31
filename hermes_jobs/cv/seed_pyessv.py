@@ -35,7 +35,7 @@ def _get_term_data(data):
 
 
 def _create_term(partition, kind, idx, data):
-	"""Returns a pyessv.Term instantiated from an ipsl.prodiguer term.
+	"""Returns a pyessv.Term instantiated from an ipsl.hermes term.
 
 	"""
 	# Create a term.

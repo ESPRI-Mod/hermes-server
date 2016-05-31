@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.setup.py
+.. module:: hermes.db.setup.py
    :platform: Unix
    :synopsis: Initializes database.
 

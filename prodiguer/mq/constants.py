@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.mq.constants.py
+.. module:: hermes.mq.constants.py
    :platform: Unix
    :synopsis: Hermes mq constants.
 
@@ -34,7 +34,7 @@ AMPQ_DELIVERY_MODES = {
 	}
 
 # Message server virtual host.
-VHOST = "prodiguer"
+VHOST = "hermes"
 
 # Message server exchanges.
 EXCHANGE_HERMES_PRIMARY = "x-primary"

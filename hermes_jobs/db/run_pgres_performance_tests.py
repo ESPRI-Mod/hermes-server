@@ -5,7 +5,7 @@
    :copyright: Copyright "Mar 21, 2015", Institute Pierre Simon Laplace
    :license: GPL/CeCIL
    :platform: Unix
-   :synopsis: Executes prodiguer postgres database performance tests and writes results to file system.
+   :synopsis: Executes HERMES postgres database performance tests and writes results to file system.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 

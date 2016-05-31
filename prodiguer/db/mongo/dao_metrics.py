@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.mongo.dao_metrics.py
+.. module:: hermes.db.mongo.dao_metrics.py
    :platform: Unix
    :synopsis: Set of metrics related data access operations.
 

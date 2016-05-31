@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.dao.py
+.. module:: hermes.db.dao.py
    :platform: Unix
    :synopsis: Set of core data access operations.
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.types.py
+.. module:: hermes.db.types.py
    :platform: Unix
    :synopsis: Hermes db types.
 

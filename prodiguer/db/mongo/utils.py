@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.mongo.utils.py
+.. module:: hermes.db.mongo.utils.py
    :platform: Unix
    :synopsis: Set of mongo db related utilty functions.
 

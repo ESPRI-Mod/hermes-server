@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.session.py
+.. module:: hermes.db.session.py
    :platform: Unix
    :synopsis: Database session manager.
 

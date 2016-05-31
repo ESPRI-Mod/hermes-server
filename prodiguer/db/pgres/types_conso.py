@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.types_conso.py
+.. module:: hermes.db.types_conso.py
    :platform: Unix
    :synopsis: Resource consumption database tables.
 

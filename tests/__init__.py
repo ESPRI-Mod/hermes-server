@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer_tests.__init__.py
+.. module:: hermes_tests.__init__.py
 
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL / CeCILL

@@ -26,8 +26,9 @@ _CONFIG_FILENAME = 'config.json'
 
 
 def _get_config_filepath():
-	"""Returns the path to the prodiguer configuration file."""
-	# Note - this assumes that prodiguer stack has been correctly installed.
+	"""Returns the path to the HERMES configuration file.
+
+	"""
 	fp = abspath(__file__)
 	for i in range(4):
 		fp = dirname(fp)

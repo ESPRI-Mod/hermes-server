@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.utils.config.py
+.. module:: hermes.utils.config.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -21,9 +21,9 @@ from prodiguer.utils.convert import json_to_namedtuple
 # Environment variables to be injected into config.
 _ENV_VARS = {
 	# ... general variables
-	"HERMES_HOME": "/opt/prodiguer",
+	"HERMES_HOME": "/opt/hermes",
 	"HERMES_DEPLOYMENT_MODE": "test",
-	"HERMES_CLIENT_WEB_URL": "https://hermes-test-web.ipsl.fr",
+	"HERMES_CLIENT_WEB_URL": "https://hermes.upmc.ipsl.fr",
 
 	# ... db server variables
 	"HERMES_DB_MONGO_HOST": "localhost:27017",
@@ -44,7 +44,7 @@ _ENV_VARS = {
 	# ... web server variables
 	"HERMES_WEB_COOKIE_SECRET": None,
 	"HERMES_WEB_PORT": "8888",
-	"HERMES_WEB_URL": "https://hermes-test-web.ipsl.fr"
+	"HERMES_WEB_URL": "https://hermes.upmc.ipsl.fr"
 }
 
 # Set of environment variables to be url encoded.

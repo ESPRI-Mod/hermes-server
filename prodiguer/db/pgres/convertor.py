@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.convertor.py
+.. module:: hermes.db.convertor.py
    :platform: Unix
-   :synopsis: Converts prodiguer db types to dictionaries.
+   :synopsis: Converts HERMES db types to dictionaries.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 

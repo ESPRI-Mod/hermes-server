@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.mq.default.py
+.. module:: hermes.mq.default.py
    :platform: Unix
    :synopsis: Hermes mq defaults.
 

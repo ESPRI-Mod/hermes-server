@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.meta.py
+.. module:: hermes.db.meta.py
    :platform: Unix
    :synopsis: Database ORM metadata singleton.
 

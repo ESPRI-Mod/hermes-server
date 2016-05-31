@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-.. module:: prodiguer.db.__init__.py
+.. module:: hermes.db.__init__.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows

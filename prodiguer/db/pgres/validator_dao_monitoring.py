@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.validator_dao_monitoring.py
+.. module:: hermes.db.validator_dao_monitoring.py
    :copyright: Copyright "Mar 21, 2015", IPSL
    :license: GPL/CeCIL
    :platform: Unix

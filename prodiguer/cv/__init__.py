@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-.. module:: prodiguer.cv.__init__.py
+.. module:: hermes.cv.__init__.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows

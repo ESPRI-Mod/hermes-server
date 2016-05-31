@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.web.endpoints.monitoring.fetch_detail.py
+.. module:: hermes.web.endpoints.monitoring.fetch_detail.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows

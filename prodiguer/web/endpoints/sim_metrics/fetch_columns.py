@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-.. module:: prodiguer.web.endpoints.sim_metrics.fetch.py
+.. module:: hermes.web.endpoints.sim_metrics.fetch.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows

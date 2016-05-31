@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.types_superviseur.py
+.. module:: hermes.db.types_superviseur.py
    :platform: Unix
    :synopsis: Hermes superviseur database tables.
 

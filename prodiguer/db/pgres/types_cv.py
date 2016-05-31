@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.types_cv.py
+.. module:: hermes.db.types_cv.py
    :platform: Unix
    :synopsis: Hermes controlled vocabulary database tables.
 

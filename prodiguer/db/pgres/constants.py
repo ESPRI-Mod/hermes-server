@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: prodiguer.db.constants.py
+.. module:: hermes.db.constants.py
    :platform: Unix
    :synopsis: Pgres related db constants.
 
