@@ -24,6 +24,8 @@ _ENV_VARS = {
 	"HERMES_HOME": "/opt/hermes",
 	"HERMES_DEPLOYMENT_MODE": "test",
 	"HERMES_CLIENT_WEB_URL": "https://hermes.upmc.ipsl.fr",
+	"HERMES_ALERT_EMAIL_ADDRESS_FROM": None,
+	"HERMES_ALERT_EMAIL_ADDRESS_TO": None,
 
 	# ... db server variables
 	"HERMES_DB_MONGO_HOST": "localhost:27017",
