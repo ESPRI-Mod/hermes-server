@@ -11,7 +11,9 @@
 
 
 """
-import requests, json
+import json
+
+import requests
 
 from prodiguer import web
 from prodiguer.utils import logger
