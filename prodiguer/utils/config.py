@@ -32,6 +32,7 @@ _ENV_VARS = {
 	"HERMES_DB_MONGO_USER_PASSWORD": None,
 	"HERMES_DB_PGRES_HOST": "localhost:5432",
 	"HERMES_DB_PGRES_NAME": "hermes",
+	"HERMES_DB_PGRES_USER": "hermes_db_user",
 	"HERMES_DB_PGRES_USER_PASSWORD": None,
 
 	# ... mq server variables
