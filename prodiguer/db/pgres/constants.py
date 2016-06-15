@@ -12,7 +12,7 @@
 
 
 # Name of standard db.
-HERMES_DB_NAME = "prodiguer"
+HERMES_DB_NAME = "hermes"
 
 # User name of standard db user.
 HERMES_DB_USER = "hermes_db_user"
