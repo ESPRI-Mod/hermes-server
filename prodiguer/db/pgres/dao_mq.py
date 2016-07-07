@@ -254,6 +254,7 @@ def persist_message_email_stats(
     outgoing_0000=0,
     outgoing_0100=0,
     outgoing_1000=0,
+    outgoing_1001=0,
     outgoing_1100=0,
     outgoing_1900=0,
     outgoing_1999=0,
@@ -278,25 +279,26 @@ def persist_message_email_stats(
     :param int errors_decoding_json: Count of json decoding errors.
     :param int errors_encoding_ampq: Count of ampq encoding errors.
     :param int excluded: Count of excluded messages.
-    :param int outgoing: Count of messages dispateched to RabbitMQ server.
-    :param int outgoing_0000: Count of messages (type=0000) dispateched to RabbitMQ server.
-    :param int outgoing_0100: Count of messages (type=0100) dispateched to RabbitMQ server.
-    :param int outgoing_1000: Count of messages (type=1000) dispateched to RabbitMQ server.
-    :param int outgoing_1100: Count of messages (type=1100) dispateched to RabbitMQ server.
-    :param int outgoing_1900: Count of messages (type=1900) dispateched to RabbitMQ server.
-    :param int outgoing_1999: Count of messages (type=1999) dispateched to RabbitMQ server.
-    :param int outgoing_2000: Count of messages (type=2000) dispateched to RabbitMQ server.
-    :param int outgoing_2100: Count of messages (type=2100) dispateched to RabbitMQ server.
-    :param int outgoing_2900: Count of messages (type=2900) dispateched to RabbitMQ server.
-    :param int outgoing_2999: Count of messages (type=2999) dispateched to RabbitMQ server.
-    :param int outgoing_3000: Count of messages (type=3000) dispateched to RabbitMQ server.
-    :param int outgoing_3100: Count of messages (type=3100) dispateched to RabbitMQ server.
-    :param int outgoing_3900: Count of messages (type=3900) dispateched to RabbitMQ server.
-    :param int outgoing_3999: Count of messages (type=3999) dispateched to RabbitMQ server.
-    :param int outgoing_7000: Count of messages (type=7000) dispateched to RabbitMQ server.
-    :param int outgoing_7010: Count of messages (type=7010) dispateched to RabbitMQ server.
-    :param int outgoing_7011: Count of messages (type=7011) dispateched to RabbitMQ server.
-    :param int outgoing_7100: Count of messages (type=7100) dispateched to RabbitMQ server.
+    :param int outgoing: Count of messages dispatched to RabbitMQ server.
+    :param int outgoing_0000: Count of messages (type=0000) dispatched to RabbitMQ server.
+    :param int outgoing_0100: Count of messages (type=0100) dispatched to RabbitMQ server.
+    :param int outgoing_1000: Count of messages (type=1000) dispatched to RabbitMQ server.
+    :param int outgoing_1001: Count of messages (type=1001) dispatched to RabbitMQ server.
+    :param int outgoing_1100: Count of messages (type=1100) dispatched to RabbitMQ server.
+    :param int outgoing_1900: Count of messages (type=1900) dispatched to RabbitMQ server.
+    :param int outgoing_1999: Count of messages (type=1999) dispatched to RabbitMQ server.
+    :param int outgoing_2000: Count of messages (type=2000) dispatched to RabbitMQ server.
+    :param int outgoing_2100: Count of messages (type=2100) dispatched to RabbitMQ server.
+    :param int outgoing_2900: Count of messages (type=2900) dispatched to RabbitMQ server.
+    :param int outgoing_2999: Count of messages (type=2999) dispatched to RabbitMQ server.
+    :param int outgoing_3000: Count of messages (type=3000) dispatched to RabbitMQ server.
+    :param int outgoing_3100: Count of messages (type=3100) dispatched to RabbitMQ server.
+    :param int outgoing_3900: Count of messages (type=3900) dispatched to RabbitMQ server.
+    :param int outgoing_3999: Count of messages (type=3999) dispatched to RabbitMQ server.
+    :param int outgoing_7000: Count of messages (type=7000) dispatched to RabbitMQ server.
+    :param int outgoing_7010: Count of messages (type=7010) dispatched to RabbitMQ server.
+    :param int outgoing_7011: Count of messages (type=7011) dispatched to RabbitMQ server.
+    :param int outgoing_7100: Count of messages (type=7100) dispatched to RabbitMQ server.
 
     """
     _update_message_email(email_id, arrival_date, dispatch_date)
@@ -316,6 +318,7 @@ def persist_message_email_stats(
     instance.outgoing_0000 = outgoing_0000
     instance.outgoing_0100 = outgoing_0100
     instance.outgoing_1000 = outgoing_1000
+    # instance.outgoing_1001 = outgoing_1001
     instance.outgoing_1100 = outgoing_1100
     instance.outgoing_1900 = outgoing_1900
     instance.outgoing_1999 = outgoing_1999
