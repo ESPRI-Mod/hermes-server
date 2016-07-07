@@ -25,6 +25,7 @@ _AGENTS = {
     '0000': monitoring.job_start,
     '0100': monitoring.job_end,
     '1000': monitoring.job_start,
+    '1001': monitoring.job_update,
     '1100': monitoring.job_end,
     '1900': monitoring.command_fail,
     '1999': monitoring.job_end,
