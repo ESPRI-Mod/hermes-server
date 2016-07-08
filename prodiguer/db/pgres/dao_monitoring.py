@@ -274,6 +274,19 @@ def retrieve_jobs_by_interval(interval_start, interval_end):
     return qry.all()
 
 
+@decorators.validate(validator.validate_retrieve_latest_job_period)
+def retrieve_latest_job_period(uid):
+    """Retrieves set of most recent job period entries.
+
+    :param str uid: UID of job.
+
+    :returns: A list of job periods.
+    :rtype: list
+
+    """
+    pass
+
+
 @decorators.validate(validator.validate_retrieve_job_subset)
 def retrieve_job_subset(uid):
     """Retrieves a subset of job details from db.
