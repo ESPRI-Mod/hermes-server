@@ -22,6 +22,7 @@ def get_tasks():
     """
     return (
         _unpack_content,
+        _persist
         )
 
 
