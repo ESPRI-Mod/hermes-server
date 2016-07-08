@@ -13,6 +13,11 @@
 """
 from prodiguer import mq
 from prodiguer.db import pgres as db
+from prodiguer.db.pgres.dao_monitoring import retrieve_job
+from prodiguer.db.pgres.dao_monitoring import retrieve_latest_job_period
+from prodiguer.db.pgres.dao_monitoring import retrieve_simulation
+from prodiguer.db.pgres.dao_superviseur import retrieve_supervision
+from prodiguer.utils import config
 from prodiguer.utils import logger
 from hermes_jobs.mq import utils
 import superviseur
@@ -25,8 +30,9 @@ def get_tasks():
     """
     return (
         _unpack_content,
-        _set_data,
+        _verify,
         _authorize,
+        _set_data,
         _format,
         _enqueue_script_dispatch,
         )
@@ -44,6 +50,8 @@ class ProcessingContextInfo(mq.Message):
             props, body, decode=decode)
 
         self.job = None
+        self.job_period = []
+        self.job_uid = None
         self.simulation = None
         self.supervision = None
         self.supervision_id = None
@@ -55,27 +63,39 @@ def _unpack_content(ctx):
     """Unpacks message being processed.
 
     """
+    ctx.job_uid = ctx.content['job_uid']
+    ctx.simulation_uid = ctx.content['simulation_uid']
     ctx.supervision_id = int(ctx.content['supervision_id'])
 
 
-def _set_data(ctx):
-    """Sets data to be passed to script formatter as input.
+def _verify(ctx):
+    """Verifies that the job formatting is required.
 
     """
-    ctx.supervision = db.dao_superviseur.retrieve_supervision(ctx.supervision_id)
-    ctx.simulation = db.dao_monitoring.retrieve_simulation(ctx.supervision.simulation_uid)
-    ctx.job = db.dao_monitoring.retrieve_job(ctx.supervision.job_uid)
+    # Verify that most recent job period failure is within allowed limit.
+    ctx.job_period = retrieve_latest_job_period(ctx.job_uid)
+    if len(ctx.job_period) < config.apps.monitoring.maxAllowedJobPeriodFailures:
+        ctx.abort = True
 
 
 def _authorize(ctx):
     """Verifies that the user has authorized supervision.
 
     """
+    ctx.simulation = retrieve_simulation(ctx.simulation_uid)
     try:
         ctx.user = superviseur.authorize(ctx.simulation.compute_node_login)
     except UserWarning as err:
         logger.log_mq_warning("Supervision dispatch unauthorized: {}".format(err))
         ctx.abort = True
+
+
+def _set_data(ctx):
+    """Sets data also required by script formatter.
+
+    """
+    ctx.supervision = retrieve_supervision(ctx.supervision_id)
+    ctx.job = retrieve_job(ctx.job_uid)
 
 
 def _format(ctx):

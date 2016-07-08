@@ -284,7 +284,7 @@ def retrieve_latest_job_period(uid):
     :rtype: list
 
     """
-    pass
+    return []
 
 
 @decorators.validate(validator.validate_retrieve_job_subset)
