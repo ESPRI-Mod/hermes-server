@@ -274,8 +274,8 @@ def retrieve_jobs_by_interval(interval_start, interval_end):
     return qry.all()
 
 
-@decorators.validate(validator.validate_retrieve_latest_job_period)
-def retrieve_latest_job_period(uid):
+@decorators.validate(validator.validate_retrieve_latest_job_periods)
+def retrieve_latest_job_periods(uid):
     """Retrieves set of most recent job period entries.
 
     :param str uid: UID of job.
