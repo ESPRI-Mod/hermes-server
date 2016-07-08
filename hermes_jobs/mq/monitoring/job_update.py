@@ -48,23 +48,22 @@ def _unpack_content(ctx):
     """Unpacks message being processed.
 
     """
+    ctx.simulation_uid = ctx.content['simuid']
     ctx.job_uid = ctx.content['jobuid']
+    ctx.period_id = ctx.content['CumulPeriod']
     ctx.period_date_begin = ctx.content['PeriodDateBegin']
     ctx.period_date_end = ctx.content['PeriodDateEnd']
-    ctx.period_id = ctx.content['CumulPeriod']
-    ctx.simulation_uid = ctx.content['simuid']
-
-    print "message 1001: ", ctx.job_uid, ctx.period_date_begin, ctx.period_date_end, ctx.period_id
 
 
 def _persist(ctx):
     """Persists job updates to dB.
 
     """
+
     dao.persist_job_period(
         ctx.simulation_uid,
         ctx.job_uid,
-        ctx.period_date_begin,
-        ctx.period_date_end,
-        ctx.period_id
+        int(ctx.period_id or 0),
+        int(ctx.period_date_begin),
+        int(ctx.period_date_end)
         )

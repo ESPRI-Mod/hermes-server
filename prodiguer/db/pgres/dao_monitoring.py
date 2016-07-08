@@ -601,17 +601,17 @@ def persist_job_02(
 def persist_job_period(
     simulation_uid,
     job_uid,
+    period_id,
     period_date_begin,
-    period_date_end,
-    period_id
+    period_date_end
     ):
     """Persists job period information to db.
 
     :param str simulation_uid: Simulation UID.
     :param str job_uid: Job UID.
-    :param datetime period_date_begin: Date upon which job period began.
-    :param datetime period_date_end: Date upon which job period ended.
     :param int period_id: Job period ordinal identifier.
+    :param int period_date_begin: Date upon which job period began.
+    :param int period_date_end: Date upon which job period ended.
 
     :returns: A new job period instance.
     :rtype: types.JobPeriod

@@ -110,18 +110,18 @@ def validate_persist_job_02(
 def validate_persist_job_period(
     simulation_uid,
     job_uid,
+    period_id,
     period_date_begin,
-    period_date_end,
-    period_id
+    period_date_end
     ):
     """Function input validator: persist_job_period.
 
     """
     validation.validate_uid(simulation_uid, "Simulation uid")
     validation.validate_uid(job_uid, "Job uid")
-    validation.validate_date(period_date_begin, "Job period date begin")
-    validation.validate_date(period_date_end, "Job period date end")
     validation.validate_int(period_id, "Job period identifier")
+    validation.validate_int(period_date_begin, "Job period date begin")
+    validation.validate_int(period_date_end, "Job period date end")
 
 
 def validate_persist_environment_metric(

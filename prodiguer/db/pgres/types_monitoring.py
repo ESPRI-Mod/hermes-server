@@ -18,6 +18,7 @@ from sqlalchemy import Float
 from sqlalchemy import Integer
 from sqlalchemy import Text
 from sqlalchemy import Unicode
+from sqlalchemy import UniqueConstraint
 
 from prodiguer.db.pgres.entity import Entity
 
@@ -82,6 +83,12 @@ class JobPeriod(Entity):
     # SQLAlchemy directives.
     __tablename__ = 'tbl_job_period'
     __table_args__ = (
+        UniqueConstraint(
+            'job_uid',
+            'period_id',
+            'period_date_begin',
+            'period_date_end'
+            ),
         {'schema':_SCHEMA}
     )
 
@@ -89,8 +96,8 @@ class JobPeriod(Entity):
     simulation_uid = Column(Unicode(63), nullable=False)
     job_uid = Column(Unicode(63), nullable=False)
     period_id = Column(Integer, nullable=False)
-    period_end_date = Column(DateTime, nullable=False)
-    period_start_date = Column(DateTime, nullable=False)
+    period_date_begin = Column(Integer, nullable=False)
+    period_date_end = Column(Integer, nullable=False)
 
 
 class Simulation(Entity):
