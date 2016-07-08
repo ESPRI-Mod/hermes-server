@@ -75,6 +75,24 @@ class Job(Entity):
     warning_delay = Column(Integer)
 
 
+class JobPeriod(Entity):
+    """History of job period related events.
+
+    """
+    # SQLAlchemy directives.
+    __tablename__ = 'tbl_job_period'
+    __table_args__ = (
+        {'schema':_SCHEMA}
+    )
+
+    # Attributes.
+    simulation_uid = Column(Unicode(63), nullable=False)
+    job_uid = Column(Unicode(63), nullable=False)
+    period_id = Column(Integer, nullable=False)
+    period_end_date = Column(DateTime, nullable=False)
+    period_start_date = Column(DateTime, nullable=False)
+
+
 class Simulation(Entity):
     """A simulation being run in order to test a climate model against an experiment.
 

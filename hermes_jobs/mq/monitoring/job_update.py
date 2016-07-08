@@ -12,7 +12,7 @@
 """
 from prodiguer import mq
 from prodiguer.db.pgres import dao_monitoring as dao
-from hermes_jobs.mq import utils
+from hermes_jobs.mq import utils as mq_utils
 
 
 
@@ -37,10 +37,10 @@ class ProcessingContextInfo(mq.Message):
             props, body, decode=decode)
 
         self.job_uid = None
-        self.simulation_uid = None
         self.period_date_begin = None
         self.period_date_end = None
         self.period_id = None
+        self.simulation_uid = None
 
 
 def _unpack_content(ctx):
@@ -48,9 +48,22 @@ def _unpack_content(ctx):
 
     """
     ctx.job_uid = ctx.content['jobuid']
-    ctx.simulation_uid = ctx.content['simuid']
     ctx.period_date_begin = ctx.content['PeriodDateBegin']
     ctx.period_date_end = ctx.content['PeriodDateEnd']
     ctx.period_id = ctx.content['CumulPeriod']
+    ctx.simulation_uid = ctx.content['simuid']
 
     print "message 1001: ", ctx.job_uid, ctx.period_date_begin, ctx.period_date_end, ctx.period_id
+
+
+def _persist(ctx):
+    """Persists job updates to dB.
+
+    """
+    dao.persist_job_period(
+        ctx.simulation_uid,
+        ctx.job_uid,
+        ctx.period_date_begin,
+        ctx.period_date_end,
+        ctx.period_id
+        )

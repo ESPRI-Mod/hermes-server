@@ -597,6 +597,36 @@ def persist_job_02(
     return dao.persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 
 
+@decorators.validate(validator.validate_persist_job_period)
+def persist_job_period(
+    simulation_uid,
+    job_uid,
+    period_date_begin,
+    period_date_end,
+    period_id
+    ):
+    """Persists job period information to db.
+
+    :param str simulation_uid: Simulation UID.
+    :param str job_uid: Job UID.
+    :param datetime period_date_begin: Date upon which job period began.
+    :param datetime period_date_end: Date upon which job period ended.
+    :param int period_id: Job period ordinal identifier.
+
+    :returns: A new job period instance.
+    :rtype: types.JobPeriod
+
+    """
+    instance = types.JobPeriod()
+    instance.simulation_uid = unicode(simulation_uid)
+    instance.job_uid = unicode(job_uid)
+    instance.period_date_begin = period_date_begin
+    instance.period_date_end = period_date_end
+    instance.period_id = period_id
+
+    return session.add(instance)
+
+
 @decorators.validate(validator.validate_update_active_simulation)
 def update_active_simulation(hashid):
     """Updates the active simulation within a group.

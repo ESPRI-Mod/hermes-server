@@ -17,6 +17,7 @@ from prodiguer.db.pgres.types_cv import ControlledVocabularyTerm
 from prodiguer.db.pgres.types_monitoring import Command
 from prodiguer.db.pgres.types_monitoring import EnvironmentMetric
 from prodiguer.db.pgres.types_monitoring import Job
+from prodiguer.db.pgres.types_monitoring import JobPeriod
 from prodiguer.db.pgres.types_monitoring import Simulation
 from prodiguer.db.pgres.types_monitoring import SimulationConfiguration
 from prodiguer.db.pgres.types_mq import Message
@@ -43,6 +44,7 @@ SUPPORTED = TYPES = [
     Command,
     EnvironmentMetric,
     Job,
+    JobPeriod,
     Simulation,
     SimulationConfiguration,
     # ... mq types
