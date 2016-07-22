@@ -278,13 +278,17 @@ def retrieve_jobs_by_interval(interval_start, interval_end):
 def retrieve_latest_job_periods(uid):
     """Retrieves set of most recent job period entries.
 
-    :param str uid: UID of job.
+    :param str uid: UID of simulation.
 
     :returns: A list of job periods.
     :rtype: list
 
     """
-    return []
+    j = types.JobPeriod
+
+    qry = session.raw_query(j.period_id)
+    qry = qry.filter(j.simulation_uid == unicode(uid))
+    return qry.all()
 
 
 @decorators.validate(validator.validate_retrieve_job_subset)

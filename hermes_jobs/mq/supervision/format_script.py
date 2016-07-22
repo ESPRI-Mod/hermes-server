@@ -73,8 +73,13 @@ def _verify(ctx):
 
     """
     # Verify that most recent job period failure is within allowed limit.
-    ctx.job_periods = retrieve_latest_job_periods(ctx.job_uid)
-    if len(ctx.job_periods) < config.apps.monitoring.maxJobPeriodFailures:
+    ctx.job_periods = retrieve_latest_job_periods(ctx.simulation_uid)
+    if ctx.job_periods == []:
+        logger.log_mq_warning("Job period empty")
+    elif (0,) in ctx.job_periods:
+        logger.log_mq_warning("Period number 0, supervision not needed")
+        ctx.abort = True
+    elif ctx.job_periods.count(max(ctx.job_periods)) < config.apps.monitoring.maxJobPeriodFailures:
         ctx.abort = True
 
 
