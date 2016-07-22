@@ -20,7 +20,6 @@ from prodiguer import mq
 from prodiguer import utils
 from prodiguer import web
 from prodiguer.cv import VOCAB_DOMAIN
-from prodiguer.cv import VOCAB_SUBDOMAIN
 from prodiguer.utils import config
 from prodiguer.utils import mail
 from prodiguer.utils import security

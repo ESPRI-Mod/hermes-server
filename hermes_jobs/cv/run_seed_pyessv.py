@@ -67,6 +67,7 @@ def _yield_termset(partition):
 	cv_set = {i: prodiguer.cv.cache.get_termset(i) for i in prodiguer.cv.constants.TERM_TYPESET}
 	for cv_type in cv_set:
 		for idx, data in enumerate(cv_set[cv_type]):
+			print cv_type, idx + 1, data
 			yield _create_term(partition, cv_type, idx + 1, data)
 
 
@@ -77,8 +78,7 @@ def execute():
 	# Set pyessv partition.
 	partition = pyessv.create_partition(
 	    prodiguer.VOCAB_DOMAIN,
-	    prodiguer.VOCAB_SUBDOMAIN,
-	    os.getenv("HERMES_PYESSV_HOME")
+	    os.getenv("PYESSV_HOME")
 	)
 
 	# Save set of CV terms.

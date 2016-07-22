@@ -11,11 +11,8 @@
 
 
 """
-# Hermes cv domain.
-VOCAB_DOMAIN = u"earth-system.modelling"
-
 # Hermes cv sub-domain.
-VOCAB_SUBDOMAIN = 'ipsl.prodiguer'
+VOCAB_DOMAIN = 'ipsl.hermes'
 
 # Term governance states.
 TERM_GOVERNANCE_STATE_NEW = "new"
