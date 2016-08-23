@@ -14,7 +14,7 @@
 from prodiguer import mq
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres.dao_monitoring import retrieve_job
-from prodiguer.db.pgres.dao_monitoring import retrieve_latest_job_periods
+from prodiguer.db.pgres.dao_monitoring import retrieve_latest_job_period
 from prodiguer.db.pgres.dao_monitoring import retrieve_simulation
 from prodiguer.db.pgres.dao_superviseur import retrieve_supervision
 from prodiguer.utils import config
@@ -50,7 +50,7 @@ class ProcessingContextInfo(mq.Message):
             props, body, decode=decode)
 
         self.job = None
-        self.job_periods = []
+        self.job_period = None
         self.job_uid = None
         self.simulation = None
         self.supervision = None
@@ -73,14 +73,16 @@ def _verify(ctx):
 
     """
     # Verify that most recent job period failure is within allowed limit.
-    ctx.job_periods = retrieve_latest_job_periods(ctx.simulation_uid)
-    if ctx.job_periods == []:
+    ctx.job_period = retrieve_latest_job_period(ctx.simulation_uid)
+    if ctx.job_period.period_id is None:
         logger.log_mq_warning("Job period empty")
-    elif (0,) in ctx.job_periods:
-        logger.log_mq_warning("Period number 0, supervision not needed")
-        ctx.abort = True
-    elif ctx.job_periods.count(max(ctx.job_periods)) < config.apps.monitoring.maxJobPeriodFailures:
-        ctx.abort = True
+    elif ctx.job_period.period_id == 0:
+        logger.log_mq("Period number 0, supervision not needed")
+        #ctx.abort = True
+    ### TODO
+    #elif ctx.job_periods.count(max(ctx.job_periods)) > config.apps.monitoring.maxJobPeriodFailures:
+    #    logger.log_mq("Too many tries for the last job period, supervision abort")
+    #    ctx.abort = True
 
 
 def _authorize(ctx):
@@ -111,7 +113,7 @@ def _format(ctx):
     params = superviseur.FormatParameters(
         ctx.simulation,
         ctx.job,
-        ctx.job_periods[-1],
+        ctx.job_period,
         ctx.supervision,
         ctx.user
         )

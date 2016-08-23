@@ -45,6 +45,7 @@ class ProcessingContextInfo(mq.Message):
             props, body, decode=decode)
 
         self.job = None
+        self.job_period = None
         self.simulation = None
         self.supervision = None
         self.supervision_id = None
@@ -65,6 +66,7 @@ def _set_data(ctx):
     ctx.supervision = db.dao_superviseur.retrieve_supervision(ctx.supervision_id)
     ctx.simulation = db.dao_monitoring.retrieve_simulation(ctx.supervision.simulation_uid)
     ctx.job = db.dao_monitoring.retrieve_job(ctx.supervision.job_uid)
+    ctx.job_period = db.dao_monitoring.retrieve_latest_job_period(ctx.supervision.simulation_uid)
 
 
 def _authorize(ctx):
@@ -84,7 +86,11 @@ def _dispatch(ctx):
     """
     # Set dispatch parameters to be passed to dispatcher.
     params = superviseur.DispatchParameters(
-        ctx.simulation, ctx.job, ctx.supervision, ctx.user)
+        ctx.simulation, 
+        ctx.job,
+        ctx.job_period,
+        ctx.supervision, 
+        ctx.user)
 
     # Dispatch script to HPC for execution.
     try:
