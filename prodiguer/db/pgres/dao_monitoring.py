@@ -292,6 +292,27 @@ def retrieve_latest_job_period(uid):
     return qry[-1]
 
 
+def retrieve_job_periods(uid):
+    """Retrieves details from db of the most recent job period entrie.
+
+    :param str uid: UID of simulation.
+
+    :returns: Job period details.
+    :rtype: list
+
+    """
+    j = types.JobPeriod
+
+    qry = session.raw_query(j.period_id)
+    qry = qry.filter(j.simulation_uid == unicode(uid))
+    print unicode(uid)
+    qry = qry.all()
+    qry.sort()
+    print qry.count(qry[-1])
+
+    return qry[-1], qry.count(qry[-1])
+
+
 @decorators.validate(validator.validate_retrieve_job_subset)
 def retrieve_job_subset(uid):
     """Retrieves a subset of job details from db.
