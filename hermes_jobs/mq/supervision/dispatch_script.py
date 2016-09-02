@@ -67,6 +67,7 @@ def _set_data(ctx):
     ctx.simulation = db.dao_monitoring.retrieve_simulation(ctx.supervision.simulation_uid)
     ctx.job = db.dao_monitoring.retrieve_job(ctx.supervision.job_uid)
     ctx.job_period = db.dao_monitoring.retrieve_latest_job_period(ctx.supervision.simulation_uid)
+    ctx.job_period_counter = db.dao_monitoring.retrieve_latest_job_period_counter(ctx.supervision.simulation_uid)
 
 
 def _authorize(ctx):
@@ -89,6 +90,7 @@ def _dispatch(ctx):
         ctx.simulation, 
         ctx.job,
         ctx.job_period,
+        ctx.job_period_counter,
         ctx.supervision, 
         ctx.user)
 
