@@ -348,12 +348,12 @@ def retrieve_mail_identifiers_by_interval(interval_start, interval_end):
     :rtype: list
 
     """
-    me = types.MessageEmail
+    mes = types.MessageEmailStats
     qry = session.raw_query(
-        me.uid
+        mes.email_id
         )
-    qry = qry.filter(types.MessageEmail.arrival_date >= interval_start)
-    qry = qry.filter(types.MessageEmail.arrival_date < interval_end)
+    qry = qry.filter(mes.arrival_date >= interval_start)
+    qry = qry.filter(mes.arrival_date < interval_end)
 
     return set([m[0] for m in qry.all()])
 
@@ -376,7 +376,7 @@ def get_earliest_mail():
     """Retrieves earliest job in database.
 
     """
-    m = types.MessageEmail
+    m = types.MessageEmailStats
 
     qry = session.query(m)
     qry = qry.filter(m.arrival_date != None)
@@ -393,8 +393,8 @@ def retrieve_mail_simulation_identifiers():
     m = types.Message
 
     qry = session.raw_query(
+        m.email_id,
         m.correlation_id_1,
-        m.email_id
         )
     qry = qry.filter(m.correlation_id_1 != None)
     qry = qry.filter(m.email_id != None)
