@@ -37,12 +37,13 @@ def _get_initial_stats():
     """
     with db.session.create():
         return [{
-            "name": ap,
+            "name": i,
             "counts": [],
             "max": None,
             "min": None,
             "avg": None
-        } for ap in dao_monitoring.get_accounting_projects() if ap is not None and len(ap)]
+        } for i in dao_monitoring.get_accounting_projects()
+          if i is not None and len(i)]
 
 
 def _get_intervals():
