@@ -40,7 +40,7 @@ class _ProcessingContextInfo(object):
             raise ValueError("Report output directory is invalid.")
 
         self.mail_to_sim_map = {}
-        self.sim_to_project_map = {}
+        self.sim_to_ap_map = {}
         self.stats = {}
         self.io_dir = io_dir
 
@@ -49,8 +49,8 @@ def _init_maps(ctx):
     """Initialises maps that simplify processing.
 
     """
-    ctx.mail_to_sim_map = {i[1]: i[0] for i in dao_mq.retrieve_mail_simulation_identifiers()}
-    ctx.sim_to_project_map = {i[0]: i[1] for i in dao_monitoring.get_simulation_accounting_projects()}
+    ctx.sim_to_ap_map = {i[0]: i[1] for i in dao_monitoring.get_simulation_accounting_projects()}
+    ctx.mail_to_sim_map = {i[0]: i[1] for i in dao_mq.retrieve_mail_simulation_identifiers() if i[1] in ctx.sim_to_ap_map}
 
 
 def _init_stats(ctx):
@@ -67,6 +67,9 @@ def _init_stats(ctx):
 
 
 def _init_intervals(ctx):
+    """Initialises time intervals for which stats will be generated.
+
+    """
     # Start from arrival date of earliest email.
     earliest_mail = dao_mq.get_earliest_mail()
     start = earliest_mail.arrival_date.date()
@@ -94,7 +97,7 @@ def _get_interval_stats(ctx, start, end):
     data = [i for i in data if i in ctx.mail_to_sim_map]
 
     # Map emails to accounting projects.
-    data = [(i, ctx.sim_to_project_map[ctx.mail_to_sim_map[i]]) for i in data]
+    data = [(i, ctx.sim_to_ap_map[ctx.mail_to_sim_map[i]]) for i in data]
 
     # Exclude those not mapped to an accounting project.
     data = [i for i in data if i[1] is not None]
