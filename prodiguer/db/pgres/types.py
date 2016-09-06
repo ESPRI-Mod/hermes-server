@@ -14,7 +14,6 @@ from prodiguer.db.pgres.types_conso import Consumption
 from prodiguer.db.pgres.types_conso import CPUState
 from prodiguer.db.pgres.types_conso import OccupationStore
 from prodiguer.db.pgres.types_cv import ControlledVocabularyTerm
-from prodiguer.db.pgres.types_monitoring import Command
 from prodiguer.db.pgres.types_monitoring import EnvironmentMetric
 from prodiguer.db.pgres.types_monitoring import Job
 from prodiguer.db.pgres.types_monitoring import JobPeriod
@@ -41,7 +40,6 @@ SUPPORTED = TYPES = [
     # ... cv types
     ControlledVocabularyTerm,
     # ... monitoring types
-    Command,
     EnvironmentMetric,
     Job,
     JobPeriod,

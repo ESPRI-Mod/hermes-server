@@ -31,24 +31,6 @@ def validate_exists(uid):
     validation.validate_uid(uid, "Simulation uid")
 
 
-def validate_persist_command(
-    simulation_uid,
-    job_uid,
-    command_uid,
-    timestamp,
-    instruction,
-    is_error):
-    """Function input validator: persist_command.
-
-    """
-    validation.validate_bool(is_error, 'Is Error flag')
-    validation.validate_unicode(instruction, 'Command instruction')
-    validation.validate_date(timestamp, 'Command timestamp')
-    validation.validate_uid(command_uid, "Command uid")
-    validation.validate_uid(job_uid, "Job uid")
-    validation.validate_uid(simulation_uid, "Simulation uid")
-
-
 def validate_persist_job_01(
     accounting_project,
     warning_delay,

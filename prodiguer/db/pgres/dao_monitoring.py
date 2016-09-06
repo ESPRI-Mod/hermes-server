@@ -505,36 +505,6 @@ def persist_simulation_configuration(uid, card):
     return session.add(instance)
 
 
-@decorators.validate(validator.validate_persist_command)
-def persist_command(
-    simulation_uid,
-    job_uid,
-    command_uid,
-    timestamp,
-    instruction,
-    is_error):
-    """Persists a new command db record.
-
-    :param str simulation_uid: Simulation UID.
-    :param str job_uid: Job UID.
-    :param str uid: Command UID.
-    :param datetime.datetime timestamp: Moment when command was executed.
-    :param str instruction: Command instruction (including parameters).
-    :param bool is_error: Flag indicating whether command was in error or not.
-
-    """
-    # Instantiate instance.
-    instance = types.Command()
-    instance.simulation_uid = unicode(simulation_uid)
-    instance.job_uid = unicode(job_uid)
-    instance.uid = unicode(command_uid)
-    instance.timestamp = timestamp
-    instance.instruction = instruction
-    instance.is_error = is_error
-
-    return session.add(instance)
-
-
 @decorators.validate(validator.validate_persist_job_01)
 def persist_job_01(
     accounting_project,

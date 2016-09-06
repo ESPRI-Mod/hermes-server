@@ -41,8 +41,6 @@ def _create_term(partition, kind, idx, data):
 	# Create a term.
 	term = partition.create(kind, prodiguer.cv.get_name(data))
 	term.aliases = prodiguer.cv.get_synonyms(data)
-    if term.aliases:
-        term.alternative_name = term.aliases[0]
 	term.create_date = prodiguer.cv.get_create_date(data)
 	term.description = prodiguer.cv.get_description(data)
 	term.id = idx
@@ -72,10 +70,6 @@ def _yield_termset(partition):
 			yield _create_term(partition, cv_type, idx + 1, data)
 
 
-# Expose to pyessv seeder.
-yield_terms = _yield_termset
-
-
 def execute():
 	"""Main entry point.
 
@@ -83,7 +77,8 @@ def execute():
 	# Set pyessv partition.
 	partition = pyessv.create_partition(
 	    prodiguer.VOCAB_DOMAIN,
-	    os.getenv("PYESSV_HOME")
+	    prodiguer.VOCAB_SUBDOMAIN,
+	    os.getenv("HERMES_PYESSV_HOME")
 	)
 
 	# Save set of CV terms.

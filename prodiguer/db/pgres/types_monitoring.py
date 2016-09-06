@@ -28,25 +28,6 @@ from prodiguer.db.pgres.entity import Entity
 _SCHEMA = 'monitoring'
 
 
-class Command(Entity):
-    """A command executed during the course of a job.
-
-    """
-    # SQLAlchemy directives.
-    __tablename__ = 'tbl_command'
-    __table_args__ = (
-        {'schema':_SCHEMA}
-    )
-
-    # Attributes.
-    simulation_uid = Column(Unicode(63))
-    job_uid = Column(Unicode(63))
-    uid = Column(Unicode(63))
-    timestamp = Column(DateTime)
-    instruction = Column(Text)
-    is_error = Column(Boolean, default=True)
-
-
 class Job(Entity):
     """History of job state events.
 
