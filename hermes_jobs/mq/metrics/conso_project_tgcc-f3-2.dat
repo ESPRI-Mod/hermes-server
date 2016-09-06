@@ -1,0 +1,153 @@
+
+Accounting for project gen0727 on Curie thin/standard at 2016-08-30
+Login                             Time in hours
+albertau                                   0.00
+bessierl                             1230007.08
+brankarj                                   0.00
+coquala                                    0.00
+huotpv                                  5935.54
+jaymonda                                1609.54
+lerouxst                               28924.41
+lesommej                                   0.00
+maisonna                                   0.00
+moinemp                                    0.00
+molines                                 8118.24
+p86denv                                    0.00
+pendufft                                   0.00
+serazin                                    1.42
+valckeso                                 198.76
+
+Total                                1274794.99
+Allocated                            1237500.00
+
+Suggested use at this time               65.93%
+Real use at this time                   103.01%
+
+Project deadline 2017-01-03
+
+
+Accounting for project gen0826 on Curie thin/standard at 2016-08-30
+Login                             Time in hours
+audifni                                    0.00
+carenton                                   0.00
+clevy                                      0.00
+dufresne                                   0.00
+flavoni                                    0.00
+foujols                                 5730.33
+labetoul                                   0.00
+lacroire                                   0.00
+lebasn                                  3577.18
+levavasg                                   0.00
+martin                                     0.00
+noelt                                      0.00
+p48ethe                                    0.00
+p86caub                                   30.96
+p86cmip5                                1313.31
+p86denv                                   34.18
+p86fair                                   21.93
+p86ipsl                                 6688.60
+p86maf                                     1.59
+p86mart                                 4545.32
+p86nguey                                3023.65
+p86yann                                    0.00
+
+Total                                  24967.05
+Allocated                              34000.00
+
+Suggested use at this time               65.93%
+Real use at this time                    73.43%
+
+Project deadline 2017-01-03
+
+Accounting for project gencmip6 on Curie thin/standard at 2016-08-30
+Login       Account               Time in hours
+abramkiv    dcpcmip6                       0.00
+aidel       dcpcmip6                       0.00
+bekki       dcpcmip6                       0.00
+borlaces    dcpcmip6                   96127.15
+carenton    dcpcmip6                       0.00
+clevy       dcpcmip6                       0.00
+corderol    dcpcmip6                       0.00
+dcugnet     dcpcmip6                       0.00
+deshayej    dcpcmip6                       0.00
+ducharna    dcpcmip6                       0.00
+dufresne    dcpcmip6                       0.00
+flavoni     dcpcmip6                       0.00
+foujols     dcpcmip6                       0.00
+germea      dcpcmip6                       0.00
+guezl       dcpcmip6                       0.00
+hurm        dcpcmip6                       0.00
+kleinscc    dcpcmip6                       0.00
+labetoul    dcpcmip6                       0.00
+lacroire    dcpcmip6                       0.00
+lebasn      dcpcmip6                       0.00
+leclechs    dcpcmip6                       0.00
+levavasg    dcpcmip6                       0.00
+lottf       dcpcmip6                       0.00
+madelejb    dcpcmip6                       0.00
+magandc     dcpcmip6                       0.00
+mainsant    dcpcmip6                       0.00
+marchand    dcpcmip6                       0.00
+martin      dcpcmip6                       0.00
+mellull     dcpcmip6                       0.00
+meyssigb    dcpcmip6                       0.00
+nguyens     dcpcmip6                       0.00
+oboucher    dcpcmip6                       0.00
+onishit     dcpcmip6                       0.00
+p24balk     dcpcmip6                       0.00
+p24cozic    dcpcmip6                       0.00
+p24haug     dcpcmip6                       0.00
+p24peyl     dcpcmip6                       0.00
+p25dumas    dcpcmip6                       0.00
+p25jype     dcpcmip6                       0.00
+p25khod     dcpcmip6                       0.00
+p25krin     dcpcmip6                       0.00
+p25masa     dcpcmip6                       0.00
+p25nath     dcpcmip6                       0.00
+p25scha     dcpcmip6                       0.00
+p25sepul    dcpcmip6                       0.00
+p25sima     dcpcmip6                       0.00
+p48ayach    dcpcmip6                       0.00
+p48bopp     dcpcmip6                       0.00
+p48ethe     dcpcmip6                       0.00
+p48levu     dcpcmip6                       0.00
+p48sefer    dcpcmip6                       0.00
+p529luy     dcpcmip6                       0.00
+p529tra     dcpcmip6                       0.00
+p86balk     dcpcmip6                       0.00
+p86broc     dcpcmip6                       0.00
+p86cadul    dcpcmip6                       0.00
+p86caub     dcpcmip6                       0.00
+p86cmip5    dcpcmip6                       0.00
+p86cozic    dcpcmip6                       0.00
+p86denv     dcpcmip6                       0.00
+p86fair     dcpcmip6                       0.00
+p86gainu    dcpcmip6                       0.00
+p86ggas     dcpcmip6                       0.00
+p86ghatt    dcpcmip6                       0.00
+p86guil     dcpcmip6                       0.00
+p86ipsl     dcpcmip6                       0.00
+p86jser     dcpcmip6                       0.00
+p86maf      dcpcmip6                       0.00
+p86mart     dcpcmip6                       0.00
+p86mign     dcpcmip6                       0.00
+p86musat    dcpcmip6                       0.00
+p86mva      dcpcmip6                       0.00
+p86nguey    dcpcmip6                       0.00
+p86pasb     dcpcmip6                       0.00
+p86yann     dcpcmip6                       0.00
+richonc     dcpcmip6                       0.00
+saintlum    dcpcmip6                       0.00
+swingedi    dcpcmip6                       0.00
+torreso     dcpcmip6                       0.00
+wangyush    dcpcmip6                       0.00
+Subtotal                               96127.15
+
+Total                                  96127.15
+Allocated                           60000000.00
+
+Suggested use at this time               65.93%
+Real use at this time                    58.74%
+
+Project deadline 2017-01-03
+
