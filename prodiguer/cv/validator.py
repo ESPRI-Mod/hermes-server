@@ -104,15 +104,6 @@ def validate_term_data(term_data):
         raise exceptions.TermUserDataError()
 
 
-def validate_activity(term_name):
-    """Validate activity term name.
-
-    :param str term_name: An activity term name.
-
-    """
-    validate_term_name(constants.TERM_TYPE_ACTIVITY, term_name)
-
-
 def validate_compute_node(term_name):
     """Validate compute node term name.
 

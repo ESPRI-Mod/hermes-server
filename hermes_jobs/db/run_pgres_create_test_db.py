@@ -159,7 +159,6 @@ def _create_simulation(start_date, end_date):
     compute_node = compute_node_machine.split("-")[0]
 
     instance = db.types.Simulation()
-    instance.activity = u"ipsl"
     instance.accounting_project = random.choice(_ACCOUNTING_PROJECTS)
     instance.compute_node = compute_node
     instance.compute_node_login = _get_cv_term(cv.constants.TERM_TYPE_COMPUTE_NODE_LOGIN)

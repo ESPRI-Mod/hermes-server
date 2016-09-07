@@ -153,8 +153,6 @@ def validate_persist_environment_metric(
 
 def validate_persist_simulation_01(
     accounting_project,
-    activity,
-    activity_raw,
     compute_node,
     compute_node_raw,
     compute_node_login,
@@ -176,7 +174,6 @@ def validate_persist_simulation_01(
     """Function input validator: persist_simulation_01.
 
     """
-    cv.validator.validate_activity(activity)
     cv.validator.validate_compute_node(compute_node)
     cv.validator.validate_compute_node_login(compute_node_login)
     cv.validator.validate_compute_node_machine(compute_node_machine)
@@ -187,8 +184,6 @@ def validate_persist_simulation_01(
         validation.validate_unicode(accounting_project, "Simulation accounting project")
     validation.validate_date(execution_start_date, 'Simulation execution start date')
 
-    if activity_raw is not None:
-        validation.validate_unicode(activity_raw, 'Simulation activity (raw)')
     if compute_node_raw is not None:
         validation.validate_unicode(compute_node_raw, 'Simulation compute node (raw)')
     if compute_node_login_raw is not None:

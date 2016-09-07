@@ -23,7 +23,7 @@ from prodiguer.db.types import Simulation
 
 
 # Test constants.
-_SIM_ACTIVITY = 'IPSL'
+_SIM_ACCOUNTING_PROJECT = 'test-cmip5'
 _SIM_COMPUTE_NODE = 'CCRT'
 _SIM_COMPUTE_NODE_LOGIN = 'dcugnet'
 _SIM_COMPUTE_NODE_MACHINE = 'CCRT - SX9'
@@ -43,7 +43,7 @@ _MSG_CONTENT2 = "12345690"
 def _create_simulation(name=tu.get_string(63)):
     import prodiguer.db.dao_monitoring as db_hooks
 
-    s = db_hooks.create_simulation(_SIM_ACTIVITY,
+    s = db_hooks.create_simulation(_SIM_ACCOUNTING_PROJECT,
                                    _SIM_COMPUTE_NODE,
                                    _SIM_COMPUTE_NODE_LOGIN,
                                    _SIM_COMPUTE_NODE_MACHINE,

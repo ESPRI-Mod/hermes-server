@@ -27,8 +27,6 @@ from prodiguer.utils import logger
 # Sql statement for selecting simulations.
 _SQL_SELECT_SIMULATIONS = """SELECT
     s.accounting_project,
-    s.activity,
-    s.activity_raw,
     s.compute_node,
     s.compute_node_raw,
     s.compute_node_login,
@@ -135,8 +133,6 @@ def retrieve_active_simulations_direct(start_date=None):
     s = db.types.Simulation
     qry = db.session.raw_query(
         s.accounting_project,
-        s.activity,
-        s.activity_raw,
         s.compute_node,
         s.compute_node_raw,
         s.compute_node_login,

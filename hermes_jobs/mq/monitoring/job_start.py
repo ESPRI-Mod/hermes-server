@@ -32,7 +32,6 @@ from hermes_jobs.mq import utils as mq_utils
 # Set of CV related simulation fields.
 _SIMULATION_CV_TERM_FIELDS = {
     'accounting_project',
-    'activity',
     'compute_node',
     'compute_node_login',
     'compute_node_machine',
@@ -43,7 +42,6 @@ _SIMULATION_CV_TERM_FIELDS = {
 
 # Set of lower case CV related simulation fields.
 _SIMULATION_CV_TERM_FIELDS_LOWER_CASE = {
-    'activity',
     'compute_node',
     'compute_node_machine',
     'model',
@@ -92,7 +90,6 @@ class ProcessingContextInfo(mq.Message):
         self.cv_terms_persisted_to_db = []
 
         self.accounting_project = None
-        self.activity = self.activity_raw = None
         self.compute_node = self.compute_node_raw = None
         self.compute_node_login = self.compute_node_login_raw = None
         self.compute_node_machine = self.compute_node_machine_raw = None
@@ -120,7 +117,6 @@ def _unpack_content(ctx):
         ctx.job_warning_delay = config.apps.monitoring.defaultJobWarningDelayInSeconds
     ctx.simulation_uid = ctx.content['simuid']
     if ctx.is_simulation_start:
-        ctx.activity = ctx.activity_raw = ctx.content['activity']
         ctx.compute_node = ctx.compute_node_raw = ctx.content['centre']
         ctx.compute_node_login = ctx.content['login']
         ctx.compute_node_machine = ctx.compute_node_machine_raw = \
@@ -242,8 +238,6 @@ def _persist_simulation(ctx):
     # Persist simulation.
     simulation = dao.persist_simulation_01(
         ctx.accounting_project,
-        ctx.activity,
-        ctx.activity_raw,
         ctx.compute_node,
         ctx.compute_node_raw,
         ctx.compute_node_login,

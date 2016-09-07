@@ -26,8 +26,8 @@ from prodiguer.cv.parser import parse_term_type
 def create(term_type, term_name, term_data=None):
     """Creates a cv term.
 
-    :param str term_type: Type of CV term being parsed, e.g. activity.
-    :param str term_name: Name of CV term being parsed, e.g. ipsl.
+    :param str term_type: Type of CV term being parsed, e.g. accounting project.
+    :param str term_name: Name of CV term being parsed, e.g. gencmip6.
     :param dict term_data: User defined term data.
 
     :returns: Created cv term.

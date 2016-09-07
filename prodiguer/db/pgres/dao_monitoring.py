@@ -88,8 +88,6 @@ def retrieve_active_simulations(start_date=None):
 
     qry = session.raw_query(
         s.accounting_project,
-        s.activity,
-        s.activity_raw,
         s.compute_node_login,
         s.compute_node_login_raw,
         s.compute_node_machine,
@@ -391,8 +389,6 @@ def persist_environment_metric(
 @decorators.validate(validator.validate_persist_simulation_01)
 def persist_simulation_01(
     accounting_project,
-    activity,
-    activity_raw,
     compute_node,
     compute_node_raw,
     compute_node_login,
@@ -414,8 +410,6 @@ def persist_simulation_01(
     """Persists simulation information to db.
 
     :param str accounting_project: Name of associated accounting project.
-    :param str activity: Name of activity, e.g. IPSL.
-    :param str activity_raw: Name of activity before CV reformatting.
     :param str compute_node: Name of compute node, e.g. TGCC.
     :param str compute_node_raw: Name of compute node before CV reformatting.
     :param str compute_node_login: Name of compute node login, e.g. dcugnet.
@@ -443,8 +437,6 @@ def persist_simulation_01(
 
         """
         instance.accounting_project = unicode(accounting_project)
-        instance.activity = unicode(activity)
-        instance.activity_raw = unicode(activity_raw)
         instance.compute_node = unicode(compute_node)
         instance.compute_node_raw = unicode(compute_node_raw)
         instance.compute_node_login = unicode(compute_node_login)

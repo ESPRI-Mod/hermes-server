@@ -93,8 +93,6 @@ class Simulation(Entity):
 
     # Attributes.
     accounting_project = Column(Unicode(511))
-    activity = Column(Unicode(127))
-    activity_raw = Column(Unicode(127))
     compute_node = Column(Unicode(127))
     compute_node_raw = Column(Unicode(127))
     compute_node_login = Column(Unicode(127))
@@ -134,7 +132,7 @@ class Simulation(Entity):
 
         """
         hashid = "".join([
-            self.activity,
+            self.accounting_project,
             self.compute_node,
             self.compute_node_login,
             self.compute_node_machine,

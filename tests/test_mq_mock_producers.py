@@ -37,7 +37,7 @@ def test_cc_smon_messages():
     # Map of event types to content keys.
     content_keys = {
         'new': (
-            'activity',
+            'accounting_project',
             'compute_node',
             'compute_node_login',
             'compute_node_machine',

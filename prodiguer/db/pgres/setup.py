@@ -63,7 +63,6 @@ def _init_simulations():
 
         # ... hydrate new simulation;
         sim = Simulation()
-        sim.activity = simulation['associations']['activity']
         sim.compute_node = simulation['associations']['compute_node']
         sim.compute_node_login = simulation['associations']['compute_node_login']
         sim.compute_node_machine = simulation['associations']['compute_node_machine']
