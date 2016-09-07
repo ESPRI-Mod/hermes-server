@@ -67,6 +67,10 @@ def _unpack_content(ctx):
     ctx.job_uid = ctx.content['job_uid']
     ctx.simulation_uid = ctx.content['simulation_uid']
     ctx.supervision_id = int(ctx.content['supervision_id'])
+    ctx.job_period = retrieve_latest_job_period(ctx.simulation_uid)
+    ctx.job_period_counter = retrieve_latest_job_period_counter(ctx.simulation_uid)
+    ctx.simulation = retrieve_simulation(ctx.simulation_uid)    
+
 
 
 def _verify(ctx):
@@ -74,13 +78,11 @@ def _verify(ctx):
 
     """
     # Verify that most recent job period failure is within allowed limit.
-    ctx.job_period_counter = retrieve_latest_job_period_counter(ctx.simulation_uid)
-    ctx.job_period = retrieve_latest_job_period(ctx.simulation_uid)
     if ctx.job_period.period_id is None:
         logger.log_mq_warning("Job period empty")
     elif ctx.job_period.period_id == 1:
         logger.log_mq("Period number 1, supervision not needed")
-        #ctx.abort = True ###commente de le temps des tests
+        #ctx.abort = True ###commente de le temps des tests (Lola)
     elif ctx.job_period_counter[1] > config.apps.monitoring.maxJobPeriodFailures:
         logger.log_mq("Too many tries for the last job period, supervision abort")
         ctx.abort = True
@@ -90,7 +92,6 @@ def _authorize(ctx):
     """Verifies that the user has authorized supervision.
 
     """
-    ctx.simulation = retrieve_simulation(ctx.simulation_uid)
     try:
         ctx.user = superviseur.authorize(ctx.simulation.compute_node_login)
     except UserWarning as err:
