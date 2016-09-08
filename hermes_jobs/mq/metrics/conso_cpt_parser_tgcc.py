@@ -46,18 +46,18 @@ def _get_block(cpt, consumption, start, end):
     project, sub_project = _get_block_project_info(cpt, consumption, start)
 
     return {
-        'allocation': None,
-        'project': project,
-        'sub_project': sub_project,
         'machine': cpt[start].split()[5].lower(),
         'node': cpt[start].split()[6].lower(),
         'consumption_date': dt.datetime.strptime(
             "{} 23:59:59".format(cpt[start].split()[-1]), "%Y-%m-%d %H:%M:%S"),
         'consumption': [(l[0], float(l[-1])) for l in consumption],
-        'total': sum([float(l[-1]) for l in consumption], float()),
+        'project': project,
         'project_allocation': float(cpt[end - 3].split()[-1]),
         'project_end_date': dt.datetime.strptime(cpt[end].split()[-1], "%Y-%m-%d"),
-        'project_start_date': dt.datetime(_YEAR, 01, 01)
+        'project_start_date': dt.datetime(_YEAR, 01, 01),
+        'project_total': float(cpt[end - 4].split()[-1]),
+        'sub_project': sub_project,
+        'sub_total': sum([float(l[-1]) for l in consumption], float())
     }
 
 

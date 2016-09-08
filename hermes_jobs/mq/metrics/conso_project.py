@@ -167,15 +167,15 @@ def _persist(ctx):
         try:
             header = dao.persist_consumption(
                 block['allocation'].id,
-                block['sub_project'],
+                None,
                 block['consumption_date'],
-                block['total']
+                block['project_total']
                 )
         except IntegrityError:
             db.session.rollback()
             header = dao.retrieve_consumption(
                 block['allocation'].id,
-                block['sub_project'],
+                None,
                 block['consumption_date']
                 )
             if header is None:

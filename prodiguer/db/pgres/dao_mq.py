@@ -154,8 +154,8 @@ def _retrieve_message_email(email_id):
     return qry.first()
 
 
-@decorators.validate(validator.validate__retrieve_message_emails)
-def _retrieve_message_emails(arrival_date):
+@decorators.validate(validator.validate_retrieve_message_emails)
+def retrieve_message_emails(arrival_date):
     """Retrieves a collection of message email records from db.
 
     :param datetime arrival_date: Date from which emails will be retrieved.
