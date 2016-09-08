@@ -274,7 +274,7 @@ def retrieve_jobs_by_interval(interval_start, interval_end):
 
 @decorators.validate(validator.validate_retrieve_latest_job_periods)
 def retrieve_latest_job_period(uid):
-    """Retrieves details from db of the most recent job period entrie.
+    """Retrieves details of a simulation's most recent job period update.
 
     :param str uid: UID of simulation.
 
@@ -282,16 +282,18 @@ def retrieve_latest_job_period(uid):
     :rtype: list
 
     """
-    j = types.JobPeriod
+    jp = types.JobPeriod
 
-    qry = session.raw_query(j)
-    qry = qry.filter(j.simulation_uid == unicode(uid))
-    
-    return qry[-1]
+    qry = session.raw_query(jp)
+    qry = qry.filter(jp.simulation_uid == unicode(uid))
+    qry = qry.order_by(jp.period_date_begin.desc())
+
+    return qry.first()
 
 
+@decorators.validate(validator.validate_retrieve_latest_job_period_counter)
 def retrieve_latest_job_period_counter(uid):
-    """Retrieves the most recent job period entrie for a simulation.
+    """Retrieves identifier of a simulation's most recent job period update.
 
     :param str uid: UID of simulation.
 
@@ -299,14 +301,16 @@ def retrieve_latest_job_period_counter(uid):
     :rtype: list
 
     """
-    j = types.JobPeriod
+    jp = types.JobPeriod
 
-    qry = session.raw_query(j.period_id)
-    qry = qry.filter(j.simulation_uid == unicode(uid))
-    qry = qry.all()
-    qry.sort()
+    qry = session.raw_query(jp.period_id)
+    qry = qry.filter(jp.simulation_uid == unicode(uid))
+    qry = qry.order_by(jp.period_date_begin.desc())
+    rows = qry.all()
 
-    return qry[-1], qry.count(qry[-1])
+    print rows
+
+    return rows[0][0], rows.count(rows[0])
 
 
 @decorators.validate(validator.validate_retrieve_job_subset)

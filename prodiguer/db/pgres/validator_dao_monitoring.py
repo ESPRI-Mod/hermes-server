@@ -258,6 +258,13 @@ def validate_retrieve_latest_job_periods(uid):
     validation.validate_uid(uid, "Simulation uid")
 
 
+def validate_retrieve_latest_job_period_counter(uid):
+    """Function input validator: retrieve_latest_job_period_counter.
+
+    """
+    validation.validate_uid(uid, "Simulation uid")
+
+
 def validate_retrieve_job_subset(uid):
     """Function input validator: retrieve_job_subset.
 
