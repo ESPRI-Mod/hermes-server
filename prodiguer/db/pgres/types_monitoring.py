@@ -132,7 +132,7 @@ class Simulation(Entity):
 
         """
         hashid = "".join([
-            self.accounting_project,
+            self.accounting_project or "UNKNOWN",
             self.compute_node,
             self.compute_node_login,
             self.compute_node_machine,

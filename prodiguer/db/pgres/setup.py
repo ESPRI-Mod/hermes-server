@@ -63,6 +63,7 @@ def _init_simulations():
 
         # ... hydrate new simulation;
         sim = Simulation()
+        sim.accounting_project = u"cmip5"
         sim.compute_node = simulation['associations']['compute_node']
         sim.compute_node_login = simulation['associations']['compute_node_login']
         sim.compute_node_machine = simulation['associations']['compute_node_machine']
