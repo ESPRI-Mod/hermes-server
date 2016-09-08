@@ -101,19 +101,19 @@ def retrieve_allocation(
 @decorators.validate(validator.validate_persist_consumption)
 def persist_consumption(
     allocation_id,
-    sub_project,
     date,
     total_hrs,
     login=None,
+    sub_project=None,
     batch_date=None
     ):
     """Persists consumption into db.
 
     :param int allocation_id: ID of associated allocation.
-    :param str sub_project: Accounting sub-project, e.g. devcmip6.
     :param datetime date: Comsumption date.
     :param float total_hours: Consumption total hours.
     :param str login: User login.
+    :param str sub_project: Accounting sub-project, e.g. devcmip6.
     :param datetime batch_date: Date upon which associated consumption batch was persisted.
 
     :returns: A new consumption instance.
@@ -134,19 +134,12 @@ def persist_consumption(
     return session.insert(instance)
 
 
-@decorators.validate(validator.validate_retrieve_consumption)
-def retrieve_consumption(
-    allocation_id,
-    sub_project,
-    date,
-    login=None
-    ):
-    """Retrieves consumption from db.
+@decorators.validate(validator.validate_retrieve_consumption_header)
+def retrieve_consumption_header(allocation_id, date):
+    """Retrieves consumption header from db.
 
     :param int allocation_id: ID of associated allocation.
-    :param str sub_project: Accounting sub-project, e.g. devcmip6.
     :param datetime date: Comsumption date.
-    :param str login: User login.
 
     :returns: A consumption instance if found else None.
     :rtype: types.Consumption | None
@@ -157,9 +150,5 @@ def retrieve_consumption(
     qry = session.query(c)
     qry = qry.filter(c.allocation_id == allocation_id)
     qry = qry.filter(c.date == date)
-    if sub_project is not None:
-        qry = qry.filter(c.sub_project == unicode(sub_project))
-    if login is not None:
-        qry = qry.filter(c.login == unicode(login))
 
     return qry.first()

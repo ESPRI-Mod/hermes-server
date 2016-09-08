@@ -38,7 +38,8 @@ def get_tasks():
       _unpack_content,
       _set_blocks,
       _set_block_allocation,
-      _persist,
+      _set_block_header,
+      _persist_block_logins
       )
 
 
@@ -158,47 +159,40 @@ def _set_block_allocation(ctx):
             _on_block_allocation_inactive(ctx, block)
 
 
-def _persist(ctx):
-    """Persists information to db.
+def _set_block_header(ctx):
+    """Sets block header information to db.
 
     """
     for block in ctx.blocks:
-        # Persist project consumption.
+        block['header'] = None
         try:
-            header = dao.persist_consumption(
+            block['header'] = dao.persist_consumption(
                 block['allocation'].id,
-                None,
                 block['consumption_date'],
                 block['project_total']
                 )
         except IntegrityError:
             db.session.rollback()
-            header = dao.retrieve_consumption(
+            block['header'] = dao.retrieve_consumption_header(
                 block['allocation'].id,
-                None,
                 block['consumption_date']
                 )
-            if header is None:
-                msg = "CONSO: block already persisted :: {} :: {} :: {} :: {} :: {}".format(
-                    ctx.centre,
-                    block['project'],
-                    block['machine'],
-                    block['node'],
-                    block['consumption_date']
-                    )
-                logger.log_mq_warning(msg)
-                continue
 
-        # Persist login consumptions.
+
+def _persist_block_logins(ctx):
+    """Persists block login information to db.
+
+    """
+    for block in [b for b in ctx.blocks if b['header']]:
         for login, sub_project, total_hours in block['consumption']:
             try:
                 dao.persist_consumption(
                     block['allocation'].id,
-                    sub_project,
                     block['consumption_date'],
                     total_hours,
                     login=login,
-                    batch_date=header.row_create_date
+                    sub_project=sub_project,
+                    batch_date=block['header'].row_create_date
                     )
             except IntegrityError:
                 db.session.rollback()
