@@ -163,19 +163,3 @@ def retrieve_consumption(
         qry = qry.filter(c.login == unicode(login))
 
     return qry.first()
-
-
-@decorators.validate(validator.validate_persist_occupation_store)
-def persist_occupation_store(
-    date,
-    login,
-    name,
-    size_gb
-    ):
-    instance = types.OccupationStore()
-    instance.date = arrow.get(date).datetime
-    instance.login = unicode(login)
-    instance.name = unicode(name)
-    instance.size_gb = float(size_gb)
-
-    return session.insert(instance)

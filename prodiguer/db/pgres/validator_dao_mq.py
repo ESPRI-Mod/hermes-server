@@ -58,25 +58,11 @@ def validate_create_message(
 
 
 
-def validate_delete_message(uid):
-    """Function input validator: delete_message.
-
-    """
-    msg_validator.validate_message_id(uid)
-
-
 def validate_create_message_email(email_id):
     """Function input validator: create_message_email.
 
     """
     msg_validator.validate_email_id(email_id)
-
-
-def validate_is_duplicate(uid):
-    """Function input validator: is_duplicate.
-
-    """
-    msg_validator.validate_message_id(uid)
 
 
 def validate_retrieve_messages(uid=None):
@@ -92,13 +78,6 @@ def validate_has_messages(uid):
 
     """
     validation.validate_uid(uid, "Simulation uid")
-
-
-def validate_retrieve_message_email(email_id):
-    """Function input validator: retrieve_message_email.
-
-    """
-    msg_validator.validate_email_id(email_id)
 
 
 def validate_retrieve_message_emails(arrival_date):

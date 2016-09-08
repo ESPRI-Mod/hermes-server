@@ -11,8 +11,6 @@
 
 
 """
-from sqlalchemy import distinct
-
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
 from prodiguer.db.pgres import validator_dao_mq as validator
@@ -91,19 +89,6 @@ def create_message(
     return session.add(instance)
 
 
-@decorators.validate(validator.validate_delete_message)
-def delete_message(uid):
-    """Deletes a message from message table.
-
-    :param str uid: UID of message.
-
-    """
-    qry = session.query(types.Message)
-    qry = qry.filter(types.Message.uid == unicode(uid))
-
-    qry.delete()
-
-
 @decorators.validate(validator.validate_has_messages)
 def has_messages(uid):
     """Retrieves boolean indicating whether a simulation has at least one messages in the db.
@@ -154,8 +139,7 @@ def retrieve_messages(uid=None, exclude_excessive=True):
     return qry.all()
 
 
-@decorators.validate(validator.validate_retrieve_message_email)
-def retrieve_message_email(email_id):
+def _retrieve_message_email(email_id):
     """Retrieves a message email record from db.
 
     :param str email_id: Email identifier (assigned by SMTP server).
@@ -170,8 +154,8 @@ def retrieve_message_email(email_id):
     return qry.first()
 
 
-@decorators.validate(validator.validate_retrieve_message_emails)
-def retrieve_message_emails(arrival_date):
+@decorators.validate(validator.validate__retrieve_message_emails)
+def _retrieve_message_emails(arrival_date):
     """Retrieves a collection of message email records from db.
 
     :param datetime arrival_date: Date from which emails will be retrieved.
@@ -202,19 +186,6 @@ def create_message_email(email_id):
     return session.add(instance)
 
 
-@decorators.validate(validator.validate_is_duplicate)
-def is_duplicate(email_id):
-    """Returns true if a message with the same uid already exists in the db.
-
-    :param str email_id: Email identifier (assigned by SMTP server).
-
-    :returns: Flag indicating whether email is a duplicate.
-    :rtype: bool
-
-    """
-    return retrieve_message_email(email_id) is not None
-
-
 def _update_message_email(email_id, arrival_date, dispatch_date):
     """Updates a message email with simple statistical information.
 
@@ -228,7 +199,7 @@ def _update_message_email(email_id, arrival_date, dispatch_date):
         return
 
     # Escape if email db entry is not yet written.
-    email = retrieve_message_email(email_id)
+    email = _retrieve_message_email(email_id)
     if email is None:
         return
 
@@ -346,20 +317,6 @@ def retrieve_mail_identifiers_by_interval(interval_start, interval_end):
     return set([m[0] for m in qry.all()])
 
 
-def get_mail_simulation_uid(email_id):
-    """Returns a set of message correlation fields that correspond to an email.
-
-    """
-    m = types.Message
-    qry = session.raw_query(
-        m.correlation_id_1
-        )
-    qry = qry.filter(m.email_id == email_id)
-
-    return qry.first()
-
-
-
 def get_earliest_mail():
     """Retrieves earliest job in database.
 
@@ -371,7 +328,6 @@ def get_earliest_mail():
     qry = qry.order_by(m.arrival_date)
 
     return qry.first()
-
 
 
 def retrieve_mail_simulation_identifiers():

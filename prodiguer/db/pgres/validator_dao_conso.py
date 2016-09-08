@@ -99,17 +99,3 @@ def validate_retrieve_consumption(
     if login is not None:
         v.validate_unicode(login, 'Consumption login')
 
-
-def validate_persist_occupation_store(
-    date,
-    login,
-    name,
-    size_gb
-    ):
-    """Function input validator: persist_occupation_store.
-
-    """
-    v.validate_date(date, 'Occupation store date')
-    v.validate_unicode(login, 'Occupation store login')
-    v.validate_unicode(name, 'Occupation name')
-    v.validate_float(size_gb, 'Occupation size (GB)')
