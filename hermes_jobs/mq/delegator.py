@@ -31,9 +31,6 @@ _AGENTS = {
     '2000': monitoring.job_start,
     '2100': monitoring.job_end,
     '2999': monitoring.job_end,
-    '3000': monitoring.job_start,
-    '3100': monitoring.job_end,
-    '3999': monitoring.job_end,
     # ... metrics handlers
     '7000': metrics.environment,
     '7010': metrics.conso_project,

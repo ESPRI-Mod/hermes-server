@@ -147,7 +147,7 @@ def retrieve_messages(uid=None, exclude_excessive=True):
     if uid is not None:
         qry = qry.filter(m.correlation_id_1 == uid)
     if exclude_excessive:
-        for msg_type  in {u'7000', u'1900', u'2900', u'3900'}:
+        for msg_type  in {u'7000', u'1900', u'2900'}:
             qry = qry.filter(m.type_id != msg_type)
     qry = qry.order_by(m.timestamp)
 
@@ -262,10 +262,6 @@ def persist_message_email_stats(
     outgoing_2100=0,
     outgoing_2900=0,
     outgoing_2999=0,
-    outgoing_3000=0,
-    outgoing_3100=0,
-    outgoing_3900=0,
-    outgoing_3999=0,
     outgoing_7000=0,
     outgoing_7010=0,
     outgoing_7011=0,
@@ -291,10 +287,6 @@ def persist_message_email_stats(
     :param int outgoing_2100: Count of messages (type=2100) dispatched to RabbitMQ server.
     :param int outgoing_2900: Count of messages (type=2900) dispatched to RabbitMQ server.
     :param int outgoing_2999: Count of messages (type=2999) dispatched to RabbitMQ server.
-    :param int outgoing_3000: Count of messages (type=3000) dispatched to RabbitMQ server.
-    :param int outgoing_3100: Count of messages (type=3100) dispatched to RabbitMQ server.
-    :param int outgoing_3900: Count of messages (type=3900) dispatched to RabbitMQ server.
-    :param int outgoing_3999: Count of messages (type=3999) dispatched to RabbitMQ server.
     :param int outgoing_7000: Count of messages (type=7000) dispatched to RabbitMQ server.
     :param int outgoing_7010: Count of messages (type=7010) dispatched to RabbitMQ server.
     :param int outgoing_7011: Count of messages (type=7011) dispatched to RabbitMQ server.
@@ -318,7 +310,7 @@ def persist_message_email_stats(
     instance.outgoing_0000 = outgoing_0000
     instance.outgoing_0100 = outgoing_0100
     instance.outgoing_1000 = outgoing_1000
-    # instance.outgoing_1001 = outgoing_1001
+    instance.outgoing_1001 = outgoing_1001
     instance.outgoing_1100 = outgoing_1100
     instance.outgoing_1900 = outgoing_1900
     instance.outgoing_1999 = outgoing_1999
@@ -326,10 +318,6 @@ def persist_message_email_stats(
     instance.outgoing_2100 = outgoing_2100
     instance.outgoing_2900 = outgoing_2900
     instance.outgoing_2999 = outgoing_2999
-    instance.outgoing_3000 = outgoing_3000
-    instance.outgoing_3100 = outgoing_3100
-    instance.outgoing_3900 = outgoing_3900
-    instance.outgoing_3999 = outgoing_3999
     instance.outgoing_7000 = outgoing_7000
     instance.outgoing_7010 = outgoing_7010
     instance.outgoing_7011 = outgoing_7011

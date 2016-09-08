@@ -129,10 +129,6 @@ def validate_persist_message_email_stats(
     outgoing_2100=0,
     outgoing_2900=0,
     outgoing_2999=0,
-    outgoing_3000=0,
-    outgoing_3100=0,
-    outgoing_3900=0,
-    outgoing_3999=0,
     outgoing_7000=0,
     outgoing_7010=0,
     outgoing_7011=0,
@@ -163,10 +159,6 @@ def validate_persist_message_email_stats(
     validation.validate_int(outgoing_2100, "outgoing_2100")
     validation.validate_int(outgoing_2900, "outgoing_2900")
     validation.validate_int(outgoing_2999, "outgoing_2999")
-    validation.validate_int(outgoing_3000, "outgoing_3000")
-    validation.validate_int(outgoing_3100, "outgoing_3100")
-    validation.validate_int(outgoing_3900, "outgoing_3900")
-    validation.validate_int(outgoing_3999, "outgoing_3999")
     validation.validate_int(outgoing_7000, "outgoing_7000")
     validation.validate_int(outgoing_7010, "outgoing_7010")
     validation.validate_int(outgoing_7011, "outgoing_7011")

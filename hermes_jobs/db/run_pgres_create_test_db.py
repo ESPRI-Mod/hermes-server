@@ -68,8 +68,7 @@ PP_DATE = arrow.get("20100101", "YYYYMMDD").datetime
 # Set of job types.
 _JOB_TYPESET = [
     u"computing",
-    u"post-processing",
-    # "post-processing-from-checker",
+    u"post-processing"
 ]
 
 # Simulation configuration card.

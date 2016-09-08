@@ -20,8 +20,7 @@ from hermes_jobs.mq import utils
 # Set of message types that correspond to job errors.
 _ERROR_MESSAGE_TYPES = {
     mq.constants.MESSAGE_TYPE_1999,     # Compute job fatal error
-    mq.constants.MESSAGE_TYPE_2999,     # Post-processing job fatal error
-    mq.constants.MESSAGE_TYPE_3999      # Post-processing-from-checker job fatal error
+    mq.constants.MESSAGE_TYPE_2999      # Post-processing job fatal error
 }
 
 # Set of message types that require supervision.
