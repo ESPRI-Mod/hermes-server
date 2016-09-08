@@ -35,30 +35,18 @@ def yield_blocks(cpt):
 
     """
     for start, end in _get_indexes(cpt):
-        for consumption in _yield_consumptions(cpt, start, end):
-            yield _get_block(cpt, consumption, start, end)
-
-
-def _get_block(cpt, consumption, start, end):
-    """Returns CPT block.
-
-    """
-    project, sub_project = _get_block_project_info(cpt, consumption, start)
-
-    return {
-        'machine': cpt[start].split()[5].lower(),
-        'node': cpt[start].split()[6].lower(),
-        'consumption_date': dt.datetime.strptime(
-            "{} 23:59:59".format(cpt[start].split()[-1]), "%Y-%m-%d %H:%M:%S"),
-        'consumption': [(l[0], float(l[-1])) for l in consumption],
-        'project': project,
-        'project_allocation': float(cpt[end - 3].split()[-1]),
-        'project_end_date': dt.datetime.strptime(cpt[end].split()[-1], "%Y-%m-%d"),
-        'project_start_date': dt.datetime(_YEAR, 01, 01),
-        'project_total': float(cpt[end - 4].split()[-1]),
-        'sub_project': sub_project,
-        'sub_total': sum([float(l[-1]) for l in consumption], float())
-    }
+        yield {
+            'machine': cpt[start].split()[5].lower(),
+            'node': cpt[start].split()[6].lower(),
+            'consumption_date': dt.datetime.strptime(
+                "{} 23:59:59".format(cpt[start].split()[-1]), "%Y-%m-%d %H:%M:%S"),
+            'consumption': _get_consumption(cpt, start, end),
+            'project': _get_project(cpt, start),
+            'project_allocation': float(cpt[end - 3].split()[-1]),
+            'project_end_date': dt.datetime.strptime(cpt[end].split()[-1], "%Y-%m-%d"),
+            'project_start_date': dt.datetime(_YEAR, 01, 01),
+            'project_total': float(cpt[end - 4].split()[-1])
+        }
 
 
 def _get_indexes(cpt):
@@ -71,7 +59,7 @@ def _get_indexes(cpt):
     )
 
 
-def _yield_consumptions(cpt, start, end):
+def _get_consumption(cpt, start, end):
     """Yields consumption lines considered to be a block.
 
     """
@@ -81,42 +69,28 @@ def _yield_consumptions(cpt, start, end):
     # Exclude interim column headers.
     lines = [l for l in lines if not l[0].startswith("login")]
 
-    # Set sub-totals.
-    subtotals = []
-    for idx, line in enumerate(lines):
-        if line[0].startswith('subtotal'):
-            subtotals.append(idx)
+    # Exclude sub-totals.
+    lines = [l for l in lines if not l[0].startswith("subtotal")]
 
-    # If no subtotals then simply return as is.
-    if not subtotals:
-        yield lines
+    # Convert login totals to floats.
+    for line in lines:
+        line[-1] = float(line[-1])
 
-    # If only one subtotal then return all lines except last.
-    if len(subtotals) == 1:
-        yield lines[0:-1]
+    # Inject null sub-project (if appropriate).
+    lines = [l if len(l) == 3 else (l[0], None, l[1]) for l in lines]
 
-    # Otherwise return blocks grouped by sub-project.
-    for idx, subtotal in enumerate(subtotals):
-        if idx == 0:
-            yield lines[0:subtotal]
-        else:
-            yield lines[subtotals[idx - 1] + 1:subtotal]
+    return lines
 
 
-def _get_block_project_info(cpt, consumption, start):
-    """Returns block project / sub-project.
+def _get_project(cpt, start):
+    """Returns block project.
 
     """
     # Derive project from CPT block header.
     project = cpt[start].split()[3].lower()
 
-    # Derive sub-project:
-    # ... from first consumption line;
-    if len(consumption[0]) == 3:
-        return project, consumption[0][1]
-    # ... cmip6 related but not gencimp6;
-    elif project.endswith(_CMIP6) and project != _GENCMIP6:
-        return _GENCMIP6, project
-    # ... otherwise sub-project is None.
-    else:
-        return project, None
+    # Replace cmip6 related but not gencimp6 with gencimp6;
+    if project.endswith(_CMIP6) and project != _GENCMIP6:
+        return _GENCMIP6
+
+    return project

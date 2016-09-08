@@ -125,7 +125,7 @@ def persist_consumption(
     instance.date = arrow.get(date).datetime
     instance.total_hrs = float(total_hrs)
     if sub_project is not None:
-        instance.sub_project = sub_project
+        instance.sub_project = unicode(sub_project)
     if login is not None:
         instance.login = unicode(login)
     if batch_date is not None:

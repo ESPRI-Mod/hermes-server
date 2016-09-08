@@ -190,11 +190,11 @@ def _persist(ctx):
                 continue
 
         # Persist login consumptions.
-        for login, total_hours in block['consumption']:
+        for login, sub_project, total_hours in block['consumption']:
             try:
                 dao.persist_consumption(
                     block['allocation'].id,
-                    block['sub_project'],
+                    sub_project,
                     block['consumption_date'],
                     total_hours,
                     login=login,

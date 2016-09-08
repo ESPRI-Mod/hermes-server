@@ -37,10 +37,8 @@ def yield_blocks(cpt, project):
             'project_allocation': float(cpt[start + 3].split()[-1]),
             'project_end_date': dt.datetime(_YEAR, 12, 31, 23, 59, 59),
             'project_start_date': dt.datetime(_YEAR, 01, 01),
-            'project_total': float(cpt[end].split()[1]),
-            'sub_project': None,
-            'sub_total': float(cpt[end].split()[1])
-            }
+            'project_total': float(cpt[end].split()[1])
+        }
 
 
 def _get_indexes(cpt):
@@ -57,5 +55,5 @@ def _get_consumption(cpt, start, end):
     """Returns consumption lines considered to be a block.
 
     """
-    return [(l[-5], float() if l[-3] == '-' else float(l[-3]))
+    return [(l[-5], None, float() if l[-3] == '-' else float(l[-3]))
             for l in [l.split() for l in cpt[start + 7: end - 1]]]
