@@ -40,6 +40,7 @@ def get_tasks():
       _set_blocks,
       _set_block_allocation,
       _persist_block_total,
+      _persist_block_subtotals,
       _persist_block_logins
       )
 
@@ -185,7 +186,7 @@ def _persist_block_subtotals(ctx):
 
     """
     for block in [b for b in ctx.blocks if b['header']]:
-        for sub_project, sub_total in b['subtotals']:
+        for sub_project, sub_total in block['subtotals']:
             try:
                 dao.persist_consumption(
                     block['allocation'].id,
