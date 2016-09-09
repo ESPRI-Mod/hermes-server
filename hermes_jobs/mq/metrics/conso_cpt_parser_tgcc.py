@@ -41,7 +41,7 @@ def yield_blocks(cpt):
             'consumption_date': dt.datetime.strptime(
                 "{} 23:59:59".format(cpt[start].split()[-1]), "%Y-%m-%d %H:%M:%S"),
             'consumption': _get_consumption(cpt, start, end),
-            'project': _get_project(cpt, start),
+            'project': cpt[start].split()[3].lower(),
             'project_allocation': float(cpt[end - 3].split()[-1]),
             'project_end_date': dt.datetime.strptime(cpt[end].split()[-1], "%Y-%m-%d"),
             'project_start_date': dt.datetime(_YEAR, 01, 01),
@@ -80,17 +80,3 @@ def _get_consumption(cpt, start, end):
     lines = [l if len(l) == 3 else (l[0], None, l[1]) for l in lines]
 
     return lines
-
-
-def _get_project(cpt, start):
-    """Returns block project.
-
-    """
-    # Derive project from CPT block header.
-    project = cpt[start].split()[3].lower()
-
-    # Replace cmip6 related but not gencimp6 with gencimp6;
-    if project.endswith(_CMIP6) and project != _GENCMIP6:
-        return _GENCMIP6
-
-    return project
