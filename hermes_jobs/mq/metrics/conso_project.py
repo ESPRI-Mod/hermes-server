@@ -12,6 +12,7 @@
 
 """
 import base64
+import collections
 import datetime as dt
 
 from sqlalchemy.exc import IntegrityError
@@ -38,7 +39,7 @@ def get_tasks():
       _unpack_content,
       _set_blocks,
       _set_block_allocation,
-      _set_block_header,
+      _persist_block_total,
       _persist_block_logins
       )
 
@@ -159,8 +160,8 @@ def _set_block_allocation(ctx):
             _on_block_allocation_inactive(ctx, block)
 
 
-def _set_block_header(ctx):
-    """Sets block header information to db.
+def _persist_block_total(ctx):
+    """Persists block total information to db.
 
     """
     for block in ctx.blocks:
@@ -177,6 +178,24 @@ def _set_block_header(ctx):
                 block['allocation'].id,
                 block['consumption_date']
                 )
+
+
+def _persist_block_subtotals(ctx):
+    """Persists block sub-total information to db.
+
+    """
+    for block in [b for b in ctx.blocks if b['header']]:
+        for sub_project, sub_total in b['subtotals']:
+            try:
+                dao.persist_consumption(
+                    block['allocation'].id,
+                    block['consumption_date'],
+                    sub_total,
+                    sub_project=sub_project,
+                    batch_date=block['header'].row_create_date
+                    )
+            except IntegrityError:
+                db.session.rollback()
 
 
 def _persist_block_logins(ctx):

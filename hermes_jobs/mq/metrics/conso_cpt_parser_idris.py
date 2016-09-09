@@ -37,7 +37,8 @@ def yield_blocks(cpt, project):
             'project_allocation': float(cpt[start + 3].split()[-1]),
             'project_end_date': dt.datetime(_YEAR, 12, 31, 23, 59, 59),
             'project_start_date': dt.datetime(_YEAR, 01, 01),
-            'project_total': float(cpt[end].split()[1])
+            'project_total': float(cpt[end].split()[1]),
+            'subtotals': []
         }
 
 

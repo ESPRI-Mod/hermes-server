@@ -11,8 +11,8 @@
 
 
 """
+import collections
 import datetime as dt
-import os
 
 
 
@@ -35,17 +35,19 @@ def yield_blocks(cpt):
 
     """
     for start, end in _get_indexes(cpt):
+        consumption = _get_consumption(cpt, start, end)
         yield {
             'machine': cpt[start].split()[5].lower(),
             'node': cpt[start].split()[6].lower(),
             'consumption_date': dt.datetime.strptime(
                 "{} 23:59:59".format(cpt[start].split()[-1]), "%Y-%m-%d %H:%M:%S"),
-            'consumption': _get_consumption(cpt, start, end),
+            'consumption': consumption,
             'project': cpt[start].split()[3].lower(),
             'project_allocation': float(cpt[end - 3].split()[-1]),
             'project_end_date': dt.datetime.strptime(cpt[end].split()[-1], "%Y-%m-%d"),
             'project_start_date': dt.datetime(_YEAR, 01, 01),
-            'project_total': float(cpt[end - 4].split()[-1])
+            'project_total': float(cpt[end - 4].split()[-1]),
+            'subtotals': _get_subtotals(consumption)
         }
 
 
@@ -80,3 +82,15 @@ def _get_consumption(cpt, start, end):
     lines = [l if len(l) == 3 else (l[0], None, l[1]) for l in lines]
 
     return lines
+
+
+def _get_subtotals(consumption):
+    """Returns consumption by sub-project subtotals.
+
+    """
+    subtotals = collections.defaultdict(float)
+    for _, sub_project, total_hours in consumption:
+        if sub_project is not None:
+            subtotals[sub_project] += total_hours
+
+    return [(k, v) for k, v in subtotals.iteritems()]
