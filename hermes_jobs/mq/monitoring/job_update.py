@@ -12,7 +12,6 @@
 """
 from prodiguer import mq
 from prodiguer.db.pgres import dao_monitoring as dao
-from hermes_jobs.mq import utils as mq_utils
 
 
 

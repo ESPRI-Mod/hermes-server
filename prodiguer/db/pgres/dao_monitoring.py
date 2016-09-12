@@ -345,7 +345,7 @@ def retrieve_job_subset(uid):
         )
     qry = qry.filter(j.job_uid == unicode(uid))
 
-    return qry.one()
+    return qry.first()
 
 
 @decorators.validate(validator.validate_persist_environment_metric)
