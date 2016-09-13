@@ -53,14 +53,14 @@ def get_date():
     """Returns a random date for testing purposes.
 
     """
-    return datetime.datetime.now()
+    return datetime.datetime.utcnow()
 
 
 def get_datetime():
     """Returns a random datetime for testing purposes.
 
     """
-    return datetime.datetime.now()
+    return datetime.datetime.utcnow()
 
 
 def get_int(lower=0, upper=9999999):

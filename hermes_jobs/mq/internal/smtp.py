@@ -313,7 +313,8 @@ def _persist_stats(ctx):
         # N.B. override errors as email headers can be inconsistent.
         try:
             return func(ctx.email_body).datetime
-        except:
+        except Exception as err:
+            logger.log_mq_warning("Email date decoding error: {}.".format(err))
             return None
 
 

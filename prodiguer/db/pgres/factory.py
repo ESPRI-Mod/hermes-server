@@ -36,7 +36,7 @@ _scalar_factories = {
     unicode: lambda: unicode(uuid.uuid4())[:15],
     str: lambda: str(uuid.uuid4())[:15],
     bool: lambda: bool(random.randint(0, 1)),
-    datetime.datetime: lambda: datetime.datetime.now(),
+    datetime.datetime: lambda: datetime.datetime.utcnow(),
     float: lambda: random.random(),
     long: lambda: long(random.randint(0, 9999999)),
     uuid.UUID : lambda: uuid.uuid4()

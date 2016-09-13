@@ -76,7 +76,7 @@ def _init_intervals(ctx):
     start = datetime.datetime(start.year, start.month, start.day)
 
     # End yesterday.
-    end = datetime.datetime.now() - datetime.timedelta(days=1)
+    end = datetime.datetime.utcnow() - datetime.timedelta(days=1)
     end = datetime.datetime(end.year, end.month, end.day)
 
     # Set hourly timeslices.
@@ -134,7 +134,7 @@ def _get_report_header(ctx):
 
     header = []
     header.append("Report Title:     Summary of incoming mails per hour per accounting project\n")
-    header.append("Report Date:      {}\n".format(datetime.datetime.now().date()))
+    header.append("Report Date:      {}\n".format(datetime.datetime.utcnow().date()))
     header.append("Report Interval:  {} - {} ({} days)\n".format(start.date(), end.date(), (end - start).days))
     header.append("\n")
     header.append("{:>15}{:>10}{:>10}{:>10}\n".format("Acc. Project", "Min", "Max", "Avg"))

@@ -241,6 +241,8 @@ def persist_message_email_stats(
     """Updates a message email with statistical information.
 
     :param str email_id: Email identifier (assigned by SMTP server).
+    :param datetime arrival_date: Date of email arrival.
+    :param datetime dispatch_date: Date of email dispatch.
     :param int incoming: Count of incoming messages.
     :param int errors_decoding_base64: Count of base64 decoding errors.
     :param int errors_decoding_json: Count of json decoding errors.

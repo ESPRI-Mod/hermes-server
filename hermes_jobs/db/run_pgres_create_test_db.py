@@ -57,7 +57,7 @@ _ACCOUNTING_PROJECTS = [
 ]
 
 # The global now.
-_NOW = datetime.datetime.now()
+_NOW = datetime.datetime.utcnow()
 
 # Set of output end/start data to be used.
 _OUTPUT_DATES = [datetime.datetime(1880 + (i * 10), 1, 1) for i in range(15)]
@@ -218,7 +218,7 @@ def _main():
 
     """
     # Initialize.
-    then = arrow.now()
+    then = arrow.utcnow()
     cv.cache.load()
 
     # Create N simulations per day for the last M days.
@@ -234,7 +234,7 @@ def _main():
 
     # Finalize.
     msg = "created {} simulations in: {}"
-    msg = msg.format(_QUOTA_DAYS * _QUOTA_SIMS_PER_DAY, arrow.now() - then)
+    msg = msg.format(_QUOTA_DAYS * _QUOTA_SIMS_PER_DAY, arrow.utcnow() - then)
     logger.log_db(msg)
 
 if __name__ == '__main__':

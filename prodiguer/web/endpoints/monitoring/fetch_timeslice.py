@@ -41,19 +41,19 @@ class FetchTimeSliceRequestHandler(HermesHTTPRequestHandler):
             """
             timeslice = self.get_argument(_PARAM_TIMESLICE)
             if timeslice == '1W':
-                self.start_date = arrow.now() - datetime.timedelta(days=7)
+                self.start_date = arrow.utcnow() - datetime.timedelta(days=7)
             elif timeslice == '2W':
-                self.start_date = arrow.now() - datetime.timedelta(days=14)
+                self.start_date = arrow.utcnow() - datetime.timedelta(days=14)
             elif timeslice == '1M':
-                self.start_date = arrow.now() - datetime.timedelta(days=31)
+                self.start_date = arrow.utcnow() - datetime.timedelta(days=31)
             elif timeslice == '2M':
-                self.start_date = arrow.now() - datetime.timedelta(days=61)
+                self.start_date = arrow.utcnow() - datetime.timedelta(days=61)
             elif timeslice == '3M':
-                self.start_date = arrow.now() - datetime.timedelta(days=92)
+                self.start_date = arrow.utcnow() - datetime.timedelta(days=92)
             elif timeslice == '6M':
-                self.start_date = arrow.now() - datetime.timedelta(days=183)
+                self.start_date = arrow.utcnow() - datetime.timedelta(days=183)
             elif timeslice == '12M':
-                self.start_date = arrow.now() - datetime.timedelta(days=365)
+                self.start_date = arrow.utcnow() - datetime.timedelta(days=365)
             elif timeslice == '*':
                 self.start_date = None
             if self.start_date is not None:

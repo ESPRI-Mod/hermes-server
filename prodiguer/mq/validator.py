@@ -16,7 +16,7 @@ import uuid
 import pika
 
 from prodiguer.mq import constants
-from prodiguer.mq import timestamp as Timestamp
+from prodiguer.mq.timestamp import create as create_timestamp
 
 
 
@@ -227,7 +227,7 @@ def validate_timestamp_info(timestamp, precision, raw):
         raise TypeError('Timestamp precision is unknown.')
     if raw:
         try:
-            Timestamp.create(precision, raw)
+            create_timestamp(precision, raw)
         except (ValueError, IndexError):
             raise TypeError('Raw timestamp is unparseable.')
 

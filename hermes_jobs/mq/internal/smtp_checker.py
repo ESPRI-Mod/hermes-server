@@ -77,7 +77,7 @@ def _check_email_latency():
     return
 
     # Retrieve all emails that have been queued for processing since last check.
-    arrival_date = datetime.datetime.now() - datetime.timedelta(seconds=_RETRY_DELAY)
+    arrival_date = datetime.datetime.utcnow() - datetime.timedelta(seconds=_RETRY_DELAY)
     with db.session.create():
         emails = db.dao_mq.retrieve_message_emails(arrival_date)
     if not emails:

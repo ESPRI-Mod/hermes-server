@@ -117,6 +117,6 @@ class EventRequestHandler(tornado.web.RequestHandler):
             if data is not None:
                 data.update({
                     'event_type' : sc.to_camel_case(event.type),
-                    'event_timestamp': datetime.datetime.now(),
+                    'event_timestamp': datetime.datetime.utcnow(),
                 })
                 websockets.on_write(_WS_KEY, data, _ws_client_filter)

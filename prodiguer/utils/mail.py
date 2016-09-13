@@ -43,6 +43,10 @@ _CHUNK_SIZE = 50
 
 # Email date format.
 _DATE_FORMAT = "ddd, DD MMM YYYY HH:mm:ss ZZ"
+_DATE_FORMATS = [
+    "ddd, D MMM YYYY HH:mm:ss ZZ",
+    "ddd, DD MMM YYYY HH:mm:ss ZZ"
+]
 
 
 def connect():
@@ -257,7 +261,14 @@ def get_email_arrival_date(body):
             y = val.split("\n")[1].strip()
             val = "{} {}".format(x, y)
 
-        return arrow.get(val, _DATE_FORMAT)
+        for date_format in _DATE_FORMATS:
+            try:
+                return arrow.get(val, date_format)
+            except Exception as err:
+                if date_format == _DATE_FORMATS[-1]:
+                    raise err
+                pass
+
 
     return _get_date(_get_header())
 
@@ -271,7 +282,16 @@ def get_email_dispatch_date(body):
     :rtype: arrow.date
 
     """
-    return arrow.get(body['Date'], _DATE_FORMAT)
+    for date_format in _DATE_FORMATS:
+        try:
+            return arrow.get(body['Date'], date_format)
+        except Exception as err:
+            if date_format == _DATE_FORMATS[-1]:
+                raise err
+            pass
+
+
+    # return arrow.get(body['Date'], _DATE_FORMAT)
 
 
 def send_email(

@@ -16,7 +16,6 @@ import csv
 import datetime
 import json
 import re
-import time
 import types
 import uuid
 
@@ -431,28 +430,6 @@ def dict_keys_to_underscore_case(d):
 
     """
     return dict_keys(d, str_to_underscore_case)
-
-
-def now_to_timestamp(offset=0):
-    """Returns a timestamp from datatime.datetime.now().
-
-    """
-    now = time.time()
-    localtime = time.localtime(now)
-    milliseconds = '%03d' % int((now - int(now)) * 1000)
-    ts = time.strftime('%Y%m%d%H%M%S', localtime) + milliseconds
-
-    return int(ts) + offset
-
-
-def date_to_timestamp(date):
-    """Returns a timestamp from passed date.
-
-    """
-    if not isinstance(date, datetime.datetime):
-        date = date_parser.parse(date)
-
-    return time.mktime(date.timetuple()) + date.microsecond / 1E6
 
 
 def csv_file_to_dict(fp):

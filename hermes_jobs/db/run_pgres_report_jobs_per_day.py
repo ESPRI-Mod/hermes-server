@@ -56,7 +56,7 @@ def _get_intervals():
     start = earliest_job.execution_start_date.date()
     start = datetime.datetime(start.year, start.month, start.day)
 
-    end = datetime.datetime.now() - datetime.timedelta(days=1)
+    end = datetime.datetime.utcnow() - datetime.timedelta(days=1)
     end = datetime.datetime(end.year, end.month, end.day)
 
     return [(start + datetime.timedelta(days=0 + i),
@@ -78,7 +78,7 @@ def _get_report_header(start, end):
     """
     header = []
     header.append("Report Title:     Summary of simulation jobs per day per accounting project\n")
-    header.append("Report Date:      {}\n".format(datetime.datetime.now().date()))
+    header.append("Report Date:      {}\n".format(datetime.datetime.utcnow().date()))
     header.append("Report Interval:  {} - {} ({} days)\n".format(start.date(), end.date(), (end - start).days))
     header.append("\n")
     header.append("{:>15}{:>10}{:>10}{:>10}\n".format("Acc. Project", "Min", "Max", "Avg"))

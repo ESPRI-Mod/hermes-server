@@ -275,11 +275,12 @@ def _enqueue_late_job_detection(ctx):
 
     """
     # Calculate expected job completion moment.
+    # ... N.B. ctx.msg.timestamp is UTC
     expected = arrow.get(ctx.msg.timestamp) + \
                datetime.timedelta(seconds=int(ctx.job_warning_delay))
 
     # Calculate time delta until system must check if job is late or not.
-    delta_in_s = int((expected - arrow.get()).total_seconds())
+    delta_in_s = int((expected - arrow.utcnow()).total_seconds())
     if delta_in_s < 0:
         delta_in_s = 600    # 10 minutes for historical messages
     else:

@@ -316,9 +316,9 @@ def _get_metric(target, timeslice, driver):
     """
     timeslice_delta = _TIMESLICE_DELTAS[timeslice]
     data_factory = _DATA_FACTORIES[driver]
-    then = arrow.now()
+    then = arrow.utcnow()
     data = data_factory(timeslice_delta, target)
-    time = arrow.now() - then
+    time = arrow.utcnow() - then
 
     return target, timeslice, driver, len(data), time
 
