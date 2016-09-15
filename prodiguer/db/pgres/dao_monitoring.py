@@ -308,9 +308,10 @@ def retrieve_latest_job_period_counter(uid):
     qry = qry.order_by(jp.period_date_begin.desc())
     rows = qry.all()
 
-    print rows
-
-    return rows[0][0], rows.count(rows[0])
+    if not rows:
+        return 0, 0
+    else :
+        return rows[0][0], rows.count(rows[0])
 
 
 @decorators.validate(validator.validate_retrieve_job_subset)
