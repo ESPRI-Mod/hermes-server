@@ -20,7 +20,7 @@ def _raise_value_error(val, var, var_type):
     """Raises a generic value error.
 
     """
-    raise ValueError('{0} [{1}] is an invalid {2}'.format(var, val, var_type))
+    raise ValueError('{} [{}] is an invalid {}'.format(var, val, var_type))
 
 
 def validate_entity_type(etype):
@@ -32,7 +32,7 @@ def validate_entity_type(etype):
     from prodiguer.db.pgres.entity import Entity
 
     if not issubclass(etype, Entity):
-        raise TypeError('DB entity type is unknown :: {0}'.format(etype))
+        raise TypeError('DB entity type is unknown :: {}'.format(etype))
 
 
 def validate_bool(val, var):
@@ -40,7 +40,7 @@ def validate_bool(val, var):
 
     """
     if val is None:
-        raise ValueError('{0} is undefined bool'.format(var))
+        raise ValueError('{} is undefined bool'.format(var))
 
     try:
         bool(val)
@@ -53,7 +53,7 @@ def validate_int(val, var):
 
     """
     if val is None:
-        raise ValueError('{0} is undefined'.format(var))
+        raise ValueError('{} is undefined'.format(var))
 
     try:
         int(val)
@@ -66,7 +66,7 @@ def validate_float(val, var):
 
     """
     if val is None:
-        raise ValueError('{0} is undefined'.format(var))
+        raise ValueError('{} is undefined'.format(var))
 
     try:
         float(val)
@@ -79,7 +79,7 @@ def validate_date(val, var, date_format=None):
 
     """
     if val is None:
-        raise ValueError('{0} is undefined date'.format(var))
+        raise ValueError('{} is undefined date'.format(var))
 
     try:
         if date_format is not None:
@@ -95,7 +95,7 @@ def validate_str(val, var):
 
     """
     if val is None:
-        raise ValueError('{0} is undefined string'.format(var))
+        raise ValueError('{} is undefined string'.format(var))
 
     try:
         val = str(val)
@@ -103,7 +103,7 @@ def validate_str(val, var):
         _raise_value_error(val, var, str)
 
     if not len(val):
-        raise ValueError('{0} is empty string'.format(var))
+        raise ValueError('{} is empty string'.format(var))
 
 
 def validate_uid(val, var):
@@ -122,7 +122,7 @@ def validate_unicode(val, var):
 
     """
     if val is None:
-        raise ValueError('{0} is undefined unicode'.format(var))
+        raise ValueError('{} is undefined unicode'.format(var))
 
     try:
         val = unicode(val)
@@ -130,7 +130,7 @@ def validate_unicode(val, var):
         _raise_value_error(val, var, unicode)
 
     if not len(val):
-        raise ValueError('{0} is empty unicode'.format(var))
+        raise ValueError('{} is empty unicode'.format(var))
 
 
 def validate_iterable(val, var):
@@ -138,9 +138,38 @@ def validate_iterable(val, var):
 
     """
     if val is None:
-        raise ValueError('{0} is undefined iterable'.format(var))
+        raise ValueError('{} is undefined iterable'.format(var))
 
     try:
         iter(val)
     except TypeError:
         _raise_value_error(val, var, iter)
+
+
+def validate_mbr(item, collection, var, convertor=None):
+    """Validates a collection member.
+
+    """
+    if convertor:
+        try:
+            item = convertor(item)
+        except ValueError:
+            raise ValueError('{} is undefined member of {}'.format(item, var))
+    if item not in collection:
+        raise ValueError('{} is undefined member of {}'.format(item, var))
+
+
+def validate_vrs(version, var):
+    """Validates a version identifier.
+
+    :param str version: A version identifier.
+
+    """
+    try:
+        elements = version.split('.')
+    except AttributeError:
+        raise ValueError("{} must consist of '.' delimited integers : {}".format(var, version))
+    try:
+        [int(v) for v in elements]
+    except ValueError:
+        raise ValueError("{} must consist of '.' delimited integers : {}".format(var, version))

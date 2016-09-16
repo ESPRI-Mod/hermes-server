@@ -61,6 +61,7 @@ _AGENT_HANDLERS = {
     'debug-8000': supervision.detect_late_job,
     'debug-8100': supervision.format_script,
     'debug-8200': supervision.dispatch_script,
+    'debug-8888': monitoring.simulation_delete,
     'debug-alert': internal.alert,
     'debug-cv': internal.cv,
     'debug-fe': internal.fe,

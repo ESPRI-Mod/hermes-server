@@ -13,10 +13,15 @@
 import base64
 import json
 
+import pika
+
 from prodiguer.mq import constants
-from prodiguer.mq import validator
 from prodiguer.utils import config
 from prodiguer.utils import convert
+from prodiguer.utils.validation import validate_int
+from prodiguer.utils.validation import validate_mbr
+from prodiguer.utils.validation import validate_uid
+from prodiguer.utils.validation import validate_vrs
 
 
 
@@ -30,7 +35,7 @@ class Message(object):
         :param bool decode: Flag indicating whether message payload is to be decoded.
 
         """
-        validator.validate_ampq_basic_properties(props)
+        _validate_basic_properties(props)
 
         self.abort = False
         self.content = content
@@ -84,3 +89,38 @@ class Message(object):
         if val and val == "null":
             return None
         return val
+
+
+def _validate_basic_properties(props):
+    """Validates AMPQ basic properties associated with message being processed.
+
+    """
+    # Validate props are AMPQ BasicProperties.
+    if not isinstance(props, pika.BasicProperties):
+        raise ValueError("AMPQ message basic properties is invalid.")
+
+    # Validate unsupported properties.
+    if props.cluster_id:
+        raise ValueError("Unsupported AMPQ basic proeprty: cluster_id")
+    if props.expiration:
+        raise ValueError("Unsupported AMPQ basic proeprty: expiration")
+
+    # Validate required properties.
+    validate_mbr(props.app_id, constants.APPS, 'message application')
+    if props.correlation_id:
+        validate_uid(props.correlation_id, 'correlation_id')
+    validate_mbr(props.content_encoding, constants.CONTENT_ENCODINGS, 'content encoding')
+    validate_mbr(props.content_type, constants.CONTENT_TYPES, 'content type')
+    validate_mbr(props.delivery_mode, constants.AMPQ_DELIVERY_MODES, 'delivery mode', int)
+    validate_uid(props.message_id, 'message_id')
+    validate_int(props.timestamp, 'message timestamp')
+    validate_mbr(props.type, constants.TYPES, 'message type')
+    validate_mbr(props.user_id, constants.USERS, 'message user')
+
+    # Validate headers.
+    for header in {'producer_id', 'producer_version'}:
+        if header not in props.headers:
+            msg = "[{}] is a required header field.".format(header)
+            raise ValueError(msg)
+    validate_mbr(props.headers['producer_id'], constants.PRODUCERS, 'producer id')
+    validate_vrs(props.headers['producer_version'], 'producer version')

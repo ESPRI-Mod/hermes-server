@@ -25,7 +25,6 @@ def convert(instance):
     return {c.name: getattr(instance, c.name) for c in sa.inspect(instance).mapper.columns}
 
 
-
 def as_datetime_string(col):
     """Converts a column result into a datetime string.
 
@@ -35,7 +34,7 @@ def as_datetime_string(col):
     :rtype: sqlalchemy.Column
 
     """
-    return sa.func.to_char(col, "YYYY-MM-DD HH24:MI:ss.US")
+    return sa.func.to_char(col, 'YYYY-MM-DD"T"HH24:MI:ss.US"Z"')
 
 
 def as_date_string(col):
@@ -47,4 +46,4 @@ def as_date_string(col):
     :rtype: sqlalchemy.Column
 
     """
-    return sa.func.to_char(col, "YYYY-MM-DD")
+    return sa.func.to_char(col, 'YYYY-MM-DD"T"00:00:00.000000"Z"')

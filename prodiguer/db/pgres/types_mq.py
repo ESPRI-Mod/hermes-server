@@ -52,8 +52,7 @@ class Message(Entity):
     correlation_id_2 = Column(Unicode(63), nullable=True)
     correlation_id_3 = Column(Unicode(63), nullable=True)
     timestamp = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
-    timestamp_raw = Column(Unicode(63), nullable=True)
-    timestamp_precision = Column(Unicode(7), nullable=False, default=u"ms")
+    timestamp_raw = Column(Unicode(63), nullable=False)
     content_encoding = Column(Unicode(63), nullable=True, default=u"utf-8")
     content_type = Column(Unicode(63),
                           nullable=True,
@@ -72,10 +71,10 @@ class MessageEmail(Entity):
     )
 
     # Attributes.
-    uid = Column(BigInteger, nullable=False, unique=True)
+    email_id = Column(BigInteger, nullable=False, unique=True)
     arrival_date = Column(DateTime)
+    arrival_latency = Column(Integer)
     dispatch_date = Column(DateTime)
-    dispatch_latency = Column(Integer)
 
 
 class MessageEmailStats(Entity):
@@ -91,8 +90,8 @@ class MessageEmailStats(Entity):
     # Attributes.
     email_id = Column(BigInteger, nullable=False)
     arrival_date = Column(DateTime)
+    arrival_latency = Column(Integer)
     dispatch_date = Column(DateTime)
-    dispatch_latency = Column(Integer)
     incoming = Column(Integer)
     errors_decoding_base64 = Column(Integer)
     errors_decoding_json = Column(Integer)
@@ -114,3 +113,4 @@ class MessageEmailStats(Entity):
     outgoing_7010 = Column(Integer)
     outgoing_7011 = Column(Integer)
     outgoing_7100 = Column(Integer)
+    outgoing_8888 = Column(Integer)

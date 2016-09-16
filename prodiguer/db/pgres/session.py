@@ -93,7 +93,9 @@ def _start(connection=None):
     # Set engine.
     if _sa_connection != connection:
         _sa_connection = connection
-        sa_engine = create_engine(connection, echo=False)
+        sa_engine = create_engine(connection,
+                                  echo=False,
+                                  connect_args={"options": "-c timezone=utc"})
         logger.log_db("db engine instantiated: {}".format(id(sa_engine)))
 
     # Set session.

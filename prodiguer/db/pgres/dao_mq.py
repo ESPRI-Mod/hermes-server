@@ -11,6 +11,8 @@
 
 
 """
+import datetime as dt
+
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
 from prodiguer.db.pgres import validator_dao_mq as validator
@@ -19,8 +21,8 @@ from prodiguer.utils import decorators
 
 
 
-@decorators.validate(validator.validate_create_message)
-def create_message(
+@decorators.validate(validator.validate_persist_message)
+def persist_message(
     uid,
     user_id,
     app_id,
@@ -34,7 +36,6 @@ def create_message(
     correlation_id_2=None,
     correlation_id_3=None,
     timestamp=None,
-    timestamp_precision=None,
     timestamp_raw=None,
     email_id=None
     ):
@@ -53,7 +54,6 @@ def create_message(
     :param str correlation_id_2: Message correlation identifier.
     :param str correlation_id_3: Message correlation identifier.
     :param datetime.datetime timestamp: Message timestamp.
-    :param str timestamp_precision: Message timestamp precision (ns | ms).
     :param str timestamp_raw: Message raw timestamp.
     :param int email_id: ID of email in which the message was dispatched.
 
@@ -80,9 +80,7 @@ def create_message(
     if email_id:
         instance.email_id = int(email_id)
     if timestamp is not None:
-        instance.timestamp = timestamp
-    if timestamp_precision is not None:
-        instance.timestamp_precision = unicode(timestamp_precision)
+        instance.timestamp = timestamp.to('utc').datetime
     if timestamp_raw is not None:
         instance.timestamp_raw = unicode(timestamp_raw)
 
@@ -149,7 +147,7 @@ def _retrieve_message_email(email_id):
 
     """
     qry = session.query(types.MessageEmail)
-    qry = qry.filter(types.MessageEmail.uid == int(email_id))
+    qry = qry.filter(types.MessageEmail.email_id == int(email_id))
 
     return qry.first()
 
@@ -170,8 +168,8 @@ def retrieve_message_emails(arrival_date):
     return qry.all()
 
 
-@decorators.validate(validator.validate_create_message_email)
-def create_message_email(email_id):
+@decorators.validate(validator.validate_persist_message_email)
+def persist_message_email(email_id):
     """Creates a new message email record in db.
 
     :param str email_id: Email identifier (assigned by SMTP server).
@@ -181,7 +179,7 @@ def create_message_email(email_id):
 
     """
     instance = types.MessageEmail()
-    instance.uid = email_id
+    instance.email_id = email_id
 
     return session.add(instance)
 
@@ -206,7 +204,7 @@ def _update_message_email(email_id, arrival_date, dispatch_date):
     email.arrival_date = arrival_date
     email.dispatch_date = dispatch_date
     if arrival_date is not None and dispatch_date is not None:
-        email.dispatch_latency = (arrival_date - dispatch_date).total_seconds()
+        email.arrival_latency = (arrival_date - dispatch_date).total_seconds()
 
     session.update(email)
 
@@ -236,7 +234,8 @@ def persist_message_email_stats(
     outgoing_7000=0,
     outgoing_7010=0,
     outgoing_7011=0,
-    outgoing_7100=0
+    outgoing_7100=0,
+    outgoing_8888=0,
     ):
     """Updates a message email with statistical information.
 
@@ -264,6 +263,7 @@ def persist_message_email_stats(
     :param int outgoing_7010: Count of messages (type=7010) dispatched to RabbitMQ server.
     :param int outgoing_7011: Count of messages (type=7011) dispatched to RabbitMQ server.
     :param int outgoing_7100: Count of messages (type=7100) dispatched to RabbitMQ server.
+    :param int outgoing_8888: Count of messages (type=8888) dispatched to RabbitMQ server.
 
     """
     _update_message_email(email_id, arrival_date, dispatch_date)
@@ -273,7 +273,7 @@ def persist_message_email_stats(
     instance.arrival_date = arrival_date
     instance.dispatch_date = dispatch_date
     if arrival_date is not None and dispatch_date is not None:
-        instance.dispatch_latency = (arrival_date - dispatch_date).total_seconds()
+        instance.arrival_latency = (arrival_date - dispatch_date).total_seconds()
     instance.incoming = incoming
     instance.errors_decoding_base64 = errors_decoding_base64
     instance.errors_decoding_json = errors_decoding_json
@@ -295,6 +295,7 @@ def persist_message_email_stats(
     instance.outgoing_7010 = outgoing_7010
     instance.outgoing_7011 = outgoing_7011
     instance.outgoing_7100 = outgoing_7100
+    instance.outgoing_8888 = outgoing_8888
 
     return session.add(instance)
 

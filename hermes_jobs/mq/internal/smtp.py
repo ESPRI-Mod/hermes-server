@@ -212,8 +212,8 @@ def _set_msg_ampq(ctx):
         """Returns an AMPQ basic properties instance, i.e. message header.
 
         """
-        # Decode nano-second precise timestamp.
-        timestamp = mq.Timestamp.from_ns(data['msgTimestamp'])
+        # Decode nano-second precise message timestamp.
+        _, ts_utc, ts_int, _ = mq.get_timestamps(data['msgTimestamp'])
 
         return mq.utils.create_ampq_message_properties(
             user_id=mq.constants.USER_HERMES,
@@ -221,10 +221,10 @@ def _set_msg_ampq(ctx):
             producer_version=data['msgProducerVersion'],
             message_id=data['msgUID'],
             message_type=data['msgCode'],
-            timestamp=timestamp.as_ms_int,
+            timestamp=ts_int,
             headers={
-                'timestamp': unicode(timestamp.as_ns_raw),
-                'timestamp_precision': u'ns',
+                'timestamp': unicode(ts_utc.isoformat()),
+                'timestamp_raw': unicode(data['msgTimestamp']),
                 'correlation_id_1': data.get('simuid'),
                 'correlation_id_2': data.get('jobuid'),
                 'email_id': ctx.email_uid
@@ -236,17 +236,14 @@ def _set_msg_ampq(ctx):
 
         """
         # Strip out non-platform platform attributes.
-        return { k: data[k] for k in data.keys() if not k.startswith("msg") }
+        return {k: data[k] for k in data.keys() if not k.startswith("msg")}
 
 
     def _encode(data):
-        """Encodes data as an ampq message.
+        """Encodes message data as an ampq message.
 
         """
-        try:
-            return mq.Message(_get_ampq_props(data), _get_ampq_payload(data))
-        except Exception as err:
-            return data, err
+        return mq.Message(_get_ampq_props(data), _get_ampq_payload(data))
 
 
     for msg in [_encode(m) for m in ctx.msg_dict]:
@@ -349,5 +346,6 @@ def _persist_stats(ctx):
         outgoing_7000=_get_outgoing_message_count(mq.constants.MESSAGE_TYPE_7000),
         outgoing_7010=_get_outgoing_message_count(mq.constants.MESSAGE_TYPE_7010),
         outgoing_7011=_get_outgoing_message_count(mq.constants.MESSAGE_TYPE_7011),
-        outgoing_7100=_get_outgoing_message_count(mq.constants.MESSAGE_TYPE_7100)
+        outgoing_7100=_get_outgoing_message_count(mq.constants.MESSAGE_TYPE_7100),
+        outgoing_8888=_get_outgoing_message_count(mq.constants.MESSAGE_TYPE_8888)
         )

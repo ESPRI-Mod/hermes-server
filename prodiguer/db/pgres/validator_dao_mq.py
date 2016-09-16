@@ -11,12 +11,17 @@
 
 
 """
-from prodiguer.mq import validator as msg_validator
-from prodiguer.utils import validation
+from prodiguer.mq import constants
+from prodiguer.utils.validation import validate_date
+from prodiguer.utils.validation import validate_int
+from prodiguer.utils.validation import validate_mbr
+from prodiguer.utils.validation import validate_str
+from prodiguer.utils.validation import validate_uid
+from prodiguer.utils.validation import validate_vrs
 
 
 
-def validate_create_message(
+def validate_persist_message(
     uid,
     user_id,
     app_id,
@@ -30,39 +35,38 @@ def validate_create_message(
     correlation_id_2,
     correlation_id_3,
     timestamp,
-    timestamp_precision,
     timestamp_raw,
     email_id
     ):
-    """Function input validator: create_message.
+    """Function input validator: persist_message.
 
     """
-    msg_validator.validate_app_id(app_id)
-    msg_validator.validate_content(content)
-    msg_validator.validate_content_encoding(content_encoding)
-    msg_validator.validate_content_type(content_type)
+    validate_mbr(app_id, constants.APPS, 'message application')
+    validate_str(content, "content")
+    validate_mbr(content_encoding, constants.CONTENT_ENCODINGS, 'content encoding')
+    validate_mbr(content_type, constants.CONTENT_TYPES, 'content type')
     if correlation_id_1:
-        msg_validator.validate_correlation_id(correlation_id_1)
+        validate_uid(correlation_id_1, "correlation_id_1")
     if correlation_id_2:
-        msg_validator.validate_correlation_id(correlation_id_2)
+        validate_uid(correlation_id_2, "correlation_id_2")
     if correlation_id_3:
-        msg_validator.validate_correlation_id(correlation_id_3)
-    msg_validator.validate_message_id(uid)
-    msg_validator.validate_producer_id(producer_id)
-    msg_validator.validate_producer_version(producer_version)
-    msg_validator.validate_timestamp_info(timestamp, timestamp_precision, timestamp_raw)
-    msg_validator.validate_type(type_id)
-    msg_validator.validate_user_id(user_id)
+        validate_uid(correlation_id_3, "correlation_id_3")
     if email_id:
-        msg_validator.validate_email_id(email_id)
+        validate_int(email_id, "email_id")
+    validate_mbr(type_id, constants.TYPES, 'message type')
+    validate_mbr(user_id, constants.USERS, 'user type')
+    validate_mbr(producer_id, constants.PRODUCERS, 'producer id')
+    validate_vrs(producer_version, 'producer version')
+    validate_date(timestamp, "timestamp")
+    validate_str(timestamp_raw, "timestamp_raw")
+    validate_uid(uid, "message_id")
 
 
-
-def validate_create_message_email(email_id):
-    """Function input validator: create_message_email.
+def validate_persist_message_email(email_id):
+    """Function input validator: persist_message_email.
 
     """
-    msg_validator.validate_email_id(email_id)
+    validate_int(email_id, "email_id")
 
 
 def validate_retrieve_messages(uid=None):
@@ -70,14 +74,14 @@ def validate_retrieve_messages(uid=None):
 
     """
     if uid is not None:
-        validation.validate_uid(uid, "Simulation uid")
+        validate_uid(uid, "Simulation uid")
 
 
 def validate_has_messages(uid):
     """Function input validator: has_messages.
 
     """
-    validation.validate_uid(uid, "Simulation uid")
+    validate_uid(uid, "Simulation uid")
 
 
 def validate_retrieve_message_emails(arrival_date):
@@ -111,34 +115,36 @@ def validate_persist_message_email_stats(
     outgoing_7000=0,
     outgoing_7010=0,
     outgoing_7011=0,
-    outgoing_7100=0
+    outgoing_7100=0,
+    outgoing_8888=0
     ):
     """Function input validator: update_message_email_stats.
 
     """
-    msg_validator.validate_email_id(email_id)
+    validate_int(email_id, "email_id")
     if arrival_date:
-        validation.validate_date(arrival_date, 'Email arrival date')
+        validate_date(arrival_date, 'Email arrival date')
     if dispatch_date:
-        validation.validate_date(dispatch_date, 'Email dispatch date')
-    validation.validate_int(incoming, "incoming")
-    validation.validate_int(errors_decoding_base64, "errors_decoding_base64")
-    validation.validate_int(errors_decoding_json, "errors_decoding_json")
-    validation.validate_int(errors_encoding_ampq, "errors_encoding_ampq")
-    validation.validate_int(excluded, "excluded")
-    validation.validate_int(outgoing, "outgoing")
-    validation.validate_int(outgoing_0000, "outgoing_0000")
-    validation.validate_int(outgoing_0100, "outgoing_0100")
-    validation.validate_int(outgoing_1000, "outgoing_1000")
-    validation.validate_int(outgoing_1001, "outgoing_1001")
-    validation.validate_int(outgoing_1100, "outgoing_1100")
-    validation.validate_int(outgoing_1900, "outgoing_1900")
-    validation.validate_int(outgoing_1999, "outgoing_1999")
-    validation.validate_int(outgoing_2000, "outgoing_2000")
-    validation.validate_int(outgoing_2100, "outgoing_2100")
-    validation.validate_int(outgoing_2900, "outgoing_2900")
-    validation.validate_int(outgoing_2999, "outgoing_2999")
-    validation.validate_int(outgoing_7000, "outgoing_7000")
-    validation.validate_int(outgoing_7010, "outgoing_7010")
-    validation.validate_int(outgoing_7011, "outgoing_7011")
-    validation.validate_int(outgoing_7100, "outgoing_7100")
+        validate_date(dispatch_date, 'Email dispatch date')
+    validate_int(incoming, "incoming")
+    validate_int(errors_decoding_base64, "errors_decoding_base64")
+    validate_int(errors_decoding_json, "errors_decoding_json")
+    validate_int(errors_encoding_ampq, "errors_encoding_ampq")
+    validate_int(excluded, "excluded")
+    validate_int(outgoing, "outgoing")
+    validate_int(outgoing_0000, "outgoing_0000")
+    validate_int(outgoing_0100, "outgoing_0100")
+    validate_int(outgoing_1000, "outgoing_1000")
+    validate_int(outgoing_1001, "outgoing_1001")
+    validate_int(outgoing_1100, "outgoing_1100")
+    validate_int(outgoing_1900, "outgoing_1900")
+    validate_int(outgoing_1999, "outgoing_1999")
+    validate_int(outgoing_2000, "outgoing_2000")
+    validate_int(outgoing_2100, "outgoing_2100")
+    validate_int(outgoing_2900, "outgoing_2900")
+    validate_int(outgoing_2999, "outgoing_2999")
+    validate_int(outgoing_7000, "outgoing_7000")
+    validate_int(outgoing_7010, "outgoing_7010")
+    validate_int(outgoing_7011, "outgoing_7011")
+    validate_int(outgoing_7100, "outgoing_7100")
+    validate_int(outgoing_8888, "outgoing_8888")

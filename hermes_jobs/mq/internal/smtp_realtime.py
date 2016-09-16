@@ -50,7 +50,7 @@ def _get_emails():
     with db.session.create():
         for uid in emails:
             try:
-                db.dao_mq.create_message_email(uid)
+                db.dao_mq.persist_message_email(uid)
             except sqlalchemy.exc.IntegrityError:
                 db.session.rollback()
             else:

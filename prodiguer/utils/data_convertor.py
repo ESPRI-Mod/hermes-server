@@ -26,7 +26,7 @@ from prodiguer.utils.string_convertor import to_camel_case
 _IGNOREABLE = (int, float, long, type(None), unicode)
 
 # Set of unicodeable types used in jsonifying.
-_UNICODEABLE = (basestring, datetime.datetime, uuid.UUID)
+_UNICODEABLE = (basestring, uuid.UUID)
 
 
 def convert(data, key_convertor=None):
@@ -40,6 +40,9 @@ def convert(data, key_convertor=None):
     """
     if isinstance(data, _IGNOREABLE):
         return data
+
+    elif isinstance(data, datetime.datetime):
+        return unicode("{}Z".format(data.isoformat()))
 
     elif isinstance(data, _UNICODEABLE):
         return unicode(data)

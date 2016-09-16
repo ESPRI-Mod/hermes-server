@@ -76,14 +76,12 @@ class Consumer(object):
 
         # Initialize properties from inputs.
         self._callback = callback
-        self._connection_reopen_delay = \
-            defaults.DEFAULT_CONNECTION_REOPEN_DELAY
+        self._connection_reopen_delay = defaults.DEFAULT_CONNECTION_REOPEN_DELAY
         self._consume_limit = consume_limit
         self._context_type = context_type
         self._exchange = exchange
         self._queue = queue
-        self._stop_ioloop_on_disconnect = \
-            not (self._connection_reopen_delay > 0)
+        self._stop_ioloop_on_disconnect = not self._connection_reopen_delay > 0
         self._url = connection_url
         self._verbose = verbose
 

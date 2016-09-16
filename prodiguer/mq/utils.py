@@ -23,14 +23,17 @@ from prodiguer.mq import message
 from prodiguer.mq import validator
 from prodiguer.mq.consumer import Consumer
 from prodiguer.mq.producer import Producer
-from prodiguer.mq.timestamp import Timestamp
 from prodiguer.utils import logger
+from prodiguer.utils import validation
 from prodiguer.utils.config import data as config
 
 
 
 # Configuration used by the module.
 _CONFIG = config.mq
+
+# Default timezone to apply.
+_DEFAULT_TZ = 'UTC'
 
 
 def create_ampq_message_properties(
@@ -67,7 +70,7 @@ def create_ampq_message_properties(
     :param int expiration: Ticks until message will no be considered as active.
     :param int priority: Messaging priority.
     :param str reply_to: Messaging RPC callback.
-    :param str timestamp: Timestamp.
+    :param int timestamp: The message timestamp.
     :param int delay_in_ms: Delay (in milliseconds) before message is routed.
 
     :returns pika.BasicProperties: Set of AMPQ message basic properties.
@@ -80,37 +83,40 @@ def create_ampq_message_properties(
         message_id = unicode(uuid.uuid4())
 
     # Validate inputs.
-    validator.validate_cluster_id(cluster_id)
-    validator.validate_content_encoding(content_encoding)
-    validator.validate_content_type(content_type)
+    validation.validate_uid(message_id, "message_id")
+    validation.validate_mbr(content_encoding, constants.CONTENT_ENCODINGS, 'content encoding')
+    validation.validate_mbr(content_type, constants.CONTENT_TYPES, 'content type')
+    if cluster_id:
+        raise NotImplementedError()
     if correlation_id:
-        validator.validate_correlation_id(correlation_id)
-    validator.validate_delivery_mode(delivery_mode)
-    validator.validate_expiration(expiration)
-    validator.validate_message_id(message_id)
-    validator.validate_priority(priority)
-    validator.validate_producer_id(producer_id)
-    validator.validate_producer_version(producer_version)
-    validator.validate_reply_to(reply_to)
-    validator.validate_type(message_type)
-    validator.validate_user_id(user_id)
+        validation.validate_uid(correlation_id)
+    validation.validate_mbr(delivery_mode, constants.AMPQ_DELIVERY_MODES, 'delivery mode')
+    if expiration:
+        raise NotImplementedError()
+    validation.validate_mbr(message_type, constants.TYPES, 'message type')
+    validation.validate_mbr(producer_id, constants.PRODUCERS, 'producer id')
+    validation.validate_vrs(producer_version, 'producer version')
+    validation.validate_mbr(priority, constants.PRIORITIES, 'priority')
+    if reply_to:
+        raise NotImplementedError()
+    if timestamp:
+        validation.validate_int(timestamp, 'timestamp')
+    validation.validate_mbr(user_id, constants.USERS, 'user id')
 
     # Set timestamps.
     # ... if not provided then create one.
     if timestamp is None:
         timestamp = arrow.utcnow()
-        headers['timestamp'] = unicode(timestamp)
-        headers['timestamp_precision'] = 'ms'
+        headers['timestamp'] = unicode(timestamp.isoformat())
         timestamp = int(repr(timestamp.float_timestamp).replace(".", ""))
 
     # ... if timestamp not in header then inject.
     if 'timestamp' not in headers:
-        headers['timestamp'] = unicode(arrow.utcnow())
-        headers['timestamp_precision'] = 'ms'
+        headers['timestamp'] = unicode(arrow.utcnow().isoformat())
 
-    # ... if precision not in header then inject.
-    if 'timestamp_precision' not in headers:
-        headers['timestamp_precision'] = 'ms'
+    # ... if timestamp not in header then inject.
+    if 'timestamp_raw' not in headers:
+        headers['timestamp_raw'] = headers['timestamp']
 
     # Set other headers.
     if 'producer_id' not in headers:
@@ -132,7 +138,7 @@ def create_ampq_message_properties(
         content_type=content_type,
         content_encoding=content_encoding,
         correlation_id=correlation_id,
-        delivery_mode = delivery_mode,
+        delivery_mode=delivery_mode,
         expiration=expiration,
         headers=headers,
         message_id=message_id,
@@ -180,9 +186,9 @@ def _process_message(ctx, callback):
 
     """
     with db.session.create():
-        # Persist message.
+        # Persist message to dB.
         try:
-            ctx.msg = persist(ctx.properties, ctx.content_raw)
+            ctx.msg = _persist(ctx.properties, ctx.content_raw)
 
         # Skip duplicate messages.
         except sqlalchemy.exc.IntegrityError:
@@ -240,27 +246,7 @@ def consume(
         consumer.stop()
 
 
-def _get_timestamps(properties):
-    """Returns timestamps used during persistence.
-
-    """
-    # Set precision.
-    if 'timestamp_precision' in properties.headers:
-        precision = properties.headers["timestamp_precision"]
-    else:
-        precision = 'ms'
-
-    # Set raw.
-    raw = properties.headers["timestamp"]
-
-    # Set parsed.
-    parser = Timestamp.from_ns if precision == 'ns' else Timestamp.from_ms
-    parsed = parser(raw).as_ms.datetime
-
-    return precision, raw, parsed
-
-
-def persist(properties, payload):
+def _persist(properties, payload):
     """Persists message to backend db.
 
     :param pika.BasicProperties properties: Message AMPQ properties.
@@ -280,9 +266,9 @@ def persist(properties, payload):
         return default
 
     # Set timestamp info.
-    ts_precision, ts_raw, ts_parsed = _get_timestamps(properties)
+    _, ts_utc, _, _ = get_timestamps(properties.headers["timestamp"])
 
-    return db.dao_mq.create_message(
+    return db.dao_mq.persist_message(
         properties.message_id,
         properties.user_id,
         properties.app_id,
@@ -295,8 +281,35 @@ def persist(properties, payload):
         _get_header('correlation_id_1'),
         _get_header('correlation_id_2'),
         _get_header('correlation_id_3'),
-        ts_parsed,
-        ts_precision,
-        ts_raw,
+        ts_utc,
+        properties.headers["timestamp_raw"],
         _get_header('email_id')
         )
+
+
+def get_timestamps(raw):
+    """Returns timestamp information derived from either a nano or micro second precise ISO timestamp.
+
+    :param str as_raw: A nano or micro second precise timestamp.
+
+    :returns: 4 member tuple of timestamp representations: (raw, utc, integer, text).
+    :rtype: tuple
+
+    """
+    # Convert to ms precise raw string.
+    as_text = "{}.{}+{}".format(
+        raw.split('.')[0],
+        raw.split('.')[1][0:6],
+        raw.split('.')[1][-5:]
+        ).replace('++', '+')
+
+    # Convert to UTC.
+    as_utc = arrow.get(as_text).to(_DEFAULT_TZ)
+
+    # Convert to integer.
+    as_int = int("{}{}".format(
+            as_utc.timestamp,
+            raw.split('.')[1][0:6]
+            ))
+
+    return raw, as_utc, as_int, as_text

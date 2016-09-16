@@ -120,7 +120,7 @@ def _unpack_content(ctx):
         ctx.compute_node_login = ctx.content['login']
         ctx.compute_node_machine = ctx.compute_node_machine_raw = \
             "{0}-{1}".format(ctx.compute_node, ctx.content['machine'])
-        ctx.experiment = ctx.experiment_raw = ctx.content['experiment']
+        ctx.experiment = ctx.experiment_raw = ctx.content['experiment'] or "--"
         ctx.model = ctx.model_raw = ctx.content['model']
         ctx.simulation_space = ctx.simulation_space_raw = ctx.content['space']
         for field in _SIMULATION_CV_TERM_FIELDS_LOWER_CASE:
@@ -275,7 +275,6 @@ def _enqueue_late_job_detection(ctx):
 
     """
     # Calculate expected job completion moment.
-    # ... N.B. ctx.msg.timestamp is UTC
     expected = arrow.get(ctx.msg.timestamp) + \
                datetime.timedelta(seconds=int(ctx.job_warning_delay))
 

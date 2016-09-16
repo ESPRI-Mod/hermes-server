@@ -11,8 +11,6 @@
 
 
 """
-import arrow
-
 from prodiguer import mq
 from prodiguer.utils import logger
 from prodiguer import __version__ as HERMES_VERSION
@@ -58,26 +56,6 @@ def enqueue(
         yield mq.Message(_get_msg_props(), payload or {})
 
     mq.produce(_yield_message)
-
-
-def get_timestamp(timestamp):
-    """Corrects nano-second to micro-second precision and returns updated timestamp.
-
-    :param str timestamp: Incoming message timestamp.
-
-    :return: Formatted micro-second precise UTC timestamp.
-    :rtype: datetime.datetime
-
-    """
-    try:
-        return arrow.get(timestamp).to('UTC').datetime
-    except arrow.parser.ParserError:
-        part1 = timestamp.split(".")[0]
-        part2 = timestamp.split(".")[1].split("+")[0][0:6]
-        part3 = timestamp.split(".")[1].split("+")[1]
-        timestamp = "{0}.{1}+{2}".format(part1, part2, part3)
-
-        return arrow.get(timestamp).to('UTC').datetime
 
 
 def invoke(agent_type, tasks, error_tasks, ctx):
