@@ -15,6 +15,11 @@ import datetime
 
 from prodiguer import mq
 from prodiguer.db import pgres as db
+from prodiguer.db.pgres.dao_monitoring import retrieve_job
+from prodiguer.db.pgres.dao_monitoring import retrieve_latest_job_period
+from prodiguer.db.pgres.dao_monitoring import retrieve_latest_job_period_counter
+from prodiguer.db.pgres.dao_monitoring import retrieve_simulation
+from prodiguer.db.pgres.dao_superviseur import retrieve_supervision
 from prodiguer.utils import logger
 import superviseur
 
@@ -63,11 +68,11 @@ def _set_data(ctx):
     """Sets data to be passed to dispatcher as input.
 
     """
-    ctx.supervision = db.dao_superviseur.retrieve_supervision(ctx.supervision_id)
-    ctx.simulation = db.dao_monitoring.retrieve_simulation(ctx.supervision.simulation_uid)
-    ctx.job = db.dao_monitoring.retrieve_job(ctx.supervision.job_uid)
-    ctx.job_period = db.dao_monitoring.retrieve_latest_job_period(ctx.supervision.simulation_uid)
-    ctx.job_period_counter = db.dao_monitoring.retrieve_latest_job_period_counter(ctx.supervision.simulation_uid)
+    ctx.supervision = retrieve_supervision(ctx.supervision_id)
+    ctx.simulation = retrieve_simulation(ctx.supervision.simulation_uid)
+    ctx.job = retrieve_job(ctx.supervision.job_uid)
+    ctx.job_period = retrieve_latest_job_period(ctx.supervision.simulation_uid)
+    ctx.job_period_counter = retrieve_latest_job_period_counter(ctx.supervision.simulation_uid)
 
 
 def _authorize(ctx):

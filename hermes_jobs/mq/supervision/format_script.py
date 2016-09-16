@@ -20,6 +20,7 @@ from prodiguer.db.pgres.dao_monitoring import retrieve_simulation
 from prodiguer.db.pgres.dao_superviseur import retrieve_supervision
 from prodiguer.utils import config
 from prodiguer.utils import logger
+from prodiguer.utils import mail
 from hermes_jobs.mq import utils
 import superviseur
 
@@ -31,9 +32,9 @@ def get_tasks():
     """
     return (
         _unpack_content,
-        _verify,
-        _authorize,
         _set_data,
+        _authorize,
+        _verify,
         _format,
         _enqueue_script_dispatch,
         )
@@ -67,25 +68,17 @@ def _unpack_content(ctx):
     ctx.job_uid = ctx.content['job_uid']
     ctx.simulation_uid = ctx.content['simulation_uid']
     ctx.supervision_id = int(ctx.content['supervision_id'])
+
+
+def _set_data(ctx):
+    """Sets data also required by script formatter.
+
+    """
+    ctx.job = retrieve_job(ctx.job_uid)
     ctx.job_period = retrieve_latest_job_period(ctx.simulation_uid)
     ctx.job_period_counter = retrieve_latest_job_period_counter(ctx.simulation_uid)
     ctx.simulation = retrieve_simulation(ctx.simulation_uid)    
-
-
-
-def _verify(ctx):
-    """Verifies that the job formatting is required.
-
-    """
-    # Verify that most recent job period failure is within allowed limit.
-    if ctx.job_period.period_id is None:
-        logger.log_mq_warning("Job period empty")
-    elif ctx.job_period.period_id == 1:
-        logger.log_mq("Period number 1, supervision not needed")
-        #ctx.abort = True ###commente de le temps des tests (Lola)
-    elif ctx.job_period_counter[1] > config.apps.monitoring.maxJobPeriodFailures:
-        logger.log_mq("Too many tries for the last job period, supervision abort")
-        ctx.abort = True
+    ctx.supervision = retrieve_supervision(ctx.supervision_id)
 
 
 def _authorize(ctx):
@@ -99,12 +92,64 @@ def _authorize(ctx):
         ctx.abort = True
 
 
-def _set_data(ctx):
-    """Sets data also required by script formatter.
+_EMAIL_SUBJECT = u"HERMES Supervision :: user {}, job {} on {} machine"
+
+# Operator email body template.
+_EMAIL_BODY = u"""Dear Hermes platform user {},
+
+Something went wrong with your job number {} on {} machine.
+
+The Hermes platform has detected that your compute job {} has failed during the period {} ({}-{}) for the {} time. 
+As it reaches the failure allowed limit ({}) for one same period, you should have a look.
+
+Regards,
+
+The Hermes Supervision Platform"""
+
+
+def _get_email_subject(ctx):
+    """Returns subject of email to be sent to user.
 
     """
-    ctx.supervision = retrieve_supervision(ctx.supervision_id)
-    ctx.job = retrieve_job(ctx.job_uid)
+    return _EMAIL_SUBJECT.format(
+        ctx.user.login,
+        ctx.job.scheduler_id,
+        ctx.simulation.compute_node_machine_raw)
+
+
+def _get_email_body(ctx):
+    """Returns body of email to be sent to user.
+
+    """
+    return _EMAIL_BODY.format(
+        ctx.user.login,
+        ctx.job.scheduler_id,
+        ctx.simulation.compute_node_machine_raw,
+        ctx.simulation.name,
+        ctx.job_period.period_id,
+        ctx.job_period.period_date_begin,
+        ctx.job_period.period_date_end,
+        ctx.job_period_counter[1],
+        config.apps.monitoring.maxJobPeriodFailures
+        )
+
+def _verify(ctx):
+    """Verifies that the job formatting is required.
+
+    """
+    # Verify that most recent job period failure is within allowed limit.
+    if ctx.job_period.period_id is None:
+        logger.log_mq_warning("Job period empty")
+    elif ctx.job_period.period_id == 1:
+        logger.log_mq("Period number 1, supervision not needed")
+        ctx.abort = True 
+    elif ctx.job_period_counter[1] > config.apps.monitoring.maxJobPeriodFailures:
+        mail.send_email(config.alerts.emailAddressFrom,
+            ctx.user.email,
+            _get_email_subject(ctx),
+            _get_email_body(ctx))
+        logger.log_mq("Too many tries for the last job period, mail sent to user and supervision abort")
+        ctx.abort = True
 
 
 def _format(ctx):
