@@ -101,8 +101,6 @@ def retrieve_active_simulations(start_date=None):
         s.model,
         s.model_raw,
         s.name,
-        as_date_string(s.output_end_date),
-        as_date_string(s.output_start_date),
         s.space,
         s.space_raw,
         s.try_id,
@@ -657,6 +655,7 @@ def delete_simulation(uid):
 
     """
     dao.delete_by_facet(types.Job, types.Job.simulation_uid == uid)
+    dao.delete_by_facet(types.JobPeriod, types.JobPeriod.simulation_uid == uid)
     dao.delete_by_facet(types.SimulationConfiguration, types.SimulationConfiguration.simulation_uid == uid)
     dao.delete_by_facet(types.Message, types.Message.correlation_id_1 == uid)
     dao.delete_by_facet(types.Simulation, types.Simulation.uid == uid)
