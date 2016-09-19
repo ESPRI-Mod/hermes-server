@@ -20,7 +20,6 @@ from prodiguer.db import pgres as db
 from prodiguer.mq import constants
 from prodiguer.mq import defaults
 from prodiguer.mq import message
-from prodiguer.mq import validator
 from prodiguer.mq.consumer import Consumer
 from prodiguer.mq.producer import Producer
 from prodiguer.utils import logger
