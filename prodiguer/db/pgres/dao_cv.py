@@ -11,12 +11,10 @@
 
 
 """
-from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import validator_dao_cv as validator
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
 from prodiguer.utils import decorators
-from prodiguer.utils import logger
 
 
 
@@ -44,7 +42,7 @@ def create_term(
     instance.display_name = term_display_name
     instance.uid = term_uid
 
-    return session.add(instance)
+    return session.insert(instance)
 
 
 @decorators.validate(validator.validate_retrieve_term)

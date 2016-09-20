@@ -108,7 +108,7 @@ def create(etype, force=False, commit=False):
             _set_fk(etype, i, c, list(c.foreign_keys)[0])
 
     # Update session.
-    session.add(i)
+    session.insert(i)
     if commit:
         session.commit()
 

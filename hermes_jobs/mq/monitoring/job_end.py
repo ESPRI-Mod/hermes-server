@@ -11,6 +11,7 @@
 
 """
 from prodiguer import mq
+from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
 from prodiguer.db.pgres import dao_superviseur
 from hermes_jobs.mq import utils
@@ -80,7 +81,7 @@ def _persist(ctx):
 
     """
     # Persist job info.
-    dao.persist_job_02(
+    dao.persist_job_end(
         ctx.msg.timestamp,
         ctx.is_compute_end,
         ctx.is_error,
@@ -103,6 +104,9 @@ def _persist(ctx):
             ctx.job_uid,
             ctx.props.type
             )
+
+    # Commit to database.
+    db.session.commit()
 
 
 def _enqueue_supervisor_format(ctx):

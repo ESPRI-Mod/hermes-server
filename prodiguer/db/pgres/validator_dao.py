@@ -135,16 +135,6 @@ def validate_get_random_sample(etype):
     validation.validate_entity_type(etype)
 
 
-def validate_insert(entity):
-    """Function input validator: insert.
-
-    """
-    validation.validate_entity_type(type(entity))
-    validation.validate_bool(entity.is_new, 'entity')
-    if not entity.is_new:
-        raise ValueError("Cannot reinsert existing entities.")
-
-
 def validate_sort(etype, collection, sort_key=None):
     """Function input validator: sort.
 

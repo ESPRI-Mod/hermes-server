@@ -38,7 +38,7 @@ def create_supervision(simulation_uid,
     instance.job_uid = unicode(job_uid)
     instance.trigger_code = unicode(trigger_code)
 
-    return session.add(instance)
+    return session.insert(instance)
 
 
 def retrieve_supervision(identifer):

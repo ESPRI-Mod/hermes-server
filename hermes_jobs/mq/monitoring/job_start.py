@@ -20,7 +20,6 @@ from prodiguer import cv
 from prodiguer import mq
 from prodiguer.cv.constants import JOB_TYPE_COMPUTING
 from prodiguer.cv.constants import JOB_TYPE_POST_PROCESSING
-from prodiguer.cv.constants import JOB_TYPE_POST_PROCESSING_FROM_CHECKER
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
 from prodiguer.utils import config
@@ -156,7 +155,7 @@ def _persist_cv(ctx):
     """Parses cv terms contained within message content.
 
     """
-    # Skip if unnecessary.
+    # Escape if unnecessary.
     if not ctx.is_simulation_start:
         return
 
@@ -200,8 +199,7 @@ def _persist_job(ctx):
     """Persists job info to db.
 
     """
-    # Persist job.
-    dao.persist_job_01(
+    dao.persist_job_start(
         ctx.accounting_project,
         ctx.job_warning_delay,
         ctx.msg.timestamp,
@@ -217,25 +215,17 @@ def _persist_job(ctx):
         submission_path=ctx.get_field('jobSubmissionPath')
         )
 
-    # Update simulation (compute jobs only).
-    if not ctx.is_simulation_start and ctx.job_type != JOB_TYPE_COMPUTING:
-        dao.persist_simulation_02(
-            None,
-            False,
-            ctx.simulation_uid
-            )
-
 
 def _persist_simulation(ctx):
     """Persists simulation information to db.
 
     """
-    # Skip if unnecessary.
+    # Escape if unnecessary.
     if not ctx.is_simulation_start:
         return
 
     # Persist simulation.
-    simulation = dao.persist_simulation_01(
+    simulation = dao.persist_simulation_start(
         ctx.accounting_project,
         ctx.compute_node,
         ctx.compute_node_raw,
@@ -267,6 +257,8 @@ def _persist_simulation(ctx):
     # Persist active simulation.
     ctx.active_simulation = \
         dao.update_active_simulation(simulation.hashid)
+
+    # Commit to database.
     db.session.commit()
 
 
@@ -302,7 +294,7 @@ def _enqueue_cv_git_push(ctx):
     """Places a message upon the new cv terms notification queue.
 
     """
-    # Skip if unnecessary.
+    # Escape if unnecessary.
     if not ctx.is_simulation_start:
         return
     if not ctx.cv_terms_persisted_to_db and not ctx.cv_terms_new:

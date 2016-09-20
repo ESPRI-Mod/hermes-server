@@ -40,7 +40,7 @@ def init_cv_terms():
         item.synonyms = ", ".join(cv.get_synonyms(term)) or None
         item.uid = cv.get_uid(term)
         item.sort_key = cv.get_sort_key(term)
-        db_session.add(item)
+        db_session.insert(item)
 
 
 def _init_simulations():
@@ -90,7 +90,7 @@ def _init_simulations():
         sim.hashid = sim.get_hashid()
 
         # ... insert into db.
-        db_session.add(sim)
+        db_session.insert(sim)
 
 
 def execute():

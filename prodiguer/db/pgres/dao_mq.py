@@ -84,7 +84,7 @@ def persist_message(
     if timestamp_raw is not None:
         instance.timestamp_raw = unicode(timestamp_raw)
 
-    return session.add(instance)
+    return session.insert(instance)
 
 
 @decorators.validate(validator.validate_has_messages)
@@ -181,7 +181,7 @@ def persist_message_email(email_id):
     instance = types.MessageEmail()
     instance.email_id = email_id
 
-    return session.add(instance)
+    return session.insert(instance)
 
 
 def _update_message_email(email_id, arrival_date, dispatch_date):
@@ -297,7 +297,7 @@ def persist_message_email_stats(
     instance.outgoing_7100 = outgoing_7100
     instance.outgoing_8888 = outgoing_8888
 
-    return session.add(instance)
+    return session.insert(instance)
 
 
 def retrieve_mail_identifiers_by_interval(interval_start, interval_end):

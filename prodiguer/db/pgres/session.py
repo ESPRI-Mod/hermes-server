@@ -144,16 +144,6 @@ def insert(instance, auto_commit=True):
     return instance
 
 
-def add(instance, auto_commit=True):
-    """Adds a newly created type instance to the session and optionally commits the session.
-
-    :param Entity instance: A db type instance.
-    :param bool auto_commit: Flag indicating whether a commit is to be issued.
-
-    """
-    return insert(instance, auto_commit)
-
-
 def delete(instance, auto_commit=True):
     """Marks a type instance for deletion and optionally commits the session.
 

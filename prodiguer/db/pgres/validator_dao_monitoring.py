@@ -31,7 +31,7 @@ def validate_exists(uid):
     validation.validate_uid(uid, "Simulation uid")
 
 
-def validate_persist_job_01(
+def validate_persist_job_start(
     accounting_project,
     warning_delay,
     execution_start_date,
@@ -46,7 +46,7 @@ def validate_persist_job_01(
     scheduler_id=None,
     submission_path=None
     ):
-    """Function input validator: persist_job_01.
+    """Function input validator: persist_job_start.
 
     """
     if accounting_project is not None:
@@ -72,14 +72,14 @@ def validate_persist_job_01(
         pass
 
 
-def validate_persist_job_02(
+def validate_persist_job_end(
     execution_end_date,
     is_compute_end,
     is_error,
     job_uid,
     simulation_uid,
     ):
-    """Function input validator: persist_job_02.
+    """Function input validator: persist_job_end.
 
     """
     validation.validate_date(execution_end_date, "Job execution end date")
@@ -151,7 +151,7 @@ def validate_persist_environment_metric(
     _validate_throughput_mb_s()
 
 
-def validate_persist_simulation_01(
+def validate_persist_simulation_start(
     accounting_project,
     compute_node,
     compute_node_raw,
@@ -171,7 +171,7 @@ def validate_persist_simulation_01(
     space_raw,
     uid
     ):
-    """Function input validator: persist_simulation_01.
+    """Function input validator: persist_simulation_start.
 
     """
     cv.validator.validate_compute_node(compute_node)

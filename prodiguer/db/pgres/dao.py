@@ -204,18 +204,6 @@ def get_random_sample(etype):
     return []
 
 
-@decorators.validate(validator.validate_insert)
-def insert(entity):
-    """Adds a newly created model to the session.
-
-    :param db.Entity item: A supported entity instance.
-
-    """
-    session.add(entity)
-
-    return entity
-
-
 @decorators.validate(validator.validate_sort)
 def sort(etype, collection, sort_key=None):
     """Sorts collection via type sort key.

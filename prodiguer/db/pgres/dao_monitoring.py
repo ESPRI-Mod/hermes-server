@@ -386,11 +386,11 @@ def persist_environment_metric(
     instance.size_mb = size_mb
     instance.throughput_mb_s = throughput_mb_s
 
-    return session.add(instance)
+    return session.insert(instance)
 
 
-@decorators.validate(validator.validate_persist_simulation_01)
-def persist_simulation_01(
+@decorators.validate(validator.validate_persist_simulation_start)
+def persist_simulation_start(
     accounting_project,
     compute_node,
     compute_node_raw,
@@ -497,11 +497,11 @@ def persist_simulation_configuration(uid, card):
     instance.simulation_uid = unicode(uid)
     instance.card = unicode(card)
 
-    return session.add(instance)
+    return session.insert(instance)
 
 
-@decorators.validate(validator.validate_persist_job_01)
-def persist_job_01(
+@decorators.validate(validator.validate_persist_job_start)
+def persist_job_start(
     accounting_project,
     warning_delay,
     execution_start_date,
@@ -567,14 +567,14 @@ def persist_job_01(
     return dao.persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 
 
-@decorators.validate(validator.validate_persist_job_02)
-def persist_job_02(
+@decorators.validate(validator.validate_persist_job_end)
+def persist_job_end(
     execution_end_date,
     is_compute_end,
     is_error,
     job_uid,
     simulation_uid):
-    """Persists job information to db.
+    """Persists job end information to db.
 
     :param datetime execution_end_date: Job end date.
     :param bool is_compute_end: Flag indicating whether a simulation has ended or not.
@@ -626,7 +626,7 @@ def persist_job_period(
     instance.period_date_end = period_date_end
     instance.period_id = period_id
 
-    return session.add(instance)
+    return session.insert(instance)
 
 
 @decorators.validate(validator.validate_update_active_simulation)
