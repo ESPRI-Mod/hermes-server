@@ -52,9 +52,12 @@ class Job(Entity):
     post_processing_name = Column(Unicode(63))
     scheduler_id = Column(Unicode(255))
     simulation_uid = Column(Unicode(63))
-    submission_path = Column(Unicode(2047))
     typeof = Column(Unicode(63))
     warning_delay = Column(Integer)
+    submission_path = Column(Unicode(2047))
+    archive_path = Column(Unicode(2047))
+    storage_path = Column(Unicode(2047))
+    storage_small_path = Column(Unicode(2047))
 
 
 class JobPeriod(Entity):
@@ -116,6 +119,13 @@ class Simulation(Entity):
     try_id = Column(Integer, nullable=False, default=1)
     uid = Column(Unicode(63), nullable=False, unique=True)
 
+    # libIGCM paths.
+    submission_path = Column(Unicode(2047))
+    archive_path = Column(Unicode(2047))
+    storage_path = Column(Unicode(2047))
+    storage_small_path = Column(Unicode(2047))
+
+    # Obsolete ???
     ensemble_member = Column(Unicode(15))
     parent_simulation_name = Column(Unicode(511))
     parent_simulation_branch_date = Column(DateTime)

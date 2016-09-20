@@ -169,7 +169,11 @@ def validate_persist_simulation_start(
     output_end_date,
     space,
     space_raw,
-    uid
+    uid,
+    submission_path,
+    archive_path,
+    storage_path,
+    storage_small_path
     ):
     """Function input validator: persist_simulation_start.
 
@@ -201,6 +205,15 @@ def validate_persist_simulation_start(
     validation.validate_date(output_end_date, 'Output end date')
     validation.validate_date(output_start_date, 'Output start date')
     validation.validate_uid(uid, "Simulation uid")
+
+    if submission_path:
+        validation.validate_str(submission_path, "Submit directory and job localisation")
+    if archive_path:
+        validation.validate_str(submission_path, "Output tree located on ARCHIVE")
+    if storage_path:
+        validation.validate_str(submission_path, "Output tree located on STORAGE")
+    if storage_small_path:
+        validation.validate_str(submission_path, "Output tree located on STORAGE hosting figures")
 
 
 def validate_persist_simulation_02(execution_end_date, is_error, uid):

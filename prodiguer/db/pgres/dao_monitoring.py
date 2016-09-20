@@ -408,7 +408,11 @@ def persist_simulation_start(
     output_end_date,
     space,
     space_raw,
-    uid
+    uid,
+    submission_path,
+    archive_path,
+    storage_path,
+    storage_small_path
     ):
     """Persists simulation information to db.
 
@@ -430,6 +434,10 @@ def persist_simulation_start(
     :param str space: Name of space, e.g. PROD.
     :param str space_raw: Name of space before CV reformatting.
     :param str uid: Simulation unique identifier.
+    :param str submission_path: Submit directory and job localisation.
+    :param str archive_path: Output tree located on ARCHIVE.
+    :param str storage_path: Output tree located on STORAGE.
+    :param str storage_small_path: Output tree located on STORAGE hosting figures.
 
     :returns: Either a new or an updated simulation instance.
     :rtype: types.Simulation
@@ -458,6 +466,14 @@ def persist_simulation_start(
         instance.space_raw = unicode(space_raw)
         instance.uid = unicode(uid)
         instance.hashid = instance.get_hashid()
+        if submission_path:
+            instance.submission_path = unicode(submission_path)
+        if archive_path:
+            instance.archive_path = unicode(archive_path)
+        if storage_path:
+            instance.storage_path = unicode(storage_path)
+        if storage_small_path:
+            instance.storage_small_path = unicode(storage_small_path)
 
     return dao.persist(_assign, types.Simulation, lambda: retrieve_simulation(uid))
 

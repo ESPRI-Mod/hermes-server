@@ -243,7 +243,11 @@ def _persist_simulation(ctx):
         arrow.get(ctx.content['endDate']).datetime,
         ctx.simulation_space,
         ctx.simulation_space_raw,
-        ctx.simulation_uid
+        ctx.simulation_uid,
+        submission_path=ctx.get_field('jobSubmissionPath'),
+        archive_path=ctx.get_field('archivePath'),
+        storage_path=ctx.get_field('storagePath'),
+        storage_small_path=ctx.get_field('storageSmallPath')
         )
 
     # Persist simulation configuration.
