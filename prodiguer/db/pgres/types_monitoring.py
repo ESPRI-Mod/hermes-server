@@ -55,9 +55,6 @@ class Job(Entity):
     typeof = Column(Unicode(63))
     warning_delay = Column(Integer)
     submission_path = Column(Unicode(2047))
-    archive_path = Column(Unicode(2047))
-    storage_path = Column(Unicode(2047))
-    storage_small_path = Column(Unicode(2047))
 
 
 class JobPeriod(Entity):
