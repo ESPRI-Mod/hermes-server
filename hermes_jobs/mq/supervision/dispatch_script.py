@@ -82,7 +82,7 @@ def _authorize(ctx):
     try:
         ctx.user = superviseur.authorize(ctx.simulation.compute_node_login)
     except UserWarning as err:
-        logger.log_mq_warning("Supervision dispatch unauthorized: {}".format(err))
+        logger.log_mq_warning("Supervision unauthorized: {}".format(err))
         ctx.abort = True
 
 
@@ -92,12 +92,13 @@ def _dispatch(ctx):
     """
     # Set dispatch parameters to be passed to dispatcher.
     params = superviseur.DispatchParameters(
-        ctx.simulation, 
+        ctx.simulation,
         ctx.job,
         ctx.job_period,
         ctx.job_period_counter,
-        ctx.supervision, 
-        ctx.user)
+        ctx.supervision,
+        ctx.user
+        )
 
     # Dispatch script to HPC for execution.
     try:

@@ -74,7 +74,7 @@ def _persist_supervision(ctx):
 
 
 def _enqueue_supervisor_format(ctx):
-    """Places a message upon the supervisor format queue.
+    """Place a message upon the supervisor format queue.
 
     """
     utils.enqueue(mq.constants.MESSAGE_TYPE_8100, {
