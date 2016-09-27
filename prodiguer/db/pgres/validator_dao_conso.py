@@ -12,7 +12,11 @@
 
 
 """
-from prodiguer.utils import validation as v
+from prodiguer.utils.validation import validate_bool
+from prodiguer.utils.validation import validate_date
+from prodiguer.utils.validation import validate_float
+from prodiguer.utils.validation import validate_int
+from prodiguer.utils.validation import validate_ucode
 
 
 
@@ -31,17 +35,17 @@ def validate_persist_allocation(
     """Function input validator: persist_project.
 
     """
-    v.validate_unicode(centre, 'Allocation computing centre')
-    v.validate_unicode(machine, 'Allocation machine')
-    v.validate_unicode(node_type, 'Allocation node type')
-    v.validate_unicode(project, 'Allocation project')
+    validate_ucode(centre, 'Allocation computing centre')
+    validate_ucode(machine, 'Allocation machine')
+    validate_ucode(node_type, 'Allocation node type')
+    validate_ucode(project, 'Allocation project')
     if sub_project:
-        v.validate_unicode(sub_project, 'Allocation sub-project')
-    v.validate_date(start_date, 'Allocation start date')
-    v.validate_date(end_date, 'Allocation end date')
-    v.validate_float(total_hrs, 'Allocation total (hours)')
-    v.validate_bool(is_active, 'Allocation is-active flag')
-    v.validate_bool(is_reviewed, 'Allocation is-reviewed flag')
+        validate_ucode(sub_project, 'Allocation sub-project')
+    validate_date(start_date, 'Allocation start date')
+    validate_date(end_date, 'Allocation end date')
+    validate_float(total_hrs, 'Allocation total (hours)')
+    validate_bool(is_active, 'Allocation is-active flag')
+    validate_bool(is_reviewed, 'Allocation is-reviewed flag')
 
 
 def validate_retrieve_allocation(
@@ -54,11 +58,11 @@ def validate_retrieve_allocation(
     """Function input validator: retrieve_allocation.
 
     """
-    v.validate_unicode(centre, 'Allocation computing centre')
-    v.validate_unicode(project, 'Allocation project')
-    v.validate_unicode(machine, 'Allocation machine')
-    v.validate_unicode(node_type, 'Allocation node type')
-    v.validate_date(consumption_date, 'Resource consumption date')
+    validate_ucode(centre, 'Allocation computing centre')
+    validate_ucode(project, 'Allocation project')
+    validate_ucode(machine, 'Allocation machine')
+    validate_ucode(node_type, 'Allocation node type')
+    validate_date(consumption_date, 'Resource consumption date')
 
 
 def validate_persist_consumption(
@@ -72,15 +76,15 @@ def validate_persist_consumption(
     """Function input validator: persist_consumption.
 
     """
-    v.validate_int(allocation_id, 'Allocation identifier')
-    v.validate_date(date, 'Consumption date')
-    v.validate_float(total_hrs, 'Consumption total (hours)')
+    validate_int(allocation_id, 'Allocation identifier')
+    validate_date(date, 'Consumption date')
+    validate_float(total_hrs, 'Consumption total (hours)')
     if login is not None:
-        v.validate_unicode(login, 'Consumption login')
+        validate_ucode(login, 'Consumption login')
     if sub_project is not None:
-        v.validate_unicode(sub_project, 'Consumption sub project')
+        validate_ucode(sub_project, 'Consumption sub project')
     if batch_date is not None:
-        v.validate_date(batch_date, 'Consumption batch date')
+        validate_date(batch_date, 'Consumption batch date')
 
 
 def validate_retrieve_consumption_header(
@@ -90,5 +94,5 @@ def validate_retrieve_consumption_header(
     """Function input validator: retrieve_consumption_header.
 
     """
-    v.validate_int(allocation_id, 'Allocation identifier')
-    v.validate_date(date, 'Consumption date')
+    validate_int(allocation_id, 'Allocation identifier')
+    validate_date(date, 'Consumption date')

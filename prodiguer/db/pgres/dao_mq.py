@@ -212,6 +212,7 @@ def _update_message_email(email_id, arrival_date, dispatch_date):
 @decorators.validate(validator.validate_persist_message_email_stats)
 def persist_message_email_stats(
     email_id,
+    email_rejected,
     arrival_date=None,
     dispatch_date=None,
     incoming=0,
@@ -235,11 +236,12 @@ def persist_message_email_stats(
     outgoing_7010=0,
     outgoing_7011=0,
     outgoing_7100=0,
-    outgoing_8888=0,
+    outgoing_8888=0
     ):
     """Updates a message email with statistical information.
 
     :param str email_id: Email identifier (assigned by SMTP server).
+    :param bool email_rejected: Flag indicating that email was rejected.
     :param datetime arrival_date: Date of email arrival.
     :param datetime dispatch_date: Date of email dispatch.
     :param int incoming: Count of incoming messages.
@@ -270,6 +272,7 @@ def persist_message_email_stats(
 
     instance = types.MessageEmailStats()
     instance.email_id = email_id
+    instance.email_rejected = email_rejected
     instance.arrival_date = arrival_date
     instance.dispatch_date = dispatch_date
     if arrival_date is not None and dispatch_date is not None:

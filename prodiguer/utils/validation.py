@@ -117,7 +117,7 @@ def validate_uid(val, var):
             _raise_value_error(val, var, uuid.UUID)
 
 
-def validate_unicode(val, var):
+def validate_ucode(val, var):
     """Validates a unicode.
 
     """

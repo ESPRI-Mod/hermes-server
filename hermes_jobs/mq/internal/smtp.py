@@ -69,6 +69,7 @@ class ProcessingContextInfo(mq.Message):
         self.email_attachments = None
         self.email_body = None
         self.email_uid = self.content['email_uid']
+        self.email_rejected = False
         self.imap_client = None
         self.msg_ampq = []
         self.msg_ampq_error = []
@@ -185,10 +186,6 @@ def _process_attachments(ctx):
     """Processes an email attchment.
 
     """
-    # Escape if there are no attachments to process.
-    if not ctx.email_attachments:
-        return
-
     # Escape if attachment is not associated with a single message.
     if len(ctx.msg_dict) != 1:
         return
@@ -199,15 +196,24 @@ def _process_attachments(ctx):
     if msg_code not in _ATTACHMENT_HANDLERS:
         return
 
+    # Escape if there are no attachments to process.
+    if not ctx.email_attachments:
+        msg = "Message type {} email has no attachments and therefore cannot be processed.".format(msg['msgCode'])
+        logger.log_mq_error(msg)
+        ctx.email_rejected = True
+
     # Invoke handler.
-    handler = _ATTACHMENT_HANDLERS[msg_code]
-    handler(ctx)
+    _ATTACHMENT_HANDLERS[msg_code](ctx)
 
 
 def _set_msg_ampq(ctx):
     """Set AMPQ messages to be dispatched.
 
     """
+    # Escape if email rejected.
+    if ctx.email_rejected:
+        return
+
     def _get_ampq_props(data):
         """Returns an AMPQ basic properties instance, i.e. message header.
 
@@ -257,6 +263,10 @@ def _enqueue_messages(ctx):
     """Enqueues messages upon MQ server.
 
     """
+    # Escape if email rejected.
+    if ctx.email_rejected:
+        return
+
     mq.produce(ctx.msg_ampq, connection_url=config.mq.connections.main)
 
 
@@ -266,6 +276,10 @@ def _dequeue_email(ctx):
     """
     if _CONFIG.mail.deleteProcessed:
         mail.delete_email(ctx.email_uid, client=ctx.imap_client)
+    elif ctx.email_rejected:
+        mail.move_email(ctx.email_uid,
+                        client=ctx.imap_client,
+                        folder=_CONFIG.mail.mailbox_rejected)
     else:
         mail.move_email(ctx.email_uid, client=ctx.imap_client)
 
@@ -284,6 +298,10 @@ def _log_stats(ctx):
     """Logs processing statistics.
 
     """
+    # Escape if email rejected.
+    if ctx.email_rejected:
+        return
+
     msg = "Email uid: {};  ".format(ctx.email_uid)
     msg += "Incoming: {};  ".format(len(ctx.msg_b64))
     if ctx.msg_json_error:
@@ -324,6 +342,7 @@ def _persist_stats(ctx):
 
     db.dao_mq.persist_message_email_stats(
         ctx.email_uid,
+        ctx.email_rejected,
         arrival_date=_get_date(mail.get_email_arrival_date),
         dispatch_date=_get_date(mail.get_email_dispatch_date),
         incoming=len(ctx.msg_b64),

@@ -13,22 +13,26 @@
 
 """
 from prodiguer import cv
-from prodiguer.utils import validation
-
+from prodiguer.utils.validation import validate_bool
+from prodiguer.utils.validation import validate_date
+from prodiguer.utils.validation import validate_int
+from prodiguer.utils.validation import validate_str
+from prodiguer.utils.validation import validate_uid
+from prodiguer.utils.validation import validate_ucode
 
 
 def validate_delete_simulation(uid):
     """Function input validator: delete_simulation.
 
     """
-    validation.validate_uid(uid, "Simulation uid")
+    validate_uid(uid, "Simulation uid")
 
 
 def validate_exists(uid):
     """Function input validator: exists.
 
     """
-    validation.validate_uid(uid, "Simulation uid")
+    validate_uid(uid, "Simulation uid")
 
 
 def validate_persist_job_start(
@@ -50,16 +54,16 @@ def validate_persist_job_start(
 
     """
     if accounting_project is not None:
-        validation.validate_unicode(accounting_project, "Job accounting project")
-    validation.validate_int(warning_delay, "Job warning delay")
-    validation.validate_date(execution_start_date, 'Job execution start date')
+        validate_ucode(accounting_project, "Job accounting project")
+    validate_int(warning_delay, "Job warning delay")
+    validate_date(execution_start_date, 'Job execution start date')
     cv.validator.validate_job_type(job_type)
-    validation.validate_uid(job_uid, "Job uid")
-    validation.validate_uid(simulation_uid, "Simulation uid")
+    validate_uid(job_uid, "Job uid")
+    validate_uid(simulation_uid, "Simulation uid")
     if post_processing_name is not None:
         pass
     if post_processing_date is not None:
-        validation.validate_date(post_processing_date, "post_processing_date", "YYYYMMDD")
+        validate_date(post_processing_date, "post_processing_date", "YYYYMMDD")
     if post_processing_dimension is not None:
         pass
     if post_processing_component is not None:
@@ -82,11 +86,11 @@ def validate_persist_job_end(
     """Function input validator: persist_job_end.
 
     """
-    validation.validate_date(execution_end_date, "Job execution end date")
-    validation.validate_bool(is_compute_end, 'Job is compute end flag')
-    validation.validate_bool(is_error, 'Job is Error flag')
-    validation.validate_uid(job_uid, "Job uid")
-    validation.validate_uid(simulation_uid, "Simulation uid")
+    validate_date(execution_end_date, "Job execution end date")
+    validate_bool(is_compute_end, 'Job is compute end flag')
+    validate_bool(is_error, 'Job is Error flag')
+    validate_uid(job_uid, "Job uid")
+    validate_uid(simulation_uid, "Simulation uid")
 
 
 def validate_persist_job_period(
@@ -99,11 +103,11 @@ def validate_persist_job_period(
     """Function input validator: persist_job_period.
 
     """
-    validation.validate_uid(simulation_uid, "Simulation uid")
-    validation.validate_uid(job_uid, "Job uid")
-    validation.validate_int(period_id, "Job period identifier")
-    validation.validate_int(period_date_begin, "Job period date begin")
-    validation.validate_int(period_date_end, "Job period date end")
+    validate_uid(simulation_uid, "Simulation uid")
+    validate_uid(job_uid, "Job uid")
+    validate_int(period_id, "Job period identifier")
+    validate_int(period_date_begin, "Job period date begin")
+    validate_int(period_date_end, "Job period date end")
 
 
 def validate_persist_environment_metric(
@@ -139,8 +143,8 @@ def validate_persist_environment_metric(
     def _validate_throughput_mb_s():
         pass
 
-    validation.validate_uid(job_uid, "Job uid")
-    validation.validate_uid(simulation_uid, "Simulation uid")
+    validate_uid(job_uid, "Job uid")
+    validate_uid(simulation_uid, "Simulation uid")
 
     _validate_action_name()
     _validate_action_timestamp()
@@ -185,60 +189,60 @@ def validate_persist_simulation_start(
     cv.validator.validate_model(model)
     cv.validator.validate_simulation_space(space)
     if accounting_project is not None:
-        validation.validate_unicode(accounting_project, "Simulation accounting project")
-    validation.validate_date(execution_start_date, 'Simulation execution start date')
+        validate_ucode(accounting_project, "Simulation accounting project")
+    validate_date(execution_start_date, 'Simulation execution start date')
 
     if compute_node_raw is not None:
-        validation.validate_unicode(compute_node_raw, 'Simulation compute node (raw)')
+        validate_ucode(compute_node_raw, 'Simulation compute node (raw)')
     if compute_node_login_raw is not None:
-        validation.validate_unicode(compute_node_login_raw, 'Simulation compute node login (raw)')
+        validate_ucode(compute_node_login_raw, 'Simulation compute node login (raw)')
     if compute_node_machine_raw is not None:
-        validation.validate_unicode(compute_node_machine_raw, 'Simulation compute node machine (raw)')
+        validate_ucode(compute_node_machine_raw, 'Simulation compute node machine (raw)')
     if experiment_raw is not None:
-        validation.validate_unicode(experiment_raw, 'Simulation experiment (raw)')
+        validate_ucode(experiment_raw, 'Simulation experiment (raw)')
     if model_raw is not None:
-        validation.validate_unicode(model_raw, 'Simulation model (raw)')
+        validate_ucode(model_raw, 'Simulation model (raw)')
     if space_raw is not None:
-        validation.validate_unicode(space_raw, 'Simulation space (raw)')
+        validate_ucode(space_raw, 'Simulation space (raw)')
 
-    validation.validate_unicode(name, "Simulation name")
-    validation.validate_date(output_end_date, 'Output end date')
-    validation.validate_date(output_start_date, 'Output start date')
-    validation.validate_uid(uid, "Simulation uid")
+    validate_ucode(name, "Simulation name")
+    validate_date(output_end_date, 'Output end date')
+    validate_date(output_start_date, 'Output start date')
+    validate_uid(uid, "Simulation uid")
 
     if submission_path:
-        validation.validate_str(submission_path, "Submit directory and job localisation")
+        validate_str(submission_path, "Submit directory and job localisation")
     if archive_path:
-        validation.validate_str(submission_path, "Output tree located on ARCHIVE")
+        validate_str(submission_path, "Output tree located on ARCHIVE")
     if storage_path:
-        validation.validate_str(submission_path, "Output tree located on STORAGE")
+        validate_str(submission_path, "Output tree located on STORAGE")
     if storage_small_path:
-        validation.validate_str(submission_path, "Output tree located on STORAGE hosting figures")
+        validate_str(submission_path, "Output tree located on STORAGE hosting figures")
 
 
 def validate_persist_simulation_02(execution_end_date, is_error, uid):
     """Function input validator: persist_simulation_02.
 
     """
-    validation.validate_bool(is_error, 'Simulation Is Error flag')
+    validate_bool(is_error, 'Simulation Is Error flag')
     if execution_end_date is not None:
-        validation.validate_date(execution_end_date, "Simulation execution end date")
-    validation.validate_uid(uid, "Simulation uid")
+        validate_date(execution_end_date, "Simulation execution end date")
+    validate_uid(uid, "Simulation uid")
 
 
 def validate_persist_simulation_configuration(uid, card):
     """Function input validator: persist_simulation_configuration.
 
     """
-    validation.validate_uid(uid, "Simulation uid")
-    validation.validate_str(card, "Simulation config card")
+    validate_uid(uid, "Simulation uid")
+    validate_str(card, "Simulation config card")
 
 
 def validate_retrieve_active_simulation(hashid):
     """Function input validator: retrieve_active_simulation.
 
     """
-    validation.validate_unicode(hashid, "Simulation hash identifier")
+    validate_ucode(hashid, "Simulation hash identifier")
 
 
 def validate_retrieve_active_simulations(start_date=None):
@@ -246,7 +250,7 @@ def validate_retrieve_active_simulations(start_date=None):
 
     """
     if start_date is not None:
-        validation.validate_date(start_date, 'Simulation execution start date')
+        validate_date(start_date, 'Simulation execution start date')
 
 
 def validate_retrieve_active_jobs(start_date=None):
@@ -254,76 +258,76 @@ def validate_retrieve_active_jobs(start_date=None):
 
     """
     if start_date is not None:
-        validation.validate_date(start_date, 'Job execution start date')
+        validate_date(start_date, 'Job execution start date')
 
 
 def validate_retrieve_job(uid):
     """Function input validator: retrieve_job.
 
     """
-    validation.validate_uid(uid, "Job uid")
+    validate_uid(uid, "Job uid")
 
 
 def validate_retrieve_latest_job_periods(uid):
     """Function input validator: retrieve_latest_job_periods.
 
     """
-    validation.validate_uid(uid, "Simulation uid")
+    validate_uid(uid, "Simulation uid")
 
 
 def validate_retrieve_latest_job_period_counter(uid):
     """Function input validator: retrieve_latest_job_period_counter.
 
     """
-    validation.validate_uid(uid, "Simulation uid")
+    validate_uid(uid, "Simulation uid")
 
 
 def validate_retrieve_job_subset(uid):
     """Function input validator: retrieve_job_subset.
 
     """
-    validation.validate_uid(uid, "Job uid")
+    validate_uid(uid, "Job uid")
 
 
 def validate_retrieve_simulation(uid):
     """Function input validator: retrieve_simulation.
 
     """
-    validation.validate_uid(uid, "Simulation uid")
+    validate_uid(uid, "Simulation uid")
 
 
 def validate_retrieve_simulation_configuration(uid):
     """Function input validator: retrieve_simulation_configuration.
 
     """
-    validation.validate_uid(uid, "Simulation uid")
+    validate_uid(uid, "Simulation uid")
 
 
 def validate_retrieve_simulation_jobs(uid):
     """Function input validator: retrieve_simulation_jobs.
 
     """
-    validation.validate_uid(uid, "Simulation uid")
+    validate_uid(uid, "Simulation uid")
 
 
 def validate_retrieve_simulation_try(hashid, try_id):
     """Function input validator: retrieve_simulation_try.
 
     """
-    validation.validate_unicode(hashid, "Simulation hash identifier")
-    validation.validate_int(try_id, "Simulation try id")
+    validate_ucode(hashid, "Simulation hash identifier")
+    validate_int(try_id, "Simulation try id")
 
 
 def validate_retrieve_simulation_previous_tries(hashid, try_id):
     """Function input validator: retrieve_simulation_previous_tries.
 
     """
-    validation.validate_unicode(hashid, "Simulation hash identifier")
-    validation.validate_int(try_id, "Simulation try id")
+    validate_ucode(hashid, "Simulation hash identifier")
+    validate_int(try_id, "Simulation try id")
 
 
 def validate_update_active_simulation(hashid):
     """Function input validator: update_active_simulation.
 
     """
-    validation.validate_unicode(hashid, "Simulation hash identifier")
+    validate_ucode(hashid, "Simulation hash identifier")

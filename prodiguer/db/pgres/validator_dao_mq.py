@@ -12,6 +12,7 @@
 
 """
 from prodiguer.mq import constants
+from prodiguer.utils.validation import validate_bool
 from prodiguer.utils.validation import validate_date
 from prodiguer.utils.validation import validate_int
 from prodiguer.utils.validation import validate_mbr
@@ -93,6 +94,7 @@ def validate_retrieve_message_emails(arrival_date):
 
 def validate_persist_message_email_stats(
     email_id,
+    email_rejected,
     arrival_date=None,
     dispatch_date=None,
     incoming=0,
@@ -122,6 +124,7 @@ def validate_persist_message_email_stats(
 
     """
     validate_int(email_id, "email_id")
+    validate_bool(email_rejected, "email rejected flag")
     if arrival_date:
         validate_date(arrival_date, 'Email arrival date')
     if dispatch_date:

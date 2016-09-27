@@ -13,6 +13,7 @@ import datetime
 import uuid
 
 from sqlalchemy import BigInteger
+from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import Integer
@@ -89,6 +90,7 @@ class MessageEmailStats(Entity):
 
     # Attributes.
     email_id = Column(BigInteger, nullable=False)
+    email_rejected = Column(Boolean, default=False)
     arrival_date = Column(DateTime)
     arrival_latency = Column(Integer)
     dispatch_date = Column(DateTime)
