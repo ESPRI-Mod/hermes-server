@@ -20,9 +20,11 @@ from prodiguer.utils import decorators
 
 
 @decorators.validate(validator.validate_create_supervision)
-def create_supervision(simulation_uid,
-                       job_uid,
-                       trigger_code):
+def create_supervision(
+    simulation_uid,
+    job_uid,
+    trigger_code
+    ):
     """Creates a new supervision record in db.
 
     :param str simulation_uid: Simulation unique identifer.
@@ -41,6 +43,7 @@ def create_supervision(simulation_uid,
     return session.insert(instance)
 
 
+@decorators.validate(validator.validate_retrieve_supervision)
 def retrieve_supervision(identifer):
     """Retrieves supervision details from db.
 
@@ -51,3 +54,4 @@ def retrieve_supervision(identifer):
 
     """
     return dao.get_by_id(types.Supervision, identifer)
+

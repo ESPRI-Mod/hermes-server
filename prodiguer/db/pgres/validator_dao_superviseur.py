@@ -11,7 +11,8 @@
 
 
 """
-from prodiguer.utils import validation
+from prodiguer.utils.validation import validate_uid
+from prodiguer.utils.validation import validate_ucode
 
 
 
@@ -19,12 +20,13 @@ def validate_create_supervision(simulation_uid, job_uid, trigger_code):
     """Function input validator: create_supervision.
 
     """
-    def _validate_trigger_code():
-        """Validates trigger_code input parameter.
+    validate_uid(job_uid, "Job uid")
+    validate_uid(simulation_uid, "Simulation uid")
+    validate_ucode(trigger_code, "trigger_code")
 
-        """
-        validation.validate_unicode(trigger_code, "trigger_code")
 
-    validation.validate_uid(job_uid, "Job uid")
-    validation.validate_uid(simulation_uid, "Simulation uid")
-    _validate_trigger_code()
+def validate_retrieve_supervision(identifer):
+    """Function input validator: create_supervision.
+
+    """
+    print "TODO: validate supervision identifier", identifer
