@@ -25,12 +25,17 @@ from prodiguer.web.endpoints import metrics_pcmdi
 from prodiguer.web.utils import websockets
 
 
+
+# Base address to API endpoints.
+_BASE_ADDRESS = '{}/api/1{}'
+
+
 def _get_path_to_front_end():
     """Return path to the front end javascript application.
 
     """
     dir_fe = shell.get_repo_path(['hermes-fe', 'src'])
-    log("Front-end static files @ {0}".format(dir_fe))
+    log("Front-end static files @ {}".format(dir_fe))
 
     return dir_fe
 
@@ -88,7 +93,7 @@ def _get_app():
     endpoints = _get_app_endpoints()
     log("Endpoint to handler mappings:")
     for url, handler in sorted(endpoints, key=lambda i: i[0]):
-        log("{0} ---> {1}".format(url, str(handler).split(".")[-1][0:-2]))
+        log("{} ---> {}".format(url, str(handler).split(".")[-1][0:-2]))
 
     schemas.init([i[0] for i in endpoints])
 
@@ -127,3 +132,12 @@ def stop():
     """
     ioloop = tornado.ioloop.IOLoop.instance()
     ioloop.add_callback(lambda x: x.stop(), ioloop)
+
+
+def get_endpoint(suffix):
+    """Returns the endpoint prefixed with base address.
+    :param str suffix: Endpoint suffix.
+    :returns: The endpoint prefixed with base address.
+    :rtype: str
+    """
+    return _BASE_ADDRESS.format(config.web.url, suffix)
