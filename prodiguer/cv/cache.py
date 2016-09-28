@@ -144,7 +144,7 @@ def get_term_count():
 
     """
     count = 0
-    for term_type in _DATA.keys():
+    for term_type in _DATA:
         count += len(_DATA[term_type])
 
     return count
@@ -157,7 +157,7 @@ def get_term_typeset():
     :rtype: list
 
     """
-    return sorted(_DATA.keys())
+    return sorted(_DATA)
 
 
 def get_random_term(term_type):

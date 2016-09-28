@@ -89,9 +89,7 @@ def retrieve_active_simulations(start_date=None):
     qry = session.raw_query(
         s.accounting_project,
         s.compute_node_login,
-        s.compute_node_login_raw,
         s.compute_node_machine,
-        s.compute_node_machine_raw,
         as_datetime_string(s.execution_end_date),
         as_datetime_string(s.execution_start_date),
         s.experiment,

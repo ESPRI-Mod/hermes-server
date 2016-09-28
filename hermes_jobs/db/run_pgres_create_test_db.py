@@ -29,7 +29,7 @@ from prodiguer.utils import logger
 
 
 # Number of days for which to create test simulations.
-_QUOTA_DAYS = 14
+_QUOTA_DAYS = 90
 
 # Number of simulations to create per day.
 _QUOTA_SIMS_PER_DAY = 30
@@ -37,7 +37,7 @@ _QUOTA_SIMS_PER_DAY = 30
 # Number of jobs to create per simulation.
 _QUOTA_JOBS_PER_SIM = 30
 
-# Number of simulations to create per day.
+# Number of messages to create per day.
 _QUOTA_MSG_PER_JOB = 10
 
 # Set of accounting projects to be used.
@@ -188,6 +188,7 @@ def _create_job_message(simulation, job, message_type):
     instance.producer_id = unicode(mq.constants.PRODUCER_HERMES)
     instance.producer_version = u"x.x.x"
     instance.type_id = message_type
+    instance.timestamp_raw = unicode(instance.timestamp)
     instance.user_id = mq.constants.USER_HERMES
     instance.uid = unicode(uuid.uuid4())
     instance.correlation_id_1 = simulation.uid
@@ -237,6 +238,7 @@ def _main():
     msg = msg.format(_QUOTA_DAYS * _QUOTA_SIMS_PER_DAY, arrow.utcnow() - then)
     logger.log_db(msg)
 
+
 if __name__ == '__main__':
-    with db.session.create():
+    with db.session.create(commitable=True):
         _main()

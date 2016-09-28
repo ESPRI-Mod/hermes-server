@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "additionalProperties": false,
+    "properties": {
+        "uid": {
+            "items": {
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        }
+    },
+    "required": [
+        "uid"
+    ],
+    "title": "HERMES JSON schema: endpoint = api/1/simulation/monitoring/fetch_detail",
+    "type": "object"
+}

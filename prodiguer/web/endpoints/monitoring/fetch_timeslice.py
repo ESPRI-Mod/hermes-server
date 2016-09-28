@@ -14,12 +14,12 @@
 import datetime
 
 import arrow
+import tornado
 
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
 from prodiguer.utils import logger
-from prodiguer.web.request_validation import validator_monitoring as rv
-from prodiguer.web.utils.http import HermesHTTPRequestHandler
+from prodiguer.web.utils.http1 import process_request
 
 
 
@@ -27,7 +27,7 @@ from prodiguer.web.utils.http import HermesHTTPRequestHandler
 _PARAM_TIMESLICE = 'timeslice'
 
 
-class FetchTimeSliceRequestHandler(HermesHTTPRequestHandler):
+class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
     """Fetches a time slice of simulations.
 
     """
@@ -35,29 +35,27 @@ class FetchTimeSliceRequestHandler(HermesHTTPRequestHandler):
         """HTTP GET handler.
 
         """
-        def _decode_request():
-            """Decodes request.
+        def _set_criteria():
+            """Sets search criteria.
 
             """
             timeslice = self.get_argument(_PARAM_TIMESLICE)
             if timeslice == '1W':
-                self.start_date = arrow.utcnow() - datetime.timedelta(days=7)
+                start_date = arrow.utcnow() - datetime.timedelta(days=7)
             elif timeslice == '2W':
-                self.start_date = arrow.utcnow() - datetime.timedelta(days=14)
+                start_date = arrow.utcnow() - datetime.timedelta(days=14)
             elif timeslice == '1M':
-                self.start_date = arrow.utcnow() - datetime.timedelta(days=31)
+                start_date = arrow.utcnow() - datetime.timedelta(days=31)
             elif timeslice == '2M':
-                self.start_date = arrow.utcnow() - datetime.timedelta(days=61)
+                start_date = arrow.utcnow() - datetime.timedelta(days=61)
             elif timeslice == '3M':
-                self.start_date = arrow.utcnow() - datetime.timedelta(days=92)
+                start_date = arrow.utcnow() - datetime.timedelta(days=92)
             elif timeslice == '6M':
-                self.start_date = arrow.utcnow() - datetime.timedelta(days=183)
+                start_date = arrow.utcnow() - datetime.timedelta(days=183)
             elif timeslice == '12M':
-                self.start_date = arrow.utcnow() - datetime.timedelta(days=365)
-            elif timeslice == '*':
-                self.start_date = None
-            if self.start_date is not None:
-                self.start_date = self.start_date.datetime
+                start_date = arrow.utcnow() - datetime.timedelta(days=365)
+
+            self.start_date = None if timeslice == '*' else start_date.datetime
 
 
         def _set_data():
@@ -76,15 +74,26 @@ class FetchTimeSliceRequestHandler(HermesHTTPRequestHandler):
             """Sets response to be returned to client.
 
             """
+            self.write_raw_output = True
             self.output = {
                 'jobList': self.jobs,
                 'simulationList': self.simulations
             }
 
 
-        # Invoke tasks.
-        self.invoke(rv.validate_fetch_timeslice, [
-            _decode_request,
+        def _cleanup():
+            """Performs cleanup after request processing.
+
+            """
+            del self.jobs
+            del self.simulations
+            del self.start_date
+
+
+        # Process request.
+        process_request(self, [
+            _set_criteria,
             _set_data,
             _set_output,
-            ], write_raw_output=True)
+            _cleanup
+            ])

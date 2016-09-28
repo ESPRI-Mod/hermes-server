@@ -333,7 +333,7 @@ def dict_to_namedtuple(d, key_formatter=None):
     if key_formatter is not None:
         d = key_formatter(d)
 
-    _Class = collections.namedtuple('_Class', d.keys())
+    _Class = collections.namedtuple('_Class', d)
 
     return _Class(**d)
 
@@ -550,7 +550,7 @@ def _jsonify(data):
         return unicode(data)
 
     if isinstance(data, collections.Mapping):
-        mapped = [(str_to_camel_case(k), _jsonify(data[k])) for k in data.keys()]
+        mapped = [(str_to_camel_case(k), _jsonify(data[k])) for k in data]
         mapped = sorted(mapped, key = lambda i: i[0].lower())
         return collections.OrderedDict(mapped)
 

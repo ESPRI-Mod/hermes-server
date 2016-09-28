@@ -136,7 +136,7 @@ def get_email_uid_list(client=None):
     # Set de-duplicated email uid map.
     uid_map = {}
     for chunk in chunks:
-        for uid in chunk.keys():
+        for uid in chunk:
             try:
                 header = chunk[uid][_MESSAGE_ID_HEADER]
             except KeyError:

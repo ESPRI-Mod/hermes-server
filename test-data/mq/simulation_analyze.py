@@ -100,12 +100,12 @@ def _write_stats_1(stats, sim):
                     {mtype: 0 for mtype in MESSAGE_TYPES if mtype[0] != "-"}
             counts[msg['simuid']][msg['msgCode']] += 1
 
-    for simuid in sorted(counts.keys()):
+    for simuid in sorted(counts):
         stats.write("--------------------------------------------------------------------------------------\n")
         stats.write("Simulation: {0}\n".format(simuid))
         stats.write("--------------------------------------------------------------------------------------\n")
         total = 0
-        for mtype in sorted(counts[simuid].keys()):
+        for mtype in sorted(counts[simuid]):
             stats.write("{0}\t\t{1}\n".format(mtype, counts[simuid][mtype]))
             total += counts[simuid][mtype]
         stats.write("\n")

@@ -27,6 +27,10 @@ _HTTP_RESPONSE_BAD_REQUEST = 400
 _HTTP_RESPONSE_SERVER_ERROR = 500
 
 
+
+
+
+
 class HermesHTTPRequestHandler(tornado.web.RequestHandler):
     """A web service request handler.
 
@@ -74,9 +78,11 @@ class HermesHTTPRequestHandler(tornado.web.RequestHandler):
             msg = msg.format(id(self), self)
             logger.log_web(msg)
 
-            # Write response.
+            # Write response:
+            # ... raw output for arrays/simple types;
             if write_raw_output:
                 self.write(data)
+            # ... convert mapped db types.
             else:
                 self.write(data_convertor.convert(data, string_convertor.to_camel_case))
 
@@ -110,12 +116,12 @@ class HermesHTTPRequestHandler(tornado.web.RequestHandler):
 
             """
             try:
-                data = self.output
+                self.output
             except AttributeError:
-                data = {}
-            if 'status' not in data:
-                data['status'] = 0
-            _write(data)
+                _write({})
+            else:
+                _write(self.output)
+                # del self.output
 
 
         def _write_failure(err):

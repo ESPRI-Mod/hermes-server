@@ -97,7 +97,7 @@ def clear_cache(key=None):
     :param str key: Web socket client cache key.
 
     """
-    keys = _WS_CLIENTS.keys() if key is None else { key }
+    keys = list(_WS_CLIENTS) if key is None else { key }
     for key in keys:
         del _WS_CLIENTS[key]
 
@@ -106,7 +106,7 @@ def pong_clients():
     """Pongs clients.
 
     """
-    for app in _WS_CLIENTS.keys():
+    for app in _WS_CLIENTS:
         for client in _WS_CLIENTS[app]:
             try:
                 client.write_message("pong")

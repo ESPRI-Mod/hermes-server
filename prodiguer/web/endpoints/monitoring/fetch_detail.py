@@ -11,12 +11,13 @@
 
 
 """
+import tornado
+
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring
 from prodiguer.db.pgres import dao_mq
 from prodiguer.utils import logger
-from prodiguer.web.request_validation import validator_monitoring as rv
-from prodiguer.web.utils.http import HermesHTTPRequestHandler
+from prodiguer.web.utils.http1 import process_request
 
 
 
@@ -24,8 +25,7 @@ from prodiguer.web.utils.http import HermesHTTPRequestHandler
 _PARAM_UID = 'uid'
 
 
-
-class FetchDetailRequestHandler(HermesHTTPRequestHandler):
+class FetchDetailRequestHandler(tornado.web.RequestHandler):
     """Simulation monitor front end setup request handler.
 
     """
@@ -33,8 +33,8 @@ class FetchDetailRequestHandler(HermesHTTPRequestHandler):
         """HTTP GET handler.
 
         """
-        def _decode_request():
-            """Decodes request.
+        def _set_criteria():
+            """Sets search criteria.
 
             """
             self.uid = self.get_argument(_PARAM_UID)
@@ -64,7 +64,6 @@ class FetchDetailRequestHandler(HermesHTTPRequestHandler):
                     self.previous_tries = dao_monitoring.retrieve_simulation_previous_tries(self.simulation.hashid,
                                                                                             self.simulation.try_id)
 
-
         def _set_output():
             """Sets response to be returned to client.
 
@@ -78,9 +77,23 @@ class FetchDetailRequestHandler(HermesHTTPRequestHandler):
             }
 
 
-        # Invoke tasks.
-        self.invoke(rv.validate_fetch_one, [
-            _decode_request,
+        def _cleanup():
+            """Performs cleanup after request processing.
+
+            """
+            del self.configuration
+            del self.has_messages
+            del self.job_list
+            del self.previous_tries
+            del self.simulation
+            del self.uid
+
+
+        # Process request.
+        process_request(self, [
+            _set_criteria,
             _set_data,
-            _set_output
-        ])
+            _set_output,
+            _cleanup
+            ])
+

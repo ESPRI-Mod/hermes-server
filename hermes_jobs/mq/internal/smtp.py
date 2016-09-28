@@ -242,7 +242,7 @@ def _set_msg_ampq(ctx):
 
         """
         # Strip out non-platform platform attributes.
-        return {k: data[k] for k in data.keys() if not k.startswith("msg")}
+        return {k: data[k] for k in data if not k.startswith("msg")}
 
 
     def _encode(data):

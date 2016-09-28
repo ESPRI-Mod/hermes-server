@@ -158,7 +158,7 @@ def fetch_columns(group_id, exclude_id_column=False):
     # Get columns from first record.
     collection = _get_collection(group_id)
     cursor = _fetch(collection.find_one)
-    columns = cursor.keys() if cursor else []
+    columns = list(cursor) if cursor else []
 
     # Split columns into user defined and control.
     user_columns = [k for k in columns if not k.startswith('_')]

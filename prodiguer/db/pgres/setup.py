@@ -58,7 +58,7 @@ def _init_simulations():
     # Insert into db.
     for simulation in simulations:
         # ... ensure CV cross references are lower-case.
-        for key in simulation['associations'].keys():
+        for key in simulation['associations']:
             simulation['associations'][key] = simulation['associations'][key].lower()
 
         # ... hydrate new simulation;

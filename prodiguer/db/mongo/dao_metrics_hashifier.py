@@ -44,7 +44,7 @@ def _get_hashid(group_id, data):
 
     """
     hashid = unicode(group_id)
-    for key in [k for k in sorted(data.keys()) if k in _HASH_FIELDSET]:
+    for key in [k for k in sorted(data) if k in _HASH_FIELDSET]:
         hashid += unicode(key)
         hashid += unicode(data[key])
 

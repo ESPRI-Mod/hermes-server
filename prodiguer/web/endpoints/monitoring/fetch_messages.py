@@ -11,12 +11,13 @@
 
 
 """
+import tornado
+
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring
 from prodiguer.db.pgres import dao_mq
 from prodiguer.utils import logger
-from prodiguer.web.request_validation import validator_monitoring as rv
-from prodiguer.web.utils.http import HermesHTTPRequestHandler
+from prodiguer.web.utils.http1 import process_request
 
 
 
@@ -24,7 +25,7 @@ from prodiguer.web.utils.http import HermesHTTPRequestHandler
 _PARAM_UID = 'uid'
 
 
-class FetchMessagesRequestHandler(HermesHTTPRequestHandler):
+class FetchMessagesRequestHandler(tornado.web.RequestHandler):
     """Simulation monitor fetch messages request handler.
 
     """
@@ -32,8 +33,8 @@ class FetchMessagesRequestHandler(HermesHTTPRequestHandler):
         """HTTP GET handler.
 
         """
-        def _decode_request():
-            """Decodes request.
+        def _set_criteria():
+            """Sets search criteria.
 
             """
             self.simulation_uid = self.get_argument(_PARAM_UID)
@@ -61,9 +62,19 @@ class FetchMessagesRequestHandler(HermesHTTPRequestHandler):
             }
 
 
-        # Invoke tasks.
-        self.invoke(rv.validate_fetch_messages, [
-            _decode_request,
+        def _cleanup():
+            """Performs cleanup after request processing.
+
+            """
+            del self.simulation_uid
+            del self.simulation
+            del self.message_history
+
+
+        # Process request.
+        process_request(self, [
+            _set_criteria,
             _set_data,
-            _set_output
-        ])
+            _set_output,
+            _cleanup
+            ])
