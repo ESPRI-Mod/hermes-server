@@ -23,17 +23,18 @@ def load(typeof, endpoint):
 
 	"""
 	fpath = _get_fpath(typeof, endpoint)
-	print fpath
-	if os.path.exists(fpath):
-		try:
-			with open(fpath, 'r') as fstream:
-				schema = json.loads(fstream.read())
-		except Exception as err:
-			print endpoint, err
-			pass
-		else:
-			extender.extend(schema, typeof, endpoint)
-			return schema
+	if not os.path.exists(fpath):
+		return
+
+	try:
+		with open(fpath, 'r') as fstream:
+			schema = json.loads(fstream.read())
+	except Exception as err:
+		print endpoint, err
+		pass
+	else:
+		extender.extend(schema, typeof, endpoint)
+		return schema
 
 
 def _get_fpath(typeof, endpoint):

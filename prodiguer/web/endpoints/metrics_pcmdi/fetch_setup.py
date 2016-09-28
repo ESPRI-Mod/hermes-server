@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-.. module:: hermes.web.endpoints.sim_metrics.fetch_line_count.py
+.. module:: hermes.web.endpoints.metrics_pcmdi.fetch_setup.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
-   :synopsis: Metric group line count request handler.
+   :synopsis: Metric group setup fetch request handler.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
@@ -13,7 +13,7 @@
 import tornado
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web.request_validation import validator_sim_metrics as rv
+from prodiguer.web.request_validation import validator_metrics_pcmdi as rv
 from prodiguer.web.utils.http import HermesHTTPRequestHandler
 
 
@@ -25,8 +25,8 @@ _CONTENT_TYPE_JSON = ["application/json", "application/json; charset=UTF-8"]
 _PARAM_GROUP = 'group'
 
 
-class FetchCountRequestHandler(HermesHTTPRequestHandler):
-    """Simulation metric group fetch line count method request handler.
+class FetchSetupRequestHandler(HermesHTTPRequestHandler):
+    """Simulation metric group fetch setup method request handler.
 
     """
     def get(self):
@@ -46,7 +46,8 @@ class FetchCountRequestHandler(HermesHTTPRequestHandler):
             """
             self.output = {
                 'group': self.group,
-                'count': dao.fetch_count(self.group, self.query)
+                'columns': dao.fetch_columns(self.group, True),
+                'data': dao.fetch_setup(self.group, self.query)
             }
 
         def _set_headers():
@@ -56,7 +57,7 @@ class FetchCountRequestHandler(HermesHTTPRequestHandler):
             self.set_header("Access-Control-Allow-Origin", "*")
 
         # Invoke tasks.
-        self.invoke(rv.validate_fetch_count, [
+        self.invoke(rv.validate_fetch_setup, [
             _decode_request,
             _set_output,
             _set_headers

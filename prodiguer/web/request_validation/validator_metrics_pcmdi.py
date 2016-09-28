@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: hermes.web.request_validation.validator_sim_metrics.py
+.. module:: hermes.web.request_validation.validator_metrics_pcmdi.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -13,7 +13,8 @@
 """
 import re
 
-from voluptuous import All, Required, Schema
+from voluptuous import All
+from voluptuous import Required
 
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.web.request_validation import validator as rv

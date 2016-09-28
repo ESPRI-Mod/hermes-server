@@ -19,6 +19,7 @@ import tornado
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
 from prodiguer.utils import logger
+from prodiguer.web.utils import constants
 from prodiguer.web.utils.http1 import process_request
 
 

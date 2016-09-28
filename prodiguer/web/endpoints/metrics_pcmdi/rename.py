@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: hermes.web.endpoints.sim_metrics.rename.py
+.. module:: hermes.web.endpoints.metrics_pcmdi.rename.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
@@ -14,7 +14,7 @@
 import tornado
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web.request_validation import validator_sim_metrics as rv
+from prodiguer.web.request_validation import validator_metrics_pcmdi as rv
 from prodiguer.web.utils.http import HermesHTTPRequestHandler
 
 

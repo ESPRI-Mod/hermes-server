@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-.. module:: test_web_sim_metrics.py
+.. module:: test_web_metrics_pcmdi.py
 
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL / CeCILL

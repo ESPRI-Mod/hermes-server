@@ -21,7 +21,7 @@ from prodiguer.web import schemas
 from prodiguer.web.endpoints import cv
 from prodiguer.web.endpoints import monitoring
 from prodiguer.web.endpoints import ops
-from prodiguer.web.endpoints import sim_metrics
+from prodiguer.web.endpoints import metrics_pcmdi
 from prodiguer.web.utils import websockets
 
 
@@ -51,15 +51,15 @@ def _get_app_endpoints():
         (r'/api/1/simulation/monitoring/ws/all', monitoring.FrontEndWebSocketAllHandler),
         (r'/api/1/simulation/monitoring/event', monitoring.EventRequestHandler),
         # Simulation metric routes.
-        (r'/api/1/simulation/metrics/add', sim_metrics.AddRequestHandler),
-        (r'/api/1/simulation/metrics/delete', sim_metrics.DeleteRequestHandler),
-        (r'/api/1/simulation/metrics/fetch', sim_metrics.FetchRequestHandler),
-        (r'/api/1/simulation/metrics/fetch_count', sim_metrics.FetchCountRequestHandler),
-        (r'/api/1/simulation/metrics/fetch_columns', sim_metrics.FetchColumnsRequestHandler),
-        (r'/api/1/simulation/metrics/fetch_list', sim_metrics.FetchListRequestHandler),
-        (r'/api/1/simulation/metrics/fetch_setup', sim_metrics.FetchSetupRequestHandler),
-        (r'/api/1/simulation/metrics/rename', sim_metrics.RenameRequestHandler),
-        (r'/api/1/simulation/metrics/set_hashes', sim_metrics.SetHashesRequestHandler)
+        (r'/api/1/simulation/metrics/add', metrics_pcmdi.AddRequestHandler),
+        (r'/api/1/simulation/metrics/delete', metrics_pcmdi.DeleteRequestHandler),
+        (r'/api/1/simulation/metrics/fetch', metrics_pcmdi.FetchRequestHandler),
+        (r'/api/1/simulation/metrics/fetch_count', metrics_pcmdi.FetchCountRequestHandler),
+        (r'/api/1/simulation/metrics/fetch_columns', metrics_pcmdi.FetchColumnsRequestHandler),
+        (r'/api/1/simulation/metrics/fetch_list', metrics_pcmdi.FetchListRequestHandler),
+        (r'/api/1/simulation/metrics/fetch_setup', metrics_pcmdi.FetchSetupRequestHandler),
+        (r'/api/1/simulation/metrics/rename', metrics_pcmdi.RenameRequestHandler),
+        (r'/api/1/simulation/metrics/set_hashes', metrics_pcmdi.SetHashesRequestHandler)
     )
 
 
