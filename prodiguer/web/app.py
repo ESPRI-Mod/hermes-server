@@ -42,7 +42,6 @@ def _get_app_endpoints():
     return (
         # Operations routes.
         (r'/api', ops.HeartbeatRequestHandler),
-        (r'/api/1/ops/heartbeat', ops.HeartbeatRequestHandler),
         # Controlled vocabulary routes.
         (r'/api/1/cv/fetch', cv.FetchRequestHandler),
         # Simulation monitoring routes.

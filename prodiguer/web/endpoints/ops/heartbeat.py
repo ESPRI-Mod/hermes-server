@@ -11,14 +11,17 @@
 
 
 """
+import datetime as dt
+
 import tornado
 
-from prodiguer.web.utils.http import HermesHTTPRequestHandler
-from prodiguer.web.request_validation import validator as rv
+import prodiguer
+from prodiguer.web.utils.http1 import process_request
 
 
 
-class HeartbeatRequestHandler(HermesHTTPRequestHandler):
+
+class HeartbeatRequestHandler(tornado.web.RequestHandler):
     """Operations heartbeat request handler.
 
     """
@@ -31,9 +34,10 @@ class HeartbeatRequestHandler(HermesHTTPRequestHandler):
 
             """
             self.output = {
-                "message": "Hermes web service is running",
-                "status": 0
+                "message": "HERMES web service is operational @ {}".format(dt.datetime.now()),
+                "version": prodiguer.__version__
             }
 
-        # Invoke tasks.
-        self.invoke(rv.validate, _set_output)
+
+        # Process request.
+        process_request(self, _set_output)
