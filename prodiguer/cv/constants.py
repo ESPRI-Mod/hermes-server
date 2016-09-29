@@ -73,7 +73,7 @@ CASE_SENSITIVE_TERM_TYPESET = [
 
 # Constants pertaining to job types.
 JOB_TYPE_COMPUTING = u"c"
-JOB_TYPE_POST_PROCESSING = u"pp"
+JOB_TYPE_POST_PROCESSING = u"p"
 
 # Set of job types.
 JOB_TYPESET = [

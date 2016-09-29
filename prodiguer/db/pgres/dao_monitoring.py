@@ -41,12 +41,11 @@ def retrieve_active_jobs(start_date=None):
         as_datetime_string(j.execution_start_date),
         j.is_compute_end,
         j.is_error,
-        j.job_uid,
-        j.simulation_uid,
+        j.id,
         j.typeof,
-        j.post_processing_name,
         j.execution_state,
-        j.is_im
+        j.is_im,
+        s.id
         )
     qry = qry.join(s, j.simulation_uid == s.uid)
     qry = qry.filter(j.execution_start_date != None)
@@ -104,7 +103,8 @@ def retrieve_active_simulations(start_date=None):
         s.space,
         s.space_raw,
         s.try_id,
-        s.uid
+        s.uid,
+        s.id,
         )
     qry = qry.filter(s.execution_start_date != None)
     qry = qry.filter(s.is_obsolete == False)
