@@ -220,8 +220,8 @@ def validate_persist_simulation_start(
         validate_str(submission_path, "Output tree located on STORAGE hosting figures")
 
 
-def validate_persist_simulation_02(execution_end_date, is_error, uid):
-    """Function input validator: persist_simulation_02.
+def validate_persist_simulation_end(execution_end_date, is_error, uid):
+    """Function input validator: persist_simulation_end.
 
     """
     validate_bool(is_error, 'Simulation Is Error flag')

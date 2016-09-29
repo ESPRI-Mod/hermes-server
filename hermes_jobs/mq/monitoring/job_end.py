@@ -91,7 +91,7 @@ def _persist(ctx):
 
     # Persist simulation info.
     if ctx.props.type in _END_SIMULATION_MESSAGE_TYPES:
-        ctx.simulation = dao.persist_simulation_02(
+        ctx.simulation = dao.persist_simulation_end(
             ctx.msg.timestamp,
             ctx.is_error,
             ctx.simulation_uid

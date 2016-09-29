@@ -40,10 +40,12 @@ class Job(Entity):
 
     # Attributes.
     accounting_project = Column(Unicode(511))
+    execution_state = Column(Unicode(1), default='q')
     execution_end_date = Column(DateTime)
     execution_start_date = Column(DateTime)
     is_compute_end = Column(Boolean, default=False)
     is_error = Column(Boolean, default=False)
+    is_im = Column(Boolean, default=False)
     job_uid = Column(Unicode(63), nullable=False, unique=True)
     post_processing_component = Column(Unicode(63))
     post_processing_date = Column(DateTime)
@@ -55,6 +57,19 @@ class Job(Entity):
     typeof = Column(Unicode(63))
     warning_delay = Column(Integer)
     submission_path = Column(Unicode(2047))
+
+
+    def get_execution_state(self):
+        """Returns current derived execution status.
+
+        """
+        if self.execution_start_date and not self.execution_end_date:
+            return 'r'
+        if self.execution_end_date and self.is_error:
+            return 'e'
+        if self.execution_end_date and not self.is_error:
+            return 'c'
+        return 'q'
 
 
 class JobPeriod(Entity):

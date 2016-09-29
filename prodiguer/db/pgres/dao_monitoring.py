@@ -44,7 +44,9 @@ def retrieve_active_jobs(start_date=None):
         j.job_uid,
         j.simulation_uid,
         j.typeof,
-        j.post_processing_name
+        j.post_processing_name,
+        j.execution_state,
+        j.is_im
         )
     qry = qry.join(s, j.simulation_uid == s.uid)
     qry = qry.filter(j.execution_start_date != None)
@@ -226,7 +228,9 @@ def retrieve_simulation_jobs(uid):
         j.post_processing_name,
         j.scheduler_id,
         j.submission_path,
-        j.warning_delay
+        j.warning_delay,
+        j.execution_state,
+        j.is_im
         )
     qry = qry.filter(j.execution_start_date != None)
     qry = qry.filter(j.simulation_uid == unicode(uid))
@@ -338,7 +342,9 @@ def retrieve_job_subset(uid):
         j.post_processing_name,
         j.scheduler_id,
         j.submission_path,
-        j.warning_delay
+        j.warning_delay,
+        j.execution_state,
+        j.is_im,
         )
     qry = qry.filter(j.job_uid == unicode(uid))
 
@@ -476,8 +482,8 @@ def persist_simulation_start(
     return dao.persist(_assign, types.Simulation, lambda: retrieve_simulation(uid))
 
 
-@decorators.validate(validator.validate_persist_simulation_02)
-def persist_simulation_02(execution_end_date, is_error, uid):
+@decorators.validate(validator.validate_persist_simulation_end)
+def persist_simulation_end(execution_end_date, is_error, uid):
     """Persists simulation information to db.
 
     :param datetime execution_end_date: Simulation end date.
@@ -559,12 +565,14 @@ def persist_job_start(
         instance.job_uid = unicode(job_uid)
         instance.simulation_uid = unicode(simulation_uid)
         instance.warning_delay = int(warning_delay)
+        instance.execution_state = instance.get_execution_state()
 
         # ... optional fields
         if accounting_project:
             instance.accounting_project = unicode(accounting_project)
         if post_processing_name:
             instance.post_processing_name = unicode(post_processing_name)
+            instance.is_im = (post_processing_name == 'monitoring')
         if post_processing_date:
             instance.post_processing_date = post_processing_date
         if post_processing_dimension:
@@ -577,6 +585,7 @@ def persist_job_start(
             instance.scheduler_id = unicode(scheduler_id)
         if submission_path:
             instance.submission_path = unicode(submission_path)
+
 
     return dao.persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 
@@ -609,6 +618,7 @@ def persist_job_end(
         instance.is_error = is_error
         instance.job_uid = unicode(job_uid)
         instance.simulation_uid = unicode(simulation_uid)
+        instance.execution_state = instance.get_execution_state()
 
     return dao.persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 
