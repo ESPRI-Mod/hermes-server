@@ -21,7 +21,10 @@ from sqlalchemy import Unicode
 from sqlalchemy import UniqueConstraint
 
 from prodiguer.db.pgres.entity import Entity
-
+from prodiguer.cv.constants import EXECUTION_STATE_COMPLETE
+from prodiguer.cv.constants import EXECUTION_STATE_ERROR
+from prodiguer.cv.constants import EXECUTION_STATE_QUEUED
+from prodiguer.cv.constants import EXECUTION_STATE_RUNNING
 
 
 # Database schema.
@@ -40,7 +43,7 @@ class Job(Entity):
 
     # Attributes.
     accounting_project = Column(Unicode(511))
-    execution_state = Column(Unicode(1), default='q')
+    execution_state = Column(Unicode(1), default=EXECUTION_STATE_QUEUED)
     execution_end_date = Column(DateTime)
     execution_start_date = Column(DateTime)
     is_compute_end = Column(Boolean, default=False)
@@ -64,12 +67,12 @@ class Job(Entity):
 
         """
         if self.execution_start_date and not self.execution_end_date:
-            return 'r'
+            return EXECUTION_STATE_RUNNING
         if self.execution_end_date and self.is_error:
-            return 'e'
+            return EXECUTION_STATE_ERROR
         if self.execution_end_date and not self.is_error:
-            return 'c'
-        return 'q'
+            return EXECUTION_STATE_COMPLETE
+        return EXECUTION_STATE_QUEUED
 
 
 class JobPeriod(Entity):

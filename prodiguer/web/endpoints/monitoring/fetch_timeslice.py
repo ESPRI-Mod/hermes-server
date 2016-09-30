@@ -19,7 +19,6 @@ import tornado
 from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
 from prodiguer.utils import logger
-from prodiguer.web.utils import constants
 from prodiguer.web.utils.http1 import process_request
 
 
@@ -67,7 +66,7 @@ class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
             """
             with db.session.create():
                 logger.log_web("[{}]: executing db query: retrieve_active_jobs".format(id(self)))
-                self.jobs = [_map_job(j) for j in dao.retrieve_active_jobs(self.start_date)]
+                self.jobs = dao.retrieve_active_jobs(self.start_date)
 
                 logger.log_web("[{}]: executing db query: retrieve_active_simulations".format(id(self)))
                 self.simulations = dao.retrieve_active_simulations(self.start_date)
@@ -100,21 +99,3 @@ class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
             _set_output,
             _cleanup
             ])
-
-
-
-def _map_job(j):
-    """Returns mapped job data.
-
-    """
-    return (
-        j[0],
-        j[1],
-        1 if j[2] else 0,
-        1 if j[3] else 0,
-        j[4],
-        j[5],
-        j[6],
-        1 if j[7] else 0,
-        j[8]
-        )

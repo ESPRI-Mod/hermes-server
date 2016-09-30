@@ -81,10 +81,11 @@ def get_synonyms(term):
 
     """
     try:
-        synonyms = term['synonyms']
+        term['synonyms']
     except KeyError:
-        synonyms = []
+        return []
     else:
+        synonyms = term['synonyms']
         try:
             synonyms = synonyms.split(",")
         except AttributeError:

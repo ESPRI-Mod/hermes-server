@@ -29,7 +29,7 @@ from prodiguer.utils import logger
 
 
 # Number of days for which to create test simulations.
-_QUOTA_DAYS = 90
+_QUOTA_DAYS = 2
 
 # Number of simulations to create per day.
 _QUOTA_SIMS_PER_DAY = 30
@@ -67,8 +67,8 @@ PP_DATE = arrow.get("20100101", "YYYYMMDD").datetime
 
 # Set of job types.
 _JOB_TYPESET = [
-    u"computing",
-    u"post-processing"
+    u"c",
+    u"p"
 ]
 
 # Simulation configuration card.
@@ -103,7 +103,7 @@ def _create_job(simulation, job_index):
 
     """
     typeof = random.choice(_JOB_TYPESET)
-    if typeof == "post-processing":
+    if typeof == "p":
         pp_date = PP_DATE
         pp_name = random.choice(_POST_PROCESSING_JOB_NAMES)
     else:
@@ -115,9 +115,13 @@ def _create_job(simulation, job_index):
     instance.job_uid = unicode(uuid.uuid4())
     instance.accounting_project = simulation.accounting_project
     instance.execution_start_date = simulation.execution_start_date + datetime.timedelta(hours=job_index * 2)
-    instance.execution_end_date = instance.execution_start_date + datetime.timedelta(hours=1)
+    if job_index == _QUOTA_JOBS_PER_SIM - 1:
+        instance.execution_end_date = simulation.execution_start_date
+    else:
+        instance.execution_end_date = instance.execution_start_date + datetime.timedelta(hours=1)
     instance.is_error = False
     instance.is_compute_end = False
+    instance.is_im = (pp_name == 'monitoring')
     instance.scheduler_id = random.randint(2000000, 9000000)
     instance.submission_path = unicode(uuid.uuid4())
     instance.post_processing_name = pp_name
@@ -188,7 +192,6 @@ def _create_job_message(simulation, job, message_type):
     instance.producer_id = unicode(mq.constants.PRODUCER_HERMES)
     instance.producer_version = u"x.x.x"
     instance.type_id = message_type
-    instance.timestamp_raw = unicode(instance.timestamp)
     instance.user_id = mq.constants.USER_HERMES
     instance.uid = unicode(uuid.uuid4())
     instance.correlation_id_1 = simulation.uid
@@ -202,16 +205,30 @@ def _create_job_message(simulation, job, message_type):
         "simuid": simulation.uid
     })
 
+    if message_type == mq.constants.MESSAGE_TYPE_0000:
+        instance.timestamp = simulation.execution_start_date
+    elif message_type == mq.constants.MESSAGE_TYPE_0100:
+        instance.timestamp = simulation.execution_end_date
+    instance.timestamp_raw = unicode(instance.timestamp)
+
     return db.session.insert(instance)
 
 
-def _create_job_messages(simulation, job):
-    """Create test messages related to a simulation.
+def _create_simulation_messages(s):
+    return
 
-    """
-    for _ in range(_QUOTA_MSG_PER_JOB):
-        _create_job_message(simulation, job, mq.constants.MESSAGE_TYPE_1000)
-        _create_job_message(simulation, job, mq.constants.MESSAGE_TYPE_1100)
+
+
+def _create_simulation_jobs(s):
+    jobs = [_create_job(s, i) for i in range(_QUOTA_JOBS_PER_SIM)]
+
+    print s.execution_start_date, jobs[0].execution_start_date
+    # print s.execution_start_date, jobs[10].execution_start_date
+    # print s.execution_end_date, jobs[10].execution_end_date
+    print s.execution_end_date, jobs[-1].execution_start_date
+    print "------------------------------"
+
+    s.jobs = jobs
 
 
 def _main():
@@ -227,11 +244,12 @@ def _main():
         logger.log_db("creating {} simulations starting at: {}".format(_QUOTA_SIMS_PER_DAY, start_date))
         end_date = start_date + datetime.timedelta(days=4)
         for _ in range(_QUOTA_SIMS_PER_DAY):
-            simulation = _create_simulation(start_date, end_date)
-            _create_simulation_configuration(simulation)
-            jobs = [_create_job(simulation, i + 1) for i in range(_QUOTA_JOBS_PER_SIM)]
-            for job in jobs:
-                _create_job_messages(simulation, job)
+            s = _create_simulation(start_date, end_date)
+            _create_simulation_configuration(s)
+            _create_simulation_jobs(s)
+            # _create_simulation_messages(s)
+
+
 
     # Finalize.
     msg = "created {} simulations in: {}"
