@@ -38,15 +38,15 @@ def retrieve_active_jobs(start_date=None):
     s = types.Simulation
 
     qry = session.raw_query(
-        as_datetime_string(j.execution_end_date),
-        as_datetime_string(j.execution_start_date),
-        cast(j.is_compute_end, Integer),
-        cast(j.is_error, Integer),
-        j.id,
-        j.typeof,
-        j.execution_state,
-        cast(j.is_im, Integer),
-        s.id
+        as_datetime_string(j.execution_end_date),       #0
+        as_datetime_string(j.execution_start_date),     #1
+        j.execution_state,                              #2
+        j.id,                                           #3
+        cast(j.is_compute_end, Integer),                #4
+        cast(j.is_error, Integer),                      #5
+        cast(j.is_im, Integer),                         #6
+        j.typeof,                                       #7
+        s.id                                            #8
         )
     qry = qry.join(s, j.simulation_uid == s.uid)
     qry = qry.filter(j.execution_start_date != None)
@@ -54,69 +54,6 @@ def retrieve_active_jobs(start_date=None):
     qry = qry.filter(s.is_obsolete == False)
     if start_date:
         qry = qry.filter(s.execution_start_date >= start_date)
-    qry = qry.order_by(j.execution_start_date)
-
-    return qry.all()
-
-
-
-@decorators.validate(validator.validate_retrieve_simulation_jobs)
-def retrieve_simulation_jobs(uid):
-    """Retrieves job details from db.
-
-    :param str uid: UID of simulation.
-
-    :returns: List of jobs associated with a simulation.
-    :rtype: list
-
-    """
-    j = types.Job
-
-    # qry = session.raw_query(
-    #     as_datetime_string(j.execution_end_date),
-    #     as_datetime_string(j.execution_start_date),
-    #     cast(j.is_compute_end, Integer),
-    #     cast(j.is_error, Integer),
-    #     j.job_uid,
-    #     j.simulation_uid,
-    #     j.typeof,
-    #     j.accounting_project,
-    #     j.post_processing_component,
-    #     as_date_string(j.post_processing_date),
-    #     j.post_processing_dimension,
-    #     j.post_processing_file,
-    #     j.post_processing_name,
-    #     j.scheduler_id,
-    #     j.submission_path,
-    #     j.warning_delay,
-    #     j.execution_state,
-    #     cast(j.is_im, Integer)
-    #     )
-
-    qry = session.raw_query(
-        as_datetime_string(j.execution_end_date),
-        as_datetime_string(j.execution_start_date),
-        cast(j.is_compute_end, Integer),
-        cast(j.is_error, Integer),
-        j.id,
-        j.typeof,
-        j.execution_state,
-        cast(j.is_im, Integer),
-        s.id,
-        j.job_uid,
-        j.simulation_uid,
-        j.accounting_project,
-        j.post_processing_component,
-        as_date_string(j.post_processing_date),
-        j.post_processing_dimension,
-        j.post_processing_file,
-        j.post_processing_name,
-        j.scheduler_id,
-        j.submission_path,
-        j.warning_delay
-        )
-    qry = qry.filter(j.execution_start_date != None)
-    qry = qry.filter(j.simulation_uid == unicode(uid))
     qry = qry.order_by(j.execution_start_date)
 
     return qry.all()
@@ -195,10 +132,44 @@ def retrieve_latest_job_period_counter(uid):
     qry = qry.order_by(jp.period_date_begin.desc())
     rows = qry.all()
 
-    if not rows:
-        return 0, 0
-    else :
-        return rows[0][0], rows.count(rows[0])
+    return (rows[0][0], rows.count(rows[0])) if rows else (0, 0)
+
+
+
+def _get_job_raw_query():
+    """Returns a raw query over job table.
+
+    """
+    j = types.Job
+    s = types.Simulation
+
+    qry = session.raw_query(
+        # ... core fields
+        as_datetime_string(j.execution_end_date),       #0
+        as_datetime_string(j.execution_start_date),     #1
+        j.execution_state,                              #2
+        j.id,                                           #3
+        cast(j.is_compute_end, Integer),                #4
+        cast(j.is_error, Integer),                      #5
+        cast(j.is_im, Integer),                         #6
+        j.typeof,                                       #7
+        s.id,                                           #8
+        # ... non-core fields
+        j.accounting_project,                           #9
+        j.job_uid,                                      #10
+        j.post_processing_component,                    #11
+        as_date_string(j.post_processing_date),         #12
+        j.post_processing_dimension,                    #13
+        j.post_processing_file,                         #14
+        j.post_processing_name,                         #15
+        j.scheduler_id,                                 #16
+        j.submission_path,                              #17
+        j.warning_delay,                                #18
+        s.uid                                           #19
+        )
+    qry = qry.join(s, j.simulation_uid == s.uid)
+
+    return qry
 
 
 @decorators.validate(validator.validate_retrieve_job_subset)
@@ -212,33 +183,31 @@ def retrieve_job_subset(uid):
 
     """
     j = types.Job
-    s = types.Simulation
 
-    qry = session.raw_query(
-        as_datetime_string(j.execution_end_date),
-        as_datetime_string(j.execution_start_date),
-        j.is_compute_end,
-        j.is_error,
-        j.job_uid,
-        j.simulation_uid,
-        j.typeof,
-        j.accounting_project,
-        j.post_processing_component,
-        as_date_string(j.post_processing_date),
-        j.post_processing_dimension,
-        j.post_processing_file,
-        j.post_processing_name,
-        j.scheduler_id,
-        j.submission_path,
-        j.warning_delay,
-        j.execution_state,
-        j.is_im,
-        s.id
-        )
-    qry = qry.join(s, j.simulation_uid == s.uid)
+    qry = _get_job_raw_query()
     qry = qry.filter(j.job_uid == unicode(uid))
 
     return qry.first()
+
+
+@decorators.validate(validator.validate_retrieve_simulation_jobs)
+def retrieve_simulation_jobs(uid):
+    """Retrieves job details from db.
+
+    :param str uid: UID of simulation.
+
+    :returns: List of jobs associated with a simulation.
+    :rtype: list
+
+    """
+    j = types.Job
+
+    qry = _get_job_raw_query()
+    qry = qry.filter(j.simulation_uid == unicode(uid))
+    qry = qry.filter(j.execution_start_date != None)
+    qry = qry.order_by(j.execution_start_date)
+
+    return qry.all()
 
 
 @decorators.validate(validator.validate_persist_job_start)

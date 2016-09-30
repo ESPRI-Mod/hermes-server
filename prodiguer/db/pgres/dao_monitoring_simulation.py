@@ -52,23 +52,23 @@ def retrieve_active_simulations(start_date=None):
     s = types.Simulation
 
     qry = session.raw_query(
-        s.accounting_project,
-        s.compute_node_login,
-        s.compute_node_machine,
-        as_datetime_string(s.execution_end_date),
-        as_datetime_string(s.execution_start_date),
-        s.experiment,
-        s.experiment_raw,
-        s.is_error,
-        s.hashid,
-        s.model,
-        s.model_raw,
-        s.name,
-        s.space,
-        s.space_raw,
-        s.try_id,
-        s.uid,
-        s.id,
+        s.accounting_project,                           #0
+        s.compute_node_login,                           #1
+        s.compute_node_machine,                         #2
+        as_datetime_string(s.execution_end_date),       #3
+        as_datetime_string(s.execution_start_date),     #4
+        s.experiment,                                   #5
+        s.experiment_raw,                               #6
+        s.is_error,                                     #7
+        s.hashid,                                       #8
+        s.id,                                           #9
+        s.model,                                        #10
+        s.model_raw,                                    #11
+        s.name,                                         #12
+        s.space,                                        #13
+        s.space_raw,                                    #14
+        s.try_id,                                       #15
+        s.uid                                           #16
         )
     qry = qry.filter(s.execution_start_date != None)
     qry = qry.filter(s.is_obsolete == False)
