@@ -121,9 +121,11 @@ def _unpack_content(ctx):
             "{0}-{1}".format(ctx.compute_node, ctx.content['machine'])
         ctx.experiment = ctx.experiment_raw = ctx.content['experiment'] or "--"
         ctx.model = ctx.model_raw = ctx.content['model']
-        ctx.simulation_space = ctx.simulation_space_raw = ctx.content['space'] or None
+        ctx.simulation_space = ctx.simulation_space_raw = ctx.content['space']
         for field in _SIMULATION_CV_TERM_FIELDS_LOWER_CASE:
             setattr(ctx, field, getattr(ctx, field).lower())
+        if ctx.simulation_space_raw == "":
+            ctx.simulation_space_raw = None
 
 
 def _parse_cv(ctx):
