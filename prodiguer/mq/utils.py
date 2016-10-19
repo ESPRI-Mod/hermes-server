@@ -196,7 +196,7 @@ def _process_message(ctx, callback):
             logger.log_mq_warning(msg)
             db.session.rollback()
 
-        # Log persistence errors (should never happen).
+        # Log persistence errors.
         except Exception as err:
             logger.log_mq_error(err)
 

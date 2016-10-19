@@ -27,15 +27,17 @@ from prodiguer.utils.validation import validate_vrs
 
 class Message(object):
     """Wraps a message either being consumed or produced."""
-    def __init__(self, props, content, decode=False):
+    def __init__(self, props, content, decode=False, validate_props=True):
         """Constructor.
 
         :param pika.BasicProperties props: Set of AMPQ properties associated with the message.
         :param object content: Message content.
         :param bool decode: Flag indicating whether message payload is to be decoded.
+        :param bool validate_props: Flag indicating whether AMPQ properties need to be validated.
 
         """
-        _validate_basic_properties(props)
+        if validate_props:
+            _validate_basic_properties(props)
 
         self.abort = False
         self.content = content
@@ -44,11 +46,11 @@ class Message(object):
         self.exchange = constants.MESSAGE_TYPE_EXCHANGE[props.type]
         self.msg = None
         self.props = self.properties = props
-        self.routing_key = "{0}.{1}.{2}.{3}.{4}".format(config.deploymentMode,
-                                                        props.user_id,
-                                                        props.headers['producer_id'],
-                                                        props.app_id,
-                                                        props.type).lower()
+        self.routing_key = "{}.{}.{}.{}.{}".format(config.deploymentMode,
+                                                   props.user_id,
+                                                   props.headers['producer_id'],
+                                                   props.app_id,
+                                                   props.type).lower()
         if decode:
             self.decode()
 

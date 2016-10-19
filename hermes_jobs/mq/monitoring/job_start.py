@@ -75,12 +75,12 @@ class ProcessingContextInfo(mq.Message):
     """Message processing context information.
 
     """
-    def __init__(self, props, body, decode=True):
+    def __init__(self, props, body, decode=True, validate_props=True):
         """Object constructor.
 
         """
         super(ProcessingContextInfo, self).__init__(
-            props, body, decode=decode)
+            props, body, decode=decode, validate_props=validate_props)
 
         self.cv_terms = []
         self.cv_terms_for_fe = []
@@ -244,10 +244,10 @@ def _persist_simulation(ctx):
         ctx.simulation_space,
         ctx.simulation_space_raw,
         ctx.simulation_uid,
-        submission_path=ctx.get_field('jobSubmissionPath'),
-        archive_path=ctx.get_field('archivePath'),
-        storage_path=ctx.get_field('storagePath'),
-        storage_small_path=ctx.get_field('storageSmallPath')
+        ctx.get_field('jobSubmissionPath'),
+        ctx.get_field('archivePath'),
+        ctx.get_field('storagePath'),
+        ctx.get_field('storageSmallPath')
         )
 
     # Persist simulation configuration.

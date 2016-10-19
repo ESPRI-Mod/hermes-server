@@ -145,12 +145,14 @@ class Simulation(Entity):
     parent_simulation_name = Column(Unicode(511))
     parent_simulation_branch_date = Column(DateTime)
 
+
     @property
     def is_restart(self):
         """Returns flag indicating whether this is a restarted simulation or not.
 
         """
         return self.try_id > 1
+
 
     def get_hashid(self):
         """Returns the computed hash id for a simulation.
@@ -181,7 +183,7 @@ class SimulationConfiguration(Entity):
     )
 
     # Attributes.
-    simulation_uid = Column(Unicode(63), nullable=False)
+    simulation_uid = Column(Unicode(63), nullable=False, unique=True)
     card = Column(Text, nullable=True)
     card_encoding = Column(Unicode(63), nullable=True, default=u"utf-8")
     card_mime_type = Column(Unicode(63),

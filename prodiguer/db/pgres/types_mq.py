@@ -59,6 +59,9 @@ class Message(Entity):
                           nullable=True,
                           default=u"application/json")
     content = Column(Text, nullable=True)
+    processing_error = Column(Text, nullable=True)
+    processing_tries = Column(Unicode(63), default=1)
+    is_queued_for_reprocessing = Column(Boolean, default=False)
 
 
 class MessageEmail(Entity):

@@ -274,11 +274,14 @@ def persist_simulation_configuration(uid, card):
     :param str card: Simulation configuration card.
 
     """
-    instance = types.SimulationConfiguration()
-    instance.simulation_uid = unicode(uid)
-    instance.card = unicode(card)
+    def _assign(instance):
+        """Assigns instance values from input parameters.
 
-    return session.insert(instance)
+        """
+        instance.simulation_uid = unicode(uid)
+        instance.card = unicode(card)
+
+    return dao.persist(_assign, types.SimulationConfiguration, lambda: retrieve_simulation_configuration(uid))
 
 
 @decorators.validate(validator.validate_update_active_simulation)
