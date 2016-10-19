@@ -111,7 +111,7 @@ def _unpack_content(ctx):
     ctx.job_uid = ctx.content['jobuid']
     ctx.job_warning_delay = ctx.get_field(
         'jobWarningDelay', config.apps.monitoring.defaultJobWarningDelayInSeconds)
-    if ctx.job_warning_delay == "0":
+    if ctx.job_warning_delay in ("0", ""):
         ctx.job_warning_delay = config.apps.monitoring.defaultJobWarningDelayInSeconds
     ctx.simulation_uid = ctx.content['simuid']
     if ctx.is_simulation_start:
