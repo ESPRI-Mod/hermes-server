@@ -11,6 +11,7 @@
 
 
 """
+from prodiguer.utils.validation import validate_int
 from prodiguer.utils.validation import validate_uid
 from prodiguer.utils.validation import validate_ucode
 
@@ -29,4 +30,4 @@ def validate_retrieve_supervision(identifer):
     """Function input validator: create_supervision.
 
     """
-    print "TODO: validate supervision identifier", identifer
+    validate_int(identifer)

@@ -58,6 +58,70 @@ def enqueue(
     mq.produce(_yield_message)
 
 
+def _invoke(task, ctx, err=None):
+    """Invokes an individual task.
+
+    """
+    if ctx and err:
+        task(ctx, err)
+    elif ctx:
+        task(ctx)
+    elif err:
+        task(err)
+    else:
+        task()
+
+
+def  _get_taskset(taskset):
+    """Gets formatted tasks in readiness for execution.
+
+    """
+    if taskset is None:
+        return []
+    else:
+        try:
+            iter(taskset)
+        except TypeError:
+            return [taskset]
+        else:
+            return taskset
+
+
+def _set_message_processing_error(ctx, err=None):
+    """Set message processing error either after sucessful or failed message processing.
+
+    """
+    try:
+        ctx.msg
+    except AttributeError:
+        pass
+    else:
+        ctx.msg.processing_error = unicode(err) if err else None
+
+
+def _on_invoke_error(agent_type, error_tasks, ctx, task, err):
+    """Invocation error handler.
+
+    """
+    # Log.
+    err_msg = "{} :: {} :: {} :: {}.".format(agent_type, task, type(err), err)
+    logger.log_mq_error(err_msg)
+
+    # Set processing errors.
+    _set_message_processing_error(ctx, err)
+
+    # Invoke error tasks (apply sub-error shielding).
+    try:
+        for error_task in _get_taskset(error_tasks):
+            _invoke(error_task, ctx, err)
+    except Exception as err:
+        try:
+            err_msg = "SUB-ERROR !! :: {} :: {} :: {} :: {}.".format(agent_type, error_task, type(err), err)
+            logger.log_mq_error(err_msg)
+        except:
+            pass
+
+
 def invoke(agent_type, tasks, error_tasks, ctx):
     """Invokes a set of message queue tasks and handles errors.
 
@@ -67,53 +131,15 @@ def invoke(agent_type, tasks, error_tasks, ctx):
     :param object ctx: Task processing context object.
 
     """
-    def  _get(taskset):
-        """Gets formatted tasks in readiness for execution.
-
-        """
-        if taskset is None:
-            return []
-        else:
-            try:
-                iter(taskset)
-            except TypeError:
-                return [taskset]
-            else:
-                return taskset
-
-
-    def _invoke(task, err=None):
-        """Invokes an individual task.
-
-        """
-        if ctx and err:
-            task(ctx, err)
-        elif ctx:
-            task(ctx)
-        elif err:
-            task(err)
-        else:
-            task()
-
-    # Execute tasks.
-    for task in _get(tasks):
+    for task in _get_taskset(tasks):
         try:
-            _invoke(task)
-        # ... error tasks.
+            _invoke(task, ctx)
         except Exception as err:
-            err_msg = "{0} :: {1} :: {2} :: {3}.".format(agent_type, task, type(err), err)
-            logger.log_mq_error(err_msg)
-            try:
-                for error_task in _get(error_tasks):
-                    print agent_type, "ERROR TASK", error_task
-                    _invoke(error_task, err)
-            except:
-                pass
-            # Escape out of main loop.
+            _on_invoke_error(agent_type, error_tasks, ctx, task, err)
             break
-        # ... abort tasks.
         else:
             try:
+                _set_message_processing_error(ctx)
                 if ctx.abort == True:
                     break
             except AttributeError:

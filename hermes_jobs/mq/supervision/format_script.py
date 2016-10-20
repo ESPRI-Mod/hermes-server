@@ -26,6 +26,32 @@ import superviseur
 
 
 
+_EMAIL_SUBJECT = u"HERMES-SUPERVISOR :: COMPUTE JOB FAILURE :: USER={}; JOB={}; MACHINE={}."
+
+# Operator email body template.
+_EMAIL_BODY = u"""Dear HERMES platform user {},
+
+The following issue has been detected:
+
+Machine:\t\t\t{}
+Login/User:\t\t{}
+Job name:\t\t{}
+Job number:\t\t{}
+
+A compute job failed within the period {} ({}-{}) for the {}{} time.  Jobs that fail more than {} times within the same output period require your attention.
+
+Further information:
+
+    https://hermes.ipsl.upmc.fr/static/simulation.detail.html?uid={}
+    https://hermes.ipsl.upmc.fr/static/simulation.monitoring.html?login={}
+
+Best regards,
+
+The HERMES Platform
+
+"""
+
+
 def get_tasks():
     """Returns set of tasks to be executed when processing a message.
 
@@ -79,7 +105,8 @@ def _set_data(ctx):
     ctx.simulation = retrieve_simulation(ctx.simulation_uid)
     if ctx.simulation is None:
         msg = "Supervision not possible: simulation not found: sim-uid={}"
-        logger.log_mq_warning(msg.format(ctx.simulation_uid))
+        msg = msg.format(ctx.simulation_uid)
+        logger.log_mq_warning(msg)
         ctx.abort = True
         return
 
@@ -87,7 +114,8 @@ def _set_data(ctx):
     # ... happens in testing when 0000 message have not yet been received.
     if ctx.simulation.compute_node_login is None:
         msg = "Supervision not possible: simulation login unspecified: sim-uid={}"
-        logger.log_mq_warning(msg.format(ctx.simulation_uid))
+        msg = msg.format(ctx.simulation_uid)
+        logger.log_mq_warning(msg)
         ctx.abort = True
         return
 
@@ -108,32 +136,6 @@ def _authorize(ctx):
         ctx.abort = True
 
 
-_EMAIL_SUBJECT = u"HERMES-SUPERVISOR :: COMPUTE JOB FAILURE :: USER={}; JOB={}; MACHINE={}."
-
-# Operator email body template.
-_EMAIL_BODY = u"""Dear HERMES platform user {},
-
-The following issue has been detected:
-
-Machine:\t\t\t{}
-Login/User:\t\t{}
-Job name:\t\t{}
-Job number:\t\t{}
-
-A compute job failed within the period {} ({}-{}) for the {}{} time.  Jobs that fail more than {} times within the same output period require your attention.
-
-Further information:
-
-    https://hermes.ipsl.upmc.fr/static/simulation.detail.html?uid={}
-    https://hermes.ipsl.upmc.fr/static/simulation.monitoring.html?login={}
-
-Best regards,
-
-The HERMES Platform
-
-"""
-
-
 def _get_email_subject(ctx):
     """Returns subject of email to be sent to user.
 
@@ -141,10 +143,14 @@ def _get_email_subject(ctx):
     return _EMAIL_SUBJECT.format(
         ctx.user.login,
         ctx.job.scheduler_id,
-        ctx.simulation.compute_node_machine_raw)
+        ctx.simulation.compute_node_machine_raw
+        )
 
 
 def _get_job_failure_count_suffix(count):
+    """Returns a count suffix.
+
+    """
     count = int(count)
     if count in [1, 21, 31, 41, 51]:
         return "st"
@@ -180,18 +186,24 @@ def _verify(ctx):
     """Verifies that the job formatting is required.
 
     """
-    # Verify that most recent job period failure is within allowed limit.
+    # Escape processing if job period is undefined.
     if ctx.job_period.period_id is None:
         logger.log_mq_warning("Job period empty")
+        ctx.abort = True
+
+    # Escape processing if dealing with the first job period.
     elif ctx.job_period.period_id == 1:
-        logger.log_mq("Period number 1, supervision not needed")
-        ctx.abort = True 
+        logger.log_mq("First job periods do not require supervision")
+        ctx.abort = True
+
+    # Escape processing & notify user if the job period failure count exceeds the configurable limit.
     elif ctx.job_period_counter[1] > config.apps.monitoring.maxJobPeriodFailures:
         mail.send_email(config.alerts.emailAddressFrom,
             ctx.user.email,
             _get_email_subject(ctx),
-            _get_email_body(ctx))
-        logger.log_mq("Too many tries for the last job period, mail sent to user and supervision abort")
+            _get_email_body(ctx)
+            )
+        logger.log_mq("Too many tries for the last job period, mail sent to user and supervision aborted")
         ctx.abort = True
 
 
@@ -199,7 +211,7 @@ def _format(ctx):
     """Formats the script for the job to be executed at the compute node.
 
     """
-    # Set dispatch parameters to be passed to dispatcher.
+    # Set formatter parameters.
     params = superviseur.FormatParameters(
         ctx.simulation,
         ctx.job,
