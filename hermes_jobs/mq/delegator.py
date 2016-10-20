@@ -64,6 +64,9 @@ def _process(ctx):
     """Processes a simulation monitoring message pulled from message queue.
 
     """
+    # Mark context as delegated.
+    ctx.is_delegator = True
+
     # Ensure message content is decoded.
     ctx.decode()
 
@@ -75,8 +78,9 @@ def _process(ctx):
     sub_ctx = sub_ctx_type(ctx.props, ctx.content, decode=False)
     sub_ctx.msg = ctx.msg
 
+    # Set task sets.
+    tasks = agent.get_tasks()
+    error_tasks = agent.get_error_tasks() if hasattr(agent, "get_error_tasks") else []
+
     # Invoke tasks.
-    invoke_handler(ctx.props.type,
-                   agent.get_tasks(),
-                   agent.get_error_tasks() if hasattr(agent, "get_error_tasks") else [],
-                   sub_ctx)
+    invoke_handler(ctx.props.type, tasks, error_tasks, sub_ctx)

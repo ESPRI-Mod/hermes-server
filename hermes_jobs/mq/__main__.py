@@ -180,6 +180,18 @@ def _get_handler_error_tasks(handler):
         return task_factory()
 
 
+def _process_message(agent_type, handler, ctx):
+    """Processes a message pulled from a queue.
+
+    """
+    # Set tasks.
+    tasks = _get_handler_tasks(handler)
+    error_tasks = _get_handler_error_tasks(handler)
+
+    # Invoke agent.
+    invoke_handler(agent_type, tasks, error_tasks, ctx)
+
+
 def _execute_agent(agent_type, agent_limit, handler):
     """Executes a standard agent.
 
@@ -188,15 +200,14 @@ def _execute_agent(agent_type, agent_limit, handler):
     cv.session.init()
 
     # Consume messages.
-    mq.utils.consume(_get_exchange(agent_type),
-                     _get_queue(agent_type),
-                     lambda ctx: invoke_handler(agent_type,
-                                                _get_handler_tasks(handler),
-                                                _get_handler_error_tasks(handler),
-                                                ctx),
-                     consume_limit=agent_limit,
-                     context_type=_get_handler_context_type(handler),
-                     verbose=agent_limit > 0)
+    mq.utils.consume(
+        _get_exchange(agent_type),
+        _get_queue(agent_type),
+        lambda ctx: _process_message(agent_type, handler, ctx),
+        consume_limit=agent_limit,
+        context_type=_get_handler_context_type(handler),
+        verbose=agent_limit > 0
+        )
 
 
 def _execute(agent_type, agent_limit):

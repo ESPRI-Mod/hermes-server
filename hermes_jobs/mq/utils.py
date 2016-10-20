@@ -12,6 +12,7 @@
 
 """
 from prodiguer import mq
+from prodiguer.db import pgres as db
 from prodiguer.utils import logger
 from prodiguer import __version__ as HERMES_VERSION
 
@@ -87,16 +88,21 @@ def  _get_taskset(taskset):
             return taskset
 
 
-def _set_message_processing_error(ctx, err=None):
+def _on_invoke_complete(ctx, err=None):
     """Set message processing error either after sucessful or failed message processing.
 
     """
-    try:
-        ctx.msg
-    except AttributeError:
-        pass
-    else:
-        ctx.msg.processing_error = unicode(err) if err else None
+    # Escape if the context is a message delegator.
+    if hasattr(ctx, "is_delegator"):
+        return
+
+    # Update message processing error.
+    if hasattr(ctx, "msg"):
+        if err is not None:
+            err = unicode(err)
+        if ctx.msg.processing_error != err:
+            ctx.msg.processing_error = err
+            db.session.update(ctx.msg)
 
 
 def _on_invoke_error(agent_type, error_tasks, ctx, task, err):
@@ -106,9 +112,6 @@ def _on_invoke_error(agent_type, error_tasks, ctx, task, err):
     # Log.
     err_msg = "{} :: {} :: {} :: {}.".format(agent_type, task, type(err), err)
     logger.log_mq_error(err_msg)
-
-    # Set processing errors.
-    _set_message_processing_error(ctx, err)
 
     # Invoke error tasks (apply sub-error shielding).
     try:
@@ -131,6 +134,9 @@ def invoke(agent_type, tasks, error_tasks, ctx):
     :param object ctx: Task processing context object.
 
     """
+    err = None
+
+    # Invoke taskset.
     for task in _get_taskset(tasks):
         try:
             _invoke(task, ctx)
@@ -139,8 +145,10 @@ def invoke(agent_type, tasks, error_tasks, ctx):
             break
         else:
             try:
-                _set_message_processing_error(ctx)
                 if ctx.abort == True:
                     break
             except AttributeError:
                 pass
+
+    # Clean up.
+    _on_invoke_complete(ctx, err)
