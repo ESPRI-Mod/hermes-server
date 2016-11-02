@@ -30,4 +30,4 @@ def validate_retrieve_supervision(identifer):
     """Function input validator: create_supervision.
 
     """
-    validate_int(identifer)
+    validate_int(identifer, "supervision-id")
