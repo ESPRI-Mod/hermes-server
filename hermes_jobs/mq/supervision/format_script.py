@@ -94,29 +94,70 @@ def _unpack_content(ctx):
     ctx.job_uid = ctx.content['job_uid']
     ctx.simulation_uid = ctx.content['simulation_uid']
     ctx.supervision_id = int(ctx.content['supervision_id'])
+    ctx.try_count = ctx.content.get('try_count', 0)
+
+
+def _on_simulation_not_found(ctx):
+    """Simulation not found event handler.
+
+    """
+    # Warn operator.
+    msg = "Supervision not feasible: simulation not found: sim-uid={}.  Possible 8888 scenario."
+    msg = msg.format(ctx.simulation_uid)
+    logger.log_mq_warning(msg)
+
+    ctx.abort = True
+
+
+def _on_simulation_login_null(ctx):
+    """Simulation login null event handler.
+
+    """
+    # Warn operator.
+    msg = "Supervision not possible: simulation login unspecified: sim-uid={}"
+    msg = msg.format(ctx.simulation_uid)
+    logger.log_mq_warning(msg)
+
+    # Delayed retry.
+    if ctx.try_count < config.apps.superviseur.maxScriptFormattingAttempts:
+        # Warn operator.
+        msg = "Supervision formatting enqueued: sim-uid={}"
+        msg = msg.format(ctx.simulation_uid)
+        logger.log_mq_warning(msg)
+
+        # Re-enqueue (delayed).
+        utils.enqueue(
+            mq.constants.MESSAGE_TYPE_8100,
+            delay_in_ms=config.apps.superviseur.scriptReformattingDelayInSeconds * 1000,
+            exchange=mq.constants.EXCHANGE_HERMES_SECONDARY_DELAYED,
+            payload={
+            "job_uid": ctx.job_uid,
+            "simulation_uid": ctx.simulation_uid,
+            "supervision_id": ctx.supervision_id,
+            "try_count": ctx.try_count + 1
+        })
+    else:
+        # Warn operator.
+        msg = "Supervision formatting not possible: maximum retries exceeded: sim-uid={}"
+        msg = msg.format(ctx.simulation_uid)
+        logger.log_mq_warning(msg)
+
+    ctx.abort = True
 
 
 def _set_data(ctx):
     """Sets data also required by script formatter.
 
     """
-    # Escape if simulation not found.
-    # ... happens if 8888 message was subsequently sent.
+    # Escape if simulation not found - happens if 8888 message was subsequently sent.
     ctx.simulation = retrieve_simulation(ctx.simulation_uid)
     if ctx.simulation is None:
-        msg = "Supervision not possible: simulation not found: sim-uid={}"
-        msg = msg.format(ctx.simulation_uid)
-        logger.log_mq_warning(msg)
-        ctx.abort = True
+        _on_simulation_not_found(ctx)
         return
 
-    # Escape if login is None.
-    # ... happens in testing when 0000 message have not yet been received.
+    # Escape if login is None - happens when 0000 message has not yet been received.
     if ctx.simulation.compute_node_login is None:
-        msg = "Supervision not possible: simulation login unspecified: sim-uid={}"
-        msg = msg.format(ctx.simulation_uid)
-        logger.log_mq_warning(msg)
-        ctx.abort = True
+        _on_simulation_login_null(ctx)
         return
 
     ctx.job = retrieve_job(ctx.job_uid)
@@ -176,7 +217,7 @@ def _get_email_body(ctx):
         ctx.job_period.period_date_end,
         ctx.job_period_counter[1],
         _get_job_failure_count_suffix(ctx.job_period_counter[1]),
-        config.apps.monitoring.maxJobPeriodFailures,
+        config.apps.superviseur.maxJobPeriodFailures,
         ctx.simulation.uid,
         ctx.user.login
         )
@@ -197,7 +238,7 @@ def _verify(ctx):
         ctx.abort = True
 
     # Escape processing & notify user if the job period failure count exceeds the configurable limit.
-    elif ctx.job_period_counter[1] > config.apps.monitoring.maxJobPeriodFailures:
+    elif ctx.job_period_counter[1] > config.apps.superviseur.maxJobPeriodFailures:
         mail.send_email(config.alerts.emailAddressFrom,
             ctx.user.email,
             _get_email_subject(ctx),

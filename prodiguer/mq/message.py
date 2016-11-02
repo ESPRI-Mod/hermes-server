@@ -43,14 +43,16 @@ class Message(object):
         self.content = content
         self.content_raw = content
         self.content_type = props.content_type
-        self.exchange = constants.MESSAGE_TYPE_EXCHANGE[props.type]
+        self.exchange = props.headers.get('exchange', constants.MESSAGE_TYPE_EXCHANGE[props.type])
         self.msg = None
         self.props = self.properties = props
-        self.routing_key = "{}.{}.{}.{}.{}".format(config.deploymentMode,
-                                                   props.user_id,
-                                                   props.headers['producer_id'],
-                                                   props.app_id,
-                                                   props.type).lower()
+        self.routing_key = "{}.{}.{}.{}.{}".format(
+            config.deploymentMode,
+            props.user_id,
+            props.headers['producer_id'],
+            props.app_id,
+            props.type
+            ).lower()
         if decode:
             self.decode()
 

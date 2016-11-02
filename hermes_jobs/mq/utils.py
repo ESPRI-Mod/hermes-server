@@ -22,9 +22,9 @@ def enqueue(
     message_type,
     payload=None,
     user_id=mq.constants.USER_HERMES,
-    producer_id = mq.constants.PRODUCER_HERMES,
-    producer_version = HERMES_VERSION,
-    exchange=mq.constants.EXCHANGE_HERMES_SECONDARY,
+    producer_id=mq.constants.PRODUCER_HERMES,
+    producer_version=HERMES_VERSION,
+    exchange=None,
     delay_in_ms=None
     ):
     """Enqueues a message upon MQ server.
@@ -47,7 +47,8 @@ def enqueue(
             producer_id=producer_id,
             producer_version=producer_version,
             message_type=message_type,
-            delay_in_ms=delay_in_ms
+            delay_in_ms=delay_in_ms,
+            exchange=exchange
             )
 
     def _yield_message():

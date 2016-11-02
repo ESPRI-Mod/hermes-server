@@ -51,7 +51,8 @@ def create_ampq_message_properties(
     priority=defaults.DEFAULT_PRIORITY,
     reply_to=None,
     timestamp=None,
-    delay_in_ms=None
+    delay_in_ms=None,
+    exchange=None
     ):
     """Factory function to return set of AMQP message properties.
 
@@ -71,6 +72,7 @@ def create_ampq_message_properties(
     :param str reply_to: Messaging RPC callback.
     :param int timestamp: The message timestamp.
     :param int delay_in_ms: Delay (in milliseconds) before message is routed.
+    :param str exchange: Overridden AMPQ exchange to which message will be published.
 
     :returns pika.BasicProperties: Set of AMPQ message basic properties.
 
@@ -101,6 +103,8 @@ def create_ampq_message_properties(
     if timestamp:
         validation.validate_int(timestamp, 'timestamp')
     validation.validate_mbr(user_id, constants.USERS, 'user id')
+    if exchange:
+        validation.validate_mbr(exchange, constants.EXCHANGES, 'AMPQ exchange')
 
     # Set timestamps.
     # ... if not provided then create one.
@@ -124,6 +128,10 @@ def create_ampq_message_properties(
         headers['producer_version'] = producer_version
     if delay_in_ms is not None:
         headers['x-delay'] = delay_in_ms
+
+    # Set exchange.
+    if exchange:
+        headers['exchange'] = exchange
 
     # Remove null headers.
     for key, value in headers.iteritems():
