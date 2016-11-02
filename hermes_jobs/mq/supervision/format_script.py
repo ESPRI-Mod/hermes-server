@@ -94,7 +94,7 @@ def _unpack_content(ctx):
     ctx.job_uid = ctx.content['job_uid']
     ctx.simulation_uid = ctx.content['simulation_uid']
     ctx.supervision_id = int(ctx.content['supervision_id'])
-    ctx.try_count = ctx.content.get('try_count', 0)
+    ctx.retry_count = ctx.content.get('retry_count', 0)
 
 
 def _on_simulation_not_found(ctx):
@@ -119,7 +119,7 @@ def _on_simulation_login_null(ctx):
     logger.log_mq_warning(msg)
 
     # Delayed retry.
-    if ctx.try_count < config.apps.superviseur.maxScriptFormattingAttempts:
+    if ctx.retry_count < config.apps.superviseur.maxScriptFormattingAttempts:
         # Warn operator.
         msg = "Supervision formatting enqueued: sim-uid={}"
         msg = msg.format(ctx.simulation_uid)
@@ -134,7 +134,7 @@ def _on_simulation_login_null(ctx):
             "job_uid": ctx.job_uid,
             "simulation_uid": ctx.simulation_uid,
             "supervision_id": ctx.supervision_id,
-            "try_count": ctx.try_count + 1
+            "retry_count": ctx.retry_count + 1
         })
     else:
         # Warn operator.
