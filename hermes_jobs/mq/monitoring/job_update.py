@@ -12,6 +12,7 @@
 """
 from prodiguer import mq
 from prodiguer.db.pgres import dao_monitoring as dao
+from hermes_jobs.mq import utils as mq_utils
 
 
 
@@ -21,7 +22,8 @@ def get_tasks():
     """
     return (
         _unpack_content,
-        _persist
+        _persist,
+        _enqueue_fe_notification
         )
 
 
@@ -37,9 +39,10 @@ class ProcessingContextInfo(mq.Message):
             props, body, decode=decode)
 
         self.job_uid = None
+        self.period = None
         self.period_date_begin = None
         self.period_date_end = None
-        self.period_id = None
+        self.period_ordinal = None
         self.simulation_uid = None
 
 
@@ -49,20 +52,35 @@ def _unpack_content(ctx):
     """
     ctx.simulation_uid = ctx.content['simuid']
     ctx.job_uid = ctx.content['jobuid']
-    ctx.period_id = ctx.content['CumulPeriod']
-    ctx.period_date_begin = ctx.content['PeriodDateBegin']
-    ctx.period_date_end = ctx.content['PeriodDateEnd']
+    ctx.period_ordinal = int(ctx.content['CumulPeriod'] or 0)
+    ctx.period_date_begin = int(ctx.content['PeriodDateBegin'])
+    ctx.period_date_end = int(ctx.content['PeriodDateEnd'])
 
 
 def _persist(ctx):
     """Persists job updates to dB.
 
     """
+    # TODO: throw error if period_ordinal == 0
 
-    dao.persist_job_period(
+    ctx.period = dao.persist_job_period(
         ctx.simulation_uid,
         ctx.job_uid,
-        int(ctx.period_id or 0),
-        int(ctx.period_date_begin),
-        int(ctx.period_date_end)
+        ctx.period_ordinal,
+        ctx.period_date_begin,
+        ctx.period_date_end
         )
+
+
+def _enqueue_fe_notification(ctx):
+    """Places a message upon the front-end notification queue.
+
+    """
+    mq_utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
+        "event_type": u"job_period_update",
+        "job_uid": unicode(ctx.job_uid),
+        "simulation_uid": ctx.simulation_uid,
+        "period_ordinal": ctx.period_ordinal,
+        "period_date_begin": ctx.period_date_begin,
+        "period_date_end": ctx.period_date_end
+    })

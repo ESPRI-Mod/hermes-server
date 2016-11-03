@@ -71,6 +71,9 @@ class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
                 logger.log_web("[{}]: executing db query: retrieve_active_simulations".format(id(self)))
                 self.simulations = dao.retrieve_active_simulations(self.start_date)
 
+                logger.log_web("[{}]: executing db query: retrieve_active_job_periods".format(id(self)))
+                self.job_periods = dao.retrieve_active_job_periods(self.start_date)
+
 
         def _set_output():
             """Sets response to be returned to client.
@@ -79,6 +82,7 @@ class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
             self.write_raw_output = True
             self.output = {
                 'jobList': self.jobs,
+                'jobPeriodList': self.job_periods,
                 'simulationList': self.simulations
             }
 

@@ -43,12 +43,16 @@ def _get_simulation_event_data(request_data):
     simulation_uid = request_data['simulation_uid']
     simulation = dao.retrieve_simulation(simulation_uid)
     if simulation:
-        return {
+        data = {
             'cv_terms': request_data.get('cv_terms', []),
             'job_list': dao.retrieve_simulation_jobs(simulation_uid),
+            'job_period': dao.retrieve_latest_job_period(simulation_uid),
             'simulation': simulation,
             'simulation_uid': simulation_uid
             }
+        print data
+
+        return data
 
 
 def _get_job_event_data(request_data):
@@ -64,6 +68,16 @@ def _get_job_event_data(request_data):
         }
 
 
+def _get_job_period_event_data(request_data):
+    """Event data factory: returns job period event data.
+
+    """
+    return {
+        'simulationUID': request_data['simulation_uid'],
+        'endDate': request_data['period_date_end']
+    }
+
+
 class _EventManager(object):
     """Encpasulates incoming event information.
 
@@ -74,10 +88,14 @@ class _EventManager(object):
         """
         self.request_data = json.loads(handler.request.body)
         self.type = self.request_data['event_type']
+
         if self.request_data['event_type'].startswith("simulation"):
             self.data_factory = _get_simulation_event_data
-        else:
+        elif self.request_data['event_type'].startswith("job_period"):
+            self.data_factory = _get_job_period_event_data
+        elif self.request_data['event_type'].startswith("job"):
             self.data_factory = _get_job_event_data
+
         _log("{0} event received: {1}".format(self.type, self.request_data))
 
 

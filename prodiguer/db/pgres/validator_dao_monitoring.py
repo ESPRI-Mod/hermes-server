@@ -254,11 +254,19 @@ def validate_retrieve_active_simulations(start_date=None):
 
 
 def validate_retrieve_active_jobs(start_date=None):
-    """Function input validator: update_active_jobs.
+    """Function input validator: retrieve_active_jobs.
 
     """
     if start_date is not None:
         validate_date(start_date, 'Job execution start date')
+
+
+def validate_retrieve_active_job_periods(start_date=None):
+    """Function input validator: retrieve_active_job_periods.
+
+    """
+    if start_date is not None:
+        validate_date(start_date, 'Simulation execution start date')
 
 
 def validate_retrieve_job(uid):

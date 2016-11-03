@@ -15,6 +15,7 @@ from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
 from prodiguer.db.pgres import validator_dao_monitoring as validator
+from prodiguer.db.pgres.convertor import as_date_string
 from prodiguer.db.pgres.convertor import as_datetime_string
 from prodiguer.utils import decorators
 
@@ -68,7 +69,9 @@ def retrieve_active_simulations(start_date=None):
         s.space,                                        #13
         s.space_raw,                                    #14
         s.try_id,                                       #15
-        s.uid                                           #16
+        s.uid,                                          #16
+        as_date_string(s.output_start_date),            #17
+        as_date_string(s.output_end_date)               #18
         )
     qry = qry.filter(s.execution_start_date != None)
     qry = qry.filter(s.is_obsolete == False)
