@@ -73,8 +73,8 @@ def _get_job_period_event_data(request_data):
 
     """
     return {
-        'simulationUID': request_data['simulation_uid'],
-        'endDate': request_data['period_date_end']
+        'simulation_uid': request_data['simulation_uid'],
+        'end_date': request_data['period_date_end']
     }
 
 
