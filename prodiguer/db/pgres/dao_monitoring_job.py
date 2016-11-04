@@ -72,7 +72,7 @@ def retrieve_active_job_periods(start_date=None):
 
     qry = session.raw_query(
         s.id,
-        func.max(jp.period_date_end)
+        func.max(jp.period_date_begin)
         )
     qry = qry.join(jp, s.uid == jp.simulation_uid)
     qry = _apply_active_simulation_filter(qry, start_date)
