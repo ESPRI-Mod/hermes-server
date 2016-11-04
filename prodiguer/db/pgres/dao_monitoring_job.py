@@ -24,19 +24,6 @@ from prodiguer.db.pgres.convertor import as_datetime_string
 from prodiguer.utils import decorators
 
 
-def _apply_active_simulation_filter(qry, start_date):
-    """Applies a filter limiting result set to active simulations.
-
-    """
-    s = types.Simulation
-
-    qry = qry.filter(s.execution_start_date != None)
-    qry = qry.filter(s.is_obsolete == False)
-    if start_date:
-        qry = qry.filter(s.execution_start_date >= start_date)
-
-    return qry
-
 
 @decorators.validate(validator.validate_retrieve_active_jobs)
 def retrieve_active_jobs(start_date=None):
@@ -90,6 +77,28 @@ def retrieve_active_job_periods(start_date=None):
     qry = qry.join(jp, s.uid == jp.simulation_uid)
     qry = _apply_active_simulation_filter(qry, start_date)
     qry = qry.group_by(s.id)
+
+    return qry.all()
+
+
+@decorators.validate(validator.validate_retrieve_active_job_periods)
+def retrieve_job_periods(uid):
+    """Retrieves active job period update details from db.
+
+    :param str uid: UID of simulation.
+
+    :returns: Job details.
+    :rtype: list
+
+    """
+    jp = types.JobPeriod
+
+    qry = session.raw_query(
+        jp.job_uid,
+        jp.period_date_end
+        )
+    qry = qry.filter(jp.simulation_uid == unicode(uid))
+    qry = qry.order_by(jp.period_date_end)
 
     return qry.all()
 
@@ -390,3 +399,17 @@ def get_earliest_job():
     qry = qry.order_by(j.execution_start_date)
 
     return qry.first()
+
+
+def _apply_active_simulation_filter(qry, start_date):
+    """Applies a filter limiting result set to active simulations.
+
+    """
+    s = types.Simulation
+
+    qry = qry.filter(s.execution_start_date != None)
+    qry = qry.filter(s.is_obsolete == False)
+    if start_date:
+        qry = qry.filter(s.execution_start_date >= start_date)
+
+    return qry

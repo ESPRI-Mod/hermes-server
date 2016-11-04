@@ -49,13 +49,16 @@ class FetchDetailRequestHandler(tornado.web.RequestHandler):
                 self.simulation = dao_monitoring.retrieve_simulation(self.uid)
 
                 logger.log_web("[{}]: executing db query: retrieve_simulation_jobs".format(id(self)))
-                self.job_list = dao_monitoring.retrieve_simulation_jobs(self.simulation.uid)
+                self.job_list = dao_monitoring.retrieve_simulation_jobs(self.uid)
 
                 logger.log_web("[{}]: executing db query: retrieve_simulation_configuration".format(id(self)))
-                self.configuration = dao_monitoring.retrieve_simulation_configuration(self.simulation.uid)
+                self.configuration = dao_monitoring.retrieve_simulation_configuration(self.uid)
 
                 logger.log_web("[{}]: executing db query: has_messages".format(id(self)))
-                self.has_messages = dao_mq.has_messages(self.simulation.uid)
+                self.has_messages = dao_mq.has_messages(self.uid)
+
+                logger.log_web("[{}]: executing db query: retrieve_latest_job_period".format(id(self)))
+                self.latest_job_period = dao_monitoring.retrieve_latest_job_period(self.uid)
 
                 if self.simulation.try_id == 1:
                     self.previous_tries = []
@@ -72,6 +75,7 @@ class FetchDetailRequestHandler(tornado.web.RequestHandler):
                 'config_card': self.configuration.card if self.configuration else None,
                 'has_messages': self.has_messages,
                 'job_list': self.job_list,
+                'latest_job_period': self.latest_job_period,
                 'previous_tries': self.previous_tries,
                 'simulation': self.simulation
             }
