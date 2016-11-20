@@ -313,11 +313,13 @@ def delete_simulation(uid):
     """Deletes a simulation from database.
 
     """
+    dao.delete_by_facet(types.EnvironmentMetric, types.EnvironmentMetric.simulation_uid == uid)
     dao.delete_by_facet(types.Job, types.Job.simulation_uid == uid)
     dao.delete_by_facet(types.JobPeriod, types.JobPeriod.simulation_uid == uid)
     dao.delete_by_facet(types.SimulationConfiguration, types.SimulationConfiguration.simulation_uid == uid)
     dao.delete_by_facet(types.Message, types.Message.correlation_id_1 == uid)
     dao.delete_by_facet(types.Simulation, types.Simulation.uid == uid)
+    dao.delete_by_facet(types.Supervision, types.Supervision.simulation_uid == uid)
 
 
 def get_simulation_accounting_project(uid):

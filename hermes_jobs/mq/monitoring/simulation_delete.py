@@ -98,3 +98,4 @@ def _delete_supervision(ctx):
     """
     dao.delete_by_facet(types.Supervision,
                         types.Supervision.simulation_uid == ctx.simulation_uid)
+
