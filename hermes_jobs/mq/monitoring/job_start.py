@@ -97,6 +97,7 @@ class ProcessingContextInfo(mq.Message):
 
         self.active_simulation = None
         self.is_simulation_start = props.type == mq.constants.MESSAGE_TYPE_0000
+        self.is_compute_job_start = props.type == mq.constants.MESSAGE_TYPE_1000
         self.job_type = _MESSAGE_JOB_TYPES[self.props.type]
         self.job_uid = None
         self.job_warning_delay = None
@@ -272,6 +273,11 @@ def _enqueue_late_job_detection(ctx):
     """Places a delayed message upon the supervisor detection queue.
 
     """
+    # TODO: Set max historical latency offset in order to account for
+    # buffered 1100 messages.
+    if ctx.is_compute_job_start:
+        pass
+
     # Calculate expected job completion moment.
     expected = arrow.get(ctx.msg.timestamp) + \
                datetime.timedelta(seconds=int(ctx.job_warning_delay))
