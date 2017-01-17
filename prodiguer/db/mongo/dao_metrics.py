@@ -72,7 +72,7 @@ def add(group_id, metrics, duplicate_action):
         except pymongo.errors.DuplicateKeyError:
             duplicates.append(metric)
             if duplicate_action == 'force':
-                collection.remove({ _MONGO_OBJECT_ID: metric[_MONGO_OBJECT_ID] })
+                collection.remove({_MONGO_OBJECT_ID: metric[_MONGO_OBJECT_ID]})
                 collection.insert(metric)
 
     # Return inserted & duplicates.

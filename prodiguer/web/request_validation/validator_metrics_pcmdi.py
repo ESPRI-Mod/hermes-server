@@ -117,8 +117,6 @@ def validate_add(handler):
         """
         body = handler.decode_json_body(False)
 
-        print "AAAAAAA",'status' in body
-
         rv.validate_data(body, {
             Required(_PARAM_GROUP): All(unicode, _GroupName(False)),
             Required(_PARAM_COLUMNS): All(rv.Sequence(unicode, 0)),
