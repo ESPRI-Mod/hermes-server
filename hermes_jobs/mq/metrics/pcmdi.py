@@ -17,7 +17,7 @@ import shutil
 import tempfile
 import uuid
 
-import prodiguer_client
+import prodiguer_client as hermes_client
 from prodiguer import mq
 
 
@@ -93,14 +93,14 @@ def _format_metrics(ctx):
     """Formats metrics in readiness for upload.
 
     """
-    prodiguer_client.metrics.format(ctx.metrics_group_id, ctx.dir_raw, ctx.dir_formatted)
+    hermes_client.metrics.format(ctx.metrics_group_id, ctx.dir_raw, ctx.dir_formatted)
 
 
 def _upload_metrics(ctx):
     """Uploads metrics to API.
 
     """
-    prodiguer_client.metrics.add_batch(ctx.dir_formatted, _ADD_DUPLICATE_ACTION_SKIP)
+    hermes_client.metrics.add_batch(ctx.dir_formatted, _ADD_DUPLICATE_ACTION_SKIP)
 
 
 def _cleanup(ctx):
