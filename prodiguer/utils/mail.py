@@ -36,7 +36,7 @@ _RFC822 = u'RFC822'
 _MESSAGE_ID_HEADER = u'BODY[HEADER.FIELDS (MESSAGE-ID)]'
 
 # Email search filter.
-_SEARCH_FILTER_UNDELETED = ['NOT DELETED']
+_SEARCH_FILTER_UNDELETED = 'NOT DELETED'
 
 # Size of chunks used to split email downloads.
 _CHUNK_SIZE = 50
