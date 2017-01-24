@@ -25,7 +25,8 @@ from prodiguer.web.utils.http1 import process_request
 
 # Query parameter names.
 _PARAM_TIMESLICE = 'timeslice'
-
+_PARAM_SORT_FIELD = 'sortField'
+_PARAM_SORT_DIRECTION = 'sortDirection'
 
 
 
@@ -58,6 +59,8 @@ class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
                 start_date = arrow.utcnow() - datetime.timedelta(days=365)
 
             self.start_date = None if timeslice == '*' else start_date.datetime
+            self.sort_field = self.get_argument(_PARAM_SORT_FIELD)
+            self.sort_direction = self.get_argument(_PARAM_SORT_DIRECTION)
 
 
         def _set_data():
@@ -71,7 +74,7 @@ class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
 
                 logger.log_web("[{}]: executing db queries: retrieve_active_jobset, retrieve_active_jobperiodset".format(id(self)))
                 self.jobs, self.job_periods = \
-                    _get_job_timeslice(self.simulations, "name", "asc")
+                    _get_job_timeslice(self.simulations, self.sort_field, self.sort_direction)
 
 
         def _set_output():
@@ -112,10 +115,18 @@ def _get_job_timeslice(
     """Returns job timeslice - a subset of full job timeslice.
 
     """
+    # Format incoming sort field.
+    if sort_field == "accountingProject":
+        sort_field = "accounting_project"
+    if sort_field == "computeNodeLogin":
+        sort_field = "compute_node_login"
+    if sort_field == "computeNodeMachine":
+        sort_field = "compute_node_machine"
+
     # Apply sort.
     simulations = sorted(simulations, key=lambda i: getattr(i, sort_field))
     if sort_direction == "desc":
-        simulations = reversed(simulations)
+        simulations.reverse()
 
     # Apply filter.
     # TODO

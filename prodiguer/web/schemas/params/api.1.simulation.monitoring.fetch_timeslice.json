@@ -19,6 +19,26 @@
                 "type": "string"
             },
             "type": "array"
+        },
+        "sortField": {
+            "items": {
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "sortDirection": {
+            "items": {
+                "enum": [
+                    "asc",
+                    "desc"
+                ],
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
         }
     },
     "required": [
