@@ -39,10 +39,58 @@
                 "type": "string"
             },
             "type": "array"
+        },
+        "accountingProject": {
+            "items": {
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "computeNodeMachine": {
+            "items": {
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "computeNodeLogin": {
+            "items": {
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "model": {
+            "items": {
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "experiment": {
+            "items": {
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "space": {
+            "items": {
+                "minItems": 1,
+                "maxItems": 1,
+                "type": "string"
+            },
+            "type": "array"
         }
     },
     "required": [
-        "timeslice"
+        "timeslice", "sortField", "sortDirection"
     ],
     "title": "HERMES JSON schema: endpoint = api/1/simulation/monitoring/fetch_timeslice",
     "type": "object"
