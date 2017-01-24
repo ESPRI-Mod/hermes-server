@@ -53,6 +53,7 @@ def _get_app_endpoints():
         (r'/api/1/simulation/monitoring/fetch_detail', monitoring.FetchDetailRequestHandler),
         (r'/api/1/simulation/monitoring/fetch_messages', monitoring.FetchMessagesRequestHandler),
         (r'/api/1/simulation/monitoring/fetch_timeslice', monitoring.FetchTimeSliceRequestHandler),
+        (r'/api/1/simulation/monitoring/fetch_timeslice_jobs', monitoring.FetchTimeSliceJobsRequestHandler),
         (r'/api/1/simulation/monitoring/ws/all', monitoring.FrontEndWebSocketAllHandler),
         (r'/api/1/simulation/monitoring/event', monitoring.EventRequestHandler),
         # Simulation metric routes.

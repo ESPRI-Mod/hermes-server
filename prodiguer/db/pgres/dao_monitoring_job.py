@@ -26,10 +26,11 @@ from prodiguer.utils import decorators
 
 
 @decorators.validate(validator.validate_retrieve_active_jobs)
-def retrieve_active_jobs(start_date=None):
+def retrieve_active_jobs(start_date=None, identifers=None):
     """Retrieves active job details from db.
 
     :param datetime.datetime start_date: Job execution start date.
+    :param list identifers: Identifiers of simulation for which jobs are to be loaded.
 
     :returns: Job details.
     :rtype: list
@@ -50,18 +51,25 @@ def retrieve_active_jobs(start_date=None):
         s.id                                            #8
         )
     qry = qry.join(s, j.simulation_uid == s.uid)
-    qry = qry.filter(j.execution_start_date != None)
-    qry = _apply_active_simulation_filter(qry, start_date)
     qry = qry.order_by(j.execution_start_date)
+
+    if start_date is not None:
+        qry = qry.filter(s.execution_start_date != None)
+        qry = qry.filter(s.is_obsolete == False)
+        qry = qry.filter(s.execution_start_date >= start_date)
+    if identifers is not None:
+        qry = qry.filter(s.id.in_(identifers))
+    qry = qry.filter(j.execution_start_date != None)
 
     return qry.all()
 
 
 @decorators.validate(validator.validate_retrieve_active_job_periods)
-def retrieve_active_job_periods(start_date=None):
+def retrieve_active_job_periods(start_date=None, identifers=None):
     """Retrieves active job period update details from db.
 
     :param datetime.datetime start_date: Job execution start date.
+    :param list identifers: Identifiers of simulation for which jobs are to be loaded.
 
     :returns: Job details.
     :rtype: list
@@ -75,8 +83,14 @@ def retrieve_active_job_periods(start_date=None):
         func.max(jp.period_date_begin)
         )
     qry = qry.join(jp, s.uid == jp.simulation_uid)
-    qry = _apply_active_simulation_filter(qry, start_date)
     qry = qry.group_by(s.id)
+
+    if start_date is not None:
+        qry = qry.filter(s.execution_start_date != None)
+        qry = qry.filter(s.is_obsolete == False)
+        qry = qry.filter(s.execution_start_date >= start_date)
+    if identifers is not None:
+        qry = qry.filter(s.id.in_(identifers))
 
     return qry.all()
 
@@ -177,7 +191,6 @@ def retrieve_latest_job_period_counter(uid):
     rows = qry.all()
 
     return (rows[0][0], rows.count(rows[0])) if rows else (0, 0)
-
 
 
 def _get_job_raw_query():
@@ -399,17 +412,3 @@ def get_earliest_job():
     qry = qry.order_by(j.execution_start_date)
 
     return qry.first()
-
-
-def _apply_active_simulation_filter(qry, start_date):
-    """Applies a filter limiting result set to active simulations.
-
-    """
-    s = types.Simulation
-
-    qry = qry.filter(s.execution_start_date != None)
-    qry = qry.filter(s.is_obsolete == False)
-    if start_date:
-        qry = qry.filter(s.execution_start_date >= start_date)
-
-    return qry

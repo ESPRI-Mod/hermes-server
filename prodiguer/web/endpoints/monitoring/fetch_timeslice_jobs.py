@@ -27,10 +27,8 @@ from prodiguer.web.utils.http1 import process_request
 _PARAM_TIMESLICE = 'timeslice'
 
 
-
-
-class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
-    """Fetches a time slice of simulations.
+class FetchTimeSliceJobsRequestHandler(tornado.web.RequestHandler):
+    """Fetches a time slice of jobs.
 
     """
     def get(self, *args):
@@ -65,13 +63,11 @@ class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
 
             """
             with db.session.create():
-                logger.log_web("[{}]: executing db query: retrieve_active_simulations".format(id(self)))
-                self.simulations = \
-                    dao.retrieve_active_simulations(self.start_date)
+                logger.log_web("[{}]: executing db query: retrieve_active_jobs".format(id(self)))
+                self.jobs = dao.retrieve_active_jobs(self.start_date)
 
-                logger.log_web("[{}]: executing db queries: retrieve_active_jobset, retrieve_active_jobperiodset".format(id(self)))
-                self.jobs, self.job_periods = \
-                    _get_job_timeslice(self.simulations, "name", "asc")
+                logger.log_web("[{}]: executing db query: retrieve_active_job_periods".format(id(self)))
+                self.job_periods = dao.retrieve_active_job_periods(self.start_date)
 
 
         def _set_output():
@@ -81,8 +77,7 @@ class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
             self.write_raw_output = True
             self.output = {
                 'jobList': self.jobs,
-                'jobPeriodList': self.job_periods,
-                'simulationList': self.simulations
+                'jobPeriodList': self.job_periods
             }
 
 
@@ -90,7 +85,7 @@ class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
             """Performs cleanup after request processing.
 
             """
-            del self.simulations
+            del self.jobs
             del self.start_date
 
 
@@ -101,28 +96,3 @@ class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
             _set_output,
             _cleanup
             ])
-
-
-def _get_job_timeslice(
-    simulations,
-    sort_field,
-    sort_direction,
-    offset=300
-    ):
-    """Returns job timeslice - a subset of full job timeslice.
-
-    """
-    # Apply sort.
-    simulations = sorted(simulations, key=lambda i: getattr(i, sort_field))
-    if sort_direction == "desc":
-        simulations = reversed(simulations)
-
-    # Apply filter.
-    # TODO
-
-    # Apply offset.
-    simulation_identifers = [i.id for i in simulations[:offset]]
-
-    # Return job data.
-    return dao.retrieve_active_jobs(None, simulation_identifers), \
-           dao.retrieve_active_job_periods(None, simulation_identifers)

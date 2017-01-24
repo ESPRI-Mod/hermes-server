@@ -73,11 +73,12 @@ def retrieve_active_simulations(start_date=None):
         as_date_string(s.output_start_date),            #17
         as_date_string(s.output_end_date)               #18
         )
+    qry = qry.order_by(s.execution_start_date)
+
     qry = qry.filter(s.execution_start_date != None)
     qry = qry.filter(s.is_obsolete == False)
     if start_date:
         qry = qry.filter(s.execution_start_date >= start_date)
-    qry = qry.order_by(s.execution_start_date)
 
     return qry.all()
 

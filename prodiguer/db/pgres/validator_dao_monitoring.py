@@ -16,9 +16,11 @@ from prodiguer import cv
 from prodiguer.utils.validation import validate_bool
 from prodiguer.utils.validation import validate_date
 from prodiguer.utils.validation import validate_int
+from prodiguer.utils.validation import validate_iterable
 from prodiguer.utils.validation import validate_str
 from prodiguer.utils.validation import validate_uid
 from prodiguer.utils.validation import validate_ucode
+
 
 
 def validate_delete_simulation(uid):
@@ -253,20 +255,28 @@ def validate_retrieve_active_simulations(start_date=None):
         validate_date(start_date, 'Simulation execution start date')
 
 
-def validate_retrieve_active_jobs(start_date=None):
+def validate_retrieve_active_jobs(start_date=None, simulation_identifers=None):
     """Function input validator: retrieve_active_jobs.
 
     """
     if start_date is not None:
-        validate_date(start_date, 'Job execution start date')
+        validate_date(start_date, 'Execution start date')
+    if simulation_identifers is not None:
+        validate_iterable(simulation_identifers, "Simulation identifers")
+        for simulation_identifer in simulation_identifers:
+            validate_int(simulation_identifer, "Simulation id")
 
 
-def validate_retrieve_active_job_periods(start_date=None):
+def validate_retrieve_active_job_periods(start_date=None, simulation_identifers=None):
     """Function input validator: retrieve_active_job_periods.
 
     """
     if start_date is not None:
-        validate_date(start_date, 'Simulation execution start date')
+        validate_date(start_date, 'Execution start date')
+    if simulation_identifers is not None:
+        validate_iterable(simulation_identifers, "Simulation identifers")
+        for simulation_identifer in simulation_identifers:
+            validate_int(simulation_identifer, "Simulation id")
 
 
 def validate_retrieve_job(uid):
