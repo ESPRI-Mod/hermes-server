@@ -11,6 +11,9 @@
 
 
 """
+from sqlalchemy import cast
+from sqlalchemy import Integer
+
 from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
@@ -71,7 +74,8 @@ def retrieve_active_simulations(start_date=None):
         s.try_id,                                       #15
         s.uid,                                          #16
         as_date_string(s.output_start_date),            #17
-        as_date_string(s.output_end_date)               #18
+        as_date_string(s.output_end_date),              #18
+        cast(s.is_im, Integer),                         #19
         )
     qry = qry.order_by(s.execution_start_date)
 
@@ -270,6 +274,20 @@ def persist_simulation_end(execution_end_date, is_error, uid):
     return dao.persist(_assign, types.Simulation, lambda: retrieve_simulation(uid))
 
 
+def update_simulation_im_flag(uid, is_im):
+    """Updates a simulation's inter-monitoring flag.
+
+    :param str uid: Simulation unique identifier.
+    :param bool is_im: Flag indicating whether the simulation has inter-monitoring jobs.
+
+    """
+    instance = retrieve_simulation(uid)
+    if instance:
+        instance.is_im = is_im
+
+    return instance
+
+
 @decorators.validate(validator.validate_persist_simulation_configuration)
 def persist_simulation_configuration(uid, card):
     """Persists a new simulation configuration db record.
@@ -349,3 +367,5 @@ def get_simulation_accounting_projects():
         )
 
     return qry.all()
+
+

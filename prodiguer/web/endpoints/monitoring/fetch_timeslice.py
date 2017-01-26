@@ -34,6 +34,17 @@ _PARAM_FILTER_MACHINE = 'computeNodeMachine'
 _PARAM_FILTER_MODEL = 'model'
 _PARAM_FILTER_SPACE = 'space'
 
+# Map of timeslices to time deltas (in days).
+_TIMESLICE_DELTAS = {
+    "*": None,
+    "1W": 7,
+    "2W": 14,
+    "1M": 31,
+    "2M": 61,
+    "3M": 92,
+    "6M": 183,
+    "12M": 365
+}
 
 
 class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
@@ -48,23 +59,6 @@ class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
             """Sets search criteria.
 
             """
-            timeslice = self.get_argument(_PARAM_TIMESLICE)
-            if timeslice == '1W':
-                start_date = arrow.utcnow() - datetime.timedelta(days=7)
-            elif timeslice == '2W':
-                start_date = arrow.utcnow() - datetime.timedelta(days=14)
-            elif timeslice == '1M':
-                start_date = arrow.utcnow() - datetime.timedelta(days=31)
-            elif timeslice == '2M':
-                start_date = arrow.utcnow() - datetime.timedelta(days=61)
-            elif timeslice == '3M':
-                start_date = arrow.utcnow() - datetime.timedelta(days=92)
-            elif timeslice == '6M':
-                start_date = arrow.utcnow() - datetime.timedelta(days=183)
-            elif timeslice == '12M':
-                start_date = arrow.utcnow() - datetime.timedelta(days=365)
-
-            self.start_date = None if timeslice == '*' else start_date.datetime
             self.criteria = _SearchCriteria(self)
 
 
@@ -75,7 +69,7 @@ class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
             with db.session.create():
                 logger.log_web("[{}]: executing db query: retrieve_active_simulations".format(id(self)))
                 self.simulations = \
-                    dao.retrieve_active_simulations(self.start_date)
+                    dao.retrieve_active_simulations(self.criteria.start_date)
 
                 logger.log_web("[{}]: executing db queries: retrieve_active_jobset, retrieve_active_jobperiodset".format(id(self)))
                 self.jobs, self.job_periods = \
@@ -98,8 +92,10 @@ class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
             """Performs cleanup after request processing.
 
             """
+            del self.criteria
+            del self.jobs
+            del self.job_periods
             del self.simulations
-            del self.start_date
 
 
         # Process request.
@@ -167,3 +163,6 @@ class _SearchCriteria(object):
         self.machine = handler.get_argument(_PARAM_FILTER_MACHINE, None)
         self.model = handler.get_argument(_PARAM_FILTER_MODEL, None)
         self.space = handler.get_argument(_PARAM_FILTER_SPACE, None)
+        delta = _TIMESLICE_DELTAS[handler.get_argument(_PARAM_TIMESLICE)]
+        self.start_date = None if delta is None else \
+                          (arrow.utcnow() - datetime.timedelta(days=delta)).datetime

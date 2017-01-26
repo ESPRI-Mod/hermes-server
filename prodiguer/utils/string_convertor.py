@@ -16,7 +16,7 @@ import re
 
 
 # Values considered to be abbreviations.
-_ABBREVIATIONS = ("id", "uid", "uuid")
+_ABBREVIATIONS = ("id", "im", "uid", "uuid")
 
 # Default separator.
 _DEFAULT_SEPARATOR = "_"

@@ -46,9 +46,8 @@ def retrieve_active_jobs(start_date=None, identifers=None):
         j.id,                                           #3
         cast(j.is_compute_end, Integer),                #4
         cast(j.is_error, Integer),                      #5
-        cast(j.is_im, Integer),                         #6
-        j.typeof,                                       #7
-        s.id                                            #8
+        j.typeof,                                       #6
+        s.id                                            #7
         )
     qry = qry.join(s, j.simulation_uid == s.uid)
     qry = qry.order_by(j.execution_start_date)

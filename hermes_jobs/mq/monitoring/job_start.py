@@ -65,6 +65,7 @@ def get_tasks():
         _persist_cv,
         _persist_job,
         _persist_simulation,
+        _update_simulation_im_flag,
         _enqueue_cv_git_push,
         _enqueue_late_job_detection,
         _enqueue_fe_notification
@@ -98,6 +99,7 @@ class ProcessingContextInfo(mq.Message):
         self.active_simulation = None
         self.is_simulation_start = props.type == mq.constants.MESSAGE_TYPE_0000
         self.is_compute_job_start = props.type == mq.constants.MESSAGE_TYPE_1000
+        self.job = None
         self.job_type = _MESSAGE_JOB_TYPES[self.props.type]
         self.job_uid = None
         self.job_warning_delay = None
@@ -202,10 +204,10 @@ def _persist_job(ctx):
     """Persists job info to db.
 
     """
-    dao.persist_job_start(
+    ctx.job = dao.persist_job_start(
         ctx.accounting_project,
         ctx.job_warning_delay,
-        ctx.msg.timestamp,
+        ctx.msg.timestamp,      # execution_start_date
         ctx.job_type,
         ctx.job_uid,
         ctx.simulation_uid,
@@ -236,7 +238,7 @@ def _persist_simulation(ctx):
         ctx.compute_node_login_raw,
         ctx.compute_node_machine,
         ctx.compute_node_machine_raw,
-        ctx.msg.timestamp,
+        ctx.msg.timestamp,  # execution_start_date
         ctx.experiment,
         ctx.experiment_raw,
         ctx.model,
@@ -261,9 +263,24 @@ def _persist_simulation(ctx):
             config_card
             )
 
-    # Persist active simulation.
+    # Update active simulation.
     ctx.active_simulation = \
         dao.update_active_simulation(simulation.hashid)
+
+    # Commit to database.
+    db.session.commit()
+
+
+def _update_simulation_im_flag(ctx):
+    """Updates simulation inter-monitoring flag info to db.
+
+    """
+    # Escape if job is not an inter-monitoring one.
+    if not ctx.job.is_im:
+        return
+
+    # Set simulation im flag to true.
+    dao.update_simulation_im_flag(ctx.simulation_uid, True)
 
     # Commit to database.
     db.session.commit()

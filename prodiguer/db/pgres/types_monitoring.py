@@ -110,6 +110,7 @@ class Simulation(Entity):
     )
 
     # Attributes.
+    # ... immutable
     accounting_project = Column(Unicode(511))
     compute_node = Column(Unicode(127))
     compute_node_raw = Column(Unicode(127))
@@ -117,13 +118,9 @@ class Simulation(Entity):
     compute_node_login_raw = Column(Unicode(127))
     compute_node_machine = Column(Unicode(127))
     compute_node_machine_raw = Column(Unicode(127))
-    execution_end_date = Column(DateTime)
-    execution_start_date = Column(DateTime)
     experiment = Column(Unicode(127))
     experiment_raw = Column(Unicode(127))
     hashid = Column(Unicode(63))
-    is_error = Column(Boolean, default=False)
-    is_obsolete = Column(Boolean, default=False)
     model = Column(Unicode(127))
     model_raw = Column(Unicode(127))
     name = Column(Unicode(511))
@@ -133,6 +130,13 @@ class Simulation(Entity):
     space_raw = Column(Unicode(127))
     try_id = Column(Integer, nullable=False, default=1)
     uid = Column(Unicode(63), nullable=False, unique=True)
+
+    # ... mutable
+    execution_end_date = Column(DateTime)
+    execution_start_date = Column(DateTime)
+    is_error = Column(Boolean, default=False)
+    is_obsolete = Column(Boolean, default=False)
+    is_im = Column(Boolean, default=False)
 
     # libIGCM paths.
     submission_path = Column(Unicode(2047))
