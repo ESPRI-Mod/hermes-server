@@ -71,6 +71,14 @@ class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
                 self.simulations = \
                     dao.retrieve_active_simulations(self.criteria.start_date)
 
+                logger.log_web("[{}]: executing db query: retrieve_active_job_counts".format(id(self)))
+                self.job_counts = \
+                    dao.retrieve_active_job_counts(self.criteria.start_date)
+
+                logger.log_web("[{}]: executing db query: latest_compute_jobs".format(id(self)))
+                self.latest_compute_jobs = \
+                    dao.retrieve_latest_active_jobs(self.criteria.start_date)
+
                 logger.log_web("[{}]: executing db queries: retrieve_active_jobset, retrieve_active_jobperiodset".format(id(self)))
                 self.jobs, self.job_periods = \
                     _get_job_timeslice(self.simulations, self.criteria)
@@ -82,9 +90,11 @@ class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
             """
             self.write_raw_output = True
             self.output = {
+                'jobCounts': self.job_counts,
                 'jobList': self.jobs,
                 'jobPeriodList': self.job_periods,
-                'simulationList': self.simulations
+                'simulationList': self.simulations,
+                'latestComputeJobs': self.latest_compute_jobs
             }
 
 
@@ -94,7 +104,9 @@ class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
             """
             del self.criteria
             del self.jobs
+            del self.job_counts
             del self.job_periods
+            del self.latest_compute_jobs
             del self.simulations
 
 
