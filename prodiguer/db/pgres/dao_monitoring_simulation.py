@@ -54,7 +54,6 @@ def retrieve_active_simulations(start_date=None):
 
     """
     s = types.Simulation
-
     qry = session.raw_query(
         s.accounting_project,                           #0
         s.compute_node_login,                           #1
@@ -77,8 +76,6 @@ def retrieve_active_simulations(start_date=None):
         as_date_string(s.output_end_date),              #18
         cast(s.is_im, Integer),                         #19
         )
-    qry = qry.order_by(s.execution_start_date)
-
     qry = qry.filter(s.execution_start_date != None)
     qry = qry.filter(s.is_obsolete == False)
     if start_date:

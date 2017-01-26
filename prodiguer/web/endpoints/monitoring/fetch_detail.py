@@ -65,9 +65,9 @@ class FetchDetailRequestHandler(tornado.web.RequestHandler):
                 else:
                     logger.log_web("[{}]: executing db query: retrieve_previous_tries".format(id(self)))
                     self.previous_tries = dao_monitoring.retrieve_simulation_previous_tries(self.simulation.hashid,
-                                                                                            self.simulation.try_id)
 
-        def _set_output():
+                                                                                            self.simulation.try_id)
+        def _set_output(self):
             """Sets response to be returned to client.
 
             """

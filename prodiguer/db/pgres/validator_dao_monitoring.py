@@ -255,20 +255,8 @@ def validate_retrieve_active_simulations(start_date=None):
         validate_date(start_date, 'Simulation execution start date')
 
 
-def validate_retrieve_active_jobs(start_date=None, simulation_identifers=None):
-    """Function input validator: retrieve_active_jobs.
-
-    """
-    if start_date is not None:
-        validate_date(start_date, 'Execution start date')
-    if simulation_identifers is not None:
-        validate_iterable(simulation_identifers, "Simulation identifers")
-        for simulation_identifer in simulation_identifers:
-            validate_int(simulation_identifer, "Simulation id")
-
-
-def validate_retrieve_active_job_periods(start_date=None, simulation_identifers=None):
-    """Function input validator: retrieve_active_job_periods.
+def validate_retrieve_latest_active_job_periods(start_date=None, simulation_identifers=None):
+    """Function input validator: retrieve_latest_active_job_periods.
 
     """
     if start_date is not None:

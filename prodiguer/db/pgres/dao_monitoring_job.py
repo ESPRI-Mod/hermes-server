@@ -36,30 +36,24 @@ def retrieve_active_job_counts(start_date=None):
     """
     j = types.Job
     s = types.Simulation
-
     qry = session.raw_query(
-        s.uid,
+        s.id,
         j.typeof,
         j.execution_state,
-        func.count(s.uid)
+        func.count(s.id)
         )
     qry = qry.join(j, s.uid == j.simulation_uid)
 
-    qry = qry.order_by(s.uid)
-    qry = qry.order_by(j.typeof)
-    qry = qry.order_by(j.execution_state)
+    qry = qry.group_by(s.id, j.typeof, j.execution_state)
 
-    qry = qry.group_by(s.uid)
-    qry = qry.group_by(j.typeof)
-    qry = qry.group_by(j.execution_state)
+    qry = qry.filter(j.execution_start_date != None)
+    qry = qry.filter(j.execution_state != None)
+    qry = qry.filter(j.typeof != None)
 
-    qry = qry.filter(s.is_obsolete == False)
     qry = qry.filter(s.execution_start_date != None)
+    qry = qry.filter(s.is_obsolete == False)
     if start_date is not None:
         qry = qry.filter(s.execution_start_date >= start_date)
-    qry = qry.filter(j.execution_start_date != None)
-    qry = qry.filter(j.typeof != None)
-    qry = qry.filter(j.execution_state != None)
 
     return qry.all()
 
@@ -76,74 +70,37 @@ def retrieve_latest_active_jobs(start_date=None, job_type=JOB_TYPE_COMPUTING):
     """
     j = types.Job
     s = types.Simulation
-
     qry = session.raw_query(
-        j.simulation_uid,                               #0
-        j.execution_state,                              #1
-        cast(j.is_compute_end, Integer),                #2
-        cast(j.is_error, Integer),                      #3
-        j.typeof,                                       #4
+        s.id,                               #0
+        j.typeof,                                       #1
+        j.execution_state,                              #2
+        cast(j.is_compute_end, Integer),                #3
+        cast(j.is_error, Integer),                      #4
         as_datetime_string(j.execution_start_date),     #5
         as_datetime_string(j.execution_end_date)        #6
         )
-    qry = qry.join(s, j.simulation_uid == s.uid)
-    qry = qry.distinct(j.simulation_uid)
-    qry = qry.order_by(j.simulation_uid)
-    qry = qry.order_by(j.execution_start_date.desc())
+    qry = qry.join(j, s.uid == j.simulation_uid)
+
+    qry = qry.distinct(s.id)
+    qry = qry.order_by(s.id, j.execution_start_date.desc())
+
     qry = qry.filter(j.execution_start_date != None)
+    qry = qry.filter(j.execution_state != None)
     qry = qry.filter(j.typeof == job_type)
-    qry = qry.filter(s.is_obsolete == False)
+
     qry = qry.filter(s.execution_start_date != None)
+    qry = qry.filter(s.is_obsolete == False)
     if start_date is not None:
         qry = qry.filter(s.execution_start_date >= start_date)
 
     return qry.all()
 
 
-@decorators.validate(validator.validate_retrieve_active_jobs)
-def retrieve_active_jobs(start_date=None, identifers=None):
-    """Retrieves active job details from db.
+@decorators.validate(validator.validate_retrieve_latest_active_job_periods)
+def retrieve_latest_active_job_periods(start_date=None):
+    """Retrieves latest active job period update details from db.
 
     :param datetime.datetime start_date: Job execution start date.
-    :param list identifers: Identifiers of simulation for which jobs are to be loaded.
-
-    :returns: Job details.
-    :rtype: list
-
-    """
-    j = types.Job
-    s = types.Simulation
-
-    qry = session.raw_query(
-        as_datetime_string(j.execution_end_date),       #0
-        as_datetime_string(j.execution_start_date),     #1
-        j.execution_state,                              #2
-        j.id,                                           #3
-        cast(j.is_compute_end, Integer),                #4
-        cast(j.is_error, Integer),                      #5
-        j.typeof,                                       #6
-        s.id                                            #7
-        )
-    qry = qry.join(s, j.simulation_uid == s.uid)
-    qry = qry.order_by(j.execution_start_date)
-
-    if start_date is not None:
-        qry = qry.filter(s.execution_start_date != None)
-        qry = qry.filter(s.is_obsolete == False)
-        qry = qry.filter(s.execution_start_date >= start_date)
-    if identifers is not None:
-        qry = qry.filter(s.id.in_(identifers))
-    qry = qry.filter(j.execution_start_date != None)
-
-    return qry.all()
-
-
-@decorators.validate(validator.validate_retrieve_active_job_periods)
-def retrieve_active_job_periods(start_date=None, identifers=None):
-    """Retrieves active job period update details from db.
-
-    :param datetime.datetime start_date: Job execution start date.
-    :param list identifers: Identifiers of simulation for which jobs are to be loaded.
 
     :returns: Job details.
     :rtype: list
@@ -151,42 +108,18 @@ def retrieve_active_job_periods(start_date=None, identifers=None):
     """
     jp = types.JobPeriod
     s = types.Simulation
-
     qry = session.raw_query(
         s.id,
         func.max(jp.period_date_begin)
         )
     qry = qry.join(jp, s.uid == jp.simulation_uid)
+
     qry = qry.group_by(s.id)
 
+    qry = qry.filter(s.execution_start_date != None)
+    qry = qry.filter(s.is_obsolete == False)
     if start_date is not None:
-        qry = qry.filter(s.execution_start_date != None)
-        qry = qry.filter(s.is_obsolete == False)
         qry = qry.filter(s.execution_start_date >= start_date)
-    if identifers is not None:
-        qry = qry.filter(s.id.in_(identifers))
-
-    return qry.all()
-
-
-@decorators.validate(validator.validate_retrieve_active_job_periods)
-def retrieve_job_periods(uid):
-    """Retrieves active job period update details from db.
-
-    :param str uid: UID of simulation.
-
-    :returns: Job details.
-    :rtype: list
-
-    """
-    jp = types.JobPeriod
-
-    qry = session.raw_query(
-        jp.job_uid,
-        jp.period_date_end
-        )
-    qry = qry.filter(jp.simulation_uid == unicode(uid))
-    qry = qry.order_by(jp.period_date_end)
 
     return qry.all()
 
