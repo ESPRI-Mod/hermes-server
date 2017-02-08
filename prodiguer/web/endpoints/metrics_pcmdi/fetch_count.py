@@ -10,8 +10,6 @@
 
 
 """
-import tornado
-
 from prodiguer.db.mongo import dao_metrics as dao
 from prodiguer.web.request_validation import validator_metrics_pcmdi as rv
 from prodiguer.web.utils.http import HermesHTTPRequestHandler
@@ -39,6 +37,7 @@ class FetchCountRequestHandler(HermesHTTPRequestHandler):
             """
             self.group = self.get_argument(_PARAM_GROUP)
             self.query = self.decode_json_body(False)
+
 
         def _set_output():
             """Sets response to be returned to client.

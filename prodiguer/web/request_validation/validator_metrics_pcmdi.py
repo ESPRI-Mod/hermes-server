@@ -139,7 +139,18 @@ def validate_delete(handler):
             Required(_PARAM_GROUP): All(rv.Sequence(unicode), _GroupName(True))
         })
 
-    rv.validate(handler, query_validator=_validate_query)
+    def _validate_body():
+        """Validates HTTP request query arguments.
+
+        """
+        # TODO
+        pass
+
+    rv.validate(
+        handler,
+        query_validator=_validate_query,
+        body_validator=_validate_body
+        )
 
 
 def validate_fetch(handler):
@@ -154,7 +165,18 @@ def validate_fetch(handler):
             Required(_PARAM_GROUP): All(rv.Sequence(unicode), _GroupName(True))
         })
 
-    rv.validate(handler, query_validator=_validate_query)
+    def _validate_body():
+        """Validates HTTP request query arguments.
+
+        """
+        # TODO
+        pass
+
+    rv.validate(
+        handler,
+        query_validator=_validate_query,
+        body_validator=_validate_body
+        )
 
 
 def validate_fetch_columns(handler):
@@ -184,7 +206,18 @@ def validate_fetch_count(handler):
             Required(_PARAM_GROUP): All(rv.Sequence(unicode), _GroupName(True))
         })
 
-    rv.validate(handler, query_validator=_validate_query)
+    def _validate_body():
+        """Validates HTTP request query arguments.
+
+        """
+        # TODO
+        pass
+
+    rv.validate(
+        handler,
+        query_validator=_validate_query,
+        body_validator=_validate_body
+        )
 
 
 def validate_fetch_list(handler):
@@ -206,7 +239,18 @@ def validate_fetch_setup(handler):
             Required(_PARAM_GROUP): All(rv.Sequence(unicode), _GroupName(True))
         })
 
-    rv.validate(handler, query_validator=_validate_query)
+    def _validate_body():
+        """Validates HTTP request query arguments.
+
+        """
+        # TODO
+        pass
+
+    rv.validate(
+        handler,
+        query_validator=_validate_query,
+        body_validator=_validate_body
+        )
 
 
 def validate_rename(handler):

@@ -28,9 +28,6 @@ _HTTP_RESPONSE_SERVER_ERROR = 500
 
 
 
-
-
-
 class HermesHTTPRequestHandler(tornado.web.RequestHandler):
     """A web service request handler.
 
