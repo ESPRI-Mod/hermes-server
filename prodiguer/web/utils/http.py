@@ -118,7 +118,7 @@ class HermesHTTPRequestHandler(tornado.web.RequestHandler):
                 _write({})
             else:
                 _write(self.output)
-                # del self.output
+                del self.output
 
 
         def _write_failure(err):
