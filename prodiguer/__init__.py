@@ -11,7 +11,7 @@
 .. moduleauthor:: IPSL (ES-DOC) <dev@esdocumentation.org>
 
 """
-__version__ = '1.2.0.1'
+__version__ = '1.2.0.2'
 
 
 from prodiguer import cv
