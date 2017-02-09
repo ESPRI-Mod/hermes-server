@@ -54,9 +54,19 @@ class FetchCountRequestHandler(HermesHTTPRequestHandler):
             """
             self.set_header("Access-Control-Allow-Origin", "*")
 
+
+        def _cleanup():
+            """Performs cleanup after request processing.
+
+            """
+            del self.group
+            del self.query
+
+
         # Invoke tasks.
         self.invoke(rv.validate_fetch_count, [
             _decode_request,
             _set_output,
-            _set_headers
+            _set_headers,
+            _cleanup
         ])

@@ -83,6 +83,9 @@ def _validate_request_body(handler):
     # Null case.
     if schema is None:
         if handler.request.body:
+            # Temporary patch.
+            handler.request.data = None
+            return
             raise exceptions.SecurityError("Unexpected request body.")
 
     # Validate request data.

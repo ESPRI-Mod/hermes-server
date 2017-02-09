@@ -45,8 +45,16 @@ class RenameRequestHandler(HermesHTTPRequestHandler):
             """
             dao.rename(self.group, self.new_name)
 
+        def _cleanup():
+            """Performs cleanup after request processing.
+
+            """
+            del self.group
+            del self.new_name
+
         # Invoke tasks.
         self.invoke(rv.validate_rename, [
             _decode_request,
             _rename_metric_group,
+            _cleanup
         ])

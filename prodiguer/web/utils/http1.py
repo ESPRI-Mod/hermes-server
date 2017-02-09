@@ -9,7 +9,10 @@
 
 
 """
+import json
+
 from prodiguer.utils import logger
+from prodiguer.utils import convert
 from prodiguer.utils import string_convertor
 from prodiguer.utils import data_convertor
 from prodiguer.web.utils import http_exceptions as exceptions
@@ -249,3 +252,21 @@ def process_request(
             except:
                 pass
             break
+
+
+def decode_json_payload(handler, as_namedtuple=True):
+    """Decodes request body JSON string.
+
+    :param tornado.web.RequestHandler handler: A web request handler.
+    :param bool as_namedtuple: Flag indicating whether to return a named tuple.
+
+    :returns: Decoded json data.
+    :rtype: namedtuple | None
+
+    """
+    if not handler.request.body:
+        return None
+
+    body = json.loads(handler.request.body)
+
+    return convert.dict_to_namedtuple(body) if as_namedtuple else body

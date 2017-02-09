@@ -38,7 +38,7 @@ def _fetch(action, query=None):
     """Fetches data form db.
 
     """
-    return action(query or {})
+    return action() if query is None else action(query)
 
 
 def _get_collection(group_id):

@@ -68,10 +68,20 @@ class AddRequestHandler(HermesHTTPRequestHandler):
                     'duplicate_count': len(self.duplicates)
                 }
 
+        def _cleanup():
+            """Performs cleanup after request processing.
+
+            """
+            del self.duplicate_action
+            del self.payload
+            del self.added
+            del self.duplicates
+
         # Invoke tasks.
         self.invoke(rv.validate_add, [
             _decode_request,
             _insert_metrics,
-            _set_output
+            _set_output,
+            _cleanup
         ])
 

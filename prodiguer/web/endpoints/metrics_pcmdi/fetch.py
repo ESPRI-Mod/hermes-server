@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
+
 """
-.. module:: hermes.web.endpoints.metrics_pcmdi.fetch.py
+.. module:: hermes.web.endpoints.monitoring.fetch_all.py
    :copyright: @2015 IPSL (http://ipsl.fr)
    :license: GPL/CeCIL
    :platform: Unix, Windows
-   :synopsis: Simulation metric group fetch request handler.
+   :synopsis: Simulation monitoring front end setup request handler.
 
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 
 """
 import tornado
-import voluptuous
 
 from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web.request_validation import validator_metrics_pcmdi as rv
-from prodiguer.web.utils.http import HermesHTTPRequestHandler
+from prodiguer.web.utils.http1 import process_request
+from prodiguer.web.utils.http1 import decode_json_payload
 
 
 
@@ -26,11 +26,13 @@ _CONTENT_TYPE_JSON = ["application/json", "application/json; charset=UTF-8"]
 _PARAM_GROUP = 'group'
 
 
-class FetchRequestHandler(HermesHTTPRequestHandler):
-    """Simulation metric group fetch method request handler.
+
+
+class FetchRequestHandler(tornado.web.RequestHandler):
+    """Fetches a metrics group.
 
     """
-    def get(self):
+    def get(self, *args):
         """HTTP GET handler.
 
         """
@@ -39,7 +41,8 @@ class FetchRequestHandler(HermesHTTPRequestHandler):
 
             """
             self.group = self.get_argument(_PARAM_GROUP)
-            self.query = self.decode_json_body(False)
+            self.query = decode_json_payload(self, False)
+
 
         def _fetch_data():
             """Fetches data from db.
@@ -48,6 +51,7 @@ class FetchRequestHandler(HermesHTTPRequestHandler):
             self.columns = dao.fetch_columns(self.group)
             self.metrics = dao.fetch(self.group, self.query)
 
+
         def _format_data():
             """Formats data.
 
@@ -55,6 +59,7 @@ class FetchRequestHandler(HermesHTTPRequestHandler):
             # Move _id column to the end of each metric set.
             self.metrics = [m[1:] + [m[0]] for m in
                             [m.values() for m in self.metrics]]
+
 
         def _set_output():
             """Sets response to be returned to client.
@@ -66,17 +71,30 @@ class FetchRequestHandler(HermesHTTPRequestHandler):
                 'metrics': self.metrics
             }
 
+
         def _set_headers():
             """Sets response headers to be returned to client.
 
             """
             self.set_header("Access-Control-Allow-Origin", "*")
 
-        # Invoke tasks.
-        self.invoke(rv.validate_fetch, [
+
+        def _cleanup():
+            """Performs cleanup after request processing.
+
+            """
+            del self.group
+            del self.query
+            del self.columns
+            del self.metrics
+
+
+        # Process request.
+        process_request(self, [
             _decode_request,
             _fetch_data,
             _format_data,
             _set_output,
-            _set_headers
-        ])
+            _set_headers,
+            _cleanup
+            ])
