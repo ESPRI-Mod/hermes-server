@@ -105,9 +105,9 @@ def _validate_basic_properties(props):
 
     # Validate unsupported properties.
     if props.cluster_id:
-        raise ValueError("Unsupported AMPQ basic proeprty: cluster_id")
+        raise ValueError("Unsupported AMPQ basic property: cluster_id")
     if props.expiration:
-        raise ValueError("Unsupported AMPQ basic proeprty: expiration")
+        raise ValueError("Unsupported AMPQ basic property: expiration")
 
     # Validate required properties.
     validate_mbr(props.app_id, constants.APPS, 'message application')

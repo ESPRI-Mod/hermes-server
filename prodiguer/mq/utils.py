@@ -134,9 +134,7 @@ def create_ampq_message_properties(
         headers['exchange'] = exchange
 
     # Remove null headers.
-    for key, value in headers.iteritems():
-        if value is None:
-            del headers[key]
+    headers = {k: v for k, v in headers.iteritems() if v is not None}
 
     # Return a pika BasicProperties instance (follows AMPQ protocol).
     return pika.BasicProperties(
@@ -274,6 +272,8 @@ def _persist(properties, payload):
 
     # Set timestamp info.
     _, ts_utc, _, _ = get_timestamps(properties.headers["timestamp"])
+
+    print "persisting message", properties.message_id
 
     return db.dao_mq.persist_message(
         properties.message_id,

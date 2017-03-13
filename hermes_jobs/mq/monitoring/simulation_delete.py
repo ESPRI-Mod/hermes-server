@@ -10,9 +10,11 @@
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 """
+from hermes_jobs.mq import utils
 from prodiguer import mq
-from prodiguer.db.pgres import dao
-from prodiguer.db.pgres import types
+from prodiguer.db.pgres import dao_monitoring as dao
+from prodiguer.utils import config
+from prodiguer.utils import logger
 
 
 
@@ -22,12 +24,9 @@ def get_tasks():
     """
     return (
         _unpack_content,
-        _delete_environment_metrics,
-        _delete_jobs,
-        _delete_job_periods,
-        _delete_simulation,
-        _delete_simulation_configuration,
-        _delete_supervision
+        _delete,
+        _enqueue,
+        _log
         )
 
 
@@ -50,52 +49,33 @@ def _unpack_content(ctx):
 
     """
     ctx.simulation_uid = ctx.content['simuid']
+    ctx.is_confirm = ctx.content.get('is_confirm') is not None
 
 
-def _delete_environment_metrics(ctx):
-    """Deletes simulation environment metrics from dB.
-
-    """
-    dao.delete_by_facet(types.EnvironmentMetric,
-                        types.EnvironmentMetric.simulation_uid == ctx.simulation_uid)
-
-
-def _delete_jobs(ctx):
-    """Deletes associated jobs from dB.
+def _delete(ctx):
+    """Deletes simulation data from dB.
 
     """
-    dao.delete_by_facet(types.Job,
-                        types.Job.simulation_uid == ctx.simulation_uid)
+    dao.delete_simulation(ctx.simulation_uid)
 
 
-def _delete_job_periods(ctx):
-    """Deletes associated job periods from dB.
-
-    """
-    dao.delete_by_facet(types.JobPeriod,
-                        types.JobPeriod.simulation_uid == ctx.simulation_uid)
-
-
-def _delete_simulation(ctx):
-    """Deletes simulation from dB.
+def _enqueue(ctx):
+    """Ensure simulation is purged when email latency interferes with monitoring.
 
     """
-    dao.delete_by_facet(types.Simulation,
-                        types.Simulation.simulation_uid == ctx.simulation_uid)
+    if ctx.is_confirm:
+        return
+
+    utils.enqueue(
+        mq.constants.MESSAGE_TYPE_8888,
+        delay_in_ms=config.apps.monitoring.purgeSimulationConfirmDelayInSeconds * 1000,
+        exchange=mq.constants.EXCHANGE_HERMES_SECONDARY_DELAYED,
+        payload={"simuid": ctx.simulation_uid, "is_confirm": True}
+        )
 
 
-def _delete_simulation_configuration(ctx):
-    """Deletes simulation configuration from dB.
+def _log(ctx):
+    """Logs event.
 
     """
-    dao.delete_by_facet(types.SimulationConfiguration,
-                        types.SimulationConfiguration.simulation_uid == ctx.simulation_uid)
-
-
-def _delete_supervision(ctx):
-    """Deletes simulation supervision information from dB.
-
-    """
-    dao.delete_by_facet(types.Supervision,
-                        types.Supervision.simulation_uid == ctx.simulation_uid)
-
+    logger.log_mq("Simulation purged: {}".format(ctx.simulation_uid))

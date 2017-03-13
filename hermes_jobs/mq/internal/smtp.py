@@ -38,10 +38,12 @@ def get_tasks():
         _set_msg_json,
         _set_msg_dict,
         _drop_excluded_messages,
+        _drop_incorrelateable_messages,
         _process_attachments,
         _set_msg_ampq,
         _enqueue_messages,
         _log_stats,
+        _log_incorrelateable,
         _persist_stats,
         _dequeue_email,
         _close_imap_client
@@ -79,6 +81,7 @@ class ProcessingContextInfo(mq.Message):
         self.msg_dict = []
         self.msg_dict_error = []
         self.msg_dict_excluded = []
+        self.msg_dict_incorrelateable = []
 
 
 def _set_email(ctx):
@@ -141,6 +144,19 @@ def _drop_excluded_messages(ctx):
 
     ctx.msg_dict_excluded = [m for m in ctx.msg_dict if _is_excluded(m)]
     ctx.msg_dict = [m for m in ctx.msg_dict if m not in ctx.msg_dict_excluded]
+
+
+def _drop_incorrelateable_messages(ctx):
+    """Drops messages that are excluded as they cannot be correlated to a simulation.
+
+    """
+    for msg in ctx.msg_dict:
+        if msg.get('simuid') is not None:
+            try:
+                uuid.UUID(msg.get('simuid'))
+            except ValueError:
+                ctx.msg_dict_incorrelateable.append(msg)
+    ctx.msg_dict = [m for m in ctx.msg_dict if m not in ctx.msg_dict_incorrelateable]
 
 
 def _process_attachments_0000(ctx):
@@ -210,53 +226,48 @@ def _set_msg_ampq(ctx):
     """Set AMPQ messages to be dispatched.
 
     """
-    # Escape if email rejected.
     if ctx.email_rejected:
         return
 
-    def _get_ampq_props(data):
-        """Returns an AMPQ basic properties instance, i.e. message header.
-
-        """
-        # Decode nano-second precise message timestamp.
-        _, ts_utc, ts_int, _ = mq.get_timestamps(data['msgTimestamp'])
-
-        return mq.utils.create_ampq_message_properties(
-            user_id=mq.constants.USER_HERMES,
-            producer_id=data['msgProducer'],
-            producer_version=data['msgProducerVersion'],
-            message_id=data['msgUID'],
-            message_type=data['msgCode'],
-            timestamp=ts_int,
-            headers={
-                'timestamp': unicode(ts_utc.isoformat()),
-                'timestamp_raw': unicode(data['msgTimestamp']),
-                'correlation_id_1': data.get('simuid'),
-                'correlation_id_2': data.get('jobuid'),
-                'email_id': ctx.email_uid
-            })
-
-
-    def _get_ampq_payload(data):
-        """Return ampq message payload.
-
-        """
-        # Strip out non-platform platform attributes.
-        return {k: data[k] for k in data if not k.startswith("msg")}
-
-
-    def _encode(data):
-        """Encodes message data as an ampq message.
-
-        """
-        return mq.Message(_get_ampq_props(data), _get_ampq_payload(data))
-
-
-    for msg in [_encode(m) for m in ctx.msg_dict]:
-        if isinstance(msg, tuple):
-            ctx.msg_ampq_error.append(msg)
+    for msg in ctx.msg_dict:
+        try:
+            props = _get_ampq_props(ctx, msg)
+            payload = _get_ampq_payload(msg)
+            msg_ampq = mq.Message(props, payload)
+        except Exception as err:
+            ctx.msg_ampq_error.append((msg, err))
         else:
-            ctx.msg_ampq.append(msg)
+            ctx.msg_ampq.append(msg_ampq)
+
+
+def _get_ampq_props(ctx, msg):
+    """Returns an AMPQ basic properties instance, i.e. message header.
+
+    """
+    # Decode nano-second precise message timestamp.
+    _, ts_utc, ts_int, _ = mq.get_timestamps(msg['msgTimestamp'])
+
+    return mq.utils.create_ampq_message_properties(
+        user_id=mq.constants.USER_HERMES,
+        producer_id=msg['msgProducer'],
+        producer_version=msg['msgProducerVersion'],
+        message_id=msg['msgUID'],
+        message_type=msg['msgCode'],
+        timestamp=ts_int,
+        headers={
+            'timestamp': unicode(ts_utc.isoformat()),
+            'timestamp_raw': unicode(msg['msgTimestamp']),
+            'correlation_id_1': msg.get('simuid'),
+            'correlation_id_2': None if msg.get('jobuid') in (None, "N/A") else msg.get('jobuid'),
+            'email_id': ctx.email_uid
+        })
+
+
+def _get_ampq_payload(obj):
+    """Return ampq message payload by stripping out non-platform platform attributes.
+
+    """
+    return {k: v for k, v in obj.iteritems() if not k.startswith("msg")}
 
 
 def _enqueue_messages(ctx):
@@ -315,6 +326,15 @@ def _log_stats(ctx):
     msg += "Outgoing: {}.".format(len(ctx.msg_ampq))
 
     logger.log_mq(msg)
+
+
+def _log_incorrelateable(ctx):
+    """Logs incorrelateable messages.
+
+    """
+    err = "Message cannot be correlated to a simulation: type={}, uid={}"
+    for m in ctx.msg_dict_incorrelateable:
+        logger.log_mq_warning(err.format(m['msgCode'], m['msgUID']))
 
 
 def _persist_stats(ctx):

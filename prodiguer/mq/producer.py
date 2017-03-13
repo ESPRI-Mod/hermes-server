@@ -48,17 +48,13 @@ class Producer(object):
         :param bool verbose: Flag indicating whether logging level is verbose or not.
 
         """
-        # Override defaults from config.
-        if connection_url is None:
-            connection_url=config.mq.connections.main
-
         self._msg_source = msg_source
         self._connection_reopen_delay = defaults.DEFAULT_CONNECTION_REOPEN_DELAY
         self._enable_confirmations = enable_confirmations
         self._publish_limit = publish_limit
         self._publish_interval = publish_interval
         self._stop_ioloop_on_disconnect = not (self._connection_reopen_delay > 0)
-        self._url = connection_url
+        self._url = connection_url or config.mq.connections.main
         self._verbose = verbose
 
         self._acked = 0

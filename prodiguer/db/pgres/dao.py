@@ -41,7 +41,7 @@ def delete_all(etype):
 
 
 @decorators.validate(validator.validate_delete_by_facet)
-def delete_by_facet(etype, filter_expression=None):
+def delete_by_facet(etype, filter_expression):
     """Delete entity instance by id.
 
     :param class etype: A supported entity type.
@@ -49,8 +49,7 @@ def delete_by_facet(etype, filter_expression=None):
 
     """
     qry = session.query(etype)
-    if filter_expression:
-        qry = qry.filter(filter_expression)
+    qry = qry.filter(filter_expression)
     qry.delete()
 
 

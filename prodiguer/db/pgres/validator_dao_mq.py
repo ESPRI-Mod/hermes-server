@@ -47,9 +47,9 @@ def validate_persist_message(
     validate_mbr(content_encoding, constants.CONTENT_ENCODINGS, 'content encoding')
     validate_mbr(content_type, constants.CONTENT_TYPES, 'content type')
     if correlation_id_1:
-        validate_uid(correlation_id_1, "correlation_id_1")
+        validate_uid(correlation_id_1, "correlation_id_1_555")
     if correlation_id_2:
-        validate_uid(correlation_id_2, "correlation_id_2")
+        validate_uid(correlation_id_2, "correlation_id_2_666")
     if correlation_id_3:
         validate_uid(correlation_id_3, "correlation_id_3")
     if email_id:

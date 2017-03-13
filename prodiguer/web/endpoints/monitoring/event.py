@@ -45,12 +45,12 @@ def _get_simulation_event_data(request_data):
     if simulation:
         data = {
             'cv_terms': request_data.get('cv_terms', []),
-            'job_list': dao.retrieve_simulation_jobs(simulation_uid),
+            'latest_compute_job': dao.retrieve_simulation_latest_job(simulation_uid),
+            'job_counts': dao.retrieve_simulation_job_counts(simulation_uid),
             'job_period': dao.retrieve_latest_job_period(simulation_uid),
             'simulation': simulation,
             'simulation_uid': simulation_uid
             }
-        print data
 
         return data
 

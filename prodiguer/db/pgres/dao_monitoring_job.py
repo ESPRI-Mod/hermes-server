@@ -58,11 +58,16 @@ def retrieve_active_job_counts(start_date=None):
     return qry.all()
 
 
-def retrieve_latest_active_jobs(start_date=None, job_type=JOB_TYPE_COMPUTING):
+def retrieve_latest_active_jobs(
+    start_date=None,
+    job_type=JOB_TYPE_COMPUTING,
+    simulation_uid=None
+    ):
     """Returns set of latest jobs for active simulations.
 
     :param datetime.datetime start_date: Job execution start date.
     :param str job_type: Type of job.
+    :param str simulation_uid: Simulation UID.
 
     :returns: Job details.
     :rtype: list
@@ -92,6 +97,8 @@ def retrieve_latest_active_jobs(start_date=None, job_type=JOB_TYPE_COMPUTING):
     qry = qry.filter(s.is_obsolete == False)
     if start_date is not None:
         qry = qry.filter(s.execution_start_date >= start_date)
+    if simulation_uid is not None:
+        qry = qry.filter(s.uid == simulation_uid)
 
     return qry.all()
 

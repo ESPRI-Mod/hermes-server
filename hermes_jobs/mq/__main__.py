@@ -101,6 +101,7 @@ _AGENT_EXCHANGES = {
         'debug-7000',
         'debug-7010',
         'debug-7100',
+        'debug-8888',
         'debug-monitoring-compute',
         'debug-monitoring-post-processing',
         'live-metrics-conso',

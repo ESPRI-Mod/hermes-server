@@ -14,6 +14,7 @@
 from sqlalchemy import cast
 from sqlalchemy import Integer
 
+from prodiguer.cv.constants import JOB_TYPE_COMPUTING
 from prodiguer.db.pgres import dao
 from prodiguer.db.pgres import session
 from prodiguer.db.pgres import types
@@ -367,3 +368,67 @@ def get_simulation_accounting_projects():
     return qry.all()
 
 
+def retrieve_simulation_job_counts(uid):
+    """Returns a simulation's job counts.
+
+    :param str uid: Simulation UID.
+
+    :returns: Job counts grouped by job type, job state.
+    :rtype: list
+
+    """
+    j = types.Job
+    s = types.Simulation
+    qry = session.raw_query(
+        s.id,
+        j.typeof,
+        j.execution_state,
+        func.count(s.id)
+        )
+    qry = qry.join(j, s.uid == j.simulation_uid)
+
+    qry = qry.group_by(s.id, j.typeof, j.execution_state)
+
+    qry = qry.filter(j.execution_start_date != None)
+    qry = qry.filter(j.execution_state != None)
+    qry = qry.filter(j.typeof != None)
+    qry = qry.filter(s.uid == uid)
+
+    return qry.all()
+
+
+def retrieve_simulation_latest_job(
+    job_type=JOB_TYPE_COMPUTING,
+    uid=None
+    ):
+    """Returns set of latest jobs for active simulations.
+
+    :param str job_type: Type of job.
+    :param str uid: Simulation UID.
+
+    :returns: Job details.
+    :rtype: list
+
+    """
+    j = types.Job
+    s = types.Simulation
+    qry = session.raw_query(
+        s.id,                               #0
+        j.typeof,                                       #1
+        j.execution_state,                              #2
+        cast(j.is_compute_end, Integer),                #3
+        cast(j.is_error, Integer),                      #4
+        as_datetime_string(j.execution_start_date),     #5
+        as_datetime_string(j.execution_end_date)        #6
+        )
+    qry = qry.join(j, s.uid == j.simulation_uid)
+
+    qry = qry.distinct(s.id)
+    qry = qry.order_by(s.id, j.execution_start_date.desc())
+
+    qry = qry.filter(j.execution_start_date != None)
+    qry = qry.filter(j.execution_state != None)
+    qry = qry.filter(j.typeof == job_type)
+    qry = qry.filter(s.uid == uid)
+
+    return qry.all()
