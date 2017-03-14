@@ -14,8 +14,12 @@
 import tornado
 
 from prodiguer.db import pgres as db
-from prodiguer.db.pgres import dao_monitoring
-from prodiguer.db.pgres import dao_mq
+from prodiguer.db.pgres.dao_monitoring import retrieve_simulation
+from prodiguer.db.pgres.dao_monitoring import retrieve_simulation_jobs
+from prodiguer.db.pgres.dao_monitoring import retrieve_simulation_configuration
+from prodiguer.db.pgres.dao_monitoring import retrieve_latest_job_period
+from prodiguer.db.pgres.dao_monitoring import retrieve_simulation_previous_tries
+from prodiguer.db.pgres.dao_mq import has_messages
 from prodiguer.utils import logger
 from prodiguer.web.utils.http1 import process_request
 
@@ -46,27 +50,27 @@ class FetchDetailRequestHandler(tornado.web.RequestHandler):
             """
             with db.session.create():
                 logger.log_web("[{}]: executing db query: retrieve_simulation_try".format(id(self)))
-                self.simulation = dao_monitoring.retrieve_simulation(self.uid)
+                self.simulation = retrieve_simulation(self.uid)
 
                 logger.log_web("[{}]: executing db query: retrieve_simulation_jobs".format(id(self)))
-                self.job_list = dao_monitoring.retrieve_simulation_jobs(self.uid)
+                self.job_list = retrieve_simulation_jobs(self.uid)
 
                 logger.log_web("[{}]: executing db query: retrieve_simulation_configuration".format(id(self)))
-                self.configuration = dao_monitoring.retrieve_simulation_configuration(self.uid)
+                self.configuration = retrieve_simulation_configuration(self.uid)
 
                 logger.log_web("[{}]: executing db query: has_messages".format(id(self)))
-                self.has_messages = dao_mq.has_messages(self.uid)
+                self.has_messages = has_messages(self.uid)
 
                 logger.log_web("[{}]: executing db query: retrieve_latest_job_period".format(id(self)))
-                self.latest_job_period = dao_monitoring.retrieve_latest_job_period(self.uid)
+                self.latest_job_period = retrieve_latest_job_period(self.uid)
 
                 if self.simulation.try_id == 1:
                     self.previous_tries = []
                 else:
                     logger.log_web("[{}]: executing db query: retrieve_previous_tries".format(id(self)))
-                    self.previous_tries = dao_monitoring.retrieve_simulation_previous_tries(self.simulation.hashid,
+                    self.previous_tries = retrieve_simulation_previous_tries(self.simulation.hashid, self.simulation.try_id)
 
-                                                                                            self.simulation.try_id)
+
         def _set_output(self):
             """Sets response to be returned to client.
 
@@ -100,4 +104,3 @@ class FetchDetailRequestHandler(tornado.web.RequestHandler):
             _set_output,
             _cleanup
             ])
-

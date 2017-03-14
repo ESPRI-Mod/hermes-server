@@ -12,6 +12,7 @@
 
 """
 from sqlalchemy import cast
+from sqlalchemy import func
 from sqlalchemy import Integer
 
 from prodiguer.cv.constants import JOB_TYPE_COMPUTING
@@ -397,14 +398,11 @@ def retrieve_simulation_job_counts(uid):
     return qry.all()
 
 
-def retrieve_simulation_latest_job(
-    job_type=JOB_TYPE_COMPUTING,
-    uid=None
-    ):
+def retrieve_simulation_latest_job(uid, job_type=JOB_TYPE_COMPUTING):
     """Returns set of latest jobs for active simulations.
 
-    :param str job_type: Type of job.
     :param str uid: Simulation UID.
+    :param str job_type: Type of job.
 
     :returns: Job details.
     :rtype: list
@@ -413,7 +411,7 @@ def retrieve_simulation_latest_job(
     j = types.Job
     s = types.Simulation
     qry = session.raw_query(
-        s.id,                               #0
+        s.id,                                           #0
         j.typeof,                                       #1
         j.execution_state,                              #2
         cast(j.is_compute_end, Integer),                #3
@@ -421,14 +419,13 @@ def retrieve_simulation_latest_job(
         as_datetime_string(j.execution_start_date),     #5
         as_datetime_string(j.execution_end_date)        #6
         )
-    qry = qry.join(j, s.uid == j.simulation_uid)
 
-    qry = qry.distinct(s.id)
-    qry = qry.order_by(s.id, j.execution_start_date.desc())
+    qry = qry.join(j, s.uid == j.simulation_uid)
+    qry = qry.order_by(j.execution_start_date.desc())
 
     qry = qry.filter(j.execution_start_date != None)
     qry = qry.filter(j.execution_state != None)
     qry = qry.filter(j.typeof == job_type)
     qry = qry.filter(s.uid == uid)
 
-    return qry.all()
+    return qry.first()

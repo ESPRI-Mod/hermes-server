@@ -273,8 +273,6 @@ def _persist(properties, payload):
     # Set timestamp info.
     _, ts_utc, _, _ = get_timestamps(properties.headers["timestamp"])
 
-    print "persisting message", properties.message_id
-
     return db.dao_mq.persist_message(
         properties.message_id,
         properties.user_id,

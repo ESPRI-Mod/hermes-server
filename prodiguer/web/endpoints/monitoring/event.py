@@ -17,7 +17,11 @@ import json
 import tornado.web
 
 from prodiguer.db import pgres as db
-from prodiguer.db.pgres import dao_monitoring as dao
+from prodiguer.db.pgres.dao_monitoring import retrieve_job_info
+from prodiguer.db.pgres.dao_monitoring import retrieve_latest_job_period
+from prodiguer.db.pgres.dao_monitoring import retrieve_simulation
+from prodiguer.db.pgres.dao_monitoring import retrieve_simulation_job_counts
+from prodiguer.db.pgres.dao_monitoring import retrieve_simulation_latest_job
 from prodiguer.utils import logger
 from prodiguer.utils import string_convertor as sc
 from prodiguer.web.utils import websockets
@@ -40,27 +44,26 @@ def _get_simulation_event_data(request_data):
     """Event data factory: returns simulation event data.
 
     """
-    simulation_uid = request_data['simulation_uid']
-    simulation = dao.retrieve_simulation(simulation_uid)
-    if simulation:
-        data = {
-            'cv_terms': request_data.get('cv_terms', []),
-            'latest_compute_job': dao.retrieve_simulation_latest_job(simulation_uid),
-            'job_counts': dao.retrieve_simulation_job_counts(simulation_uid),
-            'job_period': dao.retrieve_latest_job_period(simulation_uid),
-            'simulation': simulation,
-            'simulation_uid': simulation_uid
-            }
-
-        return data
+    uid = request_data['simulation_uid']
+    with db.session.create():
+        simulation = retrieve_simulation(uid)
+        if simulation is not None:
+            return {
+                'cv_terms': request_data.get('cv_terms', []),
+                'latest_compute_job': retrieve_simulation_latest_job(uid),
+                'job_counts': retrieve_simulation_job_counts(uid),
+                'job_period': retrieve_latest_job_period(uid),
+                'simulation': simulation,
+                'simulation_uid': uid
+                }
 
 
 def _get_job_event_data(request_data):
     """Event data factory: returns job event data.
 
     """
-    job_uid = request_data['job_uid']
-    job = dao.retrieve_job_subset(job_uid)
+    with db.session.create():
+        job = retrieve_job_info(request_data['job_uid'])
     if job:
         return {
             'job': job,
@@ -88,15 +91,12 @@ class _EventManager(object):
         """
         self.request_data = json.loads(handler.request.body)
         self.type = self.request_data['event_type']
-
-        if self.request_data['event_type'].startswith("simulation"):
+        if self.type.startswith("simulation"):
             self.data_factory = _get_simulation_event_data
-        elif self.request_data['event_type'].startswith("job_period"):
+        elif self.type.startswith("job_period"):
             self.data_factory = _get_job_period_event_data
-        elif self.request_data['event_type'].startswith("job"):
+        elif self.type.startswith("job"):
             self.data_factory = _get_job_event_data
-
-        _log("{0} event received: {1}".format(self.type, self.request_data))
 
 
     def get_websocket_data(self):
@@ -128,13 +128,21 @@ class EventRequestHandler(tornado.web.RequestHandler):
         # Signal asynch.
         self.finish()
 
-        # Write web-socket event data.
-        with db.session.create():
-            event = _EventManager(self)
-            data = event.get_websocket_data()
-            if data is not None:
-                data.update({
-                    'event_type' : sc.to_camel_case(event.type),
-                    'event_timestamp': datetime.datetime.utcnow(),
-                })
-                websockets.on_write(_WS_KEY, data, _ws_client_filter)
+        # Escape if no active web-socket connections.
+        # if websockets.get_client_count() == 0:
+        #     return
+
+        # Set event manager.
+        event = _EventManager(self)
+        _log("{0} event received: {1}".format(event.type, event.request_data))
+
+        # Set event data.
+        data = event.get_websocket_data()
+
+        # Publish web-socket event.
+        if data is not None:
+            data.update({
+                'event_type' : sc.to_camel_case(event.type),
+                'event_timestamp': datetime.datetime.utcnow(),
+            })
+            websockets.on_write(_WS_KEY, data, _ws_client_filter)

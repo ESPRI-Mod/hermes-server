@@ -17,7 +17,10 @@ import arrow
 import tornado
 
 from prodiguer.db import pgres as db
-from prodiguer.db.pgres import dao_monitoring as dao
+from prodiguer.db.pgres.dao_monitoring import retrieve_active_simulations
+from prodiguer.db.pgres.dao_monitoring import retrieve_active_job_counts
+from prodiguer.db.pgres.dao_monitoring import retrieve_latest_active_jobs
+from prodiguer.db.pgres.dao_monitoring import retrieve_latest_active_job_periods
 from prodiguer.utils import logger
 from prodiguer.web.utils.http1 import process_request
 
@@ -62,19 +65,16 @@ class FetchTimeSliceRequestHandler(tornado.web.RequestHandler):
             """
             with db.session.create():
                 logger.log_web("[{}]: executing db query: retrieve_active_simulations".format(id(self)))
-                self.simulations = \
-                    dao.retrieve_active_simulations(self.start_date)
+                self.simulations = retrieve_active_simulations(self.start_date)
 
                 logger.log_web("[{}]: executing db query: retrieve_active_job_counts".format(id(self)))
-                self.job_counts = \
-                    dao.retrieve_active_job_counts(self.start_date)
+                self.job_counts = retrieve_active_job_counts(self.start_date)
 
-                logger.log_web("[{}]: executing db query: retrieve_latest_active_compute_jobs".format(id(self)))
-                self.latest_compute_jobs = \
-                    dao.retrieve_latest_active_jobs(self.start_date)
+                logger.log_web("[{}]: executing db query: retrieve_latest_active_jobs".format(id(self)))
+                self.latest_compute_jobs = retrieve_latest_active_jobs(self.start_date)
 
                 logger.log_web("[{}]: executing db query: retrieve_latest_active_job_periods".format(id(self)))
-                self.job_periods = dao.retrieve_latest_active_job_periods(self.start_date)
+                self.job_periods = retrieve_latest_active_job_periods(self.start_date)
 
 
         def _set_output():

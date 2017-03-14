@@ -14,8 +14,8 @@
 import tornado
 
 from prodiguer.db import pgres as db
-from prodiguer.db.pgres import dao_monitoring
-from prodiguer.db.pgres import dao_mq
+from prodiguer.db.pgres.dao_monitoring import retrieve_simulation
+from prodiguer.db.pgres.dao_mq import retrieve_messages
 from prodiguer.utils import logger
 from prodiguer.web.utils.http1 import process_request
 
@@ -46,10 +46,10 @@ class FetchMessagesRequestHandler(tornado.web.RequestHandler):
             """
             with db.session.create():
                 logger.log_web("[{}]: executing db query: retrieve_simulation".format(id(self)))
-                self.simulation = dao_monitoring.retrieve_simulation(self.simulation_uid)
+                self.simulation = retrieve_simulation(self.simulation_uid)
 
                 logger.log_web("[{}]: executing db query: retrieve_messages".format(id(self)))
-                self.message_history = dao_mq.retrieve_messages(self.simulation_uid)
+                self.message_history = retrieve_messages(self.simulation_uid)
 
 
         def _set_output():

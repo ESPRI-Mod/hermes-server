@@ -243,6 +243,33 @@ def _get_job_raw_query():
     return qry
 
 
+# @decorators.validate(validator.validate_retrieve_job_subset)
+def retrieve_job_info(uid):
+    """Retrieves a subset of job details from db.
+
+    :param str uid: UID of job.
+
+    :returns: A subset of job details.
+    :rtype: tuple
+
+    """
+    j = types.Job
+    s = types.Simulation
+    qry = session.raw_query(
+        s.id,                                           #0
+        j.typeof,                                       #1
+        j.execution_state,                              #2
+        cast(j.is_compute_end, Integer),                #3
+        cast(j.is_error, Integer),                      #4
+        as_datetime_string(j.execution_start_date),     #5
+        as_datetime_string(j.execution_end_date)        #6
+        )
+    qry = qry.join(j, s.uid == j.simulation_uid)
+    qry = qry.filter(j.job_uid == unicode(uid))
+
+    return qry.first()
+
+
 @decorators.validate(validator.validate_retrieve_job_subset)
 def retrieve_job_subset(uid):
     """Retrieves a subset of job details from db.
