@@ -12,6 +12,7 @@
 """
 from hermes_jobs.mq import utils
 from prodiguer import mq
+from prodiguer.db import pgres as db
 from prodiguer.db.pgres import dao_monitoring as dao
 from prodiguer.utils import config
 from prodiguer.utils import logger
@@ -57,6 +58,7 @@ def _delete(ctx):
 
     """
     dao.delete_simulation(ctx.simulation_uid)
+    db.session.commit()
 
 
 def _enqueue(ctx):
@@ -78,4 +80,7 @@ def _log(ctx):
     """Logs event.
 
     """
-    logger.log_mq("Simulation purged: {}".format(ctx.simulation_uid))
+    if ctx.is_confirm:
+        logger.log_mq("Simulation purge confirmed: {}".format(ctx.simulation_uid))
+    else:
+        logger.log_mq("Simulation purged: {}".format(ctx.simulation_uid))
