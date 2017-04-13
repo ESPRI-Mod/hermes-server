@@ -26,9 +26,6 @@ from prodiguer.utils.config import data as config
 
 
 
-# Mail server config.
-_CONFIG = config.mq.mail
-
 # Email format identifier.
 _RFC822 = u'RFC822'
 
@@ -49,18 +46,29 @@ _DATE_FORMATS = [
 ]
 
 
+def get_config():
+    """Returns mail server connection configuration.
+
+    """
+    # TODO: pick up from config.mq.emailServers[N]
+    return config.mq.mail
+
+
 def connect():
     """Connects to IMAP server and returns client.
 
     """
+    # Get config.
+    cfg = get_config()
+
     # Connect to server.
-    client = imapclient.IMAPClient(_CONFIG.host, use_uid=True, ssl=True)
+    client = imapclient.IMAPClient(cfg.host, use_uid=True, ssl=True)
 
     # Login.
-    client.login(_CONFIG.username, _CONFIG.password)
+    client.login(cfg.username, cfg.password)
 
     # Select folder.
-    client.select_folder(_CONFIG.mailbox)
+    client.select_folder(cfg.mailbox)
 
     return client
 
@@ -216,12 +224,15 @@ def move_email(email_uid, folder=None, client=None):
     :param imapclient.IMAPClient client: An imap server client.
 
     """
+    # Get config.
+    cfg = get_config()
+
     # Set imap proxy.
     proxy = client or connect()
 
     # Set folder.
     if not folder:
-        folder = _CONFIG.mailbox_processed
+        folder = cfg.mailbox_processed
 
     # Copy to new folder.
     proxy.copy(email_uid, folder)
@@ -312,6 +323,9 @@ def send_email(
     :param str attachment_name: Name to be associated with the email attachment.
 
     """
+    # Get config.
+    cfg = get_config()
+
     # Initalise email.
     msg = MIMEMultipart()
     msg['Subject'] = subject
@@ -328,11 +342,11 @@ def send_email(
         msg.attach(MIMEApplication(attachment, Name=attachment_name))
 
     # Connect to mail server.
-    mailserver = smtplib.SMTP(_CONFIG.host, port=_CONFIG.smtpPort)
+    mailserver = smtplib.SMTP(cfg.host, port=cfg.smtpPort)
     mailserver.ehlo()
     mailserver.starttls()
     mailserver.ehlo()
-    mailserver.login(_CONFIG.username, _CONFIG.password)
+    mailserver.login(cfg.username, cfg.password)
 
     # Dispatch email.
     mailserver.sendmail(address_from, address_to, msg.as_string())

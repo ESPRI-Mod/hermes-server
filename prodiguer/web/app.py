@@ -116,7 +116,7 @@ def run():
     app = _get_app()
 
     # Open port.
-    app.listen(config.web.port)
+    app.listen(int(config.web.port))
 
     # Set web-socket keep alive.
     websockets.keep_alive()

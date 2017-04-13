@@ -14,26 +14,12 @@
 import datetime
 import time
 
-from prodiguer import config
 from prodiguer import mail
 from prodiguer import mq
 from prodiguer.db import pgres as db
 from prodiguer.utils import logger
 from hermes_jobs.mq.utils import enqueue
 
-
-
-# Mail server config.
-_CONFIG = config.mq.mail.checker
-
-# Maximum number of emails allowed to reside in mailbox before triggering operator warning.
-_MAX_UNPROCESSED = _CONFIG.maxUnprocessedCount
-
-# Maximum number of seconds between email dispatch & email arrival before triggering operator warning.
-_MAX_LATENCY = _CONFIG.maxLatencyInSeconds
-
-# Delay in seconds between checks.
-_RETRY_DELAY = _CONFIG.retryDelayInSeconds
 
 
 def _log(msg, level=logger.LOG_LEVEL_INFO):
@@ -51,21 +37,24 @@ def _check_email_count():
     """Verifies that number of emails awaiting processing does not exceed a configurable limit.
 
     """
+    # JIT get mail server configuration.
+    cfg = mail.get_config()
+
     # Escape if number of unprocessed email is less than max allowed.
     emails = mail.get_email_uid_list()
-    if len(emails) < _MAX_UNPROCESSED:
+    if len(emails) < cfg.checker.maxUnprocessedCount:
         return
 
     # Log.
     msg = "unprocessed email count {} exceeds limit {}."
-    msg = msg.format(len(emails), _MAX_UNPROCESSED)
+    msg = msg.format(len(emails), cfg.checker.maxUnprocessedCount)
     _log(msg, logger.LOG_LEVEL_WARNING)
 
     # Alert operator.
     enqueue(mq.constants.MESSAGE_TYPE_ALERT, {
         "trigger": u"smtp-checker-count",
         "unprocessed_email_count": len(emails),
-        "unprocessed_email_limit": _MAX_UNPROCESSED
+        "unprocessed_email_limit": cfg.checker.maxUnprocessedCount
         })
 
 
@@ -76,8 +65,11 @@ def _check_email_latency():
     # TODO :: switched off pending further testing.
     return
 
+    # JIT get mail server configuration.
+    cfg = mail.get_config()
+
     # Retrieve all emails that have been queued for processing since last check.
-    arrival_date = datetime.datetime.utcnow() - datetime.timedelta(seconds=_RETRY_DELAY)
+    arrival_date = datetime.datetime.utcnow() - datetime.timedelta(seconds=cfg.checker.retryDelayInSeconds)
     with db.session.create():
         emails = db.dao_mq.retrieve_message_emails(arrival_date)
     if not emails:
@@ -90,13 +82,13 @@ def _check_email_latency():
 
     # Log.
     msg = "{} emails have latencies that exceed the limit {} seconds."
-    msg = msg.format(len(late), _MAX_LATENCY)
+    msg = msg.format(len(late), cfg.checker.maxLatencyInSeconds)
     _log(msg, logger.LOG_LEVEL_WARNING)
 
     # Alert operator.
     enqueue(mq.constants.MESSAGE_TYPE_ALERT, {
         "trigger": u"smtp-checker-latency",
-        "max_latency": _MAX_LATENCY,
+        "max_latency": cfg.checker.maxLatencyInSeconds,
         "number_of_late_emails": len(late)
         })
 
@@ -115,8 +107,11 @@ def execute(throttle=0):
     """Executes realtime SMTP sourced message production.
 
     """
+    # JIT get mail server configuration.
+    cfg = mail.get_config()
+
     while True:
-        time.sleep(_RETRY_DELAY)
+        time.sleep(cfg.checker.retryDelayInSeconds)
         _log("checking SMTP server ...")
         _do(_check_email_count)
         _do(_check_email_latency)
