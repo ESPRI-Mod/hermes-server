@@ -22,7 +22,7 @@ from email.utils import formatdate
 import arrow
 import imapclient
 
-from prodiguer.utils.config import data as config
+from hermes.utils.config import data as config
 
 
 

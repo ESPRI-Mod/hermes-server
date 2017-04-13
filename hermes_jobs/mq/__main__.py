@@ -16,9 +16,9 @@ import logging
 from tornado.options import define
 from tornado.options import options
 
-from prodiguer import cv
-from prodiguer import mq
-from prodiguer.utils import logger
+from hermes import cv
+from hermes import mq
+from hermes.utils import logger
 from hermes_jobs.mq import delegator
 from hermes_jobs.mq import internal
 from hermes_jobs.mq import metrics

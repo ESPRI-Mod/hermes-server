@@ -11,7 +11,7 @@
 
 
 """
-from prodiguer.db import pgres as db
+from hermes.db import pgres as db
 
 
 

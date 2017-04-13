@@ -11,7 +11,7 @@
 
 
 """
-from prodiguer import mq
+from hermes import mq
 from hermes_jobs.mq import metrics
 from hermes_jobs.mq import monitoring
 from hermes_jobs.mq import supervision

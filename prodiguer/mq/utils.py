@@ -16,15 +16,15 @@ import arrow
 import pika
 import sqlalchemy
 
-from prodiguer.db import pgres as db
-from prodiguer.mq import constants
-from prodiguer.mq import defaults
-from prodiguer.mq import message
-from prodiguer.mq.consumer import Consumer
-from prodiguer.mq.producer import Producer
-from prodiguer.utils import logger
-from prodiguer.utils import validation
-from prodiguer.utils.config import data as config
+from hermes.db import pgres as db
+from hermes.mq import constants
+from hermes.mq import defaults
+from hermes.mq import message
+from hermes.mq.consumer import Consumer
+from hermes.mq.producer import Producer
+from hermes.utils import logger
+from hermes.utils import validation
+from hermes.utils.config import data as config
 
 
 

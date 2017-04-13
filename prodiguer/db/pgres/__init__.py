@@ -11,21 +11,21 @@
 
 
 """
-from prodiguer.db.pgres import convertor
-from prodiguer.db.pgres.convertor import as_datetime_string
-from prodiguer.db.pgres.convertor import as_date_string
-from prodiguer.db.pgres import constants
-from prodiguer.db.pgres import dao
-from prodiguer.db.pgres import dao_conso
-from prodiguer.db.pgres import dao_cv
-from prodiguer.db.pgres import dao_monitoring
-from prodiguer.db.pgres import dao_mq
-from prodiguer.db.pgres import dao_superviseur
-from prodiguer.db.pgres import factory
-from prodiguer.db.pgres import session
-from prodiguer.db.pgres import setup
-from prodiguer.db.pgres import types
-from prodiguer.db.pgres.entity import Entity
+from hermes.db.pgres import convertor
+from hermes.db.pgres.convertor import as_datetime_string
+from hermes.db.pgres.convertor import as_date_string
+from hermes.db.pgres import constants
+from hermes.db.pgres import dao
+from hermes.db.pgres import dao_conso
+from hermes.db.pgres import dao_cv
+from hermes.db.pgres import dao_monitoring
+from hermes.db.pgres import dao_mq
+from hermes.db.pgres import dao_superviseur
+from hermes.db.pgres import factory
+from hermes.db.pgres import session
+from hermes.db.pgres import setup
+from hermes.db.pgres import types
+from hermes.db.pgres.entity import Entity
 
 
 

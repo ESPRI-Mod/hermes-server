@@ -11,7 +11,7 @@
 
 
 """
-from prodiguer import cv
+from hermes import cv
 
 
 

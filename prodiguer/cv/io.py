@@ -14,9 +14,9 @@
 import json
 import os
 
-from prodiguer.cv import accessor as ta
-from prodiguer.utils import logger
-from prodiguer.utils import shell
+from hermes.cv import accessor as ta
+from hermes.utils import logger
+from hermes.utils import shell
 
 
 

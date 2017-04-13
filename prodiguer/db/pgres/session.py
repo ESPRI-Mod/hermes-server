@@ -15,8 +15,8 @@ import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from prodiguer.utils import config
-from prodiguer.utils import logger
+from hermes.utils import config
+from hermes.utils import logger
 
 
 

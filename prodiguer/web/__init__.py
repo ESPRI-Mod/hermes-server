@@ -11,6 +11,6 @@
 
 
 """
-from prodiguer.web.app import get_endpoint
-from prodiguer.web.app import run
+from hermes.web.app import get_endpoint
+from hermes.web.app import run
 

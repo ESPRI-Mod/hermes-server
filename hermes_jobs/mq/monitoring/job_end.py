@@ -10,10 +10,10 @@
 .. moduleauthor:: Mark Conway-Greenslade <momipsl@ipsl.jussieu.fr>
 
 """
-from prodiguer import mq
-from prodiguer.db import pgres as db
-from prodiguer.db.pgres import dao_monitoring as dao
-from prodiguer.db.pgres import dao_superviseur
+from hermes import mq
+from hermes.db import pgres as db
+from hermes.db.pgres import dao_monitoring as dao
+from hermes.db.pgres import dao_superviseur
 from hermes_jobs.mq import utils
 
 

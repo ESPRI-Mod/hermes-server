@@ -36,34 +36,34 @@ def _assert_configuration(data):
 
 def test_main_import():
 	"""Tests top-level package import."""
-	import prodiguer
+	import hermes
 
 	modules = [
-		prodiguer,
-		prodiguer.web,
-		prodiguer.config,
-		prodiguer.cv,
-		prodiguer.db,
-		# prodiguer.mq,
-		prodiguer.utils
+		hermes,
+		hermes.web,
+		hermes.config,
+		hermes.cv,
+		hermes.db,
+		# hermes.mq,
+		hermes.utils
 	]
 
 	for module in modules:
 		tu.assert_bool(inspect.ismodule(module))
-	tu.assert_bool(inspect.isfunction(prodiguer.configure))
+	tu.assert_bool(inspect.isfunction(hermes.configure))
 
 
 def test_main_configure():
 	"""Tests custom library configuration."""
-	import prodiguer
+	import hermes
 
-	prodiguer.configure(_CONFIG_FILEPATH)
+	hermes.configure(_CONFIG_FILEPATH)
 
-	_assert_configuration(prodiguer.config.data)
+	_assert_configuration(hermes.config.data)
 
 
 def test_main_configuration_default_data():
 	"""Tests default library configuration."""
-	import prodiguer
+	import hermes
 
-	_assert_configuration(prodiguer.config.data)
+	_assert_configuration(hermes.config.data)

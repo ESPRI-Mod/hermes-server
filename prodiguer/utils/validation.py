@@ -29,7 +29,7 @@ def validate_entity_type(etype):
     :param class etype: A supported entity type.
 
     """
-    from prodiguer.db.pgres.entity import Entity
+    from hermes.db.pgres.entity import Entity
 
     if not issubclass(etype, Entity):
         raise TypeError('DB entity type is unknown :: {}'.format(etype))

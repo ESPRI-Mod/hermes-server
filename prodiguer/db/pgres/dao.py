@@ -13,9 +13,9 @@ import random
 
 from sqlalchemy.exc import IntegrityError
 
-from prodiguer.db.pgres import session
-from prodiguer.db.pgres import validator_dao as validator
-from prodiguer.utils import decorators
+from hermes.db.pgres import session
+from hermes.db.pgres import validator_dao as validator
+from hermes.utils import decorators
 
 
 

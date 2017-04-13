@@ -15,12 +15,12 @@ import time
 
 import sqlalchemy
 
-from prodiguer import __version__ as HERMES_VERSION
-from prodiguer import config
-from prodiguer import mail
-from prodiguer import mq
-from prodiguer.utils import logger
-from prodiguer.db import pgres as db
+from hermes import __version__ as HERMES_VERSION
+from hermes import config
+from hermes import mail
+from hermes import mq
+from hermes.utils import logger
+from hermes.db import pgres as db
 
 
 

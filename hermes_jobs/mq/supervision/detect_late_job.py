@@ -11,8 +11,8 @@
 
 
 """
-from prodiguer import mq
-from prodiguer.db import pgres as db
+from hermes import mq
+from hermes.db import pgres as db
 from hermes_jobs.mq import utils
 
 

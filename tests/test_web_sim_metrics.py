@@ -16,7 +16,7 @@ import uuid
 import nose
 import requests
 
-import prodiguer
+import hermes
 from . import _utils as tu
 
 

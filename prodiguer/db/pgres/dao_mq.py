@@ -13,11 +13,11 @@
 """
 import datetime as dt
 
-from prodiguer.db.pgres import session
-from prodiguer.db.pgres import types
-from prodiguer.db.pgres import validator_dao_mq as validator
-from prodiguer.db.pgres.convertor import as_datetime_string
-from prodiguer.utils import decorators
+from hermes.db.pgres import session
+from hermes.db.pgres import types
+from hermes.db.pgres import validator_dao_mq as validator
+from hermes.db.pgres.convertor import as_datetime_string
+from hermes.utils import decorators
 
 
 

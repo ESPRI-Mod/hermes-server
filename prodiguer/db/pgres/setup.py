@@ -15,14 +15,14 @@ import uuid
 from sqlalchemy.schema import CreateSchema
 from sqlalchemy.schema import DropSchema
 
-from prodiguer import cv
-from prodiguer.db.pgres import session as db_session
-from prodiguer.db.pgres.meta import METADATA
-from prodiguer.db.pgres.types import ControlledVocabularyTerm
-from prodiguer.db.pgres.types import Simulation
-from prodiguer.db.pgres.types import SCHEMAS
-from prodiguer.utils import convert
-from prodiguer.utils import logger
+from hermes import cv
+from hermes.db.pgres import session as db_session
+from hermes.db.pgres.meta import METADATA
+from hermes.db.pgres.types import ControlledVocabularyTerm
+from hermes.db.pgres.types import Simulation
+from hermes.db.pgres.types import SCHEMAS
+from hermes.utils import convert
+from hermes.utils import logger
 
 
 

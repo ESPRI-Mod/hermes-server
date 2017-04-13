@@ -15,7 +15,7 @@ import base64
 import ConfigParser
 import io
 
-import prodiguer.db.pgres as db
+import hermes.db.pgres as db
 
 
 

@@ -11,10 +11,10 @@
 
 
 """
-from prodiguer.db.pgres import validator_dao_cv as validator
-from prodiguer.db.pgres import session
-from prodiguer.db.pgres import types
-from prodiguer.utils import decorators
+from hermes.db.pgres import validator_dao_cv as validator
+from hermes.db.pgres import session
+from hermes.db.pgres import types
+from hermes.utils import decorators
 
 
 

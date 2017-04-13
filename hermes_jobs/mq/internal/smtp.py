@@ -16,11 +16,11 @@ import copy
 import json
 import uuid
 
-from prodiguer import config
-from prodiguer import mail
-from prodiguer import mq
-from prodiguer.db import pgres as db
-from prodiguer.utils import logger
+from hermes import config
+from hermes import mail
+from hermes import mq
+from hermes.db import pgres as db
+from hermes.utils import logger
 
 
 

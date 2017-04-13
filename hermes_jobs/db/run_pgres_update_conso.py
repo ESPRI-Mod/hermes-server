@@ -16,8 +16,8 @@ import json
 
 from sqlalchemy.exc import IntegrityError
 
-from prodiguer.db import pgres as db
-from prodiguer.db.pgres import dao_conso as dao
+from hermes.db import pgres as db
+from hermes.db.pgres import dao_conso as dao
 
 
 

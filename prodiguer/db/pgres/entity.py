@@ -16,8 +16,8 @@ from sqlalchemy import DateTime
 from sqlalchemy import Integer
 from sqlalchemy.ext.declarative import declarative_base
 
-from prodiguer.db.pgres import convertor
-from prodiguer.db.pgres.meta import METADATA
+from hermes.db.pgres import convertor
+from hermes.db.pgres.meta import METADATA
 
 
 

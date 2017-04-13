@@ -11,12 +11,12 @@
 """
 import json
 
-from prodiguer.utils import logger
-from prodiguer.utils import convert
-from prodiguer.utils import string_convertor
-from prodiguer.utils import data_convertor
-from prodiguer.web.utils import http_exceptions as exceptions
-from prodiguer.web.utils import http_validator as validator
+from hermes.utils import logger
+from hermes.utils import convert
+from hermes.utils import string_convertor
+from hermes.utils import data_convertor
+from hermes.web.utils import http_exceptions as exceptions
+from hermes.web.utils import http_validator as validator
 
 
 

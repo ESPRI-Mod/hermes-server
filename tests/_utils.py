@@ -19,8 +19,8 @@ import uuid
 import requests
 from dateutil import parser as dateutil_parser
 
-from prodiguer.db import pgres as db
-from prodiguer.db.pgres import convertor
+from hermes.db import pgres as db
+from hermes.db.pgres import convertor
 
 
 

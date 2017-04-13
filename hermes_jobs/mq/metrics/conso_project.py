@@ -17,10 +17,10 @@ import datetime as dt
 
 from sqlalchemy.exc import IntegrityError
 
-from prodiguer import mq
-from prodiguer.db import pgres as db
-from prodiguer.db.pgres import dao_conso as dao
-from prodiguer.utils import logger
+from hermes import mq
+from hermes.db import pgres as db
+from hermes.db.pgres import dao_conso as dao
+from hermes.utils import logger
 from hermes_jobs.mq.utils import enqueue
 from hermes_jobs.mq.metrics import conso_cpt_parser as parser
 

@@ -18,7 +18,7 @@ import tempfile
 import uuid
 
 import hermes_client
-from prodiguer import mq
+from hermes import mq
 
 
 

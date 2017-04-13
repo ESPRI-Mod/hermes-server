@@ -11,7 +11,7 @@
 
 
 """
-from prodiguer.utils import shell
+from hermes.utils import shell
 
 
 

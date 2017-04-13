@@ -16,14 +16,14 @@ import datetime
 import arrow
 from sqlalchemy.exc import IntegrityError
 
-from prodiguer import cv
-from prodiguer import mq
-from prodiguer.cv.constants import JOB_TYPE_COMPUTING
-from prodiguer.cv.constants import JOB_TYPE_POST_PROCESSING
-from prodiguer.db import pgres as db
-from prodiguer.db.pgres import dao_monitoring as dao
-from prodiguer.utils import config
-from prodiguer.utils import logger
+from hermes import cv
+from hermes import mq
+from hermes.cv.constants import JOB_TYPE_COMPUTING
+from hermes.cv.constants import JOB_TYPE_POST_PROCESSING
+from hermes.db import pgres as db
+from hermes.db.pgres import dao_monitoring as dao
+from hermes.utils import config
+from hermes.utils import logger
 from hermes_jobs.mq import utils as mq_utils
 
 

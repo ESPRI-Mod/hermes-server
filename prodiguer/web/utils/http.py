@@ -15,10 +15,10 @@ import json
 
 import tornado
 
-from prodiguer.utils import convert
-from prodiguer.utils import data_convertor
-from prodiguer.utils import logger
-from prodiguer.utils import string_convertor
+from hermes.utils import convert
+from hermes.utils import data_convertor
+from hermes.utils import logger
+from hermes.utils import string_convertor
 
 
 

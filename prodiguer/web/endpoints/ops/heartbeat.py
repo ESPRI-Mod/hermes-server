@@ -15,8 +15,8 @@ import datetime as dt
 
 import tornado
 
-import prodiguer
-from prodiguer.web.utils.http1 import process_request
+import hermes
+from hermes.web.utils.http1 import process_request
 
 
 
@@ -35,7 +35,7 @@ class HeartbeatRequestHandler(tornado.web.RequestHandler):
             """
             self.output = {
                 "message": "HERMES web service is operational @ {}".format(dt.datetime.now()),
-                "version": prodiguer.__version__
+                "version": hermes.__version__
             }
 
 

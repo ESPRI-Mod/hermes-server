@@ -20,11 +20,11 @@ from sqlalchemy import Text
 from sqlalchemy import Unicode
 from sqlalchemy import UniqueConstraint
 
-from prodiguer.db.pgres.entity import Entity
-from prodiguer.cv.constants import EXECUTION_STATE_COMPLETE
-from prodiguer.cv.constants import EXECUTION_STATE_ERROR
-from prodiguer.cv.constants import EXECUTION_STATE_QUEUED
-from prodiguer.cv.constants import EXECUTION_STATE_RUNNING
+from hermes.db.pgres.entity import Entity
+from hermes.cv.constants import EXECUTION_STATE_COMPLETE
+from hermes.cv.constants import EXECUTION_STATE_ERROR
+from hermes.cv.constants import EXECUTION_STATE_QUEUED
+from hermes.cv.constants import EXECUTION_STATE_RUNNING
 
 
 # Database schema.

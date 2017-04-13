@@ -15,9 +15,9 @@ import argparse
 import datetime
 import os
 
-from prodiguer.db import pgres as db
-from prodiguer.db.pgres import dao_monitoring
-from prodiguer.db.pgres import dao_mq
+from hermes.db import pgres as db
+from hermes.db.pgres import dao_monitoring
+from hermes.db.pgres import dao_mq
 
 
 

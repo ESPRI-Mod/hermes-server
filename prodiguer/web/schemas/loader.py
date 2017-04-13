@@ -13,8 +13,8 @@
 import json
 import os
 
-from prodiguer.web.utils import constants
-from prodiguer.web.schemas import extender
+from hermes.web.utils import constants
+from hermes.web.schemas import extender
 
 
 

@@ -17,9 +17,9 @@ import inspect
 import nose
 
 from . import utils as tu
-from prodiguer import cv
-from prodiguer.db.types import Message
-from prodiguer.db.types import Simulation
+from hermes import cv
+from hermes.db.types import Message
+from hermes.db.types import Simulation
 
 
 # Test constants.
@@ -41,7 +41,7 @@ _MSG_CONTENT2 = "12345690"
 
 
 def _create_simulation(name=tu.get_string(63)):
-    import prodiguer.db.dao_monitoring as db_hooks
+    import hermes.db.dao_monitoring as db_hooks
 
     s = db_hooks.create_simulation(_SIM_ACCOUNTING_PROJECT,
                                    _SIM_COMPUTE_NODE,
@@ -64,7 +64,7 @@ def _create_simulation(name=tu.get_string(63)):
 
 
 def _update_simulation_state(name, state):
-    import prodiguer.db.db_hooks as db_hooks
+    import hermes.db.db_hooks as db_hooks
 
     db_hooks.update_simulation_status(name, state)
 
@@ -74,7 +74,7 @@ def _update_simulation_state(name, state):
 
 
 def _delete_simulation(name):
-    import prodiguer.db.dao_mq as db_hooks
+    import hermes.db.dao_mq as db_hooks
 
     db_hooks.delete_simulation(name)
     s = db_hooks.retrieve_simulation(name)
@@ -82,7 +82,7 @@ def _delete_simulation(name):
 
 
 def _create_simulation_message(s):
-    import prodiguer.db.dao_mq as db_hooks
+    import hermes.db.dao_mq as db_hooks
     
     m = db_hooks.create_simulation_message(s.name,
                                            _MSG_APP,
@@ -101,13 +101,13 @@ def _create_simulation_messages(s, n=2):
 
 @nose.tools.nottest
 def test_imports():
-    import prodiguer.db.db_hooks as db_hooks
+    import hermes.db.db_hooks as db_hooks
     tu.assert_bool(inspect.ismodule(db_hooks))
 
 
 @nose.tools.nottest
 def test_simulation_cycle():
-    import prodiguer.db.db_hooks as db_hooks
+    import hermes.db.db_hooks as db_hooks
 
     # Create.
     s1 = _create_simulation()
@@ -126,7 +126,7 @@ def test_simulation_cycle():
 
 
 def test_simulation_message_cycle():
-    import prodiguer.db.dao_mq as db_hooks
+    import hermes.db.dao_mq as db_hooks
 
     # Create simulation.
     s1 = _create_simulation()

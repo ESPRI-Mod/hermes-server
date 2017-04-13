@@ -16,9 +16,9 @@ import uuid
 
 from sqlalchemy import inspect
 
-from prodiguer.db.pgres import session
-from prodiguer.db.pgres import types
-from prodiguer.utils import validation
+from hermes.db.pgres import session
+from hermes.db.pgres import types
+from hermes.utils import validation
 
 
 

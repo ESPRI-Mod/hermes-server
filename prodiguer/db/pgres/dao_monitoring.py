@@ -13,13 +13,13 @@
 """
 from sqlalchemy import distinct
 
-from prodiguer.db.pgres import dao
-from prodiguer.db.pgres import session
-from prodiguer.db.pgres import types
-from prodiguer.db.pgres import validator_dao_monitoring as validator
-from prodiguer.db.pgres.dao_monitoring_job import *
-from prodiguer.db.pgres.dao_monitoring_simulation import *
-from prodiguer.utils import decorators
+from hermes.db.pgres import dao
+from hermes.db.pgres import session
+from hermes.db.pgres import types
+from hermes.db.pgres import validator_dao_monitoring as validator
+from hermes.db.pgres.dao_monitoring_job import *
+from hermes.db.pgres.dao_monitoring_simulation import *
+from hermes.utils import decorators
 
 
 

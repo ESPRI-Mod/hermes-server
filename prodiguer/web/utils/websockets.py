@@ -15,9 +15,9 @@ import collections
 
 import tornado.websocket
 
-from prodiguer.utils import config
-from prodiguer.utils import logger
-from prodiguer.utils import data_convertor
+from hermes.utils import config
+from hermes.utils import logger
+from hermes.utils import data_convertor
 
 
 

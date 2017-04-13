@@ -14,10 +14,10 @@
 import collections
 import random
 
-from prodiguer.utils import logger
-from prodiguer.cv import constants
-from prodiguer.cv import io
-from prodiguer.cv import accessor as ta
+from hermes.utils import logger
+from hermes.cv import constants
+from hermes.cv import io
+from hermes.cv import accessor as ta
 
 
 

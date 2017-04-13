@@ -13,11 +13,11 @@
 """
 import collections
 
-from prodiguer.cv import accessor as ta
-from prodiguer.cv import cache
-from prodiguer.cv import constants
-from prodiguer.cv import io
-from prodiguer.utils import logger
+from hermes.cv import accessor as ta
+from hermes.cv import cache
+from hermes.cv import constants
+from hermes.cv import io
+from hermes.utils import logger
 
 
 

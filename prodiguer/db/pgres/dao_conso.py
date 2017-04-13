@@ -13,10 +13,10 @@
 """
 import arrow
 
-from prodiguer.db.pgres import session
-from prodiguer.db.pgres import types
-from prodiguer.db.pgres import validator_dao_conso as validator
-from prodiguer.utils import decorators
+from hermes.db.pgres import session
+from hermes.db.pgres import types
+from hermes.db.pgres import validator_dao_conso as validator
+from hermes.utils import decorators
 
 
 

@@ -14,11 +14,11 @@ import inspect
 
 import pika
 
-from prodiguer.mq import constants
-from prodiguer.mq import defaults
-from prodiguer.mq import message
-from prodiguer.utils import config
-from prodiguer.utils import logger
+from hermes.mq import constants
+from hermes.mq import defaults
+from hermes.mq import message
+from hermes.utils import config
+from hermes.utils import logger
 
 
 

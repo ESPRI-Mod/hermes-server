@@ -1,2 +1,2 @@
-from prodiguer.web.schemas.cache import init
-from prodiguer.web.schemas.cache import get_schema
+from hermes.web.schemas.cache import init
+from hermes.web.schemas.cache import get_schema

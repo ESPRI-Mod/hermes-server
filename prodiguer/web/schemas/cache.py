@@ -12,7 +12,7 @@
 """
 import collections
 
-from prodiguer.web.schemas import loader
+from hermes.web.schemas import loader
 
 
 

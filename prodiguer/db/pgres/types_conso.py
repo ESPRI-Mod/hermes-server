@@ -18,7 +18,7 @@ from sqlalchemy import Integer
 from sqlalchemy import Unicode
 from sqlalchemy import UniqueConstraint
 
-from prodiguer.db.pgres.entity import Entity
+from hermes.db.pgres.entity import Entity
 
 
 

@@ -1,4 +1,4 @@
-src/prodiguer/utils/serialization
+src/hermes/utils/serialization
 ipsl-esm.csv
 tmp.*
 inscope.txt

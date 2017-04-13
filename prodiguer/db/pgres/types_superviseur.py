@@ -17,7 +17,7 @@ from sqlalchemy import Integer
 from sqlalchemy import Text
 from sqlalchemy import Unicode
 
-from prodiguer.db.pgres.entity import Entity
+from hermes.db.pgres.entity import Entity
 
 
 

@@ -11,8 +11,8 @@
 
 
 """
-from prodiguer.db import pgres as db
-from prodiguer.utils import logger
+from hermes.db import pgres as db
+from hermes.utils import logger
 
 
 

@@ -13,9 +13,9 @@
 """
 import tornado
 
-from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web.utils.http1 import process_request
-from prodiguer.web.utils.http1 import decode_json_payload
+from hermes.db.mongo import dao_metrics as dao
+from hermes.web.utils.http1 import process_request
+from hermes.web.utils.http1 import decode_json_payload
 
 
 

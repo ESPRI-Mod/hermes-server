@@ -20,11 +20,11 @@ import uuid
 
 import arrow
 
-from prodiguer import cv
-from prodiguer import mq
-from prodiguer.db import pgres as db
-from prodiguer.utils import config
-from prodiguer.utils import logger
+from hermes import cv
+from hermes import mq
+from hermes.db import pgres as db
+from hermes.utils import config
+from hermes.utils import logger
 
 
 

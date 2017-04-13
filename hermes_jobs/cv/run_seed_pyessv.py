@@ -13,7 +13,7 @@
 """
 import os
 
-import prodiguer
+import hermes
 import pyessv
 
 
@@ -39,18 +39,18 @@ def _create_term(partition, kind, idx, data):
 
 	"""
 	# Create a term.
-	term = partition.create(kind, prodiguer.cv.get_name(data))
-	term.aliases = prodiguer.cv.get_synonyms(data)
+	term = partition.create(kind, hermes.cv.get_name(data))
+	term.aliases = hermes.cv.get_synonyms(data)
     if term.aliases:
         term.alternative_name = term.aliases[0]
-	term.create_date = prodiguer.cv.get_create_date(data)
-	term.description = prodiguer.cv.get_description(data)
+	term.create_date = hermes.cv.get_create_date(data)
+	term.description = hermes.cv.get_description(data)
 	term.id = idx
-	term.uid = prodiguer.cv.get_uid(data)
+	term.uid = hermes.cv.get_uid(data)
 	term.url = data.get("url")
 
 	# Set UI label.
-	term.set_label(prodiguer.cv.get_display_name(data))
+	term.set_label(hermes.cv.get_display_name(data))
 
 	# Set term data.
 	term.data = _get_term_data(data)
@@ -65,8 +65,8 @@ def _yield_termset(partition):
 	"""Yields set of pyessv terms to be written to file system by pyessv.
 
 	"""
-	prodiguer.cv.cache.load(log=False)
-	cv_set = {i: prodiguer.cv.cache.get_termset(i) for i in prodiguer.cv.constants.TERM_TYPESET}
+	hermes.cv.cache.load(log=False)
+	cv_set = {i: hermes.cv.cache.get_termset(i) for i in hermes.cv.constants.TERM_TYPESET}
 	for cv_type in cv_set:
 		for idx, data in enumerate(cv_set[cv_type]):
 			yield _create_term(partition, cv_type, idx + 1, data)
@@ -82,7 +82,7 @@ def execute():
 	"""
 	# Set pyessv partition.
 	partition = pyessv.create_partition(
-	    prodiguer.VOCAB_DOMAIN,
+	    hermes.VOCAB_DOMAIN,
 	    os.getenv("PYESSV_HOME")
 	)
 

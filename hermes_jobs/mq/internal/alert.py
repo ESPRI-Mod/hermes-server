@@ -11,10 +11,10 @@
 
 
 """
-from prodiguer import mq
-from prodiguer.utils import config
-from prodiguer.utils import mail
-from prodiguer.utils import logger
+from hermes import mq
+from hermes.utils import config
+from hermes.utils import mail
+from hermes.utils import logger
 
 
 

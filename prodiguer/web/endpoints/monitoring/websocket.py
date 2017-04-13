@@ -13,7 +13,7 @@
 """
 import tornado.websocket
 
-from prodiguer.web.utils import websockets
+from hermes.web.utils import websockets
 
 
 

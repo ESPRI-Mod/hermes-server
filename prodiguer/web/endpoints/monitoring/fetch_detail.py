@@ -13,15 +13,15 @@
 """
 import tornado
 
-from prodiguer.db import pgres as db
-from prodiguer.db.pgres.dao_monitoring import retrieve_simulation
-from prodiguer.db.pgres.dao_monitoring import retrieve_simulation_jobs
-from prodiguer.db.pgres.dao_monitoring import retrieve_simulation_configuration
-from prodiguer.db.pgres.dao_monitoring import retrieve_latest_job_period
-from prodiguer.db.pgres.dao_monitoring import retrieve_simulation_previous_tries
-from prodiguer.db.pgres.dao_mq import has_messages
-from prodiguer.utils import logger
-from prodiguer.web.utils.http1 import process_request
+from hermes.db import pgres as db
+from hermes.db.pgres.dao_monitoring import retrieve_simulation
+from hermes.db.pgres.dao_monitoring import retrieve_simulation_jobs
+from hermes.db.pgres.dao_monitoring import retrieve_simulation_configuration
+from hermes.db.pgres.dao_monitoring import retrieve_latest_job_period
+from hermes.db.pgres.dao_monitoring import retrieve_simulation_previous_tries
+from hermes.db.pgres.dao_mq import has_messages
+from hermes.utils import logger
+from hermes.web.utils.http1 import process_request
 
 
 

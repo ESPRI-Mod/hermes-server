@@ -11,12 +11,12 @@
 
 
 """
-from prodiguer.web.endpoints.metrics_pcmdi.add import AddRequestHandler
-from prodiguer.web.endpoints.metrics_pcmdi.delete import DeleteRequestHandler
-from prodiguer.web.endpoints.metrics_pcmdi.fetch import FetchRequestHandler
-from prodiguer.web.endpoints.metrics_pcmdi.fetch_columns import FetchColumnsRequestHandler
-from prodiguer.web.endpoints.metrics_pcmdi.fetch_count import FetchCountRequestHandler
-from prodiguer.web.endpoints.metrics_pcmdi.fetch_list import FetchListRequestHandler
-from prodiguer.web.endpoints.metrics_pcmdi.fetch_setup import FetchSetupRequestHandler
-from prodiguer.web.endpoints.metrics_pcmdi.rename import RenameRequestHandler
-from prodiguer.web.endpoints.metrics_pcmdi.set_hashes import SetHashesRequestHandler
+from hermes.web.endpoints.metrics_pcmdi.add import AddRequestHandler
+from hermes.web.endpoints.metrics_pcmdi.delete import DeleteRequestHandler
+from hermes.web.endpoints.metrics_pcmdi.fetch import FetchRequestHandler
+from hermes.web.endpoints.metrics_pcmdi.fetch_columns import FetchColumnsRequestHandler
+from hermes.web.endpoints.metrics_pcmdi.fetch_count import FetchCountRequestHandler
+from hermes.web.endpoints.metrics_pcmdi.fetch_list import FetchListRequestHandler
+from hermes.web.endpoints.metrics_pcmdi.fetch_setup import FetchSetupRequestHandler
+from hermes.web.endpoints.metrics_pcmdi.rename import RenameRequestHandler
+from hermes.web.endpoints.metrics_pcmdi.set_hashes import SetHashesRequestHandler

@@ -1,7 +1,7 @@
 import uuid
 
-from prodiguer import mq
-from prodiguer import __version__ as HERMES_VERSION
+from hermes import mq
+from hermes import __version__ as HERMES_VERSION
 
 
 def _get_msg_props():

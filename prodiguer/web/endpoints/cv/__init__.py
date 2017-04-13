@@ -11,4 +11,4 @@
 
 
 """
-from prodiguer.web.endpoints.cv.fetch import FetchRequestHandler
+from hermes.web.endpoints.cv.fetch import FetchRequestHandler

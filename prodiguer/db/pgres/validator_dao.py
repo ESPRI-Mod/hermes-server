@@ -11,11 +11,11 @@
 
 
 """
-from prodiguer.utils.validation import validate_bool
-from prodiguer.utils.validation import validate_entity_type
-from prodiguer.utils.validation import validate_iterable
-from prodiguer.utils.validation import validate_int
-from prodiguer.utils.validation import validate_ucode
+from hermes.utils.validation import validate_bool
+from hermes.utils.validation import validate_entity_type
+from hermes.utils.validation import validate_iterable
+from hermes.utils.validation import validate_int
+from hermes.utils.validation import validate_ucode
 
 
 

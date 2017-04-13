@@ -15,9 +15,9 @@ import tornado
 
 from collections import OrderedDict
 
-from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web.request_validation import validator_metrics_pcmdi as rv
-from prodiguer.web.utils.http import HermesHTTPRequestHandler
+from hermes.db.mongo import dao_metrics as dao
+from hermes.web.request_validation import validator_metrics_pcmdi as rv
+from hermes.web.utils.http import HermesHTTPRequestHandler
 
 
 

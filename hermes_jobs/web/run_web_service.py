@@ -1,4 +1,4 @@
-import prodiguer
+import hermes
 
 
 
@@ -6,7 +6,7 @@ def main():
 	"""Main entry point.
 
 	"""
-	prodiguer.web.run()
+	hermes.web.run()
 
 
 

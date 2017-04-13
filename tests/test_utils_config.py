@@ -17,7 +17,7 @@ from os.path import exists
 from os.path import join
 
 from . import utils as tu
-from prodiguer.utils import convert
+from hermes.utils import convert
 
 
 

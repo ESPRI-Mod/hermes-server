@@ -13,16 +13,16 @@
 """
 import tornado.web
 
-from prodiguer.cv import session as cv_session
-from prodiguer.utils import config
-from prodiguer.utils import shell
-from prodiguer.utils.logger import log_web as log
-from prodiguer.web import schemas
-from prodiguer.web.endpoints import cv
-from prodiguer.web.endpoints import monitoring
-from prodiguer.web.endpoints import ops
-from prodiguer.web.endpoints import metrics_pcmdi
-from prodiguer.web.utils import websockets
+from hermes.cv import session as cv_session
+from hermes.utils import config
+from hermes.utils import shell
+from hermes.utils.logger import log_web as log
+from hermes.web import schemas
+from hermes.web.endpoints import cv
+from hermes.web.endpoints import monitoring
+from hermes.web.endpoints import ops
+from hermes.web.endpoints import metrics_pcmdi
+from hermes.web.utils import websockets
 
 
 

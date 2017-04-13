@@ -16,15 +16,15 @@ import json
 
 import tornado.web
 
-from prodiguer.db import pgres as db
-from prodiguer.db.pgres.dao_monitoring import retrieve_job_info
-from prodiguer.db.pgres.dao_monitoring import retrieve_latest_job_period
-from prodiguer.db.pgres.dao_monitoring import retrieve_simulation
-from prodiguer.db.pgres.dao_monitoring import retrieve_simulation_job_counts
-from prodiguer.db.pgres.dao_monitoring import retrieve_simulation_latest_job
-from prodiguer.utils import logger
-from prodiguer.utils import string_convertor as sc
-from prodiguer.web.utils import websockets
+from hermes.db import pgres as db
+from hermes.db.pgres.dao_monitoring import retrieve_job_info
+from hermes.db.pgres.dao_monitoring import retrieve_latest_job_period
+from hermes.db.pgres.dao_monitoring import retrieve_simulation
+from hermes.db.pgres.dao_monitoring import retrieve_simulation_job_counts
+from hermes.db.pgres.dao_monitoring import retrieve_simulation_latest_job
+from hermes.utils import logger
+from hermes.utils import string_convertor as sc
+from hermes.web.utils import websockets
 
 
 

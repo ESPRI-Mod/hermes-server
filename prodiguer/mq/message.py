@@ -15,13 +15,13 @@ import json
 
 import pika
 
-from prodiguer.mq import constants
-from prodiguer.utils import config
-from prodiguer.utils import convert
-from prodiguer.utils.validation import validate_int
-from prodiguer.utils.validation import validate_mbr
-from prodiguer.utils.validation import validate_uid
-from prodiguer.utils.validation import validate_vrs
+from hermes.mq import constants
+from hermes.utils import config
+from hermes.utils import convert
+from hermes.utils.validation import validate_int
+from hermes.utils.validation import validate_mbr
+from hermes.utils.validation import validate_uid
+from hermes.utils.validation import validate_vrs
 
 
 

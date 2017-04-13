@@ -13,8 +13,8 @@
 """
 import inspect
 
-from prodiguer.mq import constants
-from prodiguer.mq.producers import cc_smon
+from hermes.mq import constants
+from hermes.mq.producers import cc_smon
 
 from . import utils as tu
 from . import utils_mq

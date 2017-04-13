@@ -13,10 +13,10 @@
 """
 import tornado
 
-from prodiguer.db import pgres as db
-from prodiguer.db.pgres import dao
-from prodiguer.utils import logger
-from prodiguer.web.utils.http1 import process_request
+from hermes.db import pgres as db
+from hermes.db.pgres import dao
+from hermes.utils import logger
+from hermes.web.utils.http1 import process_request
 
 
 

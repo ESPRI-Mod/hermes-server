@@ -11,11 +11,11 @@
 
 
 """
-from prodiguer.cv import accessor as ta
-from prodiguer.cv import cache
-from prodiguer.cv import constants
-from prodiguer.cv import formatter as tf
-from prodiguer.cv import validator
+from hermes.cv import accessor as ta
+from hermes.cv import cache
+from hermes.cv import constants
+from hermes.cv import formatter as tf
+from hermes.cv import validator
 
 
 

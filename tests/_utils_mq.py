@@ -13,8 +13,8 @@
 """
 import pika
 
-from prodiguer.mq import constants
-from prodiguer.mq import defaults
+from hermes.mq import constants
+from hermes.mq import defaults
 
 from . import utils as tu
 

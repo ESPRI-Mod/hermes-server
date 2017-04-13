@@ -9,20 +9,20 @@
 
 
 """
-from prodiguer.db.pgres.types_conso import Allocation
-from prodiguer.db.pgres.types_conso import Consumption
-from prodiguer.db.pgres.types_conso import CPUState
-from prodiguer.db.pgres.types_conso import OccupationStore
-from prodiguer.db.pgres.types_cv import ControlledVocabularyTerm
-from prodiguer.db.pgres.types_monitoring import EnvironmentMetric
-from prodiguer.db.pgres.types_monitoring import Job
-from prodiguer.db.pgres.types_monitoring import JobPeriod
-from prodiguer.db.pgres.types_monitoring import Simulation
-from prodiguer.db.pgres.types_monitoring import SimulationConfiguration
-from prodiguer.db.pgres.types_mq import Message
-from prodiguer.db.pgres.types_mq import MessageEmail
-from prodiguer.db.pgres.types_mq import MessageEmailStats
-from prodiguer.db.pgres.types_superviseur import Supervision
+from hermes.db.pgres.types_conso import Allocation
+from hermes.db.pgres.types_conso import Consumption
+from hermes.db.pgres.types_conso import CPUState
+from hermes.db.pgres.types_conso import OccupationStore
+from hermes.db.pgres.types_cv import ControlledVocabularyTerm
+from hermes.db.pgres.types_monitoring import EnvironmentMetric
+from hermes.db.pgres.types_monitoring import Job
+from hermes.db.pgres.types_monitoring import JobPeriod
+from hermes.db.pgres.types_monitoring import Simulation
+from hermes.db.pgres.types_monitoring import SimulationConfiguration
+from hermes.db.pgres.types_mq import Message
+from hermes.db.pgres.types_mq import MessageEmail
+from hermes.db.pgres.types_mq import MessageEmailStats
+from hermes.db.pgres.types_superviseur import Supervision
 
 
 

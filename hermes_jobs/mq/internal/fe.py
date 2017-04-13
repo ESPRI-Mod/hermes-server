@@ -15,8 +15,8 @@ import json
 
 import requests
 
-from prodiguer import web
-from prodiguer.utils import logger
+from hermes import web
+from hermes.utils import logger
 
 
 

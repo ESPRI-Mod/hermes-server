@@ -18,7 +18,7 @@ from os.path import dirname
 from os.path import exists
 
 from . import utils as tu
-from prodiguer.utils import convert
+from hermes.utils import convert
 
 
 # Path to test json file.

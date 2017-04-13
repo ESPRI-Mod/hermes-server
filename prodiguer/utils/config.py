@@ -14,7 +14,7 @@
 import os
 import urllib
 
-from prodiguer.utils.convert import json_to_namedtuple
+from hermes.utils.convert import json_to_namedtuple
 
 
 

@@ -15,14 +15,14 @@ from sqlalchemy import cast
 from sqlalchemy import func
 from sqlalchemy import Integer
 
-from prodiguer.cv.constants import JOB_TYPE_COMPUTING
-from prodiguer.db.pgres import dao
-from prodiguer.db.pgres import session
-from prodiguer.db.pgres import types
-from prodiguer.db.pgres import validator_dao_monitoring as validator
-from prodiguer.db.pgres.convertor import as_date_string
-from prodiguer.db.pgres.convertor import as_datetime_string
-from prodiguer.utils import decorators
+from hermes.cv.constants import JOB_TYPE_COMPUTING
+from hermes.db.pgres import dao
+from hermes.db.pgres import session
+from hermes.db.pgres import types
+from hermes.db.pgres import validator_dao_monitoring as validator
+from hermes.db.pgres.convertor import as_date_string
+from hermes.db.pgres.convertor import as_datetime_string
+from hermes.utils import decorators
 
 
 def retrieve_active_job_counts(start_date=None):

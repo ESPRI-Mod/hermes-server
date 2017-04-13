@@ -11,10 +11,10 @@
 
 
 """
-from prodiguer import mq
-from prodiguer.db import pgres as db
-from prodiguer.utils import logger
-from prodiguer import __version__ as HERMES_VERSION
+from hermes import mq
+from hermes.db import pgres as db
+from hermes.utils import logger
+from hermes import __version__ as HERMES_VERSION
 
 
 

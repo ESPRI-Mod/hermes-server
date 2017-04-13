@@ -18,8 +18,8 @@ from os.path import join
 
 from sqlalchemy import inspect
 
-from prodiguer import cv
-from prodiguer.db import pgres as db
+from hermes import cv
+from hermes.db import pgres as db
 from . import utils as tu
 
 

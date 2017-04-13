@@ -18,7 +18,7 @@ import uuid
 
 import sqlalchemy as sa
 
-from prodiguer.utils.string_convertor import to_camel_case
+from hermes.utils.string_convertor import to_camel_case
 
 
 

@@ -11,9 +11,9 @@
 
 
 """
-from prodiguer import cv
-from prodiguer.db import pgres as db
-from prodiguer.db.pgres import dao_monitoring as dao
+from hermes import cv
+from hermes.db import pgres as db
+from hermes.db.pgres import dao_monitoring as dao
 
 
 

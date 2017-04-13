@@ -16,8 +16,8 @@ import re
 from voluptuous import All
 from voluptuous import Required
 
-from prodiguer.db.mongo import dao_metrics as dao
-from prodiguer.web.request_validation import validator as rv
+from hermes.db.mongo import dao_metrics as dao
+from hermes.web.request_validation import validator as rv
 
 
 

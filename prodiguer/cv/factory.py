@@ -15,11 +15,11 @@ import uuid
 
 import arrow
 
-from prodiguer.cv import constants
-from prodiguer.cv.parser import parse_term_data
-from prodiguer.cv.parser import parse_term_display_name
-from prodiguer.cv.parser import parse_term_name
-from prodiguer.cv.parser import parse_term_type
+from hermes.cv import constants
+from hermes.cv.parser import parse_term_data
+from hermes.cv.parser import parse_term_display_name
+from hermes.cv.parser import parse_term_name
+from hermes.cv.parser import parse_term_type
 
 
 

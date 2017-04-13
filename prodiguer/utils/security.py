@@ -13,9 +13,9 @@
 """
 import os
 
-from prodiguer.utils import logger
-from prodiguer.utils.convert import dict_to_namedtuple
-from prodiguer.utils.convert import json_to_namedtuple
+from hermes.utils import logger
+from hermes.utils.convert import dict_to_namedtuple
+from hermes.utils.convert import json_to_namedtuple
 
 
 

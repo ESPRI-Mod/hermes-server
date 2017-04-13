@@ -12,7 +12,7 @@
 
 """
 from . import utils as tu
-from prodiguer import web
+from hermes import web
 
 
 

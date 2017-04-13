@@ -11,14 +11,14 @@
 
 
 """
-from prodiguer.mq import constants
-from prodiguer.utils.validation import validate_bool
-from prodiguer.utils.validation import validate_date
-from prodiguer.utils.validation import validate_int
-from prodiguer.utils.validation import validate_mbr
-from prodiguer.utils.validation import validate_str
-from prodiguer.utils.validation import validate_uid
-from prodiguer.utils.validation import validate_vrs
+from hermes.mq import constants
+from hermes.utils.validation import validate_bool
+from hermes.utils.validation import validate_date
+from hermes.utils.validation import validate_int
+from hermes.utils.validation import validate_mbr
+from hermes.utils.validation import validate_str
+from hermes.utils.validation import validate_uid
+from hermes.utils.validation import validate_vrs
 
 
 

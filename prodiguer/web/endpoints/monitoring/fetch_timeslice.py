@@ -16,13 +16,13 @@ import datetime
 import arrow
 import tornado
 
-from prodiguer.db import pgres as db
-from prodiguer.db.pgres.dao_monitoring import retrieve_active_simulations
-from prodiguer.db.pgres.dao_monitoring import retrieve_active_job_counts
-from prodiguer.db.pgres.dao_monitoring import retrieve_latest_active_jobs
-from prodiguer.db.pgres.dao_monitoring import retrieve_latest_active_job_periods
-from prodiguer.utils import logger
-from prodiguer.web.utils.http1 import process_request
+from hermes.db import pgres as db
+from hermes.db.pgres.dao_monitoring import retrieve_active_simulations
+from hermes.db.pgres.dao_monitoring import retrieve_active_job_counts
+from hermes.db.pgres.dao_monitoring import retrieve_latest_active_jobs
+from hermes.db.pgres.dao_monitoring import retrieve_latest_active_job_periods
+from hermes.utils import logger
+from hermes.web.utils.http1 import process_request
 
 
 

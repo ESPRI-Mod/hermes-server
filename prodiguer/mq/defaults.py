@@ -9,7 +9,7 @@
 
 
 """
-from prodiguer.mq import constants
+from hermes.mq import constants
 
 
 

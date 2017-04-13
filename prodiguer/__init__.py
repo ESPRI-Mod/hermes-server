@@ -14,12 +14,12 @@
 __version__ = '1.2.0.3'
 
 
-from prodiguer import cv
-from prodiguer import db
-from prodiguer import mq
-from prodiguer import utils
-from prodiguer import web
-from prodiguer.cv import VOCAB_DOMAIN
-from prodiguer.utils import config
-from prodiguer.utils import mail
-from prodiguer.utils import security
+from hermes import cv
+from hermes import db
+from hermes import mq
+from hermes import utils
+from hermes import web
+from hermes.cv import VOCAB_DOMAIN
+from hermes.utils import config
+from hermes.utils import mail
+from hermes.utils import security

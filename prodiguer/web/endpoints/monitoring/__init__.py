@@ -11,8 +11,8 @@
 
 
 """
-from prodiguer.web.endpoints.monitoring.event import EventRequestHandler
-from prodiguer.web.endpoints.monitoring.fetch_detail import FetchDetailRequestHandler
-from prodiguer.web.endpoints.monitoring.fetch_messages import FetchMessagesRequestHandler
-from prodiguer.web.endpoints.monitoring.fetch_timeslice import FetchTimeSliceRequestHandler
-from prodiguer.web.endpoints.monitoring.websocket import FrontEndWebSocketAllHandler
+from hermes.web.endpoints.monitoring.event import EventRequestHandler
+from hermes.web.endpoints.monitoring.fetch_detail import FetchDetailRequestHandler
+from hermes.web.endpoints.monitoring.fetch_messages import FetchMessagesRequestHandler
+from hermes.web.endpoints.monitoring.fetch_timeslice import FetchTimeSliceRequestHandler
+from hermes.web.endpoints.monitoring.websocket import FrontEndWebSocketAllHandler

@@ -13,14 +13,14 @@
 """
 import datetime
 
-from prodiguer import mq
-from prodiguer.db import pgres as db
-from prodiguer.db.pgres.dao_monitoring import retrieve_job
-from prodiguer.db.pgres.dao_monitoring import retrieve_latest_job_period
-from prodiguer.db.pgres.dao_monitoring import retrieve_latest_job_period_counter
-from prodiguer.db.pgres.dao_monitoring import retrieve_simulation
-from prodiguer.db.pgres.dao_superviseur import retrieve_supervision
-from prodiguer.utils import logger
+from hermes import mq
+from hermes.db import pgres as db
+from hermes.db.pgres.dao_monitoring import retrieve_job
+from hermes.db.pgres.dao_monitoring import retrieve_latest_job_period
+from hermes.db.pgres.dao_monitoring import retrieve_latest_job_period_counter
+from hermes.db.pgres.dao_monitoring import retrieve_simulation
+from hermes.db.pgres.dao_superviseur import retrieve_supervision
+from hermes.utils import logger
 import superviseur
 
 

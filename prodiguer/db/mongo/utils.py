@@ -11,7 +11,7 @@
 """
 import pymongo
 
-from prodiguer.utils import config
+from hermes.utils import config
 
 
 

@@ -13,8 +13,8 @@ import json
 
 import jsonschema
 
-from prodiguer.web.utils import http_exceptions as exceptions
-from prodiguer.web.schemas import get_schema
+from hermes.web.utils import http_exceptions as exceptions
+from hermes.web.schemas import get_schema
 
 
 
