@@ -17,7 +17,7 @@ import shutil
 import tempfile
 import uuid
 
-import prodiguer_client as hermes_client
+import hermes_client
 from prodiguer import mq
 
 

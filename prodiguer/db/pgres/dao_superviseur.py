@@ -32,7 +32,7 @@ def create_supervision(
     :param str trigger_code: Code explaining what caused the supervision act to be triggered.
 
     :returns: Newly created instance.
-    :rtype: prodiguer.db.pgres.types.Supervision
+    :rtype: types.Supervision
 
     """
     instance = types.Supervision()
@@ -50,7 +50,7 @@ def retrieve_supervision(identifer):
     :param str identifer: Supervision identifier.
 
     :returns: Supervision details.
-    :rtype: prodiguer.db.pgres.types.Supervision
+    :rtype: types.Supervision
 
     """
     return dao.get_by_id(types.Supervision, identifer)

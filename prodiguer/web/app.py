@@ -103,7 +103,7 @@ def _get_app():
 
 
 def run():
-    """Runs the prodiguer web api.
+    """Runs web service.
 
     """
     # Initialize application.

@@ -258,7 +258,7 @@ def _persist(properties, payload):
     :param str payload: Message payload.
 
     :returns: Persisted message.
-    :rtype: prodiguer.db.Message
+    :rtype: Message
 
     """
     def _get_header(key, default=None):

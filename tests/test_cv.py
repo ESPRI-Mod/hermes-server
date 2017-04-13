@@ -33,7 +33,7 @@ def test_cv_get_filepath():
 	folder = dirname(abspath(__file__))
 	folder = dirname(folder)
 	folder = join(folder, "src")
-	folder = join(folder, "prodiguer")
+	folder = join(folder, "hermes")
 	folder = join(folder, "cv")
 	folder = join(folder, "json")
 	# for type in (db.types.CvTerm, ):
