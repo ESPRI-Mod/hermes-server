@@ -25,6 +25,7 @@ def get_tasks():
     """
     return (
         _unpack_content,
+        _set_simulations,
         _delete,
         _enqueue,
         _log
@@ -42,6 +43,8 @@ class ProcessingContextInfo(mq.Message):
         super(ProcessingContextInfo, self).__init__(
             props, body, decode=decode, validate_props=validate_props)
 
+        self.is_confirm = False
+        self.simulations = []
         self.simulation_uid = None
 
 
@@ -53,11 +56,21 @@ def _unpack_content(ctx):
     ctx.is_confirm = ctx.content.get('is_confirm') is not None
 
 
+def _set_simulations(ctx):
+    """Sets simulations to be deleted.
+
+    """
+    simulation = data.retrieve_simulation(ctx.simulation_uid)
+    if simulation:
+        self.simulations = data.retrieve_simulations_by_hashid(simulation.hashid)
+
+
 def _delete(ctx):
     """Deletes simulation data from dB.
 
     """
-    dao.delete_simulation(ctx.simulation_uid)
+    for s in ctx.simulations:
+        dao.delete_simulation(s.uid)
     db.session.commit()
 
 

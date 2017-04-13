@@ -104,6 +104,23 @@ def retrieve_simulation(uid):
     return dao.get_by_facet(s, qfilter=qfilter)
 
 
+# @decorators.validate(validator.validate_retrieve_simulation)
+def retrieve_simulations_by_hashid(hashid):
+    """Retrieves all simulations with matching hashid.
+
+    :param str hashid: Hash ID of simulation.
+
+    :returns: Simulation details.
+    :rtype: types.monitoring.Simulation
+
+    """
+    s = types.Simulation
+
+    qfilter = s.hashid == unicode(hashid)
+
+    return dao.get_by_facet(s, qfilter=qfilter)
+
+
 @decorators.validate(validator.validate_retrieve_simulation_try)
 def retrieve_simulation_try(hashid, try_id):
     """Retrieves simulation details from db.
