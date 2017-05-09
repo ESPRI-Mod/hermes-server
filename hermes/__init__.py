@@ -11,7 +11,7 @@
 .. moduleauthor:: IPSL (ES-DOC) <dev@esdocumentation.org>
 
 """
-__version__ = '1.2.0.3'
+__version__ = '1.2.1.0'
 
 
 from hermes import cv
