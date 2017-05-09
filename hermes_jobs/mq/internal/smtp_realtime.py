@@ -17,9 +17,9 @@ import sqlalchemy
 
 from hermes import __version__ as HERMES_VERSION
 from hermes import config
-from hermes import mail
 from hermes import mq
 from hermes.utils import logger
+from hermes.utils import mail
 from hermes.db import pgres as db
 
 
@@ -55,7 +55,7 @@ def _get_emails():
     return new_emails
 
 
-def _get_message(uid):
+def _get_message(uid, email_server_id):
     """Yields a message to be enqueued upon MQ server.
 
     """
@@ -74,14 +74,17 @@ def _get_message(uid):
         """Message body factory.
 
         """
-        return {u"email_uid": uid}
+        return {
+            'email_server_id': email_server_id,
+            'email_uid': uid
+            }
 
     _log("Dispatching email {0} to MQ server".format(uid))
 
     return mq.Message(_get_props(), _get_body())
 
 
-def _enqueue_emails():
+def _enqueue_emails(email_server_id):
     """Dispatches messages to MQ server.
 
     """
@@ -94,7 +97,7 @@ def _enqueue_emails():
         _log(msg)
 
         # Enqueue.
-        mq.produce((_get_message(uid) for uid in emails),
+        mq.produce((_get_message(uid, email_server_id) for uid in emails),
                     connection_url=config.mq.connections.main)
 
 
@@ -135,7 +138,7 @@ def _requires_enqueue(idle_response):
     return False
 
 
-def _execute():
+def _execute(email_server_id):
     """Executes realtime SMTP sourced message production.
 
     """
@@ -143,7 +146,7 @@ def _execute():
     try:
         while True:
             # Enqueue existing emails.
-            _enqueue_emails()
+            _enqueue_emails(email_server_id)
 
             # Process IMAP idle events.
             imap_client = mail.connect()
@@ -159,7 +162,7 @@ def _execute():
 
                 # ... enqueues
                 elif _requires_enqueue(idle_response):
-                    _enqueue_emails()
+                    _enqueue_emails(email_server_id)
 
                 # ... other responses can be ignored
                 else:
@@ -170,15 +173,18 @@ def _execute():
         mail.disconnect(imap_client)
 
 
-def execute(throttle=0):
+def execute(throttle, email_server_id):
     """Executes realtime SMTP sourced message production.
 
+    :param int throttle: Limit upon number of messages to process.
+    :param int email_server_id: Email server ID.
+
     """
-    mail_cfg = mail.get_config()
+    mail.set_server(email_server_id)
     while True:
         _log("Launching IDLE client")
         try:
-            _execute()
+            _execute(email_server_id)
         except Exception as err:
             _log(err)
-            time.sleep(mail_cfg.idleFaultRetryDelayInSeconds)
+            time.sleep(mail.SERVER.idleFaultRetryDelayInSeconds)

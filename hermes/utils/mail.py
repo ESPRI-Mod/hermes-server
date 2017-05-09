@@ -26,6 +26,9 @@ from hermes.utils.config import data as config
 
 
 
+# Email server.
+SERVER = None
+
 # Email format identifier.
 _RFC822 = u'RFC822'
 
@@ -46,29 +49,36 @@ _DATE_FORMATS = [
 ]
 
 
-def get_config():
-    """Returns mail server connection configuration.
+def set_server(server_id=1):
+    """Iniitalises module.
+
+    :param str server_id: ID of mail server to point to.
 
     """
-    # TODO: pick up from config.mq.emailServers[N]
-    return config.mq.mail
+    global SERVER
+
+    try:
+        SERVER = config.mq.emailServers[int(server_id) - 1]
+    except (ValueError, IndexError):
+        raise ValueError("Invalid email server ID [{}]".format(server_id))
 
 
 def connect():
     """Connects to IMAP server and returns client.
 
     """
-    # Get config.
-    cfg = get_config()
+    # Ensure server is assigned.
+    if SERVER is None:
+        set_server()
 
     # Connect to server.
-    client = imapclient.IMAPClient(cfg.host, use_uid=True, ssl=True)
+    client = imapclient.IMAPClient(SERVER.host, use_uid=True, ssl=True)
 
     # Login.
-    client.login(cfg.username, cfg.password)
+    client.login(SERVER.username, SERVER.password)
 
     # Select folder.
-    client.select_folder(cfg.mailbox)
+    client.select_folder(SERVER.mailbox)
 
     return client
 
@@ -224,15 +234,16 @@ def move_email(email_uid, folder=None, client=None):
     :param imapclient.IMAPClient client: An imap server client.
 
     """
-    # Get config.
-    cfg = get_config()
+    # Ensure server is assigned.
+    if SERVER is None:
+        set_server()
 
     # Set imap proxy.
     proxy = client or connect()
 
     # Set folder.
     if not folder:
-        folder = cfg.mailbox_processed
+        folder = SERVER.mailbox_processed
 
     # Copy to new folder.
     proxy.copy(email_uid, folder)
@@ -323,8 +334,9 @@ def send_email(
     :param str attachment_name: Name to be associated with the email attachment.
 
     """
-    # Get config.
-    cfg = get_config()
+    # Ensure server is assigned.
+    if SERVER is None:
+        set_server()
 
     # Initalise email.
     msg = MIMEMultipart()
@@ -342,11 +354,11 @@ def send_email(
         msg.attach(MIMEApplication(attachment, Name=attachment_name))
 
     # Connect to mail server.
-    mailserver = smtplib.SMTP(cfg.host, port=cfg.smtpPort)
+    mailserver = smtplib.SMTP(SERVER.host, port=SERVER.smtpPort)
     mailserver.ehlo()
     mailserver.starttls()
     mailserver.ehlo()
-    mailserver.login(cfg.username, cfg.password)
+    mailserver.login(SERVER.username, SERVER.password)
 
     # Dispatch email.
     mailserver.sendmail(address_from, address_to, msg.as_string())

@@ -92,6 +92,7 @@ class MessageEmailStats(Entity):
     )
 
     # Attributes.
+    email_server_id = Column(BigInteger, nullable=False)
     email_id = Column(BigInteger, nullable=False)
     email_rejected = Column(Boolean, default=False)
     arrival_date = Column(DateTime)

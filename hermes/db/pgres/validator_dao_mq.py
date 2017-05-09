@@ -93,6 +93,7 @@ def validate_retrieve_message_emails(arrival_date):
 
 
 def validate_persist_message_email_stats(
+    email_server_id,
     email_id,
     email_rejected,
     arrival_date=None,
@@ -123,6 +124,7 @@ def validate_persist_message_email_stats(
     """Function input validator: update_message_email_stats.
 
     """
+    validate_int(email_server_id, "email_server_id")
     validate_int(email_id, "email_id")
     validate_bool(email_rejected, "email rejected flag")
     if arrival_date:

@@ -35,6 +35,10 @@ define("agent_limit",
        default=0,
        help="Agent limit (0 = unlimited)",
        type=int)
+define("agent_parameter",
+       default=None,
+       help="Agent parameter(s)",
+       type=str)
 options.parse_command_line()
 
 
@@ -193,7 +197,7 @@ def _process_message(agent_type, handler, ctx):
     invoke_handler(agent_type, tasks, error_tasks, ctx)
 
 
-def _execute_agent(agent_type, agent_limit, handler):
+def _execute_agent(agent_type, agent_limit, agent_parameter, handler):
     """Executes a standard agent.
 
     """
@@ -211,7 +215,7 @@ def _execute_agent(agent_type, agent_limit, handler):
         )
 
 
-def _execute(agent_type, agent_limit):
+def _execute(agent_type, agent_limit, agent_parameter):
     """Executes message agent.
 
     """
@@ -223,11 +227,12 @@ def _execute(agent_type, agent_limit):
 
     # Execute.
     logger.log_mq("Launching message agent: {0}".format(agent_type))
+
     if hasattr(handler, 'execute'):
-        handler.execute(agent_limit)
+        handler.execute(agent_limit, agent_parameter)
     else:
-        _execute_agent(agent_type, agent_limit, handler)
+        _execute_agent(agent_type, agent_limit, agent_parameter, handler)
 
 
 # Main entry point.
-_execute(options.agent_type, options.agent_limit)
+_execute(options.agent_type, options.agent_limit, options.agent_parameter)

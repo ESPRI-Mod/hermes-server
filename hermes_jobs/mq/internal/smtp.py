@@ -17,15 +17,11 @@ import json
 import uuid
 
 from hermes import config
-from hermes import mail
 from hermes import mq
 from hermes.db import pgres as db
 from hermes.utils import logger
+from hermes.utils import mail
 
-
-
-# Mail server config.
-_CONFIG = config.mq
 
 
 def get_tasks():
@@ -72,6 +68,7 @@ class ProcessingContextInfo(mq.Message):
         self.email_body = None
         self.email_uid = self.content['email_uid']
         self.email_rejected = False
+        self.email_server_id = self.content['email_server_id']
         self.imap_client = None
         self.msg_ampq = []
         self.msg_ampq_error = []
@@ -88,6 +85,9 @@ def _set_email(ctx):
     """Set email to be processed.
 
     """
+    # Point to email server.
+    mail.set_server(ctx.email_server_id)
+
     # Connect to imap server.
     ctx.imap_client = mail.connect()
 
@@ -140,7 +140,7 @@ def _drop_excluded_messages(ctx):
 
         """
         return 'msgProducerVersion' not in msg or \
-               msg['msgCode'] in _CONFIG.excludedTypes
+               msg['msgCode'] in config.mq.excludedTypes
 
     ctx.msg_dict_excluded = [m for m in ctx.msg_dict if _is_excluded(m)]
     ctx.msg_dict = [m for m in ctx.msg_dict if m not in ctx.msg_dict_excluded]
@@ -285,12 +285,13 @@ def _dequeue_email(ctx):
     """Removes email from mailbox after processing.
 
     """
-    if _CONFIG.mail.deleteProcessed:
+    # TODO - get email server configuration
+    if mail.SERVER.deleteProcessed:
         mail.delete_email(ctx.email_uid, client=ctx.imap_client)
     elif ctx.email_rejected:
         mail.move_email(ctx.email_uid,
                         client=ctx.imap_client,
-                        folder=_CONFIG.mail.mailbox_rejected)
+                        folder=mail.SERVER.mailbox_rejected)
     else:
         mail.move_email(ctx.email_uid, client=ctx.imap_client)
 
@@ -349,7 +350,7 @@ def _persist_stats(ctx):
         try:
             return func(ctx.email_body).datetime
         except Exception as err:
-            logger.log_mq_warning("Email date decoding error: {}.".format(err))
+            # logger.log_mq_warning("Email date decoding error: {}.".format(err))
             return None
 
 
@@ -361,6 +362,7 @@ def _persist_stats(ctx):
 
 
     db.dao_mq.persist_message_email_stats(
+        ctx.email_server_id,
         ctx.email_uid,
         ctx.email_rejected,
         arrival_date=_get_date(mail.get_email_arrival_date),

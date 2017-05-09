@@ -211,6 +211,7 @@ def _update_message_email(email_id, arrival_date, dispatch_date):
 
 @decorators.validate(validator.validate_persist_message_email_stats)
 def persist_message_email_stats(
+    email_server_id,
     email_id,
     email_rejected,
     arrival_date=None,
@@ -271,6 +272,7 @@ def persist_message_email_stats(
     _update_message_email(email_id, arrival_date, dispatch_date)
 
     instance = types.MessageEmailStats()
+    instance.email_server_id = email_server_id
     instance.email_id = email_id
     instance.email_rejected = email_rejected
     instance.arrival_date = arrival_date
