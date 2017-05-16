@@ -97,7 +97,7 @@ def disconnect(client):
     except imaplib.IMAP4.abort:
         pass
     except AttributeError:
-            pass
+        pass
 
     try:
         client.close_folder()
@@ -311,9 +311,6 @@ def get_email_dispatch_date(body):
             if date_format == _DATE_FORMATS[-1]:
                 raise err
             pass
-
-
-    # return arrow.get(body['Date'], _DATE_FORMAT)
 
 
 def send_email(
