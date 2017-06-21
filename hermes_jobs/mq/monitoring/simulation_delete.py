@@ -60,9 +60,9 @@ def _set_simulations(ctx):
     """Sets simulations to be deleted.
 
     """
-    simulation = data.retrieve_simulation(ctx.simulation_uid)
+    simulation = dao.retrieve_simulation(ctx.simulation_uid)
     if simulation:
-        self.simulations = data.retrieve_simulations_by_hashid(simulation.hashid)
+        self.simulations = dao.retrieve_simulations_by_hashid(simulation.hashid)
 
 
 def _delete(ctx):
