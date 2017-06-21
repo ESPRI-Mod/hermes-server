@@ -26,8 +26,8 @@ def _get_initialisation_data():
 
     """
     fpath = __file__.replace(".py", ".json")
-    with open(fpath, 'r') as data:
-        return json.loads(data.read())
+    with open(fpath, 'r') as fstream:
+        return json.loads(fstream.read())
 
 
 def _persist_allocation(row):
