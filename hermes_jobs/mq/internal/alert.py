@@ -119,7 +119,9 @@ def _dispatch_operator_email(ctx):
 
     # Initialise email content.
     subject = _EMAIL_SUBJECT.format(
-        _EMAIL_MAP[ctx.trigger]['app'], _EMAIL_MAP[ctx.trigger]['subject'])
+        _EMAIL_MAP[ctx.trigger]['app'],
+        _EMAIL_MAP[ctx.trigger]['subject']
+        )
     body = _EMAIL_BODY.format(_EMAIL_MAP[ctx.trigger]['body'])
 
     # Enhance email content (when appropriate).

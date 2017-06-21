@@ -13,7 +13,9 @@
 from hermes_jobs.mq import utils
 from hermes import mq
 from hermes.db import pgres as db
-from hermes.db.pgres import dao_monitoring as dao
+from hermes.db.pgres.dao_monitoring import retrieve_simulation
+from hermes.db.pgres.dao_monitoring import retrieve_simulations_by_hashid
+from hermes.db.pgres.dao_monitoring import delete_simulation
 from hermes.utils import config
 from hermes.utils import logger
 
@@ -60,18 +62,19 @@ def _set_simulations(ctx):
     """Sets simulations to be deleted.
 
     """
-    simulation = dao.retrieve_simulation(ctx.simulation_uid)
+    simulation = retrieve_simulation(ctx.simulation_uid)
     if simulation:
-        self.simulations = dao.retrieve_simulations_by_hashid(simulation.hashid)
+        ctx.simulations = retrieve_simulations_by_hashid(simulation.hashid, get_iterable=True)
 
 
 def _delete(ctx):
     """Deletes simulation data from dB.
 
     """
-    for s in ctx.simulations:
-        dao.delete_simulation(s.uid)
-    db.session.commit()
+    if ctx.simulations:
+        for s in ctx.simulations:
+            delete_simulation(s.uid)
+        db.session.commit()
 
 
 def _enqueue(ctx):
