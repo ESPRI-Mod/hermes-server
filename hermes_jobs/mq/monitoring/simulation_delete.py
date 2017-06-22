@@ -64,7 +64,7 @@ def _set_simulations(ctx):
     """
     simulation = retrieve_simulation(ctx.simulation_uid)
     if simulation:
-        ctx.simulations = retrieve_simulations_by_hashid(simulation.hashid, get_iterable=True)
+        ctx.simulations = retrieve_simulations_by_hashid(simulation.hashid)
 
 
 def _delete(ctx):
