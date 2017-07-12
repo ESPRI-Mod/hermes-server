@@ -95,6 +95,17 @@ def validate_persist_job_end(
     validate_uid(simulation_uid, "Simulation uid")
 
 
+def validate_persist_late_job(
+    job_uid,
+    simulation_uid,
+    ):
+    """Function input validator: persist_late_job.
+
+    """
+    validate_uid(job_uid, "Job uid")
+    validate_uid(simulation_uid, "Simulation uid")
+
+
 def validate_persist_job_period(
     simulation_uid,
     job_uid,

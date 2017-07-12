@@ -76,13 +76,14 @@ def retrieve_latest_active_jobs(
     j = types.Job
     s = types.Simulation
     qry = session.raw_query(
-        s.id,                               #0
+        s.id,                                           #0
         j.typeof,                                       #1
         j.execution_state,                              #2
         cast(j.is_compute_end, Integer),                #3
         cast(j.is_error, Integer),                      #4
         as_datetime_string(j.execution_start_date),     #5
-        as_datetime_string(j.execution_end_date)        #6
+        as_datetime_string(j.execution_end_date),       #6
+        cast(j.is_late, Integer)                        #7
         )
     qry = qry.join(j, s.uid == j.simulation_uid)
 
@@ -236,7 +237,8 @@ def _get_job_raw_query():
         j.scheduler_id,                                 #16
         j.submission_path,                              #17
         j.warning_delay,                                #18
-        s.uid                                           #19
+        s.uid,                                          #19
+        cast(j.is_late, Integer)                        #20
         )
     qry = qry.join(s, j.simulation_uid == s.uid)
 
@@ -405,6 +407,33 @@ def persist_job_end(
         instance.execution_end_date = execution_end_date
         instance.is_compute_end = is_compute_end
         instance.is_error = is_error
+        instance.job_uid = unicode(job_uid)
+        instance.simulation_uid = unicode(simulation_uid)
+        instance.execution_state = instance.get_execution_state()
+
+    return dao.persist(_assign, types.Job, lambda: retrieve_job(job_uid))
+
+
+@decorators.validate(validator.validate_persist_late_job)
+def persist_late_job(
+    job_uid,
+    simulation_uid
+    ):
+    """Persists late job to db.
+
+    :param str job_uid: Job unique identifier.
+    :param str simulation_uid: Simulation UID.
+
+    :returns: Either a new or an updated job instance.
+    :rtype: types.Job
+
+    """
+    def _assign(instance):
+        """Assigns instance values from input parameters.
+
+        """
+        instance.is_late = True
+        instance.is_error = True
         instance.job_uid = unicode(job_uid)
         instance.simulation_uid = unicode(simulation_uid)
         instance.execution_state = instance.get_execution_state()

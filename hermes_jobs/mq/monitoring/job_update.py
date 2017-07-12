@@ -61,8 +61,6 @@ def _persist(ctx):
     """Persists job updates to dB.
 
     """
-    # TODO: throw error if period_ordinal == 0
-
     ctx.period = dao.persist_job_period(
         ctx.simulation_uid,
         ctx.job_uid,

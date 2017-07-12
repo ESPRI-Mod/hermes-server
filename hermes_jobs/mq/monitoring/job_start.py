@@ -290,8 +290,8 @@ def _enqueue_late_job_detection(ctx):
     """Places a delayed message upon the supervisor detection queue.
 
     """
-    # TODO: Set max historical latency offset in order to account for
-    # buffered 1100 messages.
+    # TODO: Set max historical latency offset in
+    #       order to account for buffered 1100 messages.
     if ctx.is_compute_job_start:
         pass
 
@@ -336,9 +336,16 @@ def _enqueue_fe_notification(ctx):
     """Places a message upon the front-end notification queue.
 
     """
+    if ctx.is_simulation_start:
+        event_type = 'simulation_start'
+        simulation_uid = ctx.active_simulation.uid
+    else:
+        event_type = 'job_start'
+        simulation_uid = ctx.simulation_uid
+
     mq_utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
-        "event_type": u"simulation_start" if ctx.is_simulation_start else "job_start",
+        "event_type": event_type,
         "cv_terms": ctx.cv_terms_for_fe,
-        "job_uid": unicode(ctx.job_uid),
-        "simulation_uid": ctx.active_simulation.uid if ctx.is_simulation_start else ctx.simulation_uid
+        "job_uid": ctx.job_uid,
+        "simulation_uid": simulation_uid
     })

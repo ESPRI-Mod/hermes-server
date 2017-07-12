@@ -48,6 +48,7 @@ class Job(Entity):
     execution_start_date = Column(DateTime)
     is_compute_end = Column(Boolean, default=False)
     is_error = Column(Boolean, default=False)
+    is_late = Column(Boolean, default=False)
     is_im = Column(Boolean, default=False)
     job_uid = Column(Unicode(63), nullable=False, unique=True)
     post_processing_component = Column(Unicode(63))
@@ -66,12 +67,15 @@ class Job(Entity):
         """Returns current derived execution status.
 
         """
-        if self.execution_start_date and not self.execution_end_date:
-            return EXECUTION_STATE_RUNNING
-        if self.execution_end_date and self.is_error:
+        if self.is_error:
             return EXECUTION_STATE_ERROR
-        if self.execution_end_date and not self.is_error:
-            return EXECUTION_STATE_COMPLETE
+
+        if self.execution_start_date:
+            if self.execution_end_date:
+                return EXECUTION_STATE_COMPLETE
+            else:
+                return EXECUTION_STATE_RUNNING
+
         return EXECUTION_STATE_QUEUED
 
 

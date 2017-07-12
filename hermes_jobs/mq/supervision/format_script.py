@@ -121,7 +121,7 @@ def _on_simulation_login_null(ctx):
     # Delayed retry.
     if ctx.retry_count < config.apps.superviseur.maxScriptFormattingAttempts:
         # Warn operator.
-        msg = "Supervision formatting enqueued: sim-uid={}"
+        msg = "Supervision formatting requeued: sim-uid={}"
         msg = msg.format(ctx.simulation_uid)
         logger.log_mq_warning(msg)
 
@@ -227,17 +227,21 @@ def _verify(ctx):
     """Verifies that the job formatting is required.
 
     """
-    # Escape processing if job period is undefined.
+    # Accepted if no job period received.
+    if ctx.job_period is None:
+        return
+
+    # Rejected if job period is undefined.
     if ctx.job_period.period_id is None:
         logger.log_mq_warning("Job period empty")
         ctx.abort = True
 
-    # Escape processing if dealing with the first job period.
+    # Rejected if dealing with the first job period.
     elif ctx.job_period.period_id == 1:
         logger.log_mq("First job periods do not require supervision")
         ctx.abort = True
 
-    # Escape processing & notify user if the job period failure count exceeds the configurable limit.
+    # Rejected if job period failure count exceeds the configurable limit.
     elif ctx.job_period_counter[1] > config.apps.superviseur.maxJobPeriodFailures:
         mail.send_email(config.alerts.emailAddressFrom,
             ctx.user.email,
@@ -256,7 +260,6 @@ def _format(ctx):
     params = superviseur.FormatParameters(
         ctx.simulation,
         ctx.job,
-        ctx.job_period,
         ctx.supervision,
         ctx.user
         )

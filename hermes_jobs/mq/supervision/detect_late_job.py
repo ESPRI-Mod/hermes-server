@@ -23,8 +23,10 @@ def get_tasks():
     """
     return (
         _unpack_content,
-        _verify,
+        _verify_job,
+        _persist_job,
         _persist_supervision,
+        _enqueue_fe_notification,
         _enqueue_supervisor_format
         )
 
@@ -39,6 +41,7 @@ class ProcessingContextInfo(mq.Message):
         """
         super(ProcessingContextInfo, self).__init__(props, body, decode=decode)
 
+        self.job = None
         self.job_uid = None
         self.simulation_uid = None
         self.supervision = None
@@ -54,12 +57,26 @@ def _unpack_content(ctx):
     ctx.trigger_code = ctx.content['trigger_code']
 
 
-def _verify(ctx):
-    """Verifies that the late job detection is valid.
+def _verify_job(ctx):
+    """Verifies job has not executed.
 
     """
-    job = db.dao_monitoring.retrieve_job(ctx.job_uid)
-    ctx.abort = job is None or job.execution_end_date is not None
+    # Set job.
+    ctx.job = db.dao_monitoring.retrieve_job(ctx.job_uid)
+
+    # Abort if job was purged or is complete.
+    ctx.abort = ctx.job is None or \
+                ctx.job.execution_end_date is not None
+
+
+def _persist_job(ctx):
+    """Persist job info to database.
+
+    """
+    dao.persist_late_job(
+        ctx.job_uid,
+        ctx.simulation_uid
+        )
 
 
 def _persist_supervision(ctx):
@@ -71,6 +88,17 @@ def _persist_supervision(ctx):
         ctx.job_uid,
         ctx.trigger_code
         )
+
+
+def _enqueue_fe_notification(ctx):
+    """Place a message upon the front-end notifications message queue.
+
+    """
+    utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
+        "event_type": u"job_late",
+        "job_uid": unicode(ctx.job_uid),
+        "simulation_uid": unicode(ctx.simulation_uid)
+    })
 
 
 def _enqueue_supervisor_format(ctx):
