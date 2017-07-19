@@ -73,7 +73,7 @@ class Job(Entity):
             return EXECUTION_STATE_ERROR
 
         if self.execution_start_date:
-            if self.execution_end_date:
+            if self.execution_end_date is not None:
                 return EXECUTION_STATE_COMPLETE
             elif self.warning_state > 0:
                 return EXECUTION_STATE_LATE
