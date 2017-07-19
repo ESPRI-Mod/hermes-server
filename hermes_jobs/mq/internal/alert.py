@@ -80,7 +80,7 @@ def get_tasks():
 
     """
     return (
-        _unpack_content,
+        _unpack,
         _dispatch_operator_email
         )
 
@@ -99,7 +99,7 @@ class ProcessingContextInfo(mq.Message):
         self.trigger = None
 
 
-def _unpack_content(ctx):
+def _unpack(ctx):
     """Unpacks message content.
 
     """

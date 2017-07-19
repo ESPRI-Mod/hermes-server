@@ -26,8 +26,8 @@ def get_tasks():
 
     """
     return (
-        _unpack_content,
-        _set_simulations,
+        _unpack,
+        _set_data,
         _delete,
         _enqueue,
         _log
@@ -50,7 +50,7 @@ class ProcessingContextInfo(mq.Message):
         self.simulation_uid = None
 
 
-def _unpack_content(ctx):
+def _unpack(ctx):
     """Unpacks message being processed.
 
     """
@@ -58,7 +58,7 @@ def _unpack_content(ctx):
     ctx.is_confirm = ctx.content.get('is_confirm') is not None
 
 
-def _set_simulations(ctx):
+def _set_data(ctx):
     """Sets simulations to be deleted.
 
     """
@@ -88,7 +88,10 @@ def _enqueue(ctx):
         mq.constants.MESSAGE_TYPE_8888,
         delay_in_ms=config.apps.monitoring.purgeSimulationConfirmDelayInSeconds * 1000,
         exchange=mq.constants.EXCHANGE_HERMES_SECONDARY_DELAYED,
-        payload={"simuid": ctx.simulation_uid, "is_confirm": True}
+        payload={
+            "simuid": ctx.simulation_uid,
+            "is_confirm": True
+            }
         )
 
 

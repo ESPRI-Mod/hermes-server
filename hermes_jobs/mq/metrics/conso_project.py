@@ -36,7 +36,7 @@ def get_tasks():
 
     """
     return (
-      _unpack_content,
+      _unpack,
       _set_blocks,
       _set_block_allocation,
       _persist_block_total,
@@ -62,7 +62,7 @@ class ProcessingContextInfo(mq.Message):
         self.data = None
 
 
-def _unpack_content(ctx):
+def _unpack(ctx):
     """Unpacks message content.
 
     """

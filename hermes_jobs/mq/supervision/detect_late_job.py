@@ -22,12 +22,10 @@ def get_tasks():
 
     """
     return (
-        _unpack_content,
-        _verify_job,
-        _persist_job,
-        _persist_supervision,
-        _enqueue_fe_notification,
-        _enqueue_supervisor_format
+        _unpack,
+        _verify,
+        _persist,
+        _enqueue
         )
 
 
@@ -48,7 +46,7 @@ class ProcessingContextInfo(mq.Message):
         self.trigger_code = None
 
 
-def _unpack_content(ctx):
+def _unpack(ctx):
     """Unpacks message being processed.
 
     """
@@ -57,8 +55,8 @@ def _unpack_content(ctx):
     ctx.trigger_code = ctx.content['trigger_code']
 
 
-def _verify_job(ctx):
-    """Verifies job has not executed.
+def _verify(ctx):
+    """Verification step.
 
     """
     # Set job.
@@ -69,20 +67,17 @@ def _verify_job(ctx):
                 ctx.job.execution_end_date is not None
 
 
-def _persist_job(ctx):
-    """Persist job info to database.
+def _persist(ctx):
+    """Persist info to database.
 
     """
+    # Persist job info.
     dao.persist_late_job(
         ctx.job_uid,
         ctx.simulation_uid
         )
 
-
-def _persist_supervision(ctx):
-    """Persist supervision info to database.
-
-    """
+    # Persist supervision info.
     ctx.supervision = db.dao_superviseur.create_supervision(
         ctx.simulation_uid,
         ctx.job_uid,
@@ -90,21 +85,18 @@ def _persist_supervision(ctx):
         )
 
 
-def _enqueue_fe_notification(ctx):
-    """Place a message upon the front-end notifications message queue.
+def _enqueue(ctx):
+    """Enqueues messages upon downstream queues.
 
     """
+    # Notify front end.
     utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
         "event_type": u"job_late",
         "job_uid": unicode(ctx.job_uid),
         "simulation_uid": unicode(ctx.simulation_uid)
     })
 
-
-def _enqueue_supervisor_format(ctx):
-    """Place a message upon the supervisor format queue.
-
-    """
+    # Initiate supervision.
     utils.enqueue(mq.constants.MESSAGE_TYPE_8100, {
         "job_uid": ctx.job_uid,
         "simulation_uid": ctx.simulation_uid,

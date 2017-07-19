@@ -21,9 +21,9 @@ def get_tasks():
 
     """
     return (
-        _unpack_content,
+        _unpack,
         _persist,
-        _enqueue_fe_notification
+        _enqueue
         )
 
 
@@ -46,7 +46,7 @@ class ProcessingContextInfo(mq.Message):
         self.simulation_uid = None
 
 
-def _unpack_content(ctx):
+def _unpack(ctx):
     """Unpacks message being processed.
 
     """
@@ -70,7 +70,7 @@ def _persist(ctx):
         )
 
 
-def _enqueue_fe_notification(ctx):
+def _enqueue(ctx):
     """Places a message upon the front-end notification queue.
 
     """

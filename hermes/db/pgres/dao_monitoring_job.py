@@ -11,6 +11,9 @@
 
 
 """
+import datetime
+
+import arrow
 from sqlalchemy import cast
 from sqlalchemy import func
 from sqlalchemy import Integer
@@ -83,7 +86,8 @@ def retrieve_latest_active_jobs(
         cast(j.is_error, Integer),                      #4
         as_datetime_string(j.execution_start_date),     #5
         as_datetime_string(j.execution_end_date),       #6
-        cast(j.is_late, Integer)                        #7
+        j.warning_state,                                #7
+        as_datetime_string(j.warning_limit)             #8
         )
     qry = qry.join(j, s.uid == j.simulation_uid)
 
@@ -238,14 +242,15 @@ def _get_job_raw_query():
         j.submission_path,                              #17
         j.warning_delay,                                #18
         s.uid,                                          #19
-        cast(j.is_late, Integer)                        #20
+        j.warning_state,                                #20
+        as_datetime_string(j.warning_limit)             #21
         )
     qry = qry.join(s, j.simulation_uid == s.uid)
 
     return qry
 
 
-# @decorators.validate(validator.validate_retrieve_job_subset)
+@decorators.validate(validator.validate_retrieve_job_info)
 def retrieve_job_info(uid):
     """Retrieves a subset of job details from db.
 
@@ -267,24 +272,6 @@ def retrieve_job_info(uid):
         as_datetime_string(j.execution_end_date)        #6
         )
     qry = qry.join(j, s.uid == j.simulation_uid)
-    qry = qry.filter(j.job_uid == unicode(uid))
-
-    return qry.first()
-
-
-@decorators.validate(validator.validate_retrieve_job_subset)
-def retrieve_job_subset(uid):
-    """Retrieves a subset of job details from db.
-
-    :param str uid: UID of job.
-
-    :returns: A subset of job details.
-    :rtype: tuple
-
-    """
-    j = types.Job
-
-    qry = _get_job_raw_query()
     qry = qry.filter(j.job_uid == unicode(uid))
 
     return qry.first()
@@ -355,6 +342,9 @@ def persist_job_start(
         instance.job_uid = unicode(job_uid)
         instance.simulation_uid = unicode(simulation_uid)
         instance.warning_delay = int(warning_delay)
+        instance.warning_limit = \
+               arrow.get(execution_start_date) + \
+               datetime.timedelta(seconds=int(warning_delay))
         instance.execution_state = instance.get_execution_state()
 
         # ... optional fields
@@ -432,8 +422,7 @@ def persist_late_job(
         """Assigns instance values from input parameters.
 
         """
-        instance.is_late = True
-        instance.is_error = True
+        instance.warning_state = 1
         instance.job_uid = unicode(job_uid)
         instance.simulation_uid = unicode(simulation_uid)
         instance.execution_state = instance.get_execution_state()

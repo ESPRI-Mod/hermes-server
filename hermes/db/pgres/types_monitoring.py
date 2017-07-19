@@ -23,6 +23,7 @@ from sqlalchemy import UniqueConstraint
 from hermes.db.pgres.entity import Entity
 from hermes.cv.constants import EXECUTION_STATE_COMPLETE
 from hermes.cv.constants import EXECUTION_STATE_ERROR
+from hermes.cv.constants import EXECUTION_STATE_LATE
 from hermes.cv.constants import EXECUTION_STATE_QUEUED
 from hermes.cv.constants import EXECUTION_STATE_RUNNING
 
@@ -48,7 +49,6 @@ class Job(Entity):
     execution_start_date = Column(DateTime)
     is_compute_end = Column(Boolean, default=False)
     is_error = Column(Boolean, default=False)
-    is_late = Column(Boolean, default=False)
     is_im = Column(Boolean, default=False)
     job_uid = Column(Unicode(63), nullable=False, unique=True)
     post_processing_component = Column(Unicode(63))
@@ -60,6 +60,8 @@ class Job(Entity):
     simulation_uid = Column(Unicode(63))
     typeof = Column(Unicode(63))
     warning_delay = Column(Integer)
+    warning_limit = Column(DateTime)
+    warning_state = Column(Integer, default=0)
     submission_path = Column(Unicode(2047))
 
 
@@ -73,6 +75,8 @@ class Job(Entity):
         if self.execution_start_date:
             if self.execution_end_date:
                 return EXECUTION_STATE_COMPLETE
+            elif self.warning_state > 0:
+                return EXECUTION_STATE_LATE
             else:
                 return EXECUTION_STATE_RUNNING
 

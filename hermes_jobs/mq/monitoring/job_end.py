@@ -41,7 +41,7 @@ def get_tasks():
 
     """
     return (
-        _unpack_content,
+        _unpack,
         _persist,
         _enqueue_supervisor_format,
         _enqueue_fe_notification_job,
@@ -68,7 +68,7 @@ class ProcessingContextInfo(mq.Message):
         self.simulation_uid = None
 
 
-def _unpack_content(ctx):
+def _unpack(ctx):
     """Unpacks message being processed.
 
     """

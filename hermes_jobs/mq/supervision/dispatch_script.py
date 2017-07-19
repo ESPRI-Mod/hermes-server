@@ -30,9 +30,10 @@ def get_tasks():
 
     """
     return (
-      _unpack_content,
-      _set_data,
+      _unpack,
+      _set_data_01,
       _authorize,
+      _set_data_02,
       _dispatch,
       _process_dispatch_error
       )
@@ -57,22 +58,19 @@ class ProcessingContextInfo(mq.Message):
         self.user = None
 
 
-def _unpack_content(ctx):
+def _unpack(ctx):
     """Unpacks message being processed.
 
     """
     ctx.supervision_id = int(ctx.content['supervision_id'])
 
 
-def _set_data(ctx):
+def _set_data_01(ctx):
     """Sets data to be passed to dispatcher as input.
 
     """
     ctx.supervision = retrieve_supervision(ctx.supervision_id)
     ctx.simulation = retrieve_simulation(ctx.supervision.simulation_uid)
-    ctx.job = retrieve_job(ctx.supervision.job_uid)
-    ctx.job_period = retrieve_latest_job_period(ctx.supervision.simulation_uid)
-    ctx.job_period_counter = retrieve_latest_job_period_counter(ctx.supervision.simulation_uid)
 
 
 def _authorize(ctx):
@@ -84,6 +82,15 @@ def _authorize(ctx):
     except UserWarning as err:
         logger.log_mq_warning("Supervision unauthorized: {}".format(err))
         ctx.abort = True
+
+
+def _set_data_02(ctx):
+    """Sets data to be passed to dispatcher as input.
+
+    """
+    ctx.job = retrieve_job(ctx.supervision.job_uid)
+    ctx.job_period = retrieve_latest_job_period(ctx.supervision.simulation_uid)
+    ctx.job_period_counter = retrieve_latest_job_period_counter(ctx.supervision.simulation_uid)
 
 
 def _dispatch(ctx):

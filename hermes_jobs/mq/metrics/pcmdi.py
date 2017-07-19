@@ -35,7 +35,7 @@ def get_tasks():
 
     """
     return (
-      _unpack_content,
+      _unpack,
       _decode_metrics,
       _save_metrics_to_file_system,
       _format_metrics,
@@ -63,7 +63,7 @@ class ProcessingContextInfo(mq.Message):
         self.dir_formatted = None
 
 
-def _unpack_content(ctx):
+def _unpack(ctx):
     """Unpacks message being processed.
 
     """

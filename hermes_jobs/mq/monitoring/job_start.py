@@ -11,8 +11,6 @@
 
 
 """
-import datetime
-
 import arrow
 from sqlalchemy.exc import IntegrityError
 
@@ -60,7 +58,7 @@ def get_tasks():
 
     """
     return (
-        _unpack_content,
+        _unpack,
         _parse_cv,
         _persist_cv,
         _persist_job,
@@ -106,7 +104,7 @@ class ProcessingContextInfo(mq.Message):
         self.simulation_uid = None
 
 
-def _unpack_content(ctx):
+def _unpack(ctx):
     """Unpacks message content.
 
     """
@@ -295,12 +293,8 @@ def _enqueue_late_job_detection(ctx):
     if ctx.is_compute_job_start:
         pass
 
-    # Calculate expected job completion moment.
-    expected = arrow.get(ctx.msg.timestamp) + \
-               datetime.timedelta(seconds=int(ctx.job_warning_delay))
-
     # Calculate time delta until system must check if job is late or not.
-    delta_in_s = int((expected - arrow.utcnow()).total_seconds())
+    delta_in_s = int((ctx.job.warning_limit - arrow.utcnow()).total_seconds())
     if delta_in_s < 0:
         delta_in_s = 600    # 10 minutes for historical messages
     else:

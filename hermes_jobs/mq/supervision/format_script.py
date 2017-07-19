@@ -57,7 +57,7 @@ def get_tasks():
 
     """
     return (
-        _unpack_content,
+        _unpack,
         _set_data,
         _authorize,
         _verify,
@@ -87,7 +87,7 @@ class ProcessingContextInfo(mq.Message):
         self.user = None
 
 
-def _unpack_content(ctx):
+def _unpack(ctx):
     """Unpacks message being processed.
 
     """
@@ -101,61 +101,63 @@ def _on_simulation_not_found(ctx):
     """Simulation not found event handler.
 
     """
+    # Abort further processing.
+    ctx.abort = True
+
     # Warn operator.
     msg = "Supervision not feasible: simulation not found: sim-uid={}.  Possible 8888 scenario."
     msg = msg.format(ctx.simulation_uid)
     logger.log_mq_warning(msg)
-
-    ctx.abort = True
 
 
 def _on_simulation_login_null(ctx):
     """Simulation login null event handler.
 
     """
+    # Abort further processing.
+    ctx.abort = True
+
     # Warn operator.
     msg = "Supervision not possible: simulation login unspecified: sim-uid={}"
     msg = msg.format(ctx.simulation_uid)
     logger.log_mq_warning(msg)
 
-    # Delayed retry.
-    if ctx.retry_count < config.apps.superviseur.maxScriptFormattingAttempts:
-        # Warn operator.
-        msg = "Supervision formatting requeued: sim-uid={}"
+    # Maximum retries reached.
+    if ctx.retry_count >= config.apps.superviseur.maxScriptFormattingAttempts:
+        msg = "Supervision formatting not possible: maximum retries exceeded: sim-uid={}"
         msg = msg.format(ctx.simulation_uid)
         logger.log_mq_warning(msg)
+        return
 
-        # Re-enqueue (delayed).
-        utils.enqueue(
-            mq.constants.MESSAGE_TYPE_8100,
-            delay_in_ms=config.apps.superviseur.scriptReformattingDelayInSeconds * 1000,
-            exchange=mq.constants.EXCHANGE_HERMES_SECONDARY_DELAYED,
-            payload={
+    # Warn operator.
+    msg = "Supervision formatting requeued: sim-uid={}"
+    msg = msg.format(ctx.simulation_uid)
+    logger.log_mq_warning(msg)
+
+    # Requeue (delayed).
+    utils.enqueue(
+        mq.constants.MESSAGE_TYPE_8100,
+        delay_in_ms=config.apps.superviseur.scriptReformattingDelayInSeconds * 1000,
+        exchange=mq.constants.EXCHANGE_HERMES_SECONDARY_DELAYED,
+        payload={
             "job_uid": ctx.job_uid,
             "simulation_uid": ctx.simulation_uid,
             "supervision_id": ctx.supervision_id,
             "retry_count": ctx.retry_count + 1
         })
-    else:
-        # Warn operator.
-        msg = "Supervision formatting not possible: maximum retries exceeded: sim-uid={}"
-        msg = msg.format(ctx.simulation_uid)
-        logger.log_mq_warning(msg)
-
-    ctx.abort = True
 
 
 def _set_data(ctx):
     """Sets data also required by script formatter.
 
     """
-    # Escape if simulation not found - happens if 8888 message was subsequently sent.
+    # Escape if simulation purged.
     ctx.simulation = retrieve_simulation(ctx.simulation_uid)
     if ctx.simulation is None:
         _on_simulation_not_found(ctx)
         return
 
-    # Escape if login is None - happens when 0000 message has not yet been received.
+    # Escape if 0000 message has not yet been received.
     if ctx.simulation.compute_node_login is None:
         _on_simulation_login_null(ctx)
         return
@@ -238,7 +240,7 @@ def _verify(ctx):
 
     # Rejected if dealing with the first job period.
     elif ctx.job_period.period_id == 1:
-        logger.log_mq("First job periods do not require supervision")
+        logger.log_mq("Initial job periods do not require supervision")
         ctx.abort = True
 
     # Rejected if job period failure count exceeds the configurable limit.
