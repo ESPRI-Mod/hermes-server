@@ -80,7 +80,7 @@ def _authorize(ctx):
     try:
         ctx.user = superviseur.authorize(ctx.simulation.compute_node_login)
     except UserWarning as err:
-        logger.log_mq_warning("Supervision unauthorized: {}".format(err))
+        logger.log_mq_warning("Supervision authorization failure: {}".format(err))
         ctx.abort = True
 
 
