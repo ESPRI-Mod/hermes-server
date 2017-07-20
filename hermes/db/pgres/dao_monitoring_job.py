@@ -337,14 +337,15 @@ def persist_job_start(
         """Assigns instance values from input parameters.
 
         """
+        warning_limit = arrow.get(execution_start_date) + \
+                        datetime.timedelta(seconds=int(warning_delay))
+
         instance.execution_start_date = execution_start_date
         instance.typeof = unicode(job_type)
         instance.job_uid = unicode(job_uid)
         instance.simulation_uid = unicode(simulation_uid)
         instance.warning_delay = int(warning_delay)
-        instance.warning_limit = \
-               arrow.get(execution_start_date) + \
-               datetime.timedelta(seconds=int(warning_delay))
+        instance.warning_limit = warning_limit.datetime
         instance.execution_state = instance.get_execution_state()
 
         # ... optional fields
