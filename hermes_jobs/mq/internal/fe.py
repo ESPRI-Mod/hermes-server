@@ -47,10 +47,6 @@ def _invoke_endpoint(ctx):
     # Set API endpoint.
     endpoint = web.get_endpoint(_API_EP)
 
-    # Log.
-    msg = "Dispatching FE notification: {} to {}".format(ctx.content, endpoint)
-    logger.log_mq(msg)
-
     # Send event info via an HTTP POST to API endpoint.
     try:
         requests.post(endpoint,
