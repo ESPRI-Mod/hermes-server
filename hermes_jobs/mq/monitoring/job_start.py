@@ -299,7 +299,11 @@ def _enqueue_late_job_detection(ctx):
         delta_in_s = 600    # 10 minutes for historical messages
     else:
         delta_in_s += 300   # +5 mins for potential job end latency
-    logger.log_mq("Enqueuing job late warning message with delay = {} seconds".format(delta_in_s))
+
+    # Log.
+    msg = "Enqueuing late job detection: sim-uid = {}; job-uid = {}; delay = {}s"
+    msg = msg.format(ctx.simulation_uid, ctx.job_uid, delta_in_s)
+    logger.log_mq(msg)
 
     # Enqueue.
     mq_utils.enqueue(
