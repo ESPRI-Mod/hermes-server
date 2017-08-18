@@ -113,14 +113,12 @@ def _enqueue_supervisor_format(ctx):
     """Places a message upon the supervisor format queue.
 
     """
-    if not ctx.requires_supervision:
-        return
-
-    utils.enqueue(mq.constants.MESSAGE_TYPE_8100, {
-        "job_uid": ctx.job_uid,
-        "simulation_uid": ctx.simulation_uid,
-        "supervision_id": ctx.supervision.id
-    })
+    if ctx.requires_supervision:
+        utils.enqueue(mq.constants.MESSAGE_TYPE_8100, {
+            "job_uid": ctx.job_uid,
+            "simulation_uid": ctx.simulation_uid,
+            "supervision_id": ctx.supervision.id
+        })
 
 
 def _enqueue_fe_notification_job(ctx):

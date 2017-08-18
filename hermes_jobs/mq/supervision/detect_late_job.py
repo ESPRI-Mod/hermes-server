@@ -62,7 +62,7 @@ def _verify(ctx):
     # Set job.
     ctx.job = db.dao_monitoring.retrieve_job(ctx.job_uid)
 
-    # Abort if job was purged or is complete.
+    # Abort if job was purged or complete.
     ctx.abort = ctx.job is None or \
                 ctx.job.execution_end_date is not None
 
