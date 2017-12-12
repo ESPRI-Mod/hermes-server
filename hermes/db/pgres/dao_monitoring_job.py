@@ -349,7 +349,7 @@ def persist_job_start(
         instance.job_uid = unicode(job_uid)
         instance.simulation_uid = unicode(simulation_uid)
         instance.warning_delay = int(warning_delay)
-        instance.warning_limit = warning_limit.datetime
+        instance.warning_limit = warning_limit
         instance.execution_state = instance.get_execution_state()
 
         # ... optional fields
