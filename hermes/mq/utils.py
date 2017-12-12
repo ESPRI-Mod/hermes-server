@@ -302,11 +302,7 @@ def get_timestamps(raw):
 
     """
     # Convert to ms precise raw string.
-    as_text = "{}.{}+{}".format(
-        raw.split('.')[0],
-        raw.split('.')[1][0:6],
-        raw.split('.')[1][-5:]
-        ).replace('++', '+')
+    as_text = "{}.{}+{}".format(raw.split('.')[0], raw.split('.')[1][0:6], raw.split('.')[1][-5:]).replace('++', '+')
 
     # Convert to UTC.
     as_utc = arrow.get(as_text).to(_DEFAULT_TZ)
