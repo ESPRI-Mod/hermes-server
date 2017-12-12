@@ -20,6 +20,7 @@ from hermes.cv.constants import JOB_TYPE_COMPUTING
 from hermes.cv.constants import JOB_TYPE_POST_PROCESSING
 from hermes.db import pgres as db
 from hermes.db.pgres import dao_monitoring as dao
+from hermes.db.pgres.constants import DEFAULT_TZ
 from hermes.utils import config
 from hermes.utils import logger
 from hermes_jobs.mq import utils as mq_utils
@@ -218,6 +219,9 @@ def _persist_job(ctx):
         submission_path=ctx.get_field('jobSubmissionPath')
         )
 
+    # Commit to database.
+    db.session.commit()
+
 
 def _persist_simulation(ctx):
     """Persists simulation information to db.
@@ -294,7 +298,7 @@ def _enqueue_late_job_detection(ctx):
         pass
 
     # Calculate time delta until system must check if job is late or not.
-    delta_in_s = int((ctx.job.warning_limit - arrow.utcnow()).total_seconds())
+    delta_in_s = int((ctx.job.warning_limit.to(DEFAULT_TZ) - arrow.now().to(DEFAULT_TZ)).total_seconds())
     if delta_in_s < 0:
         delta_in_s = 600    # 10 minutes for historical messages
     else:

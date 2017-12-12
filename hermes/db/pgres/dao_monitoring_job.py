@@ -23,6 +23,7 @@ from hermes.db.pgres import dao
 from hermes.db.pgres import session
 from hermes.db.pgres import types
 from hermes.db.pgres import validator_dao_monitoring as validator
+from hermes.db.pgres.constants import DEFAULT_TZ
 from hermes.db.pgres.convertor import as_date_string
 from hermes.db.pgres.convertor import as_datetime_string
 from hermes.utils import decorators
@@ -337,8 +338,7 @@ def persist_job_start(
         """Assigns instance values from input parameters.
 
         """
-        warning_limit = arrow.get(execution_start_date) + \
-                        datetime.timedelta(seconds=int(warning_delay))
+        warning_limit = (arrow.get(execution_start_date) + datetime.timedelta(seconds=int(warning_delay))).to(DEFAULT_TZ)
 
         instance.execution_start_date = execution_start_date
         instance.typeof = unicode(job_type)

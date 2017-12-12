@@ -19,3 +19,6 @@ HERMES_DB_USER = "hermes_db_user"
 
 # User name of admin db user.
 HERMES_DB_ADMIN_USER = "hermes_db_admin"
+
+# Default timezone to apply.
+DEFAULT_TZ = 'UTC'

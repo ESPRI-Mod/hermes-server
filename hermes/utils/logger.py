@@ -39,14 +39,9 @@ def _get_formatted_message(msg, module, level, app, institute):
     if msg is None:
         return _NULL_MSG
     else:
-        return "{0} [{1}] :: {2} {3} > {4} : {5}".format(
-            unicode(arrow.get())[0:-13],
-            level,
-            institute,
-            app,
-            module,
-            unicode(msg).strip()
-            )
+        timestamp = str(arrow.get())[0:-13]
+        msg = str(msg).strip().decode('utf-8')
+        return "{0} [{1}] :: {2} {3} > {4} : {5}".format(timestamp, level, institute, app, module, msg)
 
 
 def log(
