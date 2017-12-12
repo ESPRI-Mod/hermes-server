@@ -219,9 +219,6 @@ def _persist_job(ctx):
         submission_path=ctx.get_field('jobSubmissionPath')
         )
 
-    # Commit to database.
-    db.session.commit()
-
 
 def _persist_simulation(ctx):
     """Persists simulation information to db.
