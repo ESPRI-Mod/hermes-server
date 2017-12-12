@@ -339,7 +339,7 @@ def persist_job_start(
 
         """
         try:
-            warning_limit = (execution_start_date + datetime.timedelta(seconds=int(warning_delay))).to(DEFAULT_TZ)
+            warning_limit = (execution_start_date + datetime.timedelta(seconds=int(warning_delay)))
         except ValueError as err:
             print 666, execution_start_date, warning_delay
             raise err
