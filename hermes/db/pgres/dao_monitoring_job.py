@@ -338,7 +338,11 @@ def persist_job_start(
         """Assigns instance values from input parameters.
 
         """
-        warning_limit = (arrow.get(execution_start_date) + datetime.timedelta(seconds=int(warning_delay))).to(DEFAULT_TZ)
+        try:
+            warning_limit = (execution_start_date + datetime.timedelta(seconds=int(warning_delay))).to(DEFAULT_TZ)
+        except ValueError as err:
+            print 666, execution_start_date, warning_delay
+            raise err
 
         instance.execution_start_date = execution_start_date
         instance.typeof = unicode(job_type)
