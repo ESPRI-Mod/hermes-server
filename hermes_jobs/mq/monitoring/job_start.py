@@ -12,6 +12,7 @@
 
 """
 import arrow
+import pytz
 from sqlalchemy.exc import IntegrityError
 
 from hermes import cv
@@ -295,7 +296,7 @@ def _enqueue_late_job_detection(ctx):
         pass
 
     # Calculate time delta until system must check if job is late or not.
-    delta_in_s = int((ctx.job.warning_limit - arrow.now().to(DEFAULT_TZ).datetime).total_seconds())
+    delta_in_s = int((ctx.job.warning_limit - datetime.datetime.now(pytz.utc)).total_seconds())
     if delta_in_s < 0:
         delta_in_s = 600    # 10 minutes for historical messages
     else:

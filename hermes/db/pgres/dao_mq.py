@@ -80,7 +80,7 @@ def persist_message(
     if email_id:
         instance.email_id = int(email_id)
     if timestamp is not None:
-        instance.timestamp = timestamp.to('utc').datetime
+        instance.timestamp = timestamp.datetime
     if timestamp_raw is not None:
         instance.timestamp_raw = unicode(timestamp_raw)
 
