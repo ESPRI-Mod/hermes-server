@@ -35,7 +35,7 @@ def format_term_name(term_name):
     :rtype: str
 
     """
-    return unicode(term_name.lower())
+    return unicode(term_name.lower().replace('/', '-'))
 
 
 def format_term_data(term_data):
