@@ -131,7 +131,7 @@ def _unpack(ctx):
         if ctx.simulation_space_raw == "":
             ctx.simulation_space_raw = None
     ctx.post_processing_date = ctx.get_field('postProcessingDate')
-    if ctx.post_processing_date.endswith('0230'):
+    if ctx.post_processing_date and ctx.post_processing_date.endswith('0230'):
         logger.log_mq('post processing date: february date subsitution')
         ctx.post_processing_date = ctx.post_processing_date.replace('0230', '0228')
 
