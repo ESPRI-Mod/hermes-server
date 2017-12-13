@@ -265,6 +265,9 @@ def _persist_simulation(ctx):
     # Commit to database.
     db.session.commit()
 
+    print simulation.uid, simulation.id, job.job_uid, job.id
+
+
 
 def _update_simulation_im_flag(ctx):
     """Updates simulation inter-monitoring flag info to db.
