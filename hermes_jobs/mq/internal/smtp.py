@@ -57,11 +57,11 @@ class ProcessingContextInfo(mq.Message):
     """Message processing context information.
 
     """
-    def __init__(self, props, body):
+    def __init__(self, props, body, decode=True, validate_props=True):
         """Object constructor.
 
         """
-        super(ProcessingContextInfo, self).__init__(props, body, decode=True)
+        super(ProcessingContextInfo, self).__init__(props, body, decode=decode, validate_props=validate_props)
 
         self.email = None
         self.email_attachments = None

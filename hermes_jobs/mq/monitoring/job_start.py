@@ -81,8 +81,7 @@ class ProcessingContextInfo(mq.Message):
         """Object constructor.
 
         """
-        super(ProcessingContextInfo, self).__init__(
-            props, body, decode=decode, validate_props=validate_props)
+        super(ProcessingContextInfo, self).__init__(props, body, decode=decode, validate_props=validate_props)
 
         self.cv_terms = []
         self.cv_terms_for_fe = []
