@@ -211,6 +211,7 @@ def _persist_simulation(ctx):
             logger.log_mq('output date cannot be parsed: {}'.format(raw_date))
             return None
 
+
     # Persist job info.
     ctx.job = dao.persist_job_start(
         ctx.accounting_project,
@@ -246,8 +247,8 @@ def _persist_simulation(ctx):
             ctx.model,
             ctx.model_raw,
             ctx.content['name'],
-            _parse_output_date('startDate'),
-            _parse_output_date('endDate'),
+            _parse_output_date(ctx.content['startDate']),
+            _parse_output_date(ctx.content['endDate']),
             ctx.simulation_space,
             ctx.simulation_space_raw,
             ctx.simulation_uid,
