@@ -219,8 +219,10 @@ def validate_persist_simulation_start(
         validate_ucode(space_raw, 'Simulation space (raw)')
 
     validate_ucode(name, "Simulation name")
-    validate_date(output_end_date, 'Output end date')
-    validate_date(output_start_date, 'Output start date')
+    if output_end_date is not None:
+        validate_date(output_end_date, 'Output end date')
+    if output_start_date is not None:
+        validate_date(output_start_date, 'Output start date')
     validate_uid(uid, "Simulation uid")
 
     if submission_path:

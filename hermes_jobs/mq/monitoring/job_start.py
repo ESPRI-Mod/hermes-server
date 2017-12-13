@@ -205,11 +205,13 @@ def _persist_simulation(ctx):
 
     """
     def _parse_output_date(field):
+        """Parses an output date.
+
+        """
         raw_date = ctx.content[field]
         try:
             return arrow.get(raw_date).to(DEFAULT_TZ).datetime
         except arrow.parser.ParserError:
-            logger.log_mq('output {} cannot be parsed: {}'.format(field))
             return None
 
 
