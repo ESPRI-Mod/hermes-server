@@ -65,12 +65,11 @@ def get_tasks():
         _unpack,
         _parse_cv,
         _persist_cv,
-        _persist_job,
         _persist_simulation,
         _update_simulation_im_flag,
         _enqueue_cv_git_push,
-        _enqueue_late_job_detection,
-        _enqueue_fe_notification
+        _enqueue_fe_notification,
+        _enqueue_late_job_detection
         )
 
 
@@ -202,10 +201,11 @@ def _persist_cv(ctx):
             })
 
 
-def _persist_job(ctx):
-    """Persists job info to db.
+def _persist_simulation(ctx):
+    """Persists job/simulation information to db.
 
     """
+    # Persist job info.
     ctx.job = dao.persist_job_start(
         ctx.accounting_project,
         ctx.job_warning_delay,
@@ -222,56 +222,45 @@ def _persist_job(ctx):
         submission_path=ctx.get_field('jobSubmissionPath')
         )
 
-    # Commit to database.
-    if not ctx.is_simulation_start:
-        db.session.commit()
-
-
-def _persist_simulation(ctx):
-    """Persists simulation information to db.
-
-    """
-    # Escape if unnecessary.
-    if not ctx.is_simulation_start:
-        return
-
-    # Persist simulation.
-    simulation = dao.persist_simulation_start(
-        ctx.accounting_project,
-        ctx.compute_node,
-        ctx.compute_node_raw,
-        ctx.compute_node_login,
-        ctx.compute_node_login_raw,
-        ctx.compute_node_machine,
-        ctx.compute_node_machine_raw,
-        ctx.msg.timestamp,  # execution_start_date
-        ctx.experiment,
-        ctx.experiment_raw,
-        ctx.model,
-        ctx.model_raw,
-        ctx.content['name'],
-        arrow.get(ctx.content['startDate']).to(DEFAULT_TZ).datetime,
-        arrow.get(ctx.content['endDate']).to(DEFAULT_TZ).datetime,
-        ctx.simulation_space,
-        ctx.simulation_space_raw,
-        ctx.simulation_uid,
-        ctx.get_field('jobSubmissionPath'),
-        ctx.get_field('archivePath'),
-        ctx.get_field('storagePath'),
-        ctx.get_field('storageSmallPath')
-        )
-
-    # Persist simulation configuration.
-    config_card = ctx.get_field('configuration')
-    if config_card:
-        dao.persist_simulation_configuration(
+    # Persist simulation info.
+    if ctx.is_simulation_start:
+        # ... simulation.
+        simulation = dao.persist_simulation_start(
+            ctx.accounting_project,
+            ctx.compute_node,
+            ctx.compute_node_raw,
+            ctx.compute_node_login,
+            ctx.compute_node_login_raw,
+            ctx.compute_node_machine,
+            ctx.compute_node_machine_raw,
+            ctx.msg.timestamp,  # execution_start_date
+            ctx.experiment,
+            ctx.experiment_raw,
+            ctx.model,
+            ctx.model_raw,
+            ctx.content['name'],
+            arrow.get(ctx.content['startDate']).to(DEFAULT_TZ).datetime,
+            arrow.get(ctx.content['endDate']).to(DEFAULT_TZ).datetime,
+            ctx.simulation_space,
+            ctx.simulation_space_raw,
             ctx.simulation_uid,
-            config_card
+            ctx.get_field('jobSubmissionPath'),
+            ctx.get_field('archivePath'),
+            ctx.get_field('storagePath'),
+            ctx.get_field('storageSmallPath')
             )
 
-    # Update active simulation.
-    ctx.active_simulation = \
-        dao.update_active_simulation(simulation.hashid)
+        # ... configuration.
+        config_card = ctx.get_field('configuration')
+        if config_card:
+            dao.persist_simulation_configuration(
+                ctx.simulation_uid,
+                config_card
+                )
+
+        # ... active simulation.
+        ctx.active_simulation = \
+            dao.update_active_simulation(simulation.hashid)
 
     # Commit to database.
     db.session.commit()
@@ -281,15 +270,41 @@ def _update_simulation_im_flag(ctx):
     """Updates simulation inter-monitoring flag info to db.
 
     """
-    # Escape if job is not an inter-monitoring one.
-    if not ctx.job.is_im:
+    if ctx.job.is_im:
+        dao.update_simulation_im_flag(ctx.simulation_uid, True)
+        db.session.commit()
+
+
+def _enqueue_cv_git_push(ctx):
+    """Places a message upon the new cv terms notification queue.
+
+    """
+    # Escape if unnecessary.
+    if not ctx.is_simulation_start:
+        return
+    if not ctx.cv_terms_persisted_to_db and not ctx.cv_terms_new:
         return
 
-    # Set simulation im flag to true.
-    dao.update_simulation_im_flag(ctx.simulation_uid, True)
+    mq_utils.enqueue(mq.constants.MESSAGE_TYPE_CV)
 
-    # Commit to database.
-    db.session.commit()
+
+def _enqueue_fe_notification(ctx):
+    """Places a message upon the front-end notification queue.
+
+    """
+    if ctx.is_simulation_start:
+        event_type = 'simulation_start'
+        simulation_uid = ctx.active_simulation.uid
+    else:
+        event_type = 'job_start'
+        simulation_uid = ctx.simulation_uid
+
+    mq_utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
+        "event_type": event_type,
+        "cv_terms": ctx.cv_terms_for_fe,
+        "job_uid": ctx.job_uid,
+        "simulation_uid": simulation_uid
+    })
 
 
 def _enqueue_late_job_detection(ctx):
@@ -323,35 +338,3 @@ def _enqueue_late_job_detection(ctx):
             "trigger_code": ctx.props.type
         }
     )
-
-
-def _enqueue_cv_git_push(ctx):
-    """Places a message upon the new cv terms notification queue.
-
-    """
-    # Escape if unnecessary.
-    if not ctx.is_simulation_start:
-        return
-    if not ctx.cv_terms_persisted_to_db and not ctx.cv_terms_new:
-        return
-
-    mq_utils.enqueue(mq.constants.MESSAGE_TYPE_CV)
-
-
-def _enqueue_fe_notification(ctx):
-    """Places a message upon the front-end notification queue.
-
-    """
-    if ctx.is_simulation_start:
-        event_type = 'simulation_start'
-        simulation_uid = ctx.active_simulation.uid
-    else:
-        event_type = 'job_start'
-        simulation_uid = ctx.simulation_uid
-
-    mq_utils.enqueue(mq.constants.MESSAGE_TYPE_FE, {
-        "event_type": event_type,
-        "cv_terms": ctx.cv_terms_for_fe,
-        "job_uid": ctx.job_uid,
-        "simulation_uid": simulation_uid
-    })

@@ -72,7 +72,7 @@ def _persist(ctx):
 
     """
     # Persist job info.
-    dao.persist_late_job(
+    db.dao_monitoring.persist_late_job(
         ctx.job_uid,
         ctx.simulation_uid
         )
