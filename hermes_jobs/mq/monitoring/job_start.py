@@ -103,6 +103,7 @@ class ProcessingContextInfo(mq.Message):
         self.job_type = _MESSAGE_JOB_TYPES[self.props.type]
         self.job_uid = None
         self.job_warning_delay = None
+        self.post_processing_date = None
         self.simulation_uid = None
 
 
@@ -129,6 +130,9 @@ def _unpack(ctx):
             setattr(ctx, field, getattr(ctx, field).lower())
         if ctx.simulation_space_raw == "":
             ctx.simulation_space_raw = None
+    ctx.post_processing_date = ctx.get_field('postProcessingDate')
+    if ctx.post_processing_date.endswith('0230'):
+        ctx.post_processing_date = ctx.post_processing_date.replace('0230', '0228')
 
 
 def _parse_cv(ctx):
@@ -224,7 +228,7 @@ def _persist_simulation(ctx):
         ctx.job_uid,
         ctx.simulation_uid,
         post_processing_component=ctx.get_field('postProcessingComp'),
-        post_processing_date=ctx.get_field('postProcessingDate'),
+        post_processing_date=ctx.post_processing_date,
         post_processing_dimension=ctx.get_field('postProcessingDimn'),
         post_processing_file=ctx.get_field('postProcessingFile'),
         post_processing_name=ctx.get_field('postProcessingName'),
@@ -234,7 +238,6 @@ def _persist_simulation(ctx):
 
     # Persist simulation info.
     if ctx.is_simulation_start:
-        print 666, ctx.content['startDate'], ctx.content['endDate']
         # ... simulation.
         simulation = dao.persist_simulation_start(
             ctx.accounting_project,
