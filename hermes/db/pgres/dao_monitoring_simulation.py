@@ -237,7 +237,6 @@ def persist_simulation_start(
         """Assigns instance values from input parameters.
 
         """
-        print 000
         instance.accounting_project = unicode(accounting_project)
         instance.compute_node = unicode(compute_node)
         instance.compute_node_raw = unicode(compute_node_raw)
@@ -251,8 +250,8 @@ def persist_simulation_start(
         instance.model = unicode(model)
         instance.model_raw = unicode(model_raw)
         instance.name = unicode(name)
-        instance.output_start_date = output_start_date
-        instance.output_end_date = output_end_date
+        # instance.output_start_date = output_start_date
+        # instance.output_end_date = output_end_date
         instance.space = unicode(space)
         instance.space_raw = unicode(space_raw)
         instance.uid = unicode(uid)
@@ -265,7 +264,6 @@ def persist_simulation_start(
             instance.storage_path = unicode(storage_path)
         if storage_small_path:
             instance.storage_small_path = unicode(storage_small_path)
-        print 0000
 
     return dao.persist(_assign, types.Simulation, lambda: retrieve_simulation(uid))
 
