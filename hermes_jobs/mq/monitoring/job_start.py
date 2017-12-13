@@ -265,7 +265,7 @@ def _persist_simulation(ctx):
     # Commit to database.
     db.session.commit()
 
-    print simulation.uid, simulation.id, job.job_uid, job.id
+    print simulation.uid, simulation.id, ctx.job.job_uid, ctx.job.id
 
 
 
