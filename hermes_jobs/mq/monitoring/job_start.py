@@ -223,6 +223,7 @@ def _persist_simulation(ctx):
 
     # Persist simulation info.
     if ctx.is_simulation_start:
+        print 666, ctx.content['startDate'], ctx.content['endDate']
         # ... simulation.
         simulation = dao.persist_simulation_start(
             ctx.accounting_project,
