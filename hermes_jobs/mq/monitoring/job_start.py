@@ -142,12 +142,15 @@ def _parse_cv(ctx):
 
     for term_type in _SIMULATION_CV_TERM_FIELDS:
         term_name = getattr(ctx, term_type)
+        print 777, term_type, term_name
         try:
             cv.validator.validate_term_name(term_type, term_name)
         except cv.TermNameError:
+            print 888, term_type, term_name
             ctx.cv_terms_new.append(cv.create(term_type, term_name))
         else:
             parsed_term_name = cv.parser.parse_term_name(term_type, term_name)
+            print 999, term_type, term_name
             if term_name != parsed_term_name:
                 setattr(ctx, term_type, parsed_term_name)
                 msg = "CV term subsitution: {0}.{1} --> {0}.{2}"
