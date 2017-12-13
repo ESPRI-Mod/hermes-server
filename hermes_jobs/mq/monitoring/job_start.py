@@ -220,6 +220,10 @@ def _persist_job(ctx):
         submission_path=ctx.get_field('jobSubmissionPath')
         )
 
+    # Commit to database.
+    if not ctx.is_simulation_start:
+        db.session.commit()
+
 
 def _persist_simulation(ctx):
     """Persists simulation information to db.
@@ -228,6 +232,8 @@ def _persist_simulation(ctx):
     # Escape if unnecessary.
     if not ctx.is_simulation_start:
         return
+
+    print 111
 
     # Persist simulation.
     simulation = dao.persist_simulation_start(
@@ -255,6 +261,8 @@ def _persist_simulation(ctx):
         ctx.get_field('storageSmallPath')
         )
 
+    print 222
+
     # Persist simulation configuration.
     config_card = ctx.get_field('configuration')
     if config_card:
@@ -263,12 +271,18 @@ def _persist_simulation(ctx):
             config_card
             )
 
+    print 333
+
     # Update active simulation.
     ctx.active_simulation = \
         dao.update_active_simulation(simulation.hashid)
 
+    print 444
+
     # Commit to database.
     db.session.commit()
+
+    print 555
 
 
 def _update_simulation_im_flag(ctx):
