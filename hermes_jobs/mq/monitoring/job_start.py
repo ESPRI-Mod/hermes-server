@@ -235,8 +235,6 @@ def _persist_simulation(ctx):
     if not ctx.is_simulation_start:
         return
 
-    print 111
-
     # Persist simulation.
     simulation = dao.persist_simulation_start(
         ctx.accounting_project,
@@ -263,8 +261,6 @@ def _persist_simulation(ctx):
         ctx.get_field('storageSmallPath')
         )
 
-    print 222
-
     # Persist simulation configuration.
     config_card = ctx.get_field('configuration')
     if config_card:
@@ -273,18 +269,12 @@ def _persist_simulation(ctx):
             config_card
             )
 
-    print 333
-
     # Update active simulation.
     ctx.active_simulation = \
         dao.update_active_simulation(simulation.hashid)
 
-    print 444
-
     # Commit to database.
     db.session.commit()
-
-    print 555
 
 
 def _update_simulation_im_flag(ctx):
@@ -312,7 +302,7 @@ def _enqueue_late_job_detection(ctx):
         pass
 
     # Calculate time delta until system must check if job is late or not.
-    delta_in_s = int((ctx.job.warning_limit - datetime.datetime.now(pytz.utc)).total_seconds())
+    delta_in_s = int((ctx.job.warning_limit - datetime.datetime.now()).total_seconds())
     if delta_in_s < 0:
         delta_in_s = 600    # 10 minutes for historical messages
     else:
