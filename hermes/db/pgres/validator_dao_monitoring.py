@@ -65,6 +65,8 @@ def validate_persist_job_start(
     if post_processing_name is not None:
         pass
     if post_processing_date is not None:
+        if post_processing_date.endswith('0230'):
+            post_processing_date = post_processing_date.replace('0230', '0228')
         validate_date(post_processing_date, "post_processing_date", "YYYYMMDD")
     if post_processing_dimension is not None:
         pass
