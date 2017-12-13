@@ -57,8 +57,7 @@ class ProcessingContextInfo(mq.Message):
         """Object constructor.
 
         """
-        super(ProcessingContextInfo, self).__init__(
-            props, body, decode=decode, validate_props=validate_props)
+        super(ProcessingContextInfo, self).__init__(props, body, decode=decode, validate_props=validate_props)
 
         self.is_compute_end = props.type == mq.constants.MESSAGE_TYPE_0100
         self.is_error = props.type in _ERROR_MESSAGE_TYPES
