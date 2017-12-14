@@ -237,19 +237,6 @@ def persist_simulation_start(
         """Assigns instance values from input parameters.
 
         """
-        print execution_start_date, type(execution_start_date)
-        print output_start_date, type(output_start_date)
-        print output_end_date, type(output_end_date)
-
-        if output_end_date is not None:
-            output_end_date = output_end_date.replace(tzinfo=None)
-        if output_start_date is not None:
-            output_start_date = output_start_date.replace(tzinfo=None)
-
-        print output_start_date, type(output_start_date)
-        print output_end_date, type(output_end_date)
-
-
         instance.accounting_project = unicode(accounting_project)
         instance.compute_node = unicode(compute_node)
         instance.compute_node_raw = unicode(compute_node_raw)
@@ -279,6 +266,18 @@ def persist_simulation_start(
             instance.storage_small_path = unicode(storage_small_path)
 
         print 111, 'persist_simulation_start'
+
+    print execution_start_date, type(execution_start_date)
+    print output_start_date, type(output_start_date)
+    print output_end_date, type(output_end_date)
+
+    if output_end_date is not None:
+        output_end_date = output_end_date.replace(tzinfo=None)
+    if output_start_date is not None:
+        output_start_date = output_start_date.replace(tzinfo=None)
+
+    print output_start_date, type(output_start_date)
+    print output_end_date, type(output_end_date)
 
     return dao.persist(_assign, types.Simulation, lambda: retrieve_simulation(uid))
 
