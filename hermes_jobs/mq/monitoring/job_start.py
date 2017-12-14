@@ -215,8 +215,7 @@ def _persist_simulation(ctx):
         """
         raw_date = ctx.content[field]
         try:
-            return arrow.get(raw_date).datetime
-            # return arrow.get(raw_date).to(DEFAULT_TZ).datetime
+            return arrow.get(raw_date).datetime.replace(tzinfo=None)
         except (arrow.parser.ParserError, ValueError) as err:
             return None
 
@@ -239,6 +238,7 @@ def _persist_simulation(ctx):
 
     # Persist simulation info.
     if ctx.is_simulation_start:
+
         print '000', ctx.content['startDate'], ctx.content['endDate']
 
         # ... simulation.
