@@ -209,7 +209,7 @@ def _persist_simulation(ctx):
     """Persists job/simulation information to db.
 
     """
-    def _parse_output_date(field):
+    def _get_output_date(field):
         """Parses an output date.
 
         """
@@ -240,6 +240,8 @@ def _persist_simulation(ctx):
 
     # Persist simulation info.
     if ctx.is_simulation_start:
+        print 111, ctx.simulation_uid, 'being persisted'
+
         # ... simulation.
         simulation = dao.persist_simulation_start(
             ctx.accounting_project,
@@ -255,8 +257,8 @@ def _persist_simulation(ctx):
             ctx.model,
             ctx.model_raw,
             ctx.content['name'],
-            _parse_output_date('startDate'),
-            _parse_output_date('endDate'),
+            _get_output_date('startDate'),
+            _get_output_date('endDate'),
             ctx.simulation_space,
             ctx.simulation_space_raw,
             ctx.simulation_uid,
