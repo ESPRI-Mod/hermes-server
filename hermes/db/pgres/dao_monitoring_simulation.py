@@ -237,6 +237,7 @@ def persist_simulation_start(
         """Assigns instance values from input parameters.
 
         """
+        print execution_start_date, type(execution_start_date)
         print output_start_date, type(output_start_date)
         print output_end_date, type(output_end_date)
 

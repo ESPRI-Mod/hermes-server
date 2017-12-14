@@ -213,7 +213,6 @@ def _persist_simulation(ctx):
         """Parses an output date.
 
         """
-        return None
         raw_date = ctx.content[field]
         try:
             return arrow.get(raw_date).to(DEFAULT_TZ).datetime
