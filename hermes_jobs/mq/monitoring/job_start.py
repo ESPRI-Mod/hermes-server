@@ -217,7 +217,7 @@ def _persist_simulation(ctx):
         try:
             return arrow.get(raw_date).datetime.replace(tzinfo=None)
         except (arrow.parser.ParserError, ValueError) as err:
-            logger.log_mq('{} date is unparseable [{}]'.format(field, raw_date))
+            logger.log_mq_warning('{} date is unparseable [{}]'.format(field, raw_date))
             return None
 
     # Persist job info.
