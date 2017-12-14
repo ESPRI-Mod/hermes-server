@@ -213,6 +213,7 @@ def _persist_simulation(ctx):
         """Parses an output date.
 
         """
+        return None
         raw_date = ctx.content[field]
         try:
             return arrow.get(raw_date).to(DEFAULT_TZ).datetime
@@ -239,7 +240,7 @@ def _persist_simulation(ctx):
     # Persist simulation info.
     if ctx.is_simulation_start:
         print '000', ctx.content['startDate'], ctx.content['endDate']
-    
+
         # ... simulation.
         simulation = dao.persist_simulation_start(
             ctx.accounting_project,
