@@ -216,7 +216,8 @@ def _persist_simulation(ctx):
         raw_date = ctx.content[field]
         try:
             return arrow.get(raw_date).to(DEFAULT_TZ).datetime
-        except (arrow.parser.ParserError, ValueError):
+        except (arrow.parser.ParserError, ValueError) as err:
+            print 666, err
             return None
 
 
