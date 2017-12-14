@@ -217,7 +217,6 @@ def _persist_simulation(ctx):
         try:
             return arrow.get(raw_date).to(DEFAULT_TZ).datetime
         except (arrow.parser.ParserError, ValueError) as err:
-            print 666, err
             return None
 
 
@@ -240,9 +239,6 @@ def _persist_simulation(ctx):
 
     # Persist simulation info.
     if ctx.is_simulation_start:
-        print 111, ctx.content['startDate'], _get_output_date('startDate')
-        print 222, ctx.content['endDate'], _get_output_date('endDate')
-
         # ... simulation.
         simulation = dao.persist_simulation_start(
             ctx.accounting_project,
