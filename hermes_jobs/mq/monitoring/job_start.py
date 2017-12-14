@@ -219,7 +219,6 @@ def _persist_simulation(ctx):
         except (arrow.parser.ParserError, ValueError) as err:
             return None
 
-
     # Persist job info.
     ctx.job = dao.persist_job_start(
         ctx.accounting_project,
@@ -236,8 +235,6 @@ def _persist_simulation(ctx):
         scheduler_id=ctx.get_field('jobSchedulerID'),
         submission_path=ctx.get_field('jobSubmissionPath')
         )
-
-    print 'aaa', 'job persisted'
 
     # Persist simulation info.
     if ctx.is_simulation_start:

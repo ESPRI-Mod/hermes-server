@@ -250,8 +250,8 @@ def persist_simulation_start(
         instance.model = unicode(model)
         instance.model_raw = unicode(model_raw)
         instance.name = unicode(name)
-        instance.output_start_date = output_start_date
-        instance.output_end_date = output_end_date
+        # instance.output_start_date = output_start_date
+        # instance.output_end_date = output_end_date
         instance.space = unicode(space)
         instance.space_raw = unicode(space_raw)
         instance.uid = unicode(uid)

@@ -17,6 +17,7 @@ import pika
 import sqlalchemy
 
 from hermes.db import pgres as db
+from hermes.db.pgres.constants import DEFAULT_TZ
 from hermes.mq import constants
 from hermes.mq import defaults
 from hermes.mq import message
@@ -30,9 +31,6 @@ from hermes.utils.config import data as config
 
 # Configuration used by the module.
 _CONFIG = config.mq
-
-# Default timezone to apply.
-_DEFAULT_TZ = 'UTC'
 
 
 def create_ampq_message_properties(
@@ -271,7 +269,7 @@ def _persist(properties, payload):
         return default
 
     # Set timestamp info.
-    _, ts_utc, _, _ = get_timestamps(properties.headers["timestamp"])
+    _, timestamp, _, _ = get_timestamps(properties.headers["timestamp"])
 
     return db.dao_mq.persist_message(
         properties.message_id,
@@ -286,7 +284,7 @@ def _persist(properties, payload):
         _get_header('correlation_id_1'),
         _get_header('correlation_id_2'),
         _get_header('correlation_id_3'),
-        ts_utc,
+        timestamp,
         properties.headers["timestamp_raw"],
         _get_header('email_id')
         )
@@ -305,7 +303,7 @@ def get_timestamps(raw):
     as_text = "{}.{}+{}".format(raw.split('.')[0], raw.split('.')[1][0:6], raw.split('.')[1][-5:]).replace('++', '+')
 
     # Convert to UTC.
-    as_utc = arrow.get(as_text).to(_DEFAULT_TZ)
+    as_utc = arrow.get(as_text).to(DEFAULT_TZ)
 
     # Convert to integer.
     as_int = int("{}{}".format(
@@ -313,4 +311,4 @@ def get_timestamps(raw):
             raw.split('.')[1][0:6]
             ))
 
-    return raw, as_utc, as_int, as_text
+    return raw, as_utc.datetime, as_int, as_text

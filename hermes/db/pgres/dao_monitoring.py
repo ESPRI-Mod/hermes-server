@@ -59,7 +59,7 @@ def persist_environment_metric(
     :param str job_uid: Job UID.
     :param str simulation_uid: Simulation UID.
     :param float size_mb: Size in megabytes of moved file(s).
-    :param datetime timestamp: Time when action took place.
+    :param datetime action_timestamp: Time when action took place.
     :param float throughput_mb_s: Rate at which copy took place.
 
     :returns: A new environment metrics instance.
