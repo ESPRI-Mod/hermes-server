@@ -264,6 +264,8 @@ def _persist_simulation(ctx):
             ctx.get_field('storageSmallPath')
             )
 
+        print 222, 'persisted simulation'
+
         # ... configuration.
         config_card = ctx.get_field('configuration')
         if config_card:
