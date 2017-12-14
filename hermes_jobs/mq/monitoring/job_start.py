@@ -237,6 +237,8 @@ def _persist_simulation(ctx):
         submission_path=ctx.get_field('jobSubmissionPath')
         )
 
+    print 'aaa', 'job persisted'
+
     # Persist simulation info.
     if ctx.is_simulation_start:
         # ... simulation.
@@ -264,6 +266,8 @@ def _persist_simulation(ctx):
             ctx.get_field('storagePath'),
             ctx.get_field('storageSmallPath')
             )
+
+        print 'bbb', 'simulation persisted'
 
         # ... configuration.
         config_card = ctx.get_field('configuration')

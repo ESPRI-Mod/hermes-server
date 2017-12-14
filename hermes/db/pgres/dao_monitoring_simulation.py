@@ -265,6 +265,8 @@ def persist_simulation_start(
         if storage_small_path:
             instance.storage_small_path = unicode(storage_small_path)
 
+        print 222, 'dao.persist_simulation_start'
+
     return dao.persist(_assign, types.Simulation, lambda: retrieve_simulation(uid))
 
 

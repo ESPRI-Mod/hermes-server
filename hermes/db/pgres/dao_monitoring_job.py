@@ -371,6 +371,8 @@ def persist_job_start(
         if submission_path:
             instance.submission_path = unicode(submission_path)
 
+        print 111, 'dao.persist_job_start'
+
     return dao.persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 
 
