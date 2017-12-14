@@ -238,9 +238,6 @@ def _persist_simulation(ctx):
 
     # Persist simulation info.
     if ctx.is_simulation_start:
-
-        print '000', ctx.content['startDate'], ctx.content['endDate']
-
         # ... simulation.
         simulation = dao.persist_simulation_start(
             ctx.accounting_project,
@@ -266,8 +263,6 @@ def _persist_simulation(ctx):
             ctx.get_field('storagePath'),
             ctx.get_field('storageSmallPath')
             )
-
-        print 222, 'persisted simulation'
 
         # ... configuration.
         config_card = ctx.get_field('configuration')
