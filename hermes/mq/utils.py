@@ -303,6 +303,7 @@ def get_timestamps(raw):
     as_text = "{}.{}+{}".format(raw.split('.')[0], raw.split('.')[1][0:6], raw.split('.')[1][-5:]).replace('++', '+')
 
     # Convert to UTC.
+    print 666, as_text
     as_utc = arrow.get(as_text).to(DEFAULT_TZ)
 
     # Convert to integer.
