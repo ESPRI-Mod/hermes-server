@@ -332,7 +332,12 @@ def _enqueue_late_job_detection(ctx):
         pass
 
     # Calculate time delta until system must check if job is late or not.
-    delta_in_s = int((ctx.job.warning_limit - datetime.datetime.now()).total_seconds())
+    try:
+        delta_in_s = int((ctx.job.warning_limit - datetime.datetime.now()).total_seconds())
+    except Exception as err:
+        print 888, err
+        raise err
+
     if delta_in_s < 0:
         delta_in_s = 600    # 10 minutes for historical messages
     else:

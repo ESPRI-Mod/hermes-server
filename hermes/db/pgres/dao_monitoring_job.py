@@ -343,7 +343,13 @@ def persist_job_start(
         instance.job_uid = unicode(job_uid)
         instance.simulation_uid = unicode(simulation_uid)
         instance.warning_delay = int(warning_delay)
-        instance.warning_limit = execution_start_date + datetime.timedelta(seconds=int(warning_delay))
+
+        try:
+            instance.warning_limit = execution_start_date + datetime.timedelta(seconds=int(warning_delay))
+        except Exception as err:
+            print 666, err
+            raise err
+
         instance.execution_state = instance.get_execution_state()
 
         # ... optional fields
@@ -364,7 +370,6 @@ def persist_job_start(
             instance.scheduler_id = unicode(scheduler_id)
         if submission_path:
             instance.submission_path = unicode(submission_path)
-
 
     return dao.persist(_assign, types.Job, lambda: retrieve_job(job_uid))
 
