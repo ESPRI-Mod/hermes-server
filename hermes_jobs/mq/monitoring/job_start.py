@@ -333,8 +333,9 @@ def _enqueue_late_job_detection(ctx):
 
     # Calculate time delta until system must check if job is late or not.
     delta_in_s = int((ctx.job.warning_limit - datetime.datetime.now()).total_seconds())
+    delta_in_s_1 = int((ctx.job.warning_limit - datetime.datetime.utcnow()).total_seconds())
 
-    print ctx.job.execution_start_date, ctx.job.warning_delay, ctx.job.warning_limit, datetime.datetime.now(), delta_in_s
+    print ctx.job.execution_start_date, '|', ctx.job.warning_delay, '|', ctx.job.warning_limit, '|', datetime.datetime.now(), '|', datetime.datetime.utcnow(), '|', delta_in_s, '|', delta_in_s_1
 
     if delta_in_s < 0:
         delta_in_s = 600    # 10 minutes for historical messages
