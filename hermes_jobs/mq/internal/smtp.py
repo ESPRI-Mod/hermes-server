@@ -217,6 +217,7 @@ def _process_attachments(ctx):
         msg = "Message type {} email has no attachments and therefore cannot be processed.".format(msg['msgCode'])
         logger.log_mq_error(msg)
         ctx.email_rejected = True
+        return
 
     # Invoke handler.
     _ATTACHMENT_HANDLERS[msg_code](ctx)
