@@ -12,14 +12,16 @@
 
 """
 import base64
-import collections
 import datetime as dt
+import os
+import time
 
 from sqlalchemy.exc import IntegrityError
 
 from hermes import mq
 from hermes.db import pgres as db
 from hermes.db.pgres import dao_conso as dao
+from hermes.utils import config
 from hermes.utils import logger
 from hermes_jobs.mq.utils import enqueue
 from hermes_jobs.mq.metrics import conso_cpt_parser as parser
@@ -37,6 +39,8 @@ def get_tasks():
     """
     return (
       _unpack,
+      _verify_write_cpt_file,
+      _write_cpt_file,
       _set_blocks,
       _set_block_allocation,
       _persist_block_total,
@@ -59,6 +63,11 @@ class ProcessingContextInfo(mq.Message):
         self.blocks = []
         self.centre = None
         self.data = None
+        self.output_dir = config.apps.conso.outputDirectory
+
+        now = dt.datetime.utcnow()
+        self.date = now.isoformat()[0:10]
+        self.timestamp = int(time.mktime(now.timetuple()))
 
 
 def _unpack(ctx):
@@ -68,7 +77,37 @@ def _unpack(ctx):
     ctx.cpt = base64.decodestring(ctx.content['data'])
     ctx.centre = ctx.content['centre'].lower()
     ctx.project = ctx.content['accountingProject'].lower()
-    ctx.year = dt.datetime.utcnow().year
+
+
+def _verify_write_cpt_file(ctx):
+    """Verifies whether writing the cpt file to the file system is required or not.
+
+    """
+    # CPT file is empty.
+    if not ctx.cpt:
+        logger.log_mq_warning("CONSO: empty cpt file -> {} :: {}".format(ctx.centre, ctx.project))
+        ctx.abort = True
+
+
+def _write_cpt_file(ctx):
+    """Writes cpt file to file system.
+
+    """
+    # Set file path.
+    fpath = ctx.output_dir
+    fpath = os.path.join(fpath, ctx.centre)
+    fpath = os.path.join(fpath, ctx.project)
+    fpath = os.path.join(fpath, ctx.date)
+    if not os.path.exists(fpath):
+        os.makedirs(fpath)
+    fpath = os.path.join(fpath, "{}.txt".format(ctx.timestamp))
+
+    # Write to file system.
+    with open(fpath, 'w') as fstream:
+        fstream.write(ctx.cpt)
+
+    # Log.
+    logger.log_mq("CONSO - cpt file written to fs -> {} :: {}".format(ctx.centre, ctx.project))
 
 
 def _set_blocks(ctx):

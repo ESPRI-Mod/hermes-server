@@ -37,6 +37,7 @@ _ENV_VARS = {
 	"HERMES_DB_PGRES_USER_PASSWORD": None,
 
 	# ... mq server variables
+	"HERMES_MQ_CONSO_OUTPUT_DIR": "/opt/hermes/ops/data/conso",
 	"HERMES_MQ_RABBIT_HOST": "localhost:5672",
 	"HERMES_MQ_RABBIT_PROTOCOL": "ampq",
 	"HERMES_MQ_RABBIT_USER": "hermes-mq-user",
