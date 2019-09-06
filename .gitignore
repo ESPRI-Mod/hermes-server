@@ -2,3 +2,4 @@ src/hermes/utils/serialization
 ipsl-esm.csv
 tmp.*
 inscope.txt
+*.pyc
