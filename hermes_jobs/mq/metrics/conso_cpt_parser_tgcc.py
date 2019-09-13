@@ -16,18 +16,8 @@ import datetime as dt
 
 
 
-# Supported HPC's.
-_HPC_TGCC = 'tgcc'
-_HPC_IDRIS = 'idris'
-
 # Year constant.
 _YEAR = dt.datetime.utcnow().year
-
-# CMIP6 project code.
-_CMIP6 = 'cmip6'
-
-# Primary CMIP6 accounting project code @ TGCC.
-_GENCMIP6 = 'gencmip6'
 
 
 def yield_blocks(cpt):
