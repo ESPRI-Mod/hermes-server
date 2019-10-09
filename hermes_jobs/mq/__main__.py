@@ -60,7 +60,6 @@ _AGENT_HANDLERS = {
     'debug-2999': monitoring.job_end,
     'debug-7000': metrics.environment,
     'debug-7010': metrics.conso_project,
-    'debug-7011': metrics.conso_jobs,
     'debug-7100': metrics.pcmdi,
     'debug-8000': supervision.detect_late_job,
     'debug-8100': supervision.format_script,
