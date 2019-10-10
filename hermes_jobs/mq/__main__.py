@@ -19,6 +19,7 @@ from tornado.options import options
 from hermes import cv
 from hermes import mq
 from hermes.utils import logger
+from hermes_jobs.mq import conso
 from hermes_jobs.mq import delegator
 from hermes_jobs.mq import internal
 from hermes_jobs.mq import metrics
@@ -59,7 +60,7 @@ _AGENT_HANDLERS = {
     'debug-2100': monitoring.job_end,
     'debug-2999': monitoring.job_end,
     'debug-7000': metrics.environment,
-    'debug-7010': metrics.conso_project,
+    'debug-7010': conso.process_file,
     'debug-7100': metrics.pcmdi,
     'debug-8000': supervision.detect_late_job,
     'debug-8100': supervision.format_script,

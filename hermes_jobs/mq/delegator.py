@@ -12,6 +12,7 @@
 
 """
 from hermes import mq
+from hermes_jobs.mq import conso
 from hermes_jobs.mq import metrics
 from hermes_jobs.mq import monitoring
 from hermes_jobs.mq import supervision
@@ -34,7 +35,8 @@ _AGENTS = {
     '8888': monitoring.simulation_delete,
     # ... metrics handlers
     '7000': metrics.environment,
-    '7010': metrics.conso_project,
+    # ... conso handlers
+    '7010': conso.process_file,
     # ... supervisor handlers
     '8000': supervision.detect_late_job,
     '8100': supervision.format_script,
